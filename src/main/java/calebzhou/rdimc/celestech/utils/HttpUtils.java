@@ -15,24 +15,19 @@ import java.util.Map;
 import static calebzhou.rdimc.celestech.constant.ServiceConstants.ADDR;
 
 public class HttpUtils {
-    public static void sendWeather(ServerPlayerEntity player){
-        ThreadPool.newThread(()-> TextUtils.sendChatMessage(player, HttpUtils.doGet(ADDR+"getWeather?ip="+player.getIp())));
-    }
     //类名= url
     public static <T extends Serializable> void postObject(T object){
+        postObject(object.getClass().getSimpleName(),object,"");
+    }
+    //param &开头
+    public static <T extends Serializable> void postObject(String shortUrl,T object,String param){
         ThreadPool.newThread(()->{
-            HttpUtils.doPost(ADDR+object.getClass().getSimpleName()+"?","obj="+new Gson().toJson(object));
+            HttpUtils.doPost(ADDR+shortUrl+"?","obj="+new Gson().toJson(object)+param);
         });
 
     }
-    public static <T extends Serializable> void postObject(String shortUrl,T object){
-        ThreadPool.newThread(()->{
-            HttpUtils.doPost(ADDR+shortUrl+"?","obj="+new Gson().toJson(object));
-        });
 
-    }
-
-    public static String doGet(String url, LinkedHashMap<String ,Object> params){
+/*    public static String doGet(String url, LinkedHashMap<String ,Object> params){
         StringBuilder getData = new StringBuilder();
         for (Map.Entry<String,Object> param : params.entrySet()) {
             getData.append(URLEncoder.encode(param.getKey(), StandardCharsets.UTF_8));
@@ -42,9 +37,9 @@ public class HttpUtils {
                 getData.append('&');
         }
         return doGet(url+"?"+getData);
-    }
+    }*/
     //发送post请求
-    public static String doPost(String url, LinkedHashMap<String,Object> params){
+/*    public static String doPost(String url, LinkedHashMap<String,Object> params){
         StringBuilder postData = new StringBuilder();
         for (Map.Entry<String,Object> param : params.entrySet()) {
             if (postData.length() != 0)
@@ -54,7 +49,7 @@ public class HttpUtils {
             postData.append(URLEncoder.encode(String.valueOf(param.getValue()), StandardCharsets.UTF_8));
         }
         return doPost(url,postData.toString());
-    }
+    }*/
 
     public static String doGet(String fullUrl) {
         HttpURLConnection connection = null;
@@ -87,29 +82,14 @@ public class HttpUtils {
                     //sbf.append("\r\n");
                 }
                 result = sbf.toString();
+            }else{
+                return "HTTP服务错误："+connection.getResponseCode();
             }
         } catch (MalformedURLException e) {
             e.printStackTrace();
         } catch (IOException e) {
-            e.printStackTrace();
+            return "HTTP服务错误："+e.getMessage();
         } finally {
-            // 关闭资源
-            if (null != br) {
-                try {
-                    br.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-
-            if (null != is) {
-                try {
-                    is.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-
             connection.disconnect();// 关闭远程连接
         }
 

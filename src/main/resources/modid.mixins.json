@@ -5,7 +5,9 @@
   "compatibilityLevel": "JAVA_17",
   "mixins": [
     "PlayerBreakBlockMixin",
-    "PlayerPlaceBlockMixin"
+    "PlayerPlaceBlockMixin",
+    "RegisterCommandsMixin",
+    "PlayerConnectServerMixin"
   ],
   "client": [
   ],

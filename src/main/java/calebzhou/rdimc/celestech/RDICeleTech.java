@@ -1,6 +1,8 @@
 package calebzhou.rdimc.celestech;
 
+import calebzhou.rdimc.celestech.command.CommandRegister;
 import calebzhou.rdimc.celestech.event.EntityBlockEvents;
+import calebzhou.rdimc.celestech.event.PlayerConnectionEvents;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.minecraft.server.MinecraftServer;
@@ -23,7 +25,8 @@ public class RDICeleTech implements ModInitializer {
 			RDICeleTech.server = server;
 		});
 		new EntityBlockEvents();
-
+		new CommandRegister();
+		new PlayerConnectionEvents();
 	}
 
 	public static MinecraftServer getServer(){

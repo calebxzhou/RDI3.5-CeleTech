@@ -6,7 +6,7 @@ import java.util.concurrent.Executors;
 
 public class ThreadPool {
     public final static ConcurrentHashMap<String,Thread> playerThreadMap = new ConcurrentHashMap<>();
-    private final static ExecutorService exe = Executors.newFixedThreadPool(65535);
+    private final static ExecutorService exe = Executors.newCachedThreadPool();
     public static void newThread(Runnable runnable){
         exe.execute(runnable);
     }

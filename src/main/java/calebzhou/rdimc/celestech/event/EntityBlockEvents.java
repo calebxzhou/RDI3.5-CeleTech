@@ -4,7 +4,11 @@ package calebzhou.rdimc.celestech.event;
 import calebzhou.rdimc.celestech.model.BlockRecord;
 import calebzhou.rdimc.celestech.utils.HttpUtils;
 import calebzhou.rdimc.celestech.utils.TimeUtils;
+import net.fabricmc.fabric.api.event.player.AttackBlockCallback;
+import net.fabricmc.fabric.api.event.player.UseBlockCallback;
 import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
+import net.minecraft.block.SaplingBlock;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -21,6 +25,16 @@ public class EntityBlockEvents {
             record(player,blockPos,blockState,BlockAction.PLACE);
             return ActionResult.PASS;
         }));
+        UseBlockCallback.EVENT.register(((player, world, hand, hitResult) -> {
+            BlockState blockState = world.getBlockState(hitResult.getBlockPos());
+            //如果不是树苗
+            if(!(blockState.getBlock() instanceof SaplingBlock))
+                return ActionResult.PASS;
+            //接下来，如果是树苗
+
+
+            return ActionResult.PASS;
+        }));
     }
     private static void record(Entity entity,BlockPos blockPos,BlockState blockState,BlockAction blockAction){
         int posX=blockPos.getX();
@@ -29,7 +43,7 @@ public class EntityBlockEvents {
         if(posY==0 && posX==0 && posZ==0)
             return;
         String playerUuid=entity instanceof PlayerEntity ?entity.getUuidAsString() : entity.getDisplayName().getString();
-        String blockType=blockState.getBlock().getLootTableId().toString();
+        String blockType=blockState.getBlock().getTranslationKey();
         String dimension=entity.world.getDimension().getEffects().toString();
         BlockRecord record=new BlockRecord(playerUuid,blockType,blockAction.toString(),dimension,posX,posY,posZ, TimeUtils.getNow());
         HttpUtils.postObject(record);
