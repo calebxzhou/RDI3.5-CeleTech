@@ -27,6 +27,7 @@ public class RDICeleTech implements ModInitializer {
 		LOGGER.info("Hello Fabric world!");
 		ServerLifecycleEvents.SERVER_STARTED.register((server)->{
 			RDICeleTech.server = server;
+
 		});
 		new EntityBlockEvents();
 		new CommandRegister();

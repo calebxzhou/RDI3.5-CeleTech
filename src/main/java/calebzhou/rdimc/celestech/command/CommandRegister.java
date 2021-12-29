@@ -16,8 +16,6 @@ public class CommandRegister {
 
         commands.add(new IslandCommand("island",0));
         commands.add(new InventoryCommand("inv",0));
-        commands.add(new DeleteIslandCommand("deleteisland",0));
-        commands.add(new ChangeIslandCommand("changeisland",0));
         commands.add(new TpaCommand("tpa",0));
         commands.add(new TpyesCommand("tpyes",0));
 

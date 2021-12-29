@@ -1,6 +1,7 @@
 package calebzhou.rdimc.celestech.model;
 
 import com.google.gson.Gson;
+import net.minecraft.server.network.ServerPlayerEntity;
 
 //坐标位置，XYZ
 public class CoordLocation {
@@ -14,12 +15,15 @@ public class CoordLocation {
 
     @Override
     public String toString() {
-        return new Gson().toJson(this);
+        return String.format("%s,%s,%s",posX,posY,posZ);
     }
-    public static CoordLocation fromString(String json){
-        return new Gson().fromJson(json,CoordLocation.class);
+    public static CoordLocation fromString(String string){
+        String splitted[]=string.split(",");
+        return new CoordLocation(Double.parseDouble(splitted[0]),Double.parseDouble(splitted[1]),Double.parseDouble(splitted[2]));
     }
-
+    public static CoordLocation fromPlayer(ServerPlayerEntity player){
+        return new CoordLocation(player.getX(), player.getY(), player.getZ());
+    }
     public CoordLocation add(double x,double y,double z){
         return new CoordLocation(this.posX+x,this.posY+y,this.posZ+z);
     }

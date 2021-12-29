@@ -16,7 +16,7 @@ public class PlayerConnectionEvents {
             ThreadPool.newThread(()-> {
                 TextUtils.sendChatMessage(player, HttpUtils.doGet(ADDR+"getWeather?ip="+player.getIp()));
                 TextUtils.sendChatMessage(player, TimeUtils.getTimeChineseString()+"好,"+player.getDisplayName().getString()+",欢迎回到RDI。");
-                TextUtils.sendChatMessage(player,"创建空岛:/createisland 回到空岛:/island 邀请好友加入空岛");
+                TextUtils.sendChatMessage(player,"/island是空岛指令");
                 }
             );
             //返回自己空岛

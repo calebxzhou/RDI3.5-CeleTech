@@ -50,6 +50,11 @@ public class PlayerMonitorThread extends Thread{
 
         //重启线程
         try {Thread.sleep(1000);} catch (InterruptedException e) {e.printStackTrace();}
+        if(player==null){
+            System.out.println("玩家"+ player.getDisplayName().getString()+"下线！");
+            this.interrupt();
+            return;
+        }
         new PlayerMonitorThread(player).run();
     }
 }

@@ -13,7 +13,7 @@ public class LoadingBarThread extends Thread{
     private final String c1="%";
     private String toSend;
     private final int totalTime;
-    //Ê±¼äµ¥Î»ÊÇºÁÃë
+    //æ—¶é—´å•ä½æ˜¯æ¯«ç§’
     public LoadingBarThread(PlayerEntity player, int totalTime) {
         this.player = player;
         this.totalTime=totalTime;
@@ -31,7 +31,7 @@ public class LoadingBarThread extends Thread{
                 e.printStackTrace();
             }
             TextUtils.sendActionMessage(player,toSend);
-            //ÕıÔÚ¶ÁÈ¡[=================>               ] 25%
+            //æ­£åœ¨è¯»å–[=================>               ] 25%
         }
         this.interrupt();
     }
