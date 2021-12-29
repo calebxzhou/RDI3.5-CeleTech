@@ -1,8 +1,6 @@
 package calebzhou.rdimc.celestech.command;
 
-import calebzhou.rdimc.celestech.command.impl.DeleteIslandCommand;
-import calebzhou.rdimc.celestech.command.impl.InventoryCommand;
-import calebzhou.rdimc.celestech.command.impl.IslandCommand;
+import calebzhou.rdimc.celestech.command.impl.*;
 import calebzhou.rdimc.celestech.event.RegisterCommandsCallback;
 import com.mojang.brigadier.CommandDispatcher;
 import net.minecraft.command.CommandSource;
@@ -19,6 +17,9 @@ public class CommandRegister {
         commands.add(new IslandCommand("island",0));
         commands.add(new InventoryCommand("inv",0));
         commands.add(new DeleteIslandCommand("deleteisland",0));
+        commands.add(new ChangeIslandCommand("changeisland",0));
+        commands.add(new TpaCommand("tpa",0));
+        commands.add(new TpyesCommand("tpyes",0));
 
 
         RegisterCommandsCallback.EVENT.register(((dispatcher, environment) -> {

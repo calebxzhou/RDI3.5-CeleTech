@@ -1,6 +1,7 @@
 package calebzhou.rdimc.celestech.mixin;
 
 import calebzhou.rdimc.celestech.event.PlayerConnectServerCallback;
+import calebzhou.rdimc.celestech.event.PlayerDisconnectServerCallback;
 import calebzhou.rdimc.celestech.event.RegisterCommandsCallback;
 import net.minecraft.network.ClientConnection;
 import net.minecraft.server.PlayerManager;
@@ -17,6 +18,12 @@ public class PlayerConnectServerMixin {
     @Inject(at = @At("TAIL"),method = "onPlayerConnect(Lnet/minecraft/network/ClientConnection;Lnet/minecraft/server/network/ServerPlayerEntity;)V")
     private void mix(ClientConnection connection, ServerPlayerEntity player,CallbackInfo callbackInfo){
         ActionResult result = PlayerConnectServerCallback.EVENT.invoker().connect(connection, player);
+        if(result == ActionResult.FAIL)
+            callbackInfo.cancel();
+    }
+    @Inject(at = @At("HEAD"),method = "remove(Lnet/minecraft/server/network/ServerPlayerEntity;)V")
+    private void mixDis(ServerPlayerEntity player,CallbackInfo callbackInfo){
+        ActionResult result = PlayerDisconnectServerCallback.EVENT.invoker().connect(player);
         if(result == ActionResult.FAIL)
             callbackInfo.cancel();
     }

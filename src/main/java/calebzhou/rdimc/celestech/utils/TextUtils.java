@@ -1,13 +1,18 @@
 package calebzhou.rdimc.celestech.utils;
 
-import net.minecraft.command.CommandSource;
+import calebzhou.rdimc.celestech.RDICeleTech;
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.network.Packet;
+import net.minecraft.network.packet.s2c.play.SubtitleS2CPacket;
+import net.minecraft.network.packet.s2c.play.TitleS2CPacket;
 import net.minecraft.server.PlayerManager;
+import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.*;
 
-import java.awt.*;
-import java.util.UUID;
+import java.util.*;
+import java.util.function.Function;
 
 public final class TextUtils {
 
@@ -61,11 +66,46 @@ public final class TextUtils {
                 .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT,new LiteralText(hoverContent))));
     }
     //连接两个text
-    public static MutableText concatTwoComponents(MutableText c1, MutableText c2) {
-        return c1.append(c2);
+    public static MutableText concatTexts(MutableText... texts) {
+        MutableText text=new LiteralText("");
+        for (MutableText mutableText : texts) {
+            text.append(mutableText);
+        }
+        return  text;
     }
-    public static MutableText concatTwoComponents(String c1, Text c2) {
+    public static MutableText concatTexts(String c1, Text c2) {
         return new LiteralText(c1).append(c2);
     }
 
+    //发送标题
+    public static void sendTitle(ServerPlayerEntity target,String title){
+        ArrayList list = new ArrayList();
+        list.add(target);
+        try {
+            sendTitle(list,new LiteralText(title),TitleType.TITLE);
+        } catch (CommandSyntaxException e) {
+            e.printStackTrace();
+        }
+    }
+    public static void sendTitle(Collection<ServerPlayerEntity> targets, Text title, TitleType titleType) throws CommandSyntaxException {
+        Function<Text, Packet<?>> constructor=null;
+
+        if(titleType==TitleType.TITLE)
+            constructor = TitleS2CPacket::new;
+        if(titleType == TitleType.SUBTITLE)
+            constructor = SubtitleS2CPacket::new;
+
+        ServerCommandSource source = RDICeleTech.getServer().getCommandSource();
+        Iterator var5 = targets.iterator();
+
+        while(var5.hasNext()) {
+            ServerPlayerEntity serverPlayerEntity = (ServerPlayerEntity)var5.next();
+            serverPlayerEntity.networkHandler.sendPacket(constructor.apply(Texts.parse(source, title, serverPlayerEntity, 0)));
+        }
+
+
+    }
+}
+enum TitleType{
+    TITLE,SUBTITLE
 }

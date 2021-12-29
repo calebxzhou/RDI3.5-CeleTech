@@ -14,6 +14,21 @@ public class PlayerHome implements Serializable {
     Float yaw,pitch;
     String comments;
 
+    public PlayerHome(ServerPlayerEntity player, String homeName) {
+        this.playerUuid = player.getUuidAsString();
+        this.homeName = homeName;
+        this.dimension = player.getWorld().getDimension().getEffects().toString();
+        this.posX = player.getX();
+        this.posY = player.getY();
+        this.posZ = player.getZ();
+        this.yaw = player.getYaw();
+        this.pitch = player.getPitch();
+    }
+
+    public static PlayerHome getIslandHomeLocation(ServerPlayerEntity player){
+        return new PlayerHome(player.getUuidAsString(), "island",player.getWorld().getDimension().getEffects().toString(),
+                player.getX(), player.getY(), player.getZ(), player.getYaw(), player.getPitch(),"空岛传送点");
+    }
     public PlayerHome(String playerUuid, String homeName, String dimension, Double posX, Double posY, Double posZ, Float yaw, Float pitch, String comments) {
         this.playerUuid = playerUuid;
         this.homeName = homeName;

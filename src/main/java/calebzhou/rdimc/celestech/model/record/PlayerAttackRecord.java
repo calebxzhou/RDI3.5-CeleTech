@@ -1,4 +1,4 @@
-package calebzhou.rdimc.celestech.model;
+package calebzhou.rdimc.celestech.model.record;
 
 import calebzhou.rdimc.celestech.utils.TimeUtils;
 

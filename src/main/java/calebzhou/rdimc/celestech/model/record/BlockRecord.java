@@ -1,4 +1,4 @@
-package calebzhou.rdimc.celestech.model;
+package calebzhou.rdimc.celestech.model.record;
 
 import com.google.gson.Gson;
 
