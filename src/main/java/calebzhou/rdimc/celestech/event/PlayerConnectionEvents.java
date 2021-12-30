@@ -1,5 +1,6 @@
 package calebzhou.rdimc.celestech.event;
 
+import calebzhou.rdimc.celestech.RDICeleTech;
 import calebzhou.rdimc.celestech.constant.LogAction;
 import calebzhou.rdimc.celestech.model.record.LogInOutRecord;
 import calebzhou.rdimc.celestech.utils.*;
@@ -29,6 +30,7 @@ public class PlayerConnectionEvents {
         PlayerDisconnectServerCallback.EVENT.register((player -> {
             HttpUtils.postObject(new LogInOutRecord(player, LogAction.OUT));
             ThreadPool.stopPlayerThread(player.getUuidAsString());
+            ServerUtils.save();
             return ActionResult.PASS;
         }));
     }

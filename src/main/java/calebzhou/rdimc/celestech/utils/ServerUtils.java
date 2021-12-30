@@ -28,4 +28,7 @@ public class ServerUtils {
         }
         return list;
     }
+    public static void save(){
+        RDICeleTech.getServer().save(true,true,true);
+    }
 }

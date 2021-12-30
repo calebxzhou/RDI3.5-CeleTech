@@ -22,7 +22,7 @@ public class CoordLocation {
         return new CoordLocation(Double.parseDouble(splitted[0]),Double.parseDouble(splitted[1]),Double.parseDouble(splitted[2]));
     }
     public static CoordLocation fromPlayer(ServerPlayerEntity player){
-        return new CoordLocation(player.getX(), player.getY(), player.getZ());
+        return new CoordLocation((int)player.getX(), (int)player.getY(), (int)player.getZ());
     }
     public CoordLocation add(double x,double y,double z){
         return new CoordLocation(this.posX+x,this.posY+y,this.posZ+z);

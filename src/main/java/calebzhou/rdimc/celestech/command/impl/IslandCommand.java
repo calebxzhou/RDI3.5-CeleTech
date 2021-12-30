@@ -71,6 +71,7 @@ public class IslandCommand extends BaseCommand {
         return 1;
     }
     private int execute(ServerCommandSource source, String opr) throws CommandSyntaxException {
+        ServerUtils.save();
         ServerPlayerEntity player = source.getPlayer();
         switch (opr){
             case "create" -> createIsland(player);

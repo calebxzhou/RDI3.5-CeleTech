@@ -1,10 +1,13 @@
 package calebzhou.rdimc.celestech.utils;
 
 import calebzhou.rdimc.celestech.RDICeleTech;
+import calebzhou.rdimc.celestech.enums.ColorConst;
 import calebzhou.rdimc.celestech.model.CoordLocation;
 import calebzhou.rdimc.celestech.model.PlayerLocation;
 import calebzhou.rdimc.celestech.model.thread.LoadingBarThread;
 import net.minecraft.block.Blocks;
+import net.minecraft.entity.effect.StatusEffectInstance;
+import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -20,6 +23,10 @@ import net.minecraft.world.World;
 import java.util.UUID;
 
 public class PlayerUtils {
+    public static void addSlowFallEffect(PlayerEntity player){
+        player.addStatusEffect(new StatusEffectInstance(StatusEffects.SLOW_FALLING,40,1));
+        TextUtils.sendActionMessage(player, ColorConst.GOLD+"感觉身体轻飘飘的...");
+    }
     public static void teleport(PlayerEntity player, CoordLocation location){
         teleportPlayer(player,"minecraft:overworld", location.getPosX(), location.getPosY(), location.getPosZ(), 0f,0f);
     }
