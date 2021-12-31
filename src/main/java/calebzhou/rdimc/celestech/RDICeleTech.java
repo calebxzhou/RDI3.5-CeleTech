@@ -12,6 +12,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.util.HashMap;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class RDICeleTech implements ModInitializer {
 	// This logger is used to write text to the console and the log file.

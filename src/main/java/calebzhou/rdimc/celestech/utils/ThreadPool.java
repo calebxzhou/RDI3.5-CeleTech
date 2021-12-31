@@ -1,6 +1,6 @@
 package calebzhou.rdimc.celestech.utils;
 
-import calebzhou.rdimc.celestech.model.thread.PlayerMonitorThread;
+import calebzhou.rdimc.celestech.model.thread.PlayerMotionThread;
 import calebzhou.rdimc.celestech.model.thread.PlayerTemperatureThread;
 import net.minecraft.server.network.ServerPlayerEntity;
 
@@ -16,7 +16,7 @@ public class ThreadPool {
         exe.execute(runnable);
     }
     public static void startPlayerThread(ServerPlayerEntity player){
-        Thread thread = new PlayerMonitorThread(player);
+        Thread thread = new PlayerMotionThread(player);
         playerThreadMap.put(player.getDisplayName().getString(),thread);
         thread.start();
 

@@ -19,7 +19,7 @@ public class PlayerMotionPath implements Serializable {
         this.y = y;
         this.z = z;
     }
-    Vec3d getVector(){
+    public Vec3d getVector(){
         return new Vec3d(x,y,z);
     }
 
