@@ -1,6 +1,6 @@
-package calebzhou.rdimc.celestech.enums;
+package calebzhou.rdimc.celestech.constant;
 
-public class ColorConst {
+public class ColorConstants {
     public static final String BLACK = "§0" ;
     public static final String DARK_BLUE = "§1" ;
     public static final String DARK_GREEN = "§2" ;

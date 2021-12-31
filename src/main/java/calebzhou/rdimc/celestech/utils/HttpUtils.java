@@ -9,6 +9,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -27,29 +28,14 @@ public class HttpUtils {
 
     }
 
-/*    public static String doGet(String url, LinkedHashMap<String ,Object> params){
-        StringBuilder getData = new StringBuilder();
-        for (Map.Entry<String,Object> param : params.entrySet()) {
-            getData.append(URLEncoder.encode(param.getKey(), StandardCharsets.UTF_8));
-            getData.append('=');
-            getData.append(URLEncoder.encode(String.valueOf(param.getValue()), StandardCharsets.UTF_8));
-            if (getData.length() != 0)
-                getData.append('&');
-        }
-        return doGet(url+"?"+getData);
-    }*/
-    //发送post请求
-/*    public static String doPost(String url, LinkedHashMap<String,Object> params){
-        StringBuilder postData = new StringBuilder();
-        for (Map.Entry<String,Object> param : params.entrySet()) {
-            if (postData.length() != 0)
-                postData.append('&');
-            postData.append(URLEncoder.encode(param.getKey(), StandardCharsets.UTF_8));
-            postData.append('=');
-            postData.append(URLEncoder.encode(String.valueOf(param.getValue()), StandardCharsets.UTF_8));
-        }
-        return doPost(url,postData.toString());
-    }*/
+    public static String post(String shortUrl,String... params){
+        StringBuilder sb = new StringBuilder();
+        Arrays.stream(params).forEach((param)->{
+            sb.append(param);
+            sb.append("&");
+        });
+        return doPost(ADDR+shortUrl,sb.toString());
+    }
 
     public static String doGet(String fullUrl) {
         HttpURLConnection connection = null;

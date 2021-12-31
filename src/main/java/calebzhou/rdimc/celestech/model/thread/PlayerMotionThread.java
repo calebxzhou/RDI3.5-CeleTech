@@ -1,7 +1,7 @@
 package calebzhou.rdimc.celestech.model.thread;
 
 import calebzhou.rdimc.celestech.constant.WorldConstants;
-import calebzhou.rdimc.celestech.enums.ColorConst;
+import calebzhou.rdimc.celestech.constant.ColorConstants;
 import calebzhou.rdimc.celestech.model.PlayerMotionPath;
 import calebzhou.rdimc.celestech.utils.*;
 import net.minecraft.entity.effect.StatusEffectInstance;
@@ -11,6 +11,7 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class PlayerMotionThread extends PlayerBaseThread{
+    //玩家名\挂机秒数
     public static final ConcurrentHashMap<String,Integer> afkPlayersMap = new ConcurrentHashMap<>();
     //限制下落速度2.0m/s
     private final double downSpeedLim = 2.0;// m/s
@@ -47,7 +48,7 @@ public class PlayerMotionThread extends PlayerBaseThread{
     private void handleDroppingFast(double timeElapsedSec){
         //下落速度过快时
         if(Math.abs(path2.y-path1.y) / timeElapsedSec > downSpeedLim){
-            TextUtils.sendActionMessage(player, ColorConst.GOLD+"感觉身体轻飘飘的...");
+            TextUtils.sendActionMessage(player, ColorConstants.GOLD+"感觉身体轻飘飘的...");
             player.addStatusEffect(new StatusEffectInstance(StatusEffects.SLOW_FALLING,40,1));
         }
     }

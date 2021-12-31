@@ -2,7 +2,7 @@ package calebzhou.rdimc.celestech.command.impl;
 
 import calebzhou.rdimc.celestech.RDICeleTech;
 import calebzhou.rdimc.celestech.command.BaseCommand;
-import calebzhou.rdimc.celestech.enums.ColorConst;
+import calebzhou.rdimc.celestech.constant.ColorConstants;
 import calebzhou.rdimc.celestech.utils.ServerUtils;
 import calebzhou.rdimc.celestech.utils.TextUtils;
 import com.mojang.brigadier.Command;
@@ -55,10 +55,10 @@ public class TpaCommand extends BaseCommand {
         PlayerTpaRequest preq=new PlayerTpaRequest(fromPlayer,toPlayer);
         RDICeleTech.tpaRequestMap.put(reqid,preq);
         TextUtils.sendChatMessage(fromPlayer,"已经发送传送请求给"+toPlayerName+", 请求ID:"+reqid);
-        TextUtils.sendChatMessage(toPlayer, ColorConst.ORANGE+fromPlayerName+"想要传送到你的身边。");
-        TextUtils.sendChatMessage(toPlayer, ColorConst.ORANGE+"为防止恶意破坏，请谨慎接受传送请求。");
-        MutableText tpyes=TextUtils.getClickableContentComp(ColorConst.BRIGHT_GREEN+"[接受]"+ ColorConst.RESET,"/tpyes "+reqid," ");
-        MutableText tpwait=TextUtils.getClickableContentComp(ColorConst.GOLD+"[等我一下]"+ ColorConst.RESET,"稍等"," ");
+        TextUtils.sendChatMessage(toPlayer, ColorConstants.ORANGE+fromPlayerName+"想要传送到你的身边。");
+        TextUtils.sendChatMessage(toPlayer, ColorConstants.ORANGE+"为防止恶意破坏，请谨慎接受传送请求。");
+        MutableText tpyes=TextUtils.getClickableContentComp(ColorConstants.BRIGHT_GREEN+"[接受]"+ ColorConstants.RESET,"/tpyes "+reqid," ");
+        MutableText tpwait=TextUtils.getClickableContentComp(ColorConstants.GOLD+"[等我一下]"+ ColorConstants.RESET,"稍等"," ");
         TextUtils.sendChatMessage(toPlayer,tpyes.append(tpwait));
 
         return Command.SINGLE_SUCCESS;

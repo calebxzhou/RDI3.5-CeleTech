@@ -6,7 +6,6 @@ import calebzhou.rdimc.celestech.event.PlayerPlaceBlockCallback;
 import calebzhou.rdimc.celestech.model.CoordLocation;
 import calebzhou.rdimc.celestech.model.record.BlockRecord2;
 import calebzhou.rdimc.celestech.utils.HttpUtils;
-import calebzhou.rdimc.celestech.utils.TimeUtils;
 import net.fabricmc.fabric.api.event.player.UseBlockCallback;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.SaplingBlock;
@@ -15,11 +14,9 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.math.BlockPos;
 
-import javax.swing.text.html.HTMLDocument;
-
 //实体与方块交互的相关事件
-public class EntityBlockEvents {
-    public EntityBlockEvents(){
+public class PlayerBlockEvent {
+    public PlayerBlockEvent(){
         PlayerBreakBlockCallback.EVENT.register(((player, blockPos, blockState) -> {
             record(player,blockPos,blockState,BlockRecord2.Action.BREAK);
             return ActionResult.PASS;

@@ -10,8 +10,8 @@ import net.minecraft.util.ActionResult;
 
 import static calebzhou.rdimc.celestech.constant.ServiceConstants.ADDR;
 
-public class PlayerConnectionEvents {
-    public PlayerConnectionEvents(){
+public class PlayerConnectEvent {
+    public PlayerConnectEvent(){
         //连接服务器
         PlayerConnectServerCallback.EVENT.register(((connection, player) -> {
             HttpUtils.postObject(new UuidNameRecord(player.getUuidAsString(), player.getEntityName()));
