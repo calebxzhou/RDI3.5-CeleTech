@@ -68,31 +68,31 @@ public class PlayerTemperatureThread extends PlayerBaseThread{
             player.damage(DamageSource.HOT_FLOOR,0.1f);
             player.addStatusEffect(new StatusEffectInstance(StatusEffects.WEAKNESS,20,1));
             player.addStatusEffect(new StatusEffectInstance(StatusEffects.NAUSEA,20,1));
-            TextUtils.sendActionMessage(player,String.format(ColorConst.RED+ColorConst.ITALIC+"咋这么迷糊呢",PlayerTemperature.get(playerName)));
+            TextUtils.sendActionMessage(player,String.format(ColorConst.RED+ColorConst.ITALIC+"%.2f℃",PlayerTemperature.get(playerName)));
         }
         if(temp >= TEMP_DANGER2 && temp < TEMP_DANGER3){
             player.damage(DamageSource.HOT_FLOOR,1.0f);
             player.addStatusEffect(new StatusEffectInstance(StatusEffects.SLOWNESS,20,1));
             player.addStatusEffect(new StatusEffectInstance(StatusEffects.NAUSEA,40,2));
-            TextUtils.sendActionMessage(player,String.format(ColorConst.RED+ColorConst.ITALIC+"咋这么迷糊呢",PlayerTemperature.get(playerName)));
+            TextUtils.sendActionMessage(player,String.format(ColorConst.RED+ColorConst.ITALIC+"%.2f℃",PlayerTemperature.get(playerName)));
         }
         if(temp >= TEMP_DANGER3 && temp < PlayerTemperature.TEMP_DANGER4){
             player.damage(DamageSource.HOT_FLOOR,2.0f);
             player.addStatusEffect(new StatusEffectInstance(StatusEffects.SLOWNESS,20,2));
             player.addStatusEffect(new StatusEffectInstance(StatusEffects.NAUSEA,60,3));
-            TextUtils.sendActionMessage(player,String.format(ColorConst.RED+ColorConst.ITALIC+"咋这么迷糊呢",PlayerTemperature.get(playerName)));
+            TextUtils.sendActionMessage(player,String.format(ColorConst.RED+ColorConst.ITALIC+"%.2f℃",PlayerTemperature.get(playerName)));
         }
         if(temp >= PlayerTemperature.TEMP_DANGER4 && temp < PlayerTemperature.TEMP_MAX){
             player.damage(DamageSource.HOT_FLOOR,3.0f);
             player.addStatusEffect(new StatusEffectInstance(StatusEffects.SLOWNESS,20,3));
             player.addStatusEffect(new StatusEffectInstance(StatusEffects.NAUSEA,60,4));
-            TextUtils.sendActionMessage(player,String.format(ColorConst.RED+ColorConst.ITALIC+"咋这么迷糊呢",PlayerTemperature.get(playerName)));
+            TextUtils.sendActionMessage(player,String.format(ColorConst.RED+ColorConst.ITALIC+"%.2f℃",PlayerTemperature.get(playerName)));
         }
         if(temp>=PlayerTemperature.TEMP_MAX){
             player.damage(DamageSource.HOT_FLOOR,5.0f);
             player.addStatusEffect(new StatusEffectInstance(StatusEffects.SLOWNESS,20,4));
             player.addStatusEffect(new StatusEffectInstance(StatusEffects.NAUSEA,60,5));
-            TextUtils.sendActionMessage(player,String.format(ColorConst.RED+ColorConst.ITALIC+"咋这么迷糊呢",PlayerTemperature.get(playerName)));
+            TextUtils.sendActionMessage(player,String.format(ColorConst.RED+ColorConst.ITALIC+"%.2f℃",PlayerTemperature.get(playerName)));
         }
     }
 

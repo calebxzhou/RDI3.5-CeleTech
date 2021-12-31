@@ -1,4 +1,4 @@
-package calebzhou.rdimc.celestech.event;
+package calebzhou.rdimc.celestech.event.impl;
 
 import calebzhou.rdimc.celestech.constant.AngrySaplingDamageSource;
 import net.minecraft.block.BlockState;

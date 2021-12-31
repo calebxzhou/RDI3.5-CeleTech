@@ -1,7 +1,10 @@
-package calebzhou.rdimc.celestech.event;
+package calebzhou.rdimc.celestech.event.impl;
 
 
-import calebzhou.rdimc.celestech.model.record.BlockRecord;
+import calebzhou.rdimc.celestech.event.PlayerBreakBlockCallback;
+import calebzhou.rdimc.celestech.event.PlayerPlaceBlockCallback;
+import calebzhou.rdimc.celestech.model.CoordLocation;
+import calebzhou.rdimc.celestech.model.record.BlockRecord2;
 import calebzhou.rdimc.celestech.utils.HttpUtils;
 import calebzhou.rdimc.celestech.utils.TimeUtils;
 import net.fabricmc.fabric.api.event.player.UseBlockCallback;
@@ -11,42 +14,42 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.math.BlockPos;
+
+import javax.swing.text.html.HTMLDocument;
+
 //实体与方块交互的相关事件
 public class EntityBlockEvents {
     public EntityBlockEvents(){
         PlayerBreakBlockCallback.EVENT.register(((player, blockPos, blockState) -> {
-            record(player,blockPos,blockState,BlockAction.BREAK);
+            record(player,blockPos,blockState,BlockRecord2.Action.BREAK);
             return ActionResult.PASS;
         }));
         PlayerPlaceBlockCallback.EVENT.register(((player, blockPos, blockState) -> {
-            record(player,blockPos,blockState,BlockAction.PLACE);
+            record(player,blockPos,blockState,BlockRecord2.Action.PLACE);
             return ActionResult.PASS;
         }));
         UseBlockCallback.EVENT.register(((player, world, hand, hitResult) -> {
             BlockState blockState = world.getBlockState(hitResult.getBlockPos());
-            //如果不是树苗
-            if(!(blockState.getBlock() instanceof SaplingBlock))
-                return ActionResult.PASS;
-            //接下来，如果是树苗
-            new SaplingEvents(player,hitResult.getBlockPos(),blockState, ((SaplingBlock) blockState.getBlock()));
+            //如果是树苗
+            if(blockState.getBlock() instanceof SaplingBlock)
+                new SaplingEvents(player,hitResult.getBlockPos(),blockState, ((SaplingBlock) blockState.getBlock()));
 
             return ActionResult.PASS;
         }));
     }
-    private static void record(Entity entity,BlockPos blockPos,BlockState blockState,BlockAction blockAction){
+    private void record(Entity entity,BlockPos blockPos,BlockState blockState,BlockRecord2.Action action){
+        String dimension=entity.world.getDimension().getEffects().toString();
         int posX=blockPos.getX();
         int posY=blockPos.getY();
         int posZ=blockPos.getZ();
         if(posY==0 && posX==0 && posZ==0)
             return;
-        String playerUuid=entity instanceof PlayerEntity ?entity.getUuidAsString() : entity.getDisplayName().getString();
+        CoordLocation location =new CoordLocation(dimension,posX,posY,posZ);
+        String playerUuid=entity instanceof PlayerEntity ?entity.getUuidAsString() : entity.getEntityName();
         String blockType=blockState.getBlock().getTranslationKey();
-        String dimension=entity.world.getDimension().getEffects().toString();
-        BlockRecord record=new BlockRecord(playerUuid,blockType,blockAction.toString(),dimension,posX,posY,posZ, TimeUtils.getNow());
+
+        BlockRecord2 record=new BlockRecord2(playerUuid,blockType,action,location);
         HttpUtils.postObject(record);
     }
 
-}
-enum BlockAction{
-    PLACE,BREAK
 }
