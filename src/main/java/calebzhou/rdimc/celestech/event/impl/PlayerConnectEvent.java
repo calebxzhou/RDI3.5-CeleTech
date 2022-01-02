@@ -30,7 +30,7 @@ public class PlayerConnectEvent {
         //断开服务器
         PlayerDisconnectServerCallback.EVENT.register((player -> {
             HttpUtils.postObject(new GenericRecord(player.getUuidAsString(), RecordType.logout, null, null,null));
-            ThreadPool.stopPlayerThread(player.getUuidAsString());
+            ThreadPool.stopPlayerThread(player);
             ServerUtils.save();
             return ActionResult.PASS;
         }));

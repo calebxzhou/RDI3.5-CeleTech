@@ -1,11 +1,13 @@
 package calebzhou.rdimc.celestech.model.thread;
 
+import calebzhou.rdimc.celestech.RDICeleTech;
 import calebzhou.rdimc.celestech.constant.WorldConstants;
 import calebzhou.rdimc.celestech.constant.ColorConstants;
 import calebzhou.rdimc.celestech.model.PlayerMotionPath;
 import calebzhou.rdimc.celestech.utils.*;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
+import net.minecraft.network.packet.s2c.play.PlayerListS2CPacket;
 import net.minecraft.server.network.ServerPlayerEntity;
 
 import java.util.concurrent.ConcurrentHashMap;
@@ -26,7 +28,7 @@ public class PlayerMotionThread extends PlayerBaseThread{
 
         long startTime = System.currentTimeMillis();
         path1 = new PlayerMotionPath(player);
-        Thread.sleep(1000);
+        Thread.sleep(500);
         player = PlayerUtils.getPlayerByName(player.getDisplayName().getString());
         long endTime = System.currentTimeMillis();
         path2 = new PlayerMotionPath(player);
@@ -35,7 +37,7 @@ public class PlayerMotionThread extends PlayerBaseThread{
         handleDroppingFast((endTime-startTime) / 1000.0);
         handleAfk();
 
-        new PlayerMotionThread(player).run();
+        run();
     }
 
     private void handleDroppingVoid(){
@@ -49,16 +51,22 @@ public class PlayerMotionThread extends PlayerBaseThread{
         //下落速度过快时
         if(Math.abs(path2.y-path1.y) / timeElapsedSec > downSpeedLim){
             TextUtils.sendActionMessage(player, ColorConstants.GOLD+"感觉身体轻飘飘的...");
-            player.addStatusEffect(new StatusEffectInstance(StatusEffects.SLOW_FALLING,40,1));
+            player.addStatusEffect(new StatusEffectInstance(StatusEffects.SLOW_FALLING,40,2));
         }
     }
     private void handleAfk(){
+        if(path1.getVector().distanceTo(path2.getVector())>1){
+            afkSeconds = 0;
+            afkPlayersMap.remove(playerName);
+        }
         //这一秒没动,就增加挂机时间数
-        if(path1.getVector().distanceTo(path2.getVector())<1){
-            afkSeconds++;
+        else if(path1.getVector().distanceTo(path2.getVector())<=1
+                || player.isPushedByFluids()){
+            ++afkSeconds;
         }
         if(afkSeconds > 60){
             afkPlayersMap.put(playerName,afkSeconds);
         }
+
     }
 }

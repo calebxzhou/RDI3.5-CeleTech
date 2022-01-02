@@ -5,6 +5,7 @@ public enum RecordType {
     login,
     logout,
     attack,
-    death
+    death,
+    biome
 
 }

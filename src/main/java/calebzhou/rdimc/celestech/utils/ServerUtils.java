@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Map;
 
 public class ServerUtils {
+    public static final List<Integer> httpHistoryDelayList = new ArrayList<>();
     public static void executeCommandOnServer(String command){
         executeCommandOnSource(command,RDICeleTech.getServer().getCommandSource());
     }
@@ -32,7 +33,18 @@ public class ServerUtils {
                 .filter(singleAfkEntry -> getOnlinePlayerList().contains(singleAfkEntry.getKey()))
                 .toList();
     }
+    //存档
     public static void save(){
         RDICeleTech.getServer().save(true,true,true);
+    }
+    //记录HTTP请求延迟 ms
+    public static void recordHttpReqDelay(long t1,long t2){
+        int dt= (int) (t2-t1);
+        if(httpHistoryDelayList.size()>20) {
+            httpHistoryDelayList.remove(0);
+        }
+
+        httpHistoryDelayList.add(dt);
+
     }
 }

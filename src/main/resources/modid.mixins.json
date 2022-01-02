@@ -9,8 +9,12 @@
     "PlayerConnectServerMixin",
     "PlayerDeathMixin",
     "PlayerPlaceBlockMixin",
-    "RegisterCommandsMixin"
-
+    "RegisterCommandsMixin",
+    "ServerPlayNetworkMixin",
+    "TradeOffersMixin",
+    "WanderingTraderManagerMixin",
+    "WaterLavaStone2Mixin",
+    "WaterLavaStoneMixin"
   ],
   "client": [
   ],

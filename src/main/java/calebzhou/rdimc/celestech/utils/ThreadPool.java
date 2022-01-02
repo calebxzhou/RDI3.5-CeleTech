@@ -17,18 +17,19 @@ public class ThreadPool {
     }
     public static void startPlayerThread(ServerPlayerEntity player){
         Thread thread = new PlayerMotionThread(player);
-        playerThreadMap.put(player.getDisplayName().getString(),thread);
+        playerThreadMap.put(player.getEntityName(),thread);
         thread.start();
-
-        Thread thread2 = new PlayerTemperatureThread(player);
+        System.out.println(playerThreadMap.toString());
+        /*Thread thread2 = new PlayerTemperatureThread(player);
         tempThreadMap.put(player.getDisplayName().getString(),thread2);
-        thread2.start();
+        thread2.start();*/
     }
-    public static void stopPlayerThread(String uuid){
-        playerThreadMap.remove(uuid);
-        tempThreadMap.remove(uuid);
+    public static void stopPlayerThread(ServerPlayerEntity player){
+        playerThreadMap.remove(player.getEntityName());
+        System.out.println(playerThreadMap.toString());
+        //tempThreadMap.remove(uuid);
     }
-    public static boolean isPlayerThreadStarted(String uuid){
-        return playerThreadMap.containsKey(uuid) && tempThreadMap.containsKey(uuid);
+    public static boolean isPlayerThreadStarted(String name){
+        return playerThreadMap.containsKey(name) /*&& tempThreadMap.containsKey(uuid)*/;
     }
 }

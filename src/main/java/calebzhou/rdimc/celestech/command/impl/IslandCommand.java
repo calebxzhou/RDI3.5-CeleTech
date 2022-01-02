@@ -3,8 +3,11 @@ package calebzhou.rdimc.celestech.command.impl;
 import calebzhou.rdimc.celestech.RDICeleTech;
 import calebzhou.rdimc.celestech.command.BaseCommand;
 import calebzhou.rdimc.celestech.constant.ColorConstants;
+import calebzhou.rdimc.celestech.constant.WorldConstants;
 import calebzhou.rdimc.celestech.model.CoordLocation;
 import calebzhou.rdimc.celestech.model.Island;
+import calebzhou.rdimc.celestech.model.record.GenericRecord;
+import calebzhou.rdimc.celestech.model.record.RecordType;
 import calebzhou.rdimc.celestech.utils.*;
 import com.google.gson.Gson;
 import com.mojang.brigadier.arguments.StringArgumentType;
@@ -46,7 +49,6 @@ public class IslandCommand extends BaseCommand {
         subcommands.add("kick");
         subcommands.add("home");
         subcommands.add("sethome");
-        subcommands.add("tps");
         subcommands.add("melt");
         subcommands.add("biome-");
     }
@@ -67,16 +69,16 @@ public class IslandCommand extends BaseCommand {
 
     private int execute(ServerCommandSource source) throws CommandSyntaxException {
         ServerPlayerEntity player = source.getPlayer();
-        sendChatMessage(player, ColorConstants.GOLD+"----RDI CeleTech3 by Davickk----");
+        sendChatMessage(player, ColorConstants.GOLD+"----RDI CT3 by Davickk----(2022.01.01)");
         sendChatMessage(player,"欢迎使用RDI空岛系统,请到群文件查看指令列表.");
+        sendChatMessage(player,getClickableContentComp(ColorConstants.GOLD+"[返回空岛]","/island home","  "));
         return 1;
     }
     private int execute(ServerCommandSource source, String opr) throws CommandSyntaxException {
         ServerUtils.save();
         ServerPlayerEntity player = source.getPlayer();
-        PlayerUtils.sendLoading(player);
+        sendActionMessage(player,"正在请求服务器....");
         switch (opr){
-            case "tps" ->tps(player);
             case "melt" ->meltObsidian(player);
 
             case "create" -> create(player);
@@ -86,30 +88,26 @@ public class IslandCommand extends BaseCommand {
             case "home" -> home(player);
             case "sethome" -> sethome(player);
             default -> {
-                if(opr.length()==0){sendChatMessage(player,"指令无效");return 0;}
-                String cmd = opr.split("-")[0];
-                String arg2 = opr.split("-")[1];
-                if(arg2==null || cmd==null){sendChatMessage(player,"参数无效!");return 0;}
-                if(arg2.length() == 0 || cmd.length()==0){sendChatMessage(player,"参数无效!");return 0;}
-                switch (cmd){
-                    case "join" -> joinIsland(player,arg2);
-                    case "biome" -> makeBiome(player,arg2);
-                    default -> sendChatMessage(player,"参数无效!");
-                }
+                if(opr.startsWith("join"))
+                    joinIsland(player,opr);
+                else if(opr.startsWith("biome"))
+                    makeBiome(player,opr);
+                else sendChatMessage(player,"参数无效!");
+
             }
         }
         return 1;
     }
     private void create(ServerPlayerEntity player){
-        PlayerUtils.sendLoading(player);
         ThreadPool.newThread(()->{
             String locaS = HttpUtils.post("island", "action=create", "pid=" + player.getUuidAsString());
-            sendChatMessage(player,"请您记住空岛的位置坐标. "+locaS);
+            sendActionMessage(player,"正在获取空岛位置:"+locaS);
             CoordLocation location = CoordLocation.fromString(locaS);
             if(location==null){
-                sendChatMessage(player,locaS+".错误!");
+                sendChatMessage(player,"获取空岛位置失败:"+locaS);
                 return;
             }
+            sendChatMessage(player,"您可以创建空岛!正在创建空岛!");
             PlayerUtils.teleport(player,location.add(0.5,3,0.5));
             PlayerUtils.placeBlock(player.getWorld(),location,"minecraft:obsidian");
             sendTitle(player, ColorConstants.RED+"创建空岛 不要触碰键盘！");
@@ -121,7 +119,13 @@ public class IslandCommand extends BaseCommand {
         boolLogic(player,"delete",null);
     }
     private void joinIsland(ServerPlayerEntity player,String island){
-        boolLogic(player,"join","iid="+island);
+        String islandId="";
+        try {
+            islandId = island.split("-")[1];
+        } catch (ArrayIndexOutOfBoundsException e) {
+            sendChatMessage(player,"参数错误!您必须输入正确格式的空岛ID!"+e.getMessage());
+        }
+        boolLogic(player,"join","iid="+islandId);
     }
     private void quit(ServerPlayerEntity player){
         boolLogic(player,"quit",null);
@@ -136,81 +140,72 @@ public class IslandCommand extends BaseCommand {
     private void home(ServerPlayerEntity player){
         ThreadPool.newThread(()->{
             String locaS = HttpUtils.post("island", "action=home", "pid=" + player.getUuidAsString());
-            sendChatMessage(player,"请您记住空岛的位置坐标. "+locaS);
+            sendActionMessage(player,locaS);
             CoordLocation location = CoordLocation.fromString(locaS);
             if(location==null){
-                sendChatMessage(player,locaS+".错误!");
+                sendChatMessage(player,"获取空岛位置失败:"+locaS);
                 return;
             }
-            PlayerUtils.teleport(player,location.add(0.5,1,0.5));
-            sendChatMessage(player,"已经回到了您的空岛！");
+            PlayerUtils.teleport(player,location.add(0.5,5,0.5));
+            sendActionMessage(player,"已经回到了您的空岛！");
         });
 
     }
 
     private void sethome(ServerPlayerEntity player){
         boolLogic(player,"sethome","loca="+CoordLocation.fromPlayer(player).toString());
+        sendChatMessage(player,"请注意，传送点必须设置在至少3x3平地的中间！");
     }
     private void boolLogic(ServerPlayerEntity player,String action,@Nullable String param){
         ThreadPool.newThread(()->{
-            String result = HttpUtils.post("island","action="+action,"pid="+player.getUuidAsString(),param);
-                    if(result.equals("true")){
-                        sendChatMessage(player,"成功");
-                    }else sendChatMessage(player,"失败 "+result);
+             String result = HttpUtils.post("island","action="+action,"pid="+player.getUuidAsString(),param);
+                    if(result.contains("true")){
+                        sendActionMessage(player,"成功");
+                        if(action.equals("delete")){
+                            PlayerUtils.teleport(player,WorldConstants.SPAWN_LOCA);
+                            player.getInventory().clear();
+                            player.kill();
+                        }
+                    }else
+                        sendActionMessage(player,"错误:"+ result);
+
                 }
         );
     }
     private void makeBiome(ServerPlayerEntity player, String biomeType) {
-        Chunk chunk = player.getWorld().getChunk(player.getBlockX()>>4,player.getBlockZ()>>4);
+        HttpUtils.postObject(new GenericRecord(player.getUuidAsString(), RecordType.biome,CoordLocation.fromPlayer(player).toString(),biomeType,null));
+        sendActionMessage(player,"已经提交更改请求,请等待处理.");
+        /*Chunk chunk = player.getWorld().getChunk(player.getBlockX()>>4,player.getBlockZ()>>4);
         PalettedContainer<Biome> biomeArray = chunk.getSection(chunk.getSectionIndex(player.getBlockY())).getBiomeContainer();
         biomeArray.swap(
                 player.getBlockX()&3,
                 player.getBlockY()&3,
                 player.getBlockZ()&3,
                 new Biome.Builder().category(Biome.Category.byName(biomeType)).build());
-        chunk.setShouldSave(true);
+        chunk.setShouldSave(true);*/
     }
 
-    private void tps(ServerPlayerEntity player) {
-        double meanTickTime = MathUtils.getAverageValue(RDICeleTech.getServer().lastTickLengths) * 1.0E-6D;
-        double stdTickTime = 120.0;
-        double meanTPS = Math.min(1000.0 / meanTickTime, 20);
-        double ratio = meanTickTime / stdTickTime;
-        long squares = Math.round(25 * ratio);
-        String squarePattern1 = ">";
-        String squaresToSend = "§a";
 
-        for (int i = 0; i <= squares; ++i) {
-            squaresToSend += squarePattern1;
-            if (i == 15)
-                squaresToSend += "§e";
-            if (i == 22)
-                squaresToSend += "§c";
-        }
-        sendChatMessage(player,"负载[" + Math.round(ratio * 100) + "%/"+meanTPS*5+"tps]" + squaresToSend);
-        sendChatMessage(player,"延迟 " + Math.round(meanTickTime) + "ms");
-
-    }
 
     private void meltObsidian(ServerPlayerEntity player) {
         BlockPos obsidianBlock = PlayerUtils.getPlayerLookingAtBlock(player,false);
         if(obsidianBlock==null){
-            sendChatMessage(player,"您不能熔化空气!!!!");
+            sendActionMessage(player,"您不能熔化空气!!!!");
             return;
         }
         BlockState obsState = player.getWorld().getBlockState(obsidianBlock);
         if(player.experienceLevel>1){
             player.addStatusEffect(new StatusEffectInstance(StatusEffects.BAD_OMEN,15*20,5));
             player.addStatusEffect(new StatusEffectInstance(StatusEffects.WEAKNESS,15*20,1));
-            sendChatMessage(player,"我抄,麻了");
+            sendActionMessage(player,"我抄,麻了");
             return;
         }
         if(obsState.getBlock() == Blocks.OBSIDIAN){
             player.getWorld().setBlockState(obsidianBlock, Fluids.LAVA.getDefaultState().getBlockState());
             player.damage(DamageSource.HOT_FLOOR,9.9f);
-            sendChatMessage(player,"成功把黑曜石熔化成了岩浆!!");
+            sendActionMessage(player,"成功把黑曜石熔化成了岩浆!!");
         }else{
-            sendChatMessage(player,"您必须对准黑曜石!!");
+            sendActionMessage(player,"您必须对准黑曜石!!");
         }
     }
 

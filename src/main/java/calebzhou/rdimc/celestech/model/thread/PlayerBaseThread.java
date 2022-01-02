@@ -15,7 +15,7 @@ public abstract class PlayerBaseThread extends Thread{
     @Override
     public void run() {
         try {
-            Thread.sleep(1000);
+            Thread.sleep(500);
             //玩家下线则终止线程
             if(!ThreadPool.isPlayerThreadStarted(playerName) || player == null){
                 this.interrupt();

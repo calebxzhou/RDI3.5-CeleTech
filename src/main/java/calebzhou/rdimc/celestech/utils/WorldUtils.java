@@ -1,10 +1,12 @@
 package calebzhou.rdimc.celestech.utils;
 
 import net.minecraft.block.Blocks;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.LightType;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldAccess;
 
 public class WorldUtils {
 
@@ -43,5 +45,8 @@ public class WorldUtils {
     public static boolean isInWater(World world,BlockPos blockPos){
         return world.getFluidState(blockPos).getFluid() == Fluids.WATER ||
                 world.getFluidState(blockPos).getFluid() == Fluids.FLOWING_WATER;
+    }
+    public static PlayerEntity getNearestPlayer(WorldAccess world, BlockPos pos){
+        return  world.getClosestPlayer(pos.getX(), pos.getY(), pos.getZ(), 20,false);
     }
 }

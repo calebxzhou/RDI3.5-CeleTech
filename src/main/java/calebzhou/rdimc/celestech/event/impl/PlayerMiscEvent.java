@@ -6,10 +6,7 @@ import calebzhou.rdimc.celestech.event.PlayerDeathCallback;
 import calebzhou.rdimc.celestech.model.PlayerTemperature;
 import calebzhou.rdimc.celestech.model.record.GenericRecord;
 import calebzhou.rdimc.celestech.model.record.RecordType;
-import calebzhou.rdimc.celestech.utils.HttpUtils;
-import calebzhou.rdimc.celestech.utils.ServerUtils;
-import calebzhou.rdimc.celestech.utils.TextUtils;
-import calebzhou.rdimc.celestech.utils.TimeUtils;
+import calebzhou.rdimc.celestech.utils.*;
 import net.minecraft.util.ActionResult;
 
 //与服务器交互事件
@@ -27,10 +24,11 @@ public class PlayerMiscEvent {
 
         PlayerChatCallback.EVENT.register(((player, message) -> {
             String msg = message.getRaw();
-            HttpUtils.postObject(new GenericRecord(player.getUuidAsString(), RecordType.chat, player.getEntityName(), null,msg));
+            HttpUtils.postObject(new GenericRecord(player.getUuidAsString(), RecordType.chat, player.getEntityName(), null,EncodingUtils.getUTF8StringFromGBKString(msg)));
+            if(msg.length()<3) return ActionResult.PASS;
             ServerUtils.getAfkPlayerList().stream()
                     //玩家说的话里面有没有挂机人的名称
-                    .filter(entry -> msg.contains(entry.getKey()))
+                    .filter(entry -> entry.getKey().contains(msg))
                     .forEach(entry -> {
                         String name = entry.getKey();
                         int seconds = entry.getValue();

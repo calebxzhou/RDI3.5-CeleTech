@@ -24,7 +24,13 @@ public class CoordLocation {
     //从字符串载入位置
     public static CoordLocation fromString(String string){
         String[] split =string.split(",");
-        return new CoordLocation(split[0],Double.parseDouble(split[1]),Double.parseDouble(split[2]),Double.parseDouble(split[3]));
+        CoordLocation location;
+        try{
+            location = new CoordLocation(split[0],Double.parseDouble(split[1]),Double.parseDouble(split[2]),Double.parseDouble(split[3]));
+        }catch (ArrayIndexOutOfBoundsException e){
+            return null;
+        }
+        return location;
     }
     //从玩家载入位置
     public static CoordLocation fromPlayer(ServerPlayerEntity player){

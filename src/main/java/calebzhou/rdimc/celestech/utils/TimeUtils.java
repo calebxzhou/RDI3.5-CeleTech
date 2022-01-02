@@ -27,7 +27,7 @@ public class TimeUtils {
     }
     public static String secondsToMinute(int seconds,String split1,String split2){
         int min = seconds / 60;
-        int sec = seconds % min;
+        int sec = seconds - (min*60);
         return String.format("%s%s%s%s", min,split1, sec,split2);
     }
 }
