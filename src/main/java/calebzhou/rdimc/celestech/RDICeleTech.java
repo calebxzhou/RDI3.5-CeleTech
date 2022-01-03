@@ -5,6 +5,8 @@ import calebzhou.rdimc.celestech.command.impl.TpaCommand;
 import calebzhou.rdimc.celestech.event.impl.PlayerBlockEvent;
 import calebzhou.rdimc.celestech.event.impl.PlayerConnectEvent;
 import calebzhou.rdimc.celestech.event.impl.PlayerMiscEvent;
+import calebzhou.rdimc.celestech.utils.ServerCache;
+import calebzhou.rdimc.celestech.utils.ServerUtils;
 import com.google.common.collect.ImmutableMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
@@ -17,6 +19,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.util.HashMap;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class RDICeleTech implements ModInitializer {
     // This logger is used to write text to the console and the log file.
@@ -39,9 +43,24 @@ public class RDICeleTech implements ModInitializer {
         new CommandRegister();
         new PlayerConnectEvent();
         new PlayerMiscEvent();
+        //10分钟清理一次缓存
+        new Timer("clearCacheTask").schedule(new TimerTask() {
+            @Override
+            public void run() {
+                clearCache();
+            }
+        },10*60*1000);
+        new Timer("saveAll").schedule(new TimerTask() {
+            @Override
+            public void run() {
+                ServerUtils.save();
+            }
+        },1*60*1000);
+    }
+    public static void clearCache(){
+        ServerCache.lavaGenStoneMap.clear();
 
     }
-
     public static MinecraftServer getServer() {
         return server;
     }

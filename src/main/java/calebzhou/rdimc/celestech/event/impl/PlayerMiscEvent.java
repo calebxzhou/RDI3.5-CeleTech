@@ -26,14 +26,8 @@ public class PlayerMiscEvent {
             String msg = message.getRaw();
             HttpUtils.postObject(new GenericRecord(player.getUuidAsString(), RecordType.chat, player.getEntityName(), null,EncodingUtils.getUTF8StringFromGBKString(msg)));
             if(msg.length()<3) return ActionResult.PASS;
-            ServerUtils.getAfkPlayerList().stream()
-                    //玩家说的话里面有没有挂机人的名称
-                    .filter(entry -> entry.getKey().contains(msg))
-                    .forEach(entry -> {
-                        String name = entry.getKey();
-                        int seconds = entry.getValue();
-                        TextUtils.sendChatMessage(player, ColorConstants.GRAY+name+" 已经挂机 "+ TimeUtils.secondsToMinute(seconds,"分","秒")+" ,因此对方不一定能够及时回复您.");
-                    });
+            ServerUtils.getAfkPlayerListDo(entry -> entry.getKey().contains(msg),player);
+
             return ActionResult.PASS;
         }));
     }

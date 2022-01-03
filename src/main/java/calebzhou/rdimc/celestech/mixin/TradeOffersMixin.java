@@ -24,6 +24,7 @@ public class TradeOffersMixin {
         int experience = 5;
         WANDERING_TRADER_TRADES = RDICeleTech.copyToFastUtilMap(
                 ImmutableMap.of(1, new TradeOffers.Factory[]{
+                        new TradeOffers.SellItemFactory(Items.END_PORTAL_FRAME, expensivePrice*8,count,maxUses,experience),
                         new TradeOffers.SellItemFactory(Items.SEA_PICKLE, price, count, maxUses, experience),
                         new TradeOffers.SellItemFactory(Items.SLIME_BALL, expensivePrice, count, maxUses, experience),
                         new TradeOffers.SellItemFactory(Items.GLOWSTONE, price, manyCount, maxUses, experience),

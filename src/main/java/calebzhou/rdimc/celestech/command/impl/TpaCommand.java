@@ -19,6 +19,8 @@ import net.minecraft.text.MutableText;
 
 import java.util.UUID;
 
+import static calebzhou.rdimc.celestech.utils.TextUtils.*;
+
 public class TpaCommand extends BaseCommand {
 
     public TpaCommand(String command, int permissionLevel) {
@@ -41,25 +43,30 @@ public class TpaCommand extends BaseCommand {
         String fromPlayerName = fromPlayer.getDisplayName().getString();
         String toPlayerName = toPlayer.getDisplayName().getString();
         if(fromPlayer==toPlayer){
-            TextUtils.sendChatMessage(fromPlayer,"禁止原地TP");
+            sendChatMessage(fromPlayer,"禁止原地TP");
             return Command.SINGLE_SUCCESS;
         }
-        if(RDICeleTech.tpaRequestMap.containsKey(fromPlayer.getUuidAsString())){
-            TextUtils.sendChatMessage(fromPlayer,"您已经给发送过传送请求了");
-            TextUtils.sendClickableContent(fromPlayer,"点击此处可以删除您发送过的所有传送请求。","tpaclear");
+        if(fromPlayer.experienceLevel<3){
+            sendChatMessage(fromPlayer,"经验不足！");
+            return 1;
         }
-
-        TextUtils.sendChatMessage(fromPlayer,"传送请求已发送给"+toPlayerName);
+        if(RDICeleTech.tpaRequestMap.containsKey(fromPlayer.getUuidAsString())){
+            sendChatMessage(fromPlayer,"您已经给发送过传送请求了");
+            sendClickableContent(fromPlayer,"点击此处可以删除您发送过的所有传送请求。","tpaclear");
+            return 1;
+        }
+        fromPlayer.experienceLevel -= 3;
+        sendChatMessage(fromPlayer,"传送请求已发送给"+toPlayerName);
 
         String reqid= UUID.randomUUID().toString().substring(1,8);
         PlayerTpaRequest preq=new PlayerTpaRequest(fromPlayer,toPlayer);
         RDICeleTech.tpaRequestMap.put(reqid,preq);
-        TextUtils.sendChatMessage(fromPlayer,"已经发送传送请求给"+toPlayerName+", 请求ID:"+reqid);
-        TextUtils.sendChatMessage(toPlayer, ColorConstants.ORANGE+fromPlayerName+"想要传送到你的身边。");
-        TextUtils.sendChatMessage(toPlayer, ColorConstants.ORANGE+"为防止恶意破坏，请谨慎接受传送请求。");
-        MutableText tpyes=TextUtils.getClickableContentComp(ColorConstants.BRIGHT_GREEN+"[接受]"+ ColorConstants.RESET,"/tpyes "+reqid," ");
-        MutableText tpwait=TextUtils.getClickableContentComp(ColorConstants.GOLD+"[等我一下]"+ ColorConstants.RESET,"稍等"," ");
-        TextUtils.sendChatMessage(toPlayer,tpyes.append(tpwait));
+        sendChatMessage(fromPlayer,"已经发送传送请求给"+toPlayerName+", 请求ID:"+reqid);
+        sendChatMessage(toPlayer, ColorConstants.ORANGE+fromPlayerName+"想要传送到你的身边。");
+        sendChatMessage(toPlayer, ColorConstants.ORANGE+"为防止恶意破坏，请谨慎接受传送请求。");
+        MutableText tpyes= getClickableContentComp(ColorConstants.BRIGHT_GREEN+"[接受]"+ ColorConstants.RESET,"/tpyes "+reqid," ");
+        MutableText tpwait= getClickableContentComp(ColorConstants.GOLD+"[等我一下]"+ ColorConstants.RESET,"稍等"," ");
+        sendChatMessage(toPlayer,tpyes.append(tpwait));
 
         return Command.SINGLE_SUCCESS;
     }

@@ -14,7 +14,7 @@ public class WanderingTraderManagerMixin {
     @ModifyConstant(method = "Lnet/minecraft/world/WanderingTraderManager;spawn(Lnet/minecraft/server/world/ServerWorld;ZZ)I",
     constant = @Constant(intValue = 24000))
     private int modifyConstSpawnDelay(int constant){
-        return 20;
+        return 12000;
     }
 
     @ModifyConstant(method = "Lnet/minecraft/world/WanderingTraderManager;spawn(Lnet/minecraft/server/world/ServerWorld;ZZ)I",

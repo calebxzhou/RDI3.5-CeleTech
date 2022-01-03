@@ -4,6 +4,7 @@
   "package": "calebzhou.rdimc.celestech.mixin",
   "compatibilityLevel": "JAVA_17",
   "mixins": [
+    "LavaAccelerateMixin",
     "PlayerBreakBlockMixin",
     "PlayerChatMixin",
     "PlayerConnectServerMixin",
