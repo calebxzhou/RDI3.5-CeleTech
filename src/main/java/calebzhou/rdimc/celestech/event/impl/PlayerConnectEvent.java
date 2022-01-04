@@ -6,7 +6,11 @@ import calebzhou.rdimc.celestech.model.record.GenericRecord;
 import calebzhou.rdimc.celestech.model.record.RecordType;
 import calebzhou.rdimc.celestech.model.record.UuidNameRecord;
 import calebzhou.rdimc.celestech.utils.*;
+import com.google.gson.Gson;
 import net.minecraft.util.ActionResult;
+
+import java.sql.Time;
+import java.util.ArrayList;
 
 import static calebzhou.rdimc.celestech.constant.ServiceConstants.ADDR;
 
@@ -20,7 +24,22 @@ public class PlayerConnectEvent {
             ThreadPool.newThread(()-> {
                 TextUtils.sendChatMessage(player, HttpUtils.doGet(ADDR+"getWeather?ip="+player.getIp()));
                 TextUtils.sendChatMessage(player, TimeUtils.getTimeChineseString()+"好,"+player.getDisplayName().getString()+",欢迎回到RDI。");
+                //载入聊天缓存
+                if(!ServerCache.chatRecord.isFull()){
+                    String json=HttpUtils.get("GenericRecord","query=SELECT * FROM GenericRecord where recordType='chat' order by recTime desc limit 48");
+                    ArrayList<GenericRecord> list = new Gson().fromJson(json, ArrayList.class);
+                    list.stream().forEach(e->{
+                        ServerCache.chatRecord.put(e.getSrc(),e);
+                    });
                 }
+                ServerCache.chatRecord.forEach((k,v)->{
+                    TextUtils.sendChatMessage(player,
+                            String.format("%s %s:%s",
+                                    TimeUtils.getComparedDateTime(v.getRecTime()),
+                                    k,
+                                    v.getContent()));
+                });
+            }
             );
 
             //载入玩家路径监控

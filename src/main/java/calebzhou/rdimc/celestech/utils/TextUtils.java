@@ -2,6 +2,7 @@ package calebzhou.rdimc.celestech.utils;
 
 import calebzhou.rdimc.celestech.RDICeleTech;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import net.minecraft.command.CommandSource;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.Packet;
 import net.minecraft.network.packet.s2c.play.SubtitleS2CPacket;
@@ -23,6 +24,9 @@ public final class TextUtils {
     //给玩家发送信息，在聊天框
     public static void sendChatMessage(PlayerEntity player, String content) {
         sendChatMessage(player,new LiteralText(content));
+    }
+    public static void sendChatMessage(ServerCommandSource source , String content){
+        source.sendFeedback(new LiteralText(content),false);
     }
 
     public static void sendChatMessage(PlayerEntity player, Text textComponent) {

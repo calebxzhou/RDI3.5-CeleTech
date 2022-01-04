@@ -15,6 +15,7 @@ import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.minecraft.item.Items;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.village.TradeOffers;
+import net.minecraft.world.Difficulty;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -38,6 +39,7 @@ public class RDICeleTech implements ModInitializer {
         // Proceed with mild caution.
         ServerLifecycleEvents.SERVER_STARTED.register((server) -> {
             RDICeleTech.server = server;
+            server.getSaveProperties().setDifficulty(Difficulty.HARD);
         });
         new PlayerBlockEvent();
         new CommandRegister();

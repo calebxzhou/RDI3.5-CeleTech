@@ -11,6 +11,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.RaycastContext;
@@ -32,6 +33,9 @@ public class PlayerUtils {
     public static void teleportPlayer(PlayerEntity player1,PlayerEntity player2){
         teleportPlayer(player1,player2.getWorld().getDimension().getEffects().toString(), player2.getX(),
                 player2.getY(), player2.getZ(), player2.getYaw(), player2.getPitch());
+    }
+    public static String  getDimensionName(PlayerEntity player){
+        return player.getWorld().getDimension().getEffects().toString();
     }
     //传送到指定位置
     public static void teleportPlayer(PlayerEntity player, String world, double x, double y, double z, float w, float p){

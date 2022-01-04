@@ -26,12 +26,12 @@ public class TpsCommand extends BaseCommand {
     }
 
     private int execute(ServerCommandSource source) throws CommandSyntaxException {
-        tps(source.getPlayer());
-        list(source.getPlayer());
+        tps(source);
+        list(source);
         return 1;
     }
 
-    private void list(ServerPlayerEntity player) {
+    private void list(ServerCommandSource player) {
         StringBuilder sb=new StringBuilder();
         ServerUtils.getAfkPlayerList().stream().forEach(e->{
             sb.append(e.getKey());
@@ -43,7 +43,7 @@ public class TpsCommand extends BaseCommand {
         sendChatMessage(player,"挂机列表:"+(sb.length()==0?"无":sb.toString()));
     }
 
-    private void tps(ServerPlayerEntity player) {
+    private void tps(ServerCommandSource player) {
         double meanTickTime = MathUtils.getAverageValue(RDICeleTech.getServer().lastTickLengths) * 1.0E-6D;
         double stdTickTime = 120.0;
         double meanTPS = Math.min(1000.0 / meanTickTime, 20);

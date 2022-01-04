@@ -12,7 +12,9 @@ public class GenericRecord implements Serializable {
     String target;
     String content;
     Timestamp recTime;
+    public GenericRecord(){
 
+    }
     public GenericRecord(String pid, RecordType recordType, String src, String target, String content) {
         this.pid = pid;
         this.recordType = recordType.toString();
@@ -20,5 +22,29 @@ public class GenericRecord implements Serializable {
         this.target = target;
         this.content = content;
         this.recTime = TimeUtils.getNow();
+    }
+
+    public String getPid() {
+        return pid;
+    }
+
+    public String getRecordType() {
+        return recordType;
+    }
+
+    public String getSrc() {
+        return src;
+    }
+
+    public String getTarget() {
+        return target;
+    }
+
+    public String getContent() {
+        return content;
+    }
+
+    public Timestamp getRecTime() {
+        return recTime;
     }
 }

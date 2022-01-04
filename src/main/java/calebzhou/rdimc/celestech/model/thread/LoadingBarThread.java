@@ -2,6 +2,7 @@ package calebzhou.rdimc.celestech.model.thread;
 
 import calebzhou.rdimc.celestech.utils.TextUtils;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.network.packet.s2c.play.BossBarS2CPacket;
 
 public class LoadingBarThread extends Thread{
     private final PlayerEntity player;
@@ -30,6 +31,7 @@ public class LoadingBarThread extends Thread{
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
+
             TextUtils.sendActionMessage(player,toSend);
             //正在读取[=================>               ] 25%
         }

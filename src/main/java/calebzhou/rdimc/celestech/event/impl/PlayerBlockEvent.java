@@ -27,7 +27,7 @@ public class PlayerBlockEvent {
 
                 //TODO 加经验 随机爆物品
                 ServerCache.lavaGenStoneMap.remove(blockPos);
-                player.experienceProgress += 0.3f;
+                player.experienceProgress += 0.1f;
 
             }
             return ActionResult.PASS;

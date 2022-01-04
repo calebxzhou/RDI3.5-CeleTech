@@ -18,6 +18,7 @@ public class CommandRegister {
         commands.add(new TpaCommand("tpa",0));
         commands.add(new TpyesCommand("tpyes",0));
         commands.add(new TpsCommand("tps",0));
+        commands.add(new TelladCommand("tellad",0));
 
 
         RegisterCommandsCallback.EVENT.register(((dispatcher, environment) -> {

@@ -27,16 +27,20 @@ public class HttpUtils {
         });
 
     }
-
-    public static String post(String shortUrl,String... params){
+    private static String concatParams(String ... params){
         StringBuilder sb = new StringBuilder();
         Arrays.stream(params).forEach((param)->{
             sb.append(param);
             sb.append("&");
         });
-        return doPost(ADDR+shortUrl,sb.toString());
+        return sb.toString();
     }
-
+    public static String post(String shortUrl,String... params){
+        return doPost(ADDR+shortUrl,concatParams(params));
+    }
+    public static String get(String shortUrl,String... params){
+        return doGet(ADDR+shortUrl+"?"+concatParams(params));
+    }
     public static String doGet(String fullUrl) {
         long t1= System.currentTimeMillis();
         HttpURLConnection connection = null;
@@ -62,12 +66,12 @@ public class HttpUtils {
                 }
                 result = sbf.toString();
             }else{
-                return "HTTP服务错误："+connection.getResponseCode();
+                return "微服务错误："+connection.getResponseCode();
             }
         } catch (MalformedURLException e) {
             e.printStackTrace();
         } catch (IOException e) {
-            return "HTTP服务错误："+e.getMessage();
+            return "微服务错误："+e.getMessage();
         } finally {
             connection.disconnect();// 关闭远程连接
         }
@@ -96,7 +100,7 @@ public class HttpUtils {
             // 设置传入参数的格式:请求参数应该是 name1=value1&name2=value2 的形式。
             connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded; charset=utf-8");
             // 设置鉴权信息：Authorization: Bearer da3efcbf-0845-4fe3-8aba-ee040be542c0
-            connection.setRequestProperty("Authorization", "Bearer da3efcbf-0845-4fe3-8aba-ee040be542c0");
+            //connection.setRequestProperty("Authorization", "Bearer da3efcbf-0845-4fe3-8aba-ee040be542c0");
             // 通过连接对象获取一个输出流
             os = connection.getOutputStream();
             // 通过输出流对象将参数写出去/传输出去,它是通过字节数组写出的
