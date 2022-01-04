@@ -6,7 +6,7 @@ import calebzhou.rdimc.celestech.event.PlayerPlaceBlockCallback;
 import calebzhou.rdimc.celestech.model.CoordLocation;
 import calebzhou.rdimc.celestech.model.record.BlockRecord2;
 import calebzhou.rdimc.celestech.utils.HttpUtils;
-import calebzhou.rdimc.celestech.utils.ServerCache;
+import calebzhou.rdimc.celestech.model.cache.BaseServerCache;
 import net.fabricmc.fabric.api.event.player.UseBlockCallback;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -23,10 +23,10 @@ public class PlayerBlockEvent {
             record(player,blockPos,blockState,BlockRecord2.Action.BREAK);
             //如果玩家破坏了刷石机生成的石头
             if((blockState.getBlock()== Blocks.STONE || blockState.getBlock()== Blocks.COBBLESTONE)
-                    && ServerCache.lavaGenStoneMap.get(blockPos)!=null){
+                    && BaseServerCache.lavaGenStoneMap.get(blockPos)!=null){
 
                 //TODO 加经验 随机爆物品
-                ServerCache.lavaGenStoneMap.remove(blockPos);
+                BaseServerCache.lavaGenStoneMap.remove(blockPos);
                 player.experienceProgress += 0.1f;
 
             }

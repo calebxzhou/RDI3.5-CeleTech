@@ -69,7 +69,9 @@ public class IslandCommand extends BaseCommand {
     private int execute(ServerCommandSource source) throws CommandSyntaxException {
         ServerPlayerEntity player = source.getPlayer();
         sendChatMessage(player, ColorConstants.GOLD+"----RDI CT3 by Davickk----(2022.01.01)");
-        sendChatMessage(player,"欢迎使用RDI空岛系统,请到群文件查看指令列表.");
+        ThreadPool.newThread(()->{
+
+        });
         sendChatMessage(player,getClickableContentComp(ColorConstants.GOLD+"[返回空岛]","/island home","  "));
         return 1;
     }

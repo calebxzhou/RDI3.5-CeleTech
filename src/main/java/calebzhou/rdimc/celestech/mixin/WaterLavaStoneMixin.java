@@ -1,6 +1,6 @@
 package calebzhou.rdimc.celestech.mixin;
 
-import calebzhou.rdimc.celestech.utils.ServerCache;
+import calebzhou.rdimc.celestech.model.cache.BaseServerCache;
 import net.minecraft.block.BlockState;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.LavaFluid;
@@ -20,6 +20,6 @@ public class WaterLavaStoneMixin {
                     shift = At.Shift.AFTER)
     )
     private void genStoneAfter(WorldAccess world, BlockPos pos, BlockState state, Direction direction, FluidState fluidState, CallbackInfo ci){
-        ServerCache.lavaGenStoneMap.put(pos,state);
+        BaseServerCache.lavaGenStoneMap.put(pos,state);
     }
 }

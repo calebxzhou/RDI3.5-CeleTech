@@ -3,16 +3,15 @@ package calebzhou.rdimc.celestech;
 import calebzhou.rdimc.celestech.command.CommandRegister;
 import calebzhou.rdimc.celestech.command.impl.TpaCommand;
 import calebzhou.rdimc.celestech.event.impl.PlayerBlockEvent;
+import calebzhou.rdimc.celestech.event.impl.PlayerChatEvent;
 import calebzhou.rdimc.celestech.event.impl.PlayerConnectEvent;
 import calebzhou.rdimc.celestech.event.impl.PlayerMiscEvent;
-import calebzhou.rdimc.celestech.utils.ServerCache;
 import calebzhou.rdimc.celestech.utils.ServerUtils;
 import com.google.common.collect.ImmutableMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
-import net.minecraft.item.Items;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.village.TradeOffers;
 import net.minecraft.world.Difficulty;
@@ -45,6 +44,7 @@ public class RDICeleTech implements ModInitializer {
         new CommandRegister();
         new PlayerConnectEvent();
         new PlayerMiscEvent();
+        new PlayerChatEvent();
         //10分钟清理一次缓存
         new Timer("clearCacheTask").schedule(new TimerTask() {
             @Override
@@ -60,7 +60,7 @@ public class RDICeleTech implements ModInitializer {
         },1*60*1000);
     }
     public static void clearCache(){
-        ServerCache.lavaGenStoneMap.clear();
+        //ServerCache.lavaGenStoneMap.clear();
 
     }
     public static MinecraftServer getServer() {

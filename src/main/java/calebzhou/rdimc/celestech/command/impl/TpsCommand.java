@@ -59,8 +59,8 @@ public class TpsCommand extends BaseCommand {
             if (i == 22)
                 squaresToSend += "§c";
         }
-        sendChatMessage(player,"负载[" + Math.round(ratio * 100) + "%/"+meanTPS*5+"tps]" + squaresToSend);
-        sendChatMessage(player,"延迟 " + Math.round(meanTickTime) + "ms");
+        sendChatMessage(player,"[" + Math.round(ratio * 100) + "%/"+meanTPS*5+"tps]" + squaresToSend);
+        sendChatMessage(player,Math.round(meanTickTime) + ".0ms");
         StringBuilder sb=new StringBuilder();
         ServerUtils.httpHistoryDelayList.stream().forEach((e)->{
             sb.append(String.format("%.2f",e/1000.0));
@@ -70,6 +70,6 @@ public class TpsCommand extends BaseCommand {
                 .mapToDouble(d -> d)
                 .average()
                 .orElse(0.0);
-        sendChatMessage(player,"微服务延迟 "+sb.toString()+String.format("（平均 %.2f s）",avg));
+        sendChatMessage(player,"微服务延迟 "+sb.toString()+String.format("（平均 %.2f s）",avg/1000.0));
     }
 }

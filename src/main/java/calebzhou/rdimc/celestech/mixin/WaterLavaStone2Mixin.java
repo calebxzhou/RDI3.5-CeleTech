@@ -1,21 +1,16 @@
 package calebzhou.rdimc.celestech.mixin;
 
-import calebzhou.rdimc.celestech.utils.ServerCache;
+import calebzhou.rdimc.celestech.model.cache.BaseServerCache;
 import calebzhou.rdimc.celestech.utils.TextUtils;
 import calebzhou.rdimc.celestech.utils.WorldUtils;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.FluidBlock;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.fluid.FluidState;
-import net.minecraft.fluid.LavaFluid;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
-import net.minecraft.world.WorldAccess;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(FluidBlock.class)
@@ -33,6 +28,6 @@ public class WaterLavaStone2Mixin {
             return;
         }
         //如果生成石头
-        ServerCache.lavaGenStoneMap.put(pos,state);
+        BaseServerCache.lavaGenStoneMap.put(pos,state);
     }
 }
