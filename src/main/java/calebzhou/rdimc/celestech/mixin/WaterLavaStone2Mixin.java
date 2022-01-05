@@ -1,6 +1,6 @@
 package calebzhou.rdimc.celestech.mixin;
 
-import calebzhou.rdimc.celestech.model.cache.BaseServerCache;
+import calebzhou.rdimc.celestech.model.cache.LavaStoneCache;
 import calebzhou.rdimc.celestech.utils.TextUtils;
 import calebzhou.rdimc.celestech.utils.WorldUtils;
 import net.minecraft.block.BlockState;
@@ -28,6 +28,6 @@ public class WaterLavaStone2Mixin {
             return;
         }
         //如果生成石头
-        BaseServerCache.lavaGenStoneMap.put(pos,state);
+        LavaStoneCache.instance.getMap().put(pos,state);
     }
 }

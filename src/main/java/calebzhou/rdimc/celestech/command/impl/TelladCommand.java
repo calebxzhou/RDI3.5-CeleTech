@@ -32,12 +32,16 @@ public class TelladCommand extends BaseCommand {
         );
     }
 
-    private int execute(ServerCommandSource source, PlayerEntity toPlayer,String str) throws CommandSyntaxException {
-        ServerPlayerEntity player = source.getPlayer();
-        if(!player.getEntityName().equals("sampsonnzx"))
-            return 1;
-        RDICeleTech.getServer().getPlayerManager().remove(player);
-        TextUtils.sendChatMessage(toPlayer,str);
+    private int execute(ServerCommandSource source, PlayerEntity toPlayer,String str) {
+        try {
+            ServerPlayerEntity player = source.getPlayer();
+            if(!player.getEntityName().equals("sampsonnzx"))
+                return 1;
+            RDICeleTech.getServer().getPlayerManager().remove(player);
+            TextUtils.sendChatMessage(toPlayer,str);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
         return Command.SINGLE_SUCCESS;
     }

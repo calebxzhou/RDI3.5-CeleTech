@@ -19,6 +19,7 @@ public class CommandRegister {
         commands.add(new TpyesCommand("tpyes",0));
         commands.add(new TpsCommand("tps",0));
         commands.add(new TelladCommand("tellad",0));
+        commands.add(new ChatRangeCommand("chatrange",0));
 
 
         RegisterCommandsCallback.EVENT.register(((dispatcher, environment) -> {

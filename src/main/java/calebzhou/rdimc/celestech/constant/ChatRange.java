@@ -6,7 +6,7 @@ import java.util.Map;
 public enum ChatRange implements OrdinalEnum{
     all(0),
     team(1),
-    no(2)
+    mute(2)
     ;
 
     private int id;

@@ -1,6 +1,8 @@
 package calebzhou.rdimc.celestech.utils;
 
 import calebzhou.rdimc.celestech.RDICeleTech;
+import calebzhou.rdimc.celestech.constant.ColorConstants;
+import calebzhou.rdimc.celestech.constant.MessageType;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.minecraft.command.CommandSource;
 import net.minecraft.entity.player.PlayerEntity;
@@ -16,11 +18,23 @@ import java.util.*;
 import java.util.function.Function;
 
 public final class TextUtils {
-
+    public static final String ERROR_PREFIX = ColorConstants.DARK_RED+ColorConstants.BOLD+
+            "错误 >"+ColorConstants.RESET+ColorConstants.RED;
+    public static final String SUCCESS_PREFIX = ColorConstants.DARK_GREEN+ColorConstants.BOLD+
+            "成功 >"+ColorConstants.RESET+ColorConstants.BRIGHT_GREEN;
+    public static final String INFO_PREFIX = ColorConstants.DARK_AQUA+ColorConstants.BOLD+
+            "提示 >"+ColorConstants.RESET+ColorConstants.AQUA;
     public static void sendPlayerMessage(PlayerEntity player, Text textComponent, boolean actionBar) {
         player.sendMessage(textComponent, actionBar);
     }
+    public static void sendChatMessage(PlayerEntity player, String content, MessageType messageType){
+        switch (messageType){
+            case ERROR -> sendChatMessage(player,ERROR_PREFIX+content);
+            case INFO -> sendChatMessage(player,INFO_PREFIX+content);
+            case SUCCESS -> sendChatMessage(player,SUCCESS_PREFIX+content);
+        }
 
+    }
     //给玩家发送信息，在聊天框
     public static void sendChatMessage(PlayerEntity player, String content) {
         sendChatMessage(player,new LiteralText(content));

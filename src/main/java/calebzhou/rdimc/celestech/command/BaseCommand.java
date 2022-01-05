@@ -17,8 +17,6 @@ public abstract class BaseCommand {
     }
 
 
-    public LiteralArgumentBuilder<ServerCommandSource> setExecution() {
-        return null;
-    }
+    public abstract LiteralArgumentBuilder<ServerCommandSource> setExecution();
 
 }
