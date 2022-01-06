@@ -10,7 +10,7 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 import java.util.Random;
 
 @Mixin(WanderingTraderManager.class)
-public class WanderingTraderManagerMixin {
+public abstract class WanderingTraderManagerMixin {
     @ModifyConstant(method = "Lnet/minecraft/world/WanderingTraderManager;spawn(Lnet/minecraft/server/world/ServerWorld;ZZ)I",
     constant = @Constant(intValue = 24000))
     private int modifyConstSpawnDelay(int constant){

@@ -4,9 +4,15 @@
   "package": "calebzhou.rdimc.celestech.mixin",
   "compatibilityLevel": "JAVA_17",
   "mixins": [
+    "ArrowDamageMixin",
+    "CreatePortalMixin",
     "CreeperEntityMixin",
+    "EndermanEntityMixin",
+    "EndermanEntityMixin2",
     "IronGolemEntityMixin",
     "LavaAccelerateMixin",
+    "LlamaSpitEntityMixin",
+    "MobEntityMixin",
     "PlayerBreakBlockMixin",
     "PlayerChatMixin",
     "PlayerConnectServerMixin",
@@ -14,10 +20,13 @@
     "PlayerPlaceBlockMixin",
     "RegisterCommandsMixin",
     "ServerPlayNetworkMixin",
+    "SkeletonEntityMixin",
+    "SlimeEntityMixin",
     "TradeOffersMixin",
     "WanderingTraderManagerMixin",
     "WaterLavaStone2Mixin",
-    "WaterLavaStoneMixin"
+    "WaterLavaStoneMixin",
+    "ZombieEntityMixin"
   ],
   "client": [
   ],

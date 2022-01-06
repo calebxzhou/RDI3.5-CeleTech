@@ -6,7 +6,7 @@ import org.spongepowered.asm.mixin.injection.Constant;
 import org.spongepowered.asm.mixin.injection.ModifyConstant;
 
 @Mixin(IronGolemEntity.class)
-public class IronGolemEntityMixin {
+public abstract class IronGolemEntityMixin {
     @ModifyConstant(
             method= "Lnet/minecraft/entity/passive/IronGolemEntity;createIronGolemAttributes()Lnet/minecraft/entity/attribute/DefaultAttributeContainer$Builder;",
     constant = @Constant(doubleValue = 100.0D))

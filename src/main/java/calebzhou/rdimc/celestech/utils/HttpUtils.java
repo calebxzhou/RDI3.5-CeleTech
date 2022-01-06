@@ -48,6 +48,7 @@ public class HttpUtils {
         BufferedReader br;
         String result = null;
         try {
+            System.out.println(fullUrl);
             URL url = new URL(fullUrl);
             connection = (HttpURLConnection) url.openConnection();
             connection.setRequestMethod("GET");

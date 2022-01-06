@@ -20,7 +20,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import java.util.UUID;
 
 @Mixin(PlayerManager.class)
-public class PlayerConnectServerMixin {
+public abstract class PlayerConnectServerMixin {
 
     @Shadow @Final protected int maxPlayers;
 

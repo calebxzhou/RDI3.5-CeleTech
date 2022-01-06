@@ -9,7 +9,7 @@ import org.spongepowered.asm.mixin.injection.Constant;
 import org.spongepowered.asm.mixin.injection.ModifyConstant;
 
 @Mixin(CreeperEntity.class)
-public class CreeperEntityMixin {
+public abstract class CreeperEntityMixin {
 
     @Shadow @Mutable
     private int fuseTime = 10;
@@ -28,6 +28,6 @@ public class CreeperEntityMixin {
             constant = @Constant(doubleValue = 0.25D)
     )
     private static double changeSpeed(double spd){
-        return 0.55D;
+        return 0.4D;
     }
 }

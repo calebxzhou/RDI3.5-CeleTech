@@ -24,7 +24,7 @@ import java.util.Map;
 import static calebzhou.rdimc.celestech.RDICeleTech.copyToFastUtilMap;
 
 @Mixin(TradeOffers.class)
-public class TradeOffersMixin {
+public abstract class TradeOffersMixin {
     @Shadow @Mutable
     public static final Map<VillagerProfession, Int2ObjectMap<TradeOffers.Factory[]>> PROFESSION_TO_LEVELED_TRADE = Util.make(Maps.newHashMap(), (map) -> {
         map.put(VillagerProfession.FARMER,

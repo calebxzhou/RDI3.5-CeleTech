@@ -1,8 +1,6 @@
 package calebzhou.rdimc.celestech.event.impl;
 
-import calebzhou.rdimc.celestech.constant.AngrySaplingDamageSource;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.Fertilizable;
 import net.minecraft.block.SaplingBlock;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.player.PlayerEntity;
@@ -30,7 +28,7 @@ public class SaplingEvents {
             else{
                 Explosion exp = new Explosion(player.getWorld(),player, player.getX(), player.getY(), player.getZ(),2.0f);
                 player.damage(DamageSource.explosion(exp),0.1f);
-                player.damage(AngrySaplingDamageSource.source,5.0f);
+               // player.damage(AngrySaplingDamageSource.source,5.0f);
 
             }
         }

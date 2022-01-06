@@ -13,7 +13,7 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 import java.util.Random;
 
 @Mixin(LavaFluid.class)
-public class LavaAccelerateMixin {
+public abstract class LavaAccelerateMixin {
     @Overwrite
     public int getTickRate(WorldView world) {
         return 10;

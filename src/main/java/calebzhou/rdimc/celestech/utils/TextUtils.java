@@ -25,6 +25,7 @@ public final class TextUtils {
     public static final String INFO_PREFIX = ColorConstants.DARK_AQUA+ColorConstants.BOLD+
             "提示 >"+ColorConstants.RESET+ColorConstants.AQUA;
     public static void sendPlayerMessage(PlayerEntity player, Text textComponent, boolean actionBar) {
+        if(player==null) return;
         player.sendMessage(textComponent, actionBar);
     }
     public static void sendChatMessage(PlayerEntity player, String content, MessageType messageType){

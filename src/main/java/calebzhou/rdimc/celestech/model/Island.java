@@ -4,6 +4,7 @@ import calebzhou.rdimc.celestech.utils.TimeUtils;
 
 import java.io.Serializable;
 import java.sql.Timestamp;
+import java.util.List;
 
 public class Island implements Serializable {
     String islandId;
@@ -11,7 +12,11 @@ public class Island implements Serializable {
     String location;
 
     Timestamp createTime;
-    String[] memIds;
+    List<String> memIds;
+
+    public List<String> getMemIds() {
+        return memIds;
+    }
 
     public Island(String islandId, String ownerUuid, CoordLocation location) {
         this.islandId = islandId;

@@ -1,5 +1,8 @@
 package calebzhou.rdimc.celestech.model;
 
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.util.math.BlockPos;
+
 import java.util.concurrent.ConcurrentHashMap;
 
 public class PlayerTemperature {
@@ -29,6 +32,19 @@ public class PlayerTemperature {
     }
     public static float get(String playerName){
         return playerTempMap.get(playerName);
+    }
+    //玩家头顶是否露天
+    protected static boolean isAffectedByDaylight(PlayerEntity player) {
+        if (player.world.isDay()) {
+            float f = player.getBrightnessAtEyes();
+            BlockPos blockPos = new BlockPos(player.getX(), player.getEyeY(), player.getZ());
+            boolean bl = player.isWet() || player.inPowderSnow || player.wasInPowderSnow;
+            if (f > 0.5F && player.getRandom().nextFloat() * 30.0F < (f - 0.4F) * 2.0F && !bl && player.world.isSkyVisible(blockPos)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
 }

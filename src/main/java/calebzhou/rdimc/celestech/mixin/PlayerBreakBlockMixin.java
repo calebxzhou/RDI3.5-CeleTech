@@ -18,7 +18,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(ServerPlayerInteractionManager.class)
-public class PlayerBreakBlockMixin {
+public abstract class PlayerBreakBlockMixin {
 	@Shadow protected ServerWorld world;
 	@Final @Shadow protected ServerPlayerEntity player;
 	@Inject(at = @At("HEAD"), method = "tryBreakBlock(Lnet/minecraft/util/math/BlockPos;)Z")

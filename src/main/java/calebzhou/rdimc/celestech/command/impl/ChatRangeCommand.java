@@ -4,8 +4,8 @@ import calebzhou.rdimc.celestech.command.BaseCommand;
 import calebzhou.rdimc.celestech.constant.ChatAction;
 import calebzhou.rdimc.celestech.constant.ChatRange;
 import calebzhou.rdimc.celestech.constant.MessageType;
-import calebzhou.rdimc.celestech.model.cache.CharRangeCache;
-import calebzhou.rdimc.celestech.model.cache.ChatRecordCache;
+import calebzhou.rdimc.celestech.model.ChatStatus;
+import calebzhou.rdimc.celestech.model.cache.ChatRangeCache;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
@@ -49,7 +49,7 @@ public class ChatRangeCommand extends BaseCommand {
             sendChatMessage(player,"您输入的聊天范围有误!正确的范围是: all 所有,team 岛内, mute 静音",MessageType.ERROR);
             return 1;
         }
-        CharRangeCache.instance.getTable().put(player.getEntityName(), ChatAction.valueOf(action), ChatRange.valueOf(range));
+        ChatRangeCache.instance.getMap().put(player.getEntityName(), new ChatStatus(ChatAction.valueOf(action), ChatRange.valueOf(range)));
         sendChatMessage(player,"您已成功设定聊天范围!",MessageType.SUCCESS);
         return 1;
     }

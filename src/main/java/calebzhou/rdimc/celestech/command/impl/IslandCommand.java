@@ -70,7 +70,7 @@ public class IslandCommand extends BaseCommand {
         ServerPlayerEntity player = source.getPlayer();
         sendChatMessage(player, ColorConstants.GOLD+"----RDI CT3 by Davickk----(2022.01.01)");
         ThreadPool.newThread(()->{
-
+            //String locaS = HttpUtils.post("island", "action=home", "pid=" + player.getUuidAsString());
         });
         sendChatMessage(player,getClickableContentComp(ColorConstants.GOLD+"[返回空岛]","/island home","  "));
         return 1;

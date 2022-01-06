@@ -5,6 +5,7 @@ import calebzhou.rdimc.celestech.constant.ColorConstants;
 import calebzhou.rdimc.celestech.model.CoordLocation;
 import calebzhou.rdimc.celestech.model.thread.LoadingBarThread;
 import net.minecraft.block.Blocks;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.player.PlayerEntity;
@@ -34,7 +35,7 @@ public class PlayerUtils {
         teleportPlayer(player1,player2.getWorld().getDimension().getEffects().toString(), player2.getX(),
                 player2.getY(), player2.getZ(), player2.getYaw(), player2.getPitch());
     }
-    public static String  getDimensionName(PlayerEntity player){
+    public static String  getDimensionName(Entity player){
         return player.getWorld().getDimension().getEffects().toString();
     }
     //传送到指定位置

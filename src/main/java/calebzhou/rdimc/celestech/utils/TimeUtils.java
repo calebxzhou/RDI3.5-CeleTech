@@ -69,8 +69,8 @@ public class TimeUtils {
     }
     public static String getComparedDateTime(Timestamp dtR){
         return getComparedDateTime(
-                LocalDateTime.parse(dtR.toString()),
-                LocalDateTime.parse(TimeUtils.getNow().toString()));
+                dtR.toLocalDateTime(),
+                TimeUtils.getNow().toLocalDateTime());
     }
     /**
      * 1.day相同 - 今天
@@ -114,7 +114,8 @@ public class TimeUtils {
 
 
 
-        return formattedTimePrefix+dtRec.getHour()+":"+dtRec.getMinute();
+        return formattedTimePrefix+dtRec.getHour()+":"
+                +  (dtRec.getMinute()<10? "0"+dtRec.getMinute() : dtRec.getMinute());
 
     }
 }

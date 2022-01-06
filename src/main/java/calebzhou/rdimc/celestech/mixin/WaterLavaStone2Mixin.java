@@ -14,7 +14,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(FluidBlock.class)
-public class WaterLavaStone2Mixin {
+public abstract class WaterLavaStone2Mixin {
     @Inject(
             method = "Lnet/minecraft/block/FluidBlock;receiveNeighborFluids(Lnet/minecraft/world/World;Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/block/BlockState;)Z",
             at = @At(value = "INVOKE",target = "Lnet/minecraft/fluid/FluidState;isStill()Z" ,
