@@ -4,6 +4,7 @@
   "package": "calebzhou.rdimc.celestech.mixin",
   "compatibilityLevel": "JAVA_17",
   "mixins": [
+    "AntiCrashMixin",
     "ArrowDamageMixin",
     "CreatePortalMixin",
     "CreeperEntityMixin",
@@ -12,6 +13,7 @@
     "IronGolemEntityMixin",
     "LavaAccelerateMixin",
     "LlamaSpitEntityMixin",
+    "MinecraftServerMixin",
     "MobEntityMixin",
     "PlayerBreakBlockMixin",
     "PlayerChatMixin",
