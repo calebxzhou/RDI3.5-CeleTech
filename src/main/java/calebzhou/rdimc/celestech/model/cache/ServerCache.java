@@ -10,4 +10,5 @@ public interface ServerCache {
     boolean has(Object obj);
     int getLimit();
     boolean isFull();
+    void loadCache();
 }

@@ -10,6 +10,7 @@
     "CreeperEntityMixin",
     "EndermanEntityMixin",
     "EndermanEntityMixin2",
+    "GlowSquidEntityMixin",
     "IronGolemEntityMixin",
     "LavaAccelerateMixin",
     "LlamaSpitEntityMixin",

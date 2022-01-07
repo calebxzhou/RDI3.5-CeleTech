@@ -12,11 +12,7 @@ public class Island implements Serializable {
     String location;
 
     Timestamp createTime;
-    List<String> memIds;
 
-    public List<String> getMemIds() {
-        return memIds;
-    }
 
     public Island(String islandId, String ownerUuid, CoordLocation location) {
         this.islandId = islandId;

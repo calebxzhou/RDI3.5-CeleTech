@@ -6,6 +6,9 @@ import calebzhou.rdimc.celestech.event.impl.PlayerBlockEvent;
 import calebzhou.rdimc.celestech.event.impl.PlayerChatEvent;
 import calebzhou.rdimc.celestech.event.impl.PlayerConnectEvent;
 import calebzhou.rdimc.celestech.event.impl.PlayerMiscEvent;
+import calebzhou.rdimc.celestech.model.cache.ChatRecordCache;
+import calebzhou.rdimc.celestech.model.cache.IslandCache;
+import calebzhou.rdimc.celestech.model.cache.UuidNameCache;
 import calebzhou.rdimc.celestech.utils.ServerUtils;
 import com.google.common.collect.ImmutableMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
@@ -45,6 +48,7 @@ public class RDICeleTech implements ModInitializer {
         new PlayerConnectEvent();
         new PlayerMiscEvent();
         new PlayerChatEvent();
+        loadCache();
         //10分钟清理一次缓存
         new Timer("clearCacheTask").schedule(new TimerTask() {
             @Override
@@ -58,10 +62,21 @@ public class RDICeleTech implements ModInitializer {
                 ServerUtils.save();
             }
         },1*60*1000);
+        new Timer("loadCacheTsk").schedule(new TimerTask() {
+            @Override
+            public void run() {
+                IslandCache.instance.loadCache();
+                UuidNameCache.instance.loadCache();
+            }
+        },10*60*1000);
     }
     public static void clearCache(){
         //ServerCache.lavaGenStoneMap.clear();
 
+    }
+
+    public static void loadCache(){
+        IslandCache.instance.loadCache();
     }
     public static MinecraftServer getServer() {
         return server;

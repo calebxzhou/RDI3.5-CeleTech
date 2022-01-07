@@ -77,7 +77,7 @@ public class PlayerChatEvent {
         if (status.getRange() == ChatRange.all) {
             receivePlayerList = RDICeleTech.getServer().getPlayerManager().getPlayerList();
         } else if (status.getRange() == ChatRange.team) {//岛内
-            Island island = IslandCache.instance.getMap().get(player.getUuidAsString());
+            Island island = IslandCache.instance.getIslandMap().get(player.getUuidAsString());
             //成员
             receivePlayerList = island.getMemIds()
                     .stream().map(id -> PlayerUtils.getPlayerByUuid(id)).collect(Collectors.toList());

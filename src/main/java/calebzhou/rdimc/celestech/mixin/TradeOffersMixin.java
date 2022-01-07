@@ -434,16 +434,17 @@ public abstract class TradeOffersMixin {
     public static Int2ObjectMap<TradeOffers.Factory[]> WANDERING_TRADER_TRADES;
     static {
         int cheapPrice = 1;
-        int price = 3;
-        int expensivePrice=8;
+        int price = 5;
+        int expensivePrice=10;
         int count = 1;
         int manyCount = 4;
         int maxUses= 4;
-        int experience = 5;
+        int experience = 7;
         WANDERING_TRADER_TRADES = copyToFastUtilMap(
                 ImmutableMap.of(1, new TradeOffers.Factory[]{
-                        new TradeOffers.SellItemFactory(Items.END_PORTAL_FRAME, expensivePrice*8,count,maxUses,experience),
+                        new TradeOffers.SellItemFactory(Items.END_PORTAL_FRAME, 64,count,maxUses,experience),
                         new TradeOffers.SellItemFactory(Items.SEA_PICKLE, price, count, maxUses, experience),
+                        new TradeOffers.SellItemFactory(Items.BAMBOO, price, count, maxUses, experience),
                         new TradeOffers.SellItemFactory(Items.SLIME_BALL, expensivePrice, count, maxUses, experience),
                         new TradeOffers.SellItemFactory(Items.GLOWSTONE, price, manyCount, maxUses, experience),
                         new TradeOffers.SellItemFactory(Items.NAUTILUS_SHELL, price, count, maxUses, experience),

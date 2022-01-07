@@ -5,6 +5,9 @@ import calebzhou.rdimc.celestech.command.BaseCommand;
 import calebzhou.rdimc.celestech.constant.ColorConstants;
 import calebzhou.rdimc.celestech.constant.WorldConstants;
 import calebzhou.rdimc.celestech.model.CoordLocation;
+import calebzhou.rdimc.celestech.model.Island;
+import calebzhou.rdimc.celestech.model.cache.IslandCache;
+import calebzhou.rdimc.celestech.model.cache.UuidNameCache;
 import calebzhou.rdimc.celestech.model.record.GenericRecord;
 import calebzhou.rdimc.celestech.model.record.RecordType;
 import calebzhou.rdimc.celestech.utils.*;
@@ -30,6 +33,8 @@ import net.minecraft.world.chunk.PalettedContainer;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
 
 import static calebzhou.rdimc.celestech.constant.ServiceConstants.ADDR;
 import static calebzhou.rdimc.celestech.utils.TextUtils.*;
@@ -68,8 +73,24 @@ public class IslandCommand extends BaseCommand {
 
     private int execute(ServerCommandSource source) throws CommandSyntaxException {
         ServerPlayerEntity player = source.getPlayer();
-        sendChatMessage(player, ColorConstants.GOLD+"----RDI CT3 by Davickk----(2022.01.01)");
+        sendChatMessage(player, ColorConstants.GOLD+"----RDI CT3 by Davickk----(2022.01.07)");
+        String islandOwnId = IslandCache.instance.getOwnIslandMap().get(player.getUuidAsString());
+        StringBuilder builder=new StringBuilder();
+        if(islandOwnId != null){
+            Island island = IslandCache.instance.getIslandMap().get(islandOwnId);
+            builder.append("岛编号: ");
+            builder.append(islandOwnId);
+            builder.append(" 岛成员: ");
+            Collection<String> memberIds = IslandCache.instance.getMemberMap().get(islandOwnId);
+            HashMap<String, String> unMap = UuidNameCache.instance.getMap();
+            unMap.forEach((id,name) ->{
+
+            });
+
+        }
+
         ThreadPool.newThread(()->{
+
             //String locaS = HttpUtils.post("island", "action=home", "pid=" + player.getUuidAsString());
         });
         sendChatMessage(player,getClickableContentComp(ColorConstants.GOLD+"[返回空岛]","/island home","  "));

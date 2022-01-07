@@ -44,14 +44,13 @@ public class ChatRecordCache implements ServerCache{
         return recordList;
     }
     //载入缓存
-    public synchronized void loadCache(Consumer<GenericRecord> do4each){
+    public void loadCache(){
         if(!isFull()){
             String json= HttpUtils.post("GenericRecord","query=SELECT @AST FROM GenericRecord where recordType='chat' order by recTime desc limit 48");
             List<GenericRecord> list = JsonUtils.stringToArray(json,GenericRecord[].class);
             Collections.reverse(list);
             list.forEach( e->ChatRecordCache.instance.getRecordList().add(e));
         }
-        recordList.forEach(do4each);
 
     }
 

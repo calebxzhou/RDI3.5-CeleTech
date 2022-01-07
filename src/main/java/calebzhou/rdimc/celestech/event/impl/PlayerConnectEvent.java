@@ -21,7 +21,8 @@ public class PlayerConnectEvent {
             HttpUtils.postObject(new GenericRecord(player.getUuidAsString(), RecordType.login, player.getIp(), null,null));
             //发送天气预报
             ThreadPool.newThread(()-> {
-                        ChatRecordCache.instance.loadCache(e -> TextUtils.sendChatMessage(player,
+                        ChatRecordCache.instance.loadCache();
+                        ChatRecordCache.instance.getRecordList().forEach(e -> TextUtils.sendChatMessage(player,
                                 String.format("%s %s:  %s",
                                         TimeUtils.getComparedDateTime(e.getRecTime()),
                                         e.getSrc(),

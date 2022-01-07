@@ -33,6 +33,11 @@ public class LavaStoneCache implements ServerCache {
         return map.size()>=limit;
     }
 
+    @Override
+    public void loadCache() {
+
+    }
+
     public HashMap<BlockPos,BlockState> getMap(){
         return map;
     }

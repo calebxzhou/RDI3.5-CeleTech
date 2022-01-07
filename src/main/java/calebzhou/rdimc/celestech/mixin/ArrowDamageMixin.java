@@ -29,8 +29,7 @@ public abstract class ArrowDamageMixin {
     )
     private void inject(EntityHitResult entityHitResult, CallbackInfo ci){
         Entity entity = entityHitResult.getEntity();
-        if(entity instanceof PlayerEntity){
-            PlayerEntity player = (PlayerEntity) entity;
+        if(entity instanceof PlayerEntity player){
             player.addStatusEffect(new StatusEffectInstance(StatusEffects.SLOWNESS,10*20,1));
         }
     }

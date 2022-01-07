@@ -29,6 +29,11 @@ public class ChatRangeCache implements ServerCache{
         return map.size()>=limit;
     }
 
+    @Override
+    public void loadCache() {
+
+    }
+
     public HashMap<String,ChatStatus> getMap() {
         return map;
     }
