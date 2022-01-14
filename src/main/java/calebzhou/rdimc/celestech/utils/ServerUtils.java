@@ -23,7 +23,7 @@ public class ServerUtils {
         MinecraftServer server = RDICeleTech.getServer();
         server.getCommandManager().execute(source,command);
     }
-    //获取在线玩家
+    //获取在线玩家 名称
     public static List<String> getOnlinePlayerList(){
         return RDICeleTech.getServer().getPlayerManager().getPlayerList().stream()
                 .map(PlayerEntity::getEntityName).toList();

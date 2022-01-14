@@ -4,6 +4,7 @@ import calebzhou.rdimc.celestech.goal.EntityBreakBlockGoal;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.ai.goal.GoalSelector;
+import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.mob.ZombieEntity;
 import net.minecraft.item.ItemStack;
@@ -20,6 +21,7 @@ import org.spongepowered.asm.mixin.injection.Constant;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.ModifyConstant;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(ZombieEntity.class)
 public abstract class ZombieEntityMixin extends MobEntity {
@@ -31,7 +33,7 @@ public abstract class ZombieEntityMixin extends MobEntity {
             at = @At("HEAD")
     )
     private void initGoal(CallbackInfo ci){
-        goalSelector.add(1,new EntityBreakBlockGoal(this));
+        //goalSelector.add(1,new EntityBreakBlockGoal(this));
     }
     @ModifyConstant(
             method = "Lnet/minecraft/entity/mob/ZombieEntity;createZombieAttributes()Lnet/minecraft/entity/attribute/DefaultAttributeContainer$Builder;",
@@ -49,7 +51,7 @@ public abstract class ZombieEntityMixin extends MobEntity {
         return 6.0D;
     }
 
-    /**
+            /**
      * @author
      */
     @Overwrite

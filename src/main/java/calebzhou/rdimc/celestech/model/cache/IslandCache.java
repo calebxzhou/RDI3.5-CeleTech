@@ -52,13 +52,13 @@ public class IslandCache implements ServerCache {
 
     public void loadCache(){
         ThreadPool.newThread(()->{
-            String json  = HttpUtils.post("island","query=SELECT @AST FROM Island");
+            String json  = HttpUtils.post("island","action=getall","query=SELECT @AST FROM Island");
             List<Island> island = JsonUtils.stringToArray(json, Island[].class);
             island.forEach(is-> {
                 islandMap.put(is.getIslandId(),is);
                 ownIslandMap.put(is.getOwnerUuid(),is.getIslandId());
             });
-            json = HttpUtils.get("island","query=SELECT @AST FROM IslandMember");
+            json = HttpUtils.post("island","action=getall","query=SELECT @AST FROM IslandMember");
             List<IslandMember> members = JsonUtils.stringToArray(json, IslandMember[].class);
             members.forEach(is -> memberMap.put(is.getIslandId(),is.getMemberUuid()));
 

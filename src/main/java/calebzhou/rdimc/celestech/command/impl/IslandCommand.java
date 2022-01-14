@@ -3,6 +3,7 @@ package calebzhou.rdimc.celestech.command.impl;
 import calebzhou.rdimc.celestech.RDICeleTech;
 import calebzhou.rdimc.celestech.command.BaseCommand;
 import calebzhou.rdimc.celestech.constant.ColorConstants;
+import calebzhou.rdimc.celestech.constant.MessageType;
 import calebzhou.rdimc.celestech.constant.WorldConstants;
 import calebzhou.rdimc.celestech.model.CoordLocation;
 import calebzhou.rdimc.celestech.model.Island;
@@ -31,10 +32,11 @@ import net.minecraft.world.biome.Biome;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.PalettedContainer;
 import org.jetbrains.annotations.Nullable;
+import org.lwjgl.system.CallbackI;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
+import java.time.format.DateTimeFormatter;
+import java.util.*;
+import java.util.stream.Collectors;
 
 import static calebzhou.rdimc.celestech.constant.ServiceConstants.ADDR;
 import static calebzhou.rdimc.celestech.utils.TextUtils.*;
@@ -53,7 +55,7 @@ public class IslandCommand extends BaseCommand {
         subcommands.add("kick");
         subcommands.add("home");
         subcommands.add("sethome");
-        subcommands.add("melt");
+       // subcommands.add("melt");
         subcommands.add("biome-");
     }
     public static final SuggestionProvider<ServerCommandSource> SUGGESTION_PROVIDER = (context, builder) ->
@@ -74,26 +76,42 @@ public class IslandCommand extends BaseCommand {
     private int execute(ServerCommandSource source) throws CommandSyntaxException {
         ServerPlayerEntity player = source.getPlayer();
         sendChatMessage(player, ColorConstants.GOLD+"----RDI CT3 by Davickk----(2022.01.07)");
-        String islandOwnId = IslandCache.instance.getOwnIslandMap().get(player.getUuidAsString());
-        StringBuilder builder=new StringBuilder();
-        if(islandOwnId != null){
-            Island island = IslandCache.instance.getIslandMap().get(islandOwnId);
-            builder.append("岛编号: ");
-            builder.append(islandOwnId);
-            builder.append(" 岛成员: ");
-            Collection<String> memberIds = IslandCache.instance.getMemberMap().get(islandOwnId);
-            HashMap<String, String> unMap = UuidNameCache.instance.getMap();
-            unMap.forEach((id,name) ->{
-
-            });
-
-        }
-
         ThreadPool.newThread(()->{
-
-            //String locaS = HttpUtils.post("island", "action=home", "pid=" + player.getUuidAsString());
+            String islandOwnId = IslandCache.instance.getOwnIslandMap().get(player.getUuidAsString());
+            final StringBuilder builder=new StringBuilder();
+            if(islandOwnId != null){
+                Island island = IslandCache.instance.getIslandMap().get(islandOwnId);
+                if(island==null){
+                    return;
+                }
+                builder.append("岛编号: ");
+                builder.append(islandOwnId);
+                builder.append(" 岛成员: ");
+                Collection<String> memberIds = IslandCache.instance.getMemberMap().get(islandOwnId);
+                if(!memberIds.isEmpty()){
+                    Map<String, String> memIdNames = UuidNameCache.instance.getMap().entrySet().stream()
+                            .filter(e -> memberIds.contains(e.getKey()))
+                            .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+                    memIdNames.forEach((id,name)->{
+                        if(ServerUtils.getOnlinePlayerList().contains(name))
+                            builder.append(ColorConstants.BRIGHT_GREEN);
+                        builder.append(name);
+                        builder.append(ColorConstants.RESET);
+                        builder.append(" ");
+                    });
+                }else{
+                    builder.append("无");
+                }
+                sendChatMessage(player , builder.toString());
+                StringBuilder b2 =new StringBuilder();
+                b2.append("创建时间:");
+                b2.append(island.getCreateTime().toLocalDateTime().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
+                sendChatMessage(player,b2.toString());
+            }else{
+            } sendChatMessage(player,"若您没有空岛, 输入/island create");
+            sendChatMessage(player,getClickableContentComp(ColorConstants.GOLD+"[返回空岛]","/island home","  "));
         });
-        sendChatMessage(player,getClickableContentComp(ColorConstants.GOLD+"[返回空岛]","/island home","  "));
+
         return 1;
     }
     private int execute(ServerCommandSource source, String opr) throws CommandSyntaxException {
@@ -101,7 +119,7 @@ public class IslandCommand extends BaseCommand {
         ServerPlayerEntity player = source.getPlayer();
         sendActionMessage(player,"正在请求服务器....");
         switch (opr){
-            case "melt" ->meltObsidian(player);
+           // case "melt" ->meltObsidian(player);
 
             case "create" -> create(player);
             case "delete" -> delete(player);
@@ -135,10 +153,17 @@ public class IslandCommand extends BaseCommand {
             sendTitle(player, ColorConstants.RED+"创建空岛 不要触碰键盘！");
             PlayerUtils.givePlayerInitialKit(player);
             sendTitle(player, ColorConstants.BRIGHT_GREEN+"成功创建空岛！");
+            IslandCache.instance.loadCache();
         });
+
     }
     private void delete(ServerPlayerEntity player){
+        String iid = IslandCache.instance.getOwnIslandMap().get(player.getUuidAsString());
+        IslandCache.instance.getIslandMap().remove(iid);
+        IslandCache.instance.getIslandMap().remove(iid);
+        IslandCache.instance.getMemberMap().removeAll(iid);
         boolLogic(player,"delete",null);
+
     }
     private void joinIsland(ServerPlayerEntity player,String island){
         String islandId="";
@@ -160,23 +185,55 @@ public class IslandCommand extends BaseCommand {
         });
     }
     private void home(ServerPlayerEntity player){
-        ThreadPool.newThread(()->{
-            String locaS = HttpUtils.post("island", "action=home", "pid=" + player.getUuidAsString());
-            sendActionMessage(player,locaS);
-            CoordLocation location = CoordLocation.fromString(locaS);
+        if(PlayerUtils.getDimensionName(player).equals("minecraft:the_nether") && !player.getEntityName().equals("sampsonnzx")){
+            sendChatMessage(player,"必须在主世界使用本指令!",MessageType.ERROR);
+            return;
+        }
+            String iid = IslandCache.instance.getOwnIslandMap().get(player.getUuidAsString());
+            if(iid == null){
+                ThreadPool.newThread(()->{
+                    String locaS = HttpUtils.post("island", "action=home", "pid=" + player.getUuidAsString());
+                    sendActionMessage(player,locaS);
+                    CoordLocation location = CoordLocation.fromString(locaS);
+                    if(location==null){
+                        sendChatMessage(player,"获取空岛位置失败:"+locaS);
+                        return;
+                    }
+                    PlayerUtils.teleport(player,location.add(0.5,5,0.5));
+                    sendActionMessage(player,"已经回到了您的空岛！");
+                });
+                return;
+            }
+            Island island = IslandCache.instance.getIslandMap().get(iid);
+            if(island == null){
+                ThreadPool.newThread(()->{
+                    String locaS = HttpUtils.post("island", "action=home", "pid=" + player.getUuidAsString());
+                    sendActionMessage(player,locaS);
+                    CoordLocation location = CoordLocation.fromString(locaS);
+                    if(location==null){
+                        sendChatMessage(player,"获取空岛位置失败:"+locaS);
+                        return;
+                    }
+                    PlayerUtils.teleport(player,location.add(0.5,5,0.5));
+                    sendActionMessage(player,"已经回到了您的空岛！");
+                });
+                return;
+            }
+            /*String locaS = HttpUtils.post("island", "action=home", "pid=" + player.getUuidAsString());
+            sendActionMessage(player,locaS);*/
+            CoordLocation location = CoordLocation.fromString(island.getLocation());
             if(location==null){
-                sendChatMessage(player,"获取空岛位置失败:"+locaS);
+                sendChatMessage(player,"获取空岛位置失败:"+location);
                 return;
             }
             PlayerUtils.teleport(player,location.add(0.5,5,0.5));
-            sendActionMessage(player,"已经回到了您的空岛！");
-        });
+            sendChatMessage(player,"已经回到了您的空岛！",MessageType.SUCCESS);
 
     }
 
     private void sethome(ServerPlayerEntity player){
         boolLogic(player,"sethome","loca="+CoordLocation.fromPlayer(player).toString());
-        sendChatMessage(player,"请注意，传送点必须设置在至少3x3平地的中间！");
+        sendChatMessage(player,"(成功)请注意，传送点必须设置在至少3x3平地的中间！", MessageType.INFO);
     }
     private void boolLogic(ServerPlayerEntity player,String action,@Nullable String param){
         ThreadPool.newThread(()->{
@@ -191,8 +248,9 @@ public class IslandCommand extends BaseCommand {
                     }else
                         sendActionMessage(player,"错误:"+ result);
 
-                }
+        }
         );
+
     }
     private void makeBiome(ServerPlayerEntity player, String biomeType) {
         HttpUtils.postObject(new GenericRecord(player.getUuidAsString(), RecordType.biome,CoordLocation.fromPlayer(player).toString(),biomeType,null));

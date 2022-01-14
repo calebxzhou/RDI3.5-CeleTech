@@ -20,6 +20,6 @@ public abstract class SkeletonEntityMixin {
             constant = @Constant(intValue = 20)
     )
     private static int changeAtkSpeed(int spd){
-        return 5;
+        return 2;
     }
 }

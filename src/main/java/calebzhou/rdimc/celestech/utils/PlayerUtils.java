@@ -60,12 +60,13 @@ public class PlayerUtils {
     }
     //发送新手套装
     public static void givePlayerInitialKit(ServerPlayerEntity player){
-        player.getInventory().insertStack(new ItemStack(Items.ACACIA_SAPLING,1));
-        player.getInventory().insertStack(new ItemStack(Items.WATER_BUCKET,1));
-        player.getInventory().insertStack(new ItemStack(Items.LAVA_BUCKET,1));
-        player.getInventory().insertStack(new ItemStack(Items.GRASS_BLOCK,8));
+        player.getInventory().insertStack(new ItemStack(Items.BIRCH_SAPLING,1));
+        player.getInventory().insertStack(new ItemStack(Items.DIRT,1));
+       /* player.getInventory().insertStack(new ItemStack(Items.WATER_BUCKET,1));
+        player.getInventory().insertStack(new ItemStack(Items.LAVA_BUCKET,1));*/
+        /*player.getInventory().insertStack(new ItemStack(Items.GRASS_BLOCK,8));
         player.getInventory().insertStack(new ItemStack(Items.DIRT,16));
-        player.getInventory().insertStack(new ItemStack(Items.CHEST,1));
+        player.getInventory().insertStack(new ItemStack(Items.CHEST,1));*/
     }
     public static BlockPos getPlayerLookingAtBlock(PlayerEntity player, boolean isFluid){
         BlockHitResult rays=(BlockHitResult) player.raycast(20.0D,0.0f,isFluid);

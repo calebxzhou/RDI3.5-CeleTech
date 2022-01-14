@@ -25,7 +25,8 @@ public class PlayerChatEvent {
     public static final String chatFormat = "%s %s: %s";
 
     static {
-        censorship.add("傻逼");
+        censorship.add("傻");
+        censorship.add("逼");
         censorship.add("操");
         censorship.add("nm");
         censorship.add("tm");
@@ -79,8 +80,8 @@ public class PlayerChatEvent {
         } else if (status.getRange() == ChatRange.team) {//岛内
             Island island = IslandCache.instance.getIslandMap().get(player.getUuidAsString());
             //成员
-            receivePlayerList = island.getMemIds()
-                    .stream().map(id -> PlayerUtils.getPlayerByUuid(id)).collect(Collectors.toList());
+           /* receivePlayerList = island.getMemIds()
+                    .stream().map(id -> PlayerUtils.getPlayerByUuid(id)).collect(Collectors.toList());*/
             //岛主
             receivePlayerList.add(PlayerUtils.getPlayerByUuid(island.getOwnerUuid()));
         }

@@ -12,7 +12,7 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Redirect;
 
-@Mixin(EndermanEntity.PickUpBlockGoal.class)
+@Mixin(value = {EndermanEntity.PickUpBlockGoal.class})
 public abstract class EndermanEntityMixin {
     @Final
     @Shadow
@@ -35,4 +35,19 @@ public abstract class EndermanEntityMixin {
 
         else  return true;
     }
+}
+@Mixin(EndermanEntity.class)
+abstract class EndermanEntityMixin2{
+    //拿了方块也会被despawn
+    @Redirect(
+            method = "Lnet/minecraft/entity/mob/EndermanEntity;cannotDespawn()Z",
+            at = @At(
+                    value = "INVOKE",
+                    target = "Lnet/minecraft/entity/mob/EndermanEntity;getCarriedBlock()Lnet/minecraft/block/BlockState;"
+            )
+    )
+    private BlockState getCarry(EndermanEntity instance){
+        return null;
+    }
+
 }

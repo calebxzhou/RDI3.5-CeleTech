@@ -47,7 +47,7 @@ public class TpaCommand extends BaseCommand {
             return Command.SINGLE_SUCCESS;
         }
         if(fromPlayer.experienceLevel<3){
-            sendChatMessage(fromPlayer,"经验不足！");
+            sendChatMessage(fromPlayer,"经验不足！如果您想要加入对方空岛,请通过/island join-空岛编号 命令");
             return 1;
         }
         if(RDICeleTech.tpaRequestMap.containsKey(fromPlayer.getUuidAsString())){

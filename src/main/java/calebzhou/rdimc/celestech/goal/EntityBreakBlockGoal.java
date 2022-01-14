@@ -48,7 +48,7 @@ public class EntityBreakBlockGoal extends Goal {
     @Override
     public boolean canStart() {
         if (!NavigationConditions.hasMobNavigation(this.entity)) {
-            log.info("no navigation");
+           // log.info("no navigation");
             return false;
 
         }/* else if (!this.entity.horizontalCollision) {
@@ -56,14 +56,14 @@ public class EntityBreakBlockGoal extends Goal {
             return false;
         }*/
         if (entity.getStackInHand(Hand.MAIN_HAND).isEmpty()) {
-            log.info("no hand item");
+         //   log.info("no hand item");
             return false;
         }
         MobNavigation mobNavigation = (MobNavigation) this.entity.getNavigation();
         //TODO 怪的方向决定破坏方向
         setBlockPos();
         Path path = mobNavigation.findPathTo(this.blockPos,1);
-        log.info("blockPos_PATH1 . "+blockPos.toShortString());
+        //log.info("blockPos_PATH1 . "+blockPos.toShortString());
         if(path != null){
 
             /*for(int i = 0; i < Math.min(path.getCurrentNodeIndex() + 2, path.getLength()); ++i) {
@@ -86,7 +86,7 @@ public class EntityBreakBlockGoal extends Goal {
             this.blockValid=true;
             return this.blockValid;
         }else
-            log.info("null path");
+           // log.info("null path");
             return false;
     }
     @Override
@@ -105,7 +105,7 @@ public class EntityBreakBlockGoal extends Goal {
         }
 
         int ran=this.entity.getRandom().nextInt(2);
-        log.info(ran+" : random");
+        //log.info(ran+" : random");
         if (ran == 0) {
             this.entity.world.syncWorldEvent(WorldEvents.ZOMBIE_ATTACKS_WOODEN_DOOR, this.blockPos, 0);
             if (!this.entity.handSwinging) {
@@ -117,7 +117,7 @@ public class EntityBreakBlockGoal extends Goal {
 
 
         ++this.breakProgress;
-        log.info("break progress "+breakProgress);
+        //log.info("break progress "+breakProgress);
         this.entity.world.setBlockBreakingInfo(this.entity.getId(), this.blockPos, (int)((float)this.breakProgress / (float)this.maxProgress * 10.0F));
         /*int i = (int)((float)this.breakProgress / (float)this.getMaxProgress() * 10.0F);
         log.info("i "+i);
@@ -128,11 +128,11 @@ public class EntityBreakBlockGoal extends Goal {
         if (this.breakProgress >= this.maxProgress) {
             
             if(this.entity.world.getBlockState(blockPos).getBlock()!=Blocks.OBSIDIAN){
-                log.info("break block success "+blockPos.toShortString());
+               // log.info("break block success "+blockPos.toShortString());
                 this.prevBlockPos = blockPos;
                 this.entity.world.setBlockState(this.blockPos,Blocks.AIR.getDefaultState());
             }else
-                log.info("no break obisdian "+blockPos.toShortString());
+                //log.info("no break obisdian "+blockPos.toShortString());
             breakProgress=0;
         }
         //throw new NullPointerException("test");

@@ -10,3 +10,7 @@ accessible class net/minecraft/village/TradeOffers$TypeAwareBuyForOneEmeraldFact
 accessible class net/minecraft/village/TradeOffers$SellPotionHoldingItemFactory
 accessible class net/minecraft/village/TradeOffers$SellMapFactory
 accessible class net/minecraft/entity/mob/EndermanEntity$PickUpBlockGoal
+accessible class net/minecraft/entity/mob/PhantomEntity$PhantomMoveControl
+accessible class net/minecraft/entity/mob/GhastEntity$GhastMoveControl
+accessible class net/minecraft/entity/mob/GhastEntity$FlyRandomlyGoal
+accessible class net/minecraft/entity/mob/GhastEntity$ShootFireballGoal

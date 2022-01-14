@@ -28,12 +28,12 @@ public class CreatePortalMixin {
         PlayerEntity player = WorldUtils.getNearestPlayer(world,pos);
         if(player==null)
             return;
-        if(player.experienceLevel<10) {
+        /*if(player.experienceLevel<10) {
             TextUtils.sendChatMessage(player,"激活此传送门需要10经验!", MessageType.ERROR);
             ci.cancel();
             return;
         }
         player.experienceLevel-=10;
-        TextUtils.sendChatMessage(player,"您成功激活了传送门!",MessageType.SUCCESS);
+        TextUtils.sendChatMessage(player,"您成功激活了传送门!",MessageType.SUCCESS);*/
     }
 }

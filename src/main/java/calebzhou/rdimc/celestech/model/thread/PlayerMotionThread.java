@@ -26,15 +26,19 @@ public class PlayerMotionThread extends PlayerBaseThread{
     protected void execute() throws InterruptedException{
         handleDroppingVoid();
 
-        long startTime = System.currentTimeMillis();
-        path1 = new PlayerMotionPath(player);
-        Thread.sleep(500);
-        player = PlayerUtils.getPlayerByName(player.getDisplayName().getString());
-        long endTime = System.currentTimeMillis();
-        path2 = new PlayerMotionPath(player);
 
+        if(player.getHealth()>20) player.setHealth(20.0f);
 
-        handleDroppingFast((endTime-startTime) / 1000.0);
+        if(PlayerUtils.getDimensionName(player).equals(WorldConstants.OVERWORLD)){
+            long startTime = System.currentTimeMillis();
+            path1 = new PlayerMotionPath(player);
+            Thread.sleep(500);
+            player = PlayerUtils.getPlayerByName(player.getDisplayName().getString());
+            long endTime = System.currentTimeMillis();
+            path2 = new PlayerMotionPath(player);
+            handleDroppingFast((endTime-startTime) / 1000.0);
+        }
+
         handleAfk();
 
         run();
@@ -50,8 +54,7 @@ public class PlayerMotionThread extends PlayerBaseThread{
     private void handleDroppingFast(double timeElapsedSec){
         //下落速度过快时
         if(Math.abs(path2.y-path1.y) / timeElapsedSec > downSpeedLim){
-            TextUtils.sendActionMessage(player, ColorConstants.GOLD+"感觉身体轻飘飘的...");
-            player.addStatusEffect(new StatusEffectInstance(StatusEffects.SLOW_FALLING,40,2));
+            player.addStatusEffect(new StatusEffectInstance(StatusEffects.SLOW_FALLING,20,0));
         }
     }
     private void handleAfk(){

@@ -16,7 +16,7 @@ import java.util.Random;
 public abstract class LavaAccelerateMixin {
     @Overwrite
     public int getTickRate(WorldView world) {
-        return 10;
+        return world.getDimension().isUltrawarm() ? 10 : 80;
     }
 
 
