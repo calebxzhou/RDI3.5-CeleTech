@@ -27,9 +27,8 @@ public class PlayerMotionThread extends PlayerBaseThread{
         handleDroppingVoid();
 
 
-        if(player.getHealth()>20) player.setHealth(20.0f);
 
-        if(PlayerUtils.getDimensionName(player).equals(WorldConstants.OVERWORLD)){
+        /*if(PlayerUtils.getDimensionName(player).equals(WorldConstants.OVERWORLD)){
             long startTime = System.currentTimeMillis();
             path1 = new PlayerMotionPath(player);
             Thread.sleep(500);
@@ -37,7 +36,7 @@ public class PlayerMotionThread extends PlayerBaseThread{
             long endTime = System.currentTimeMillis();
             path2 = new PlayerMotionPath(player);
             handleDroppingFast((endTime-startTime) / 1000.0);
-        }
+        }*/
 
         handleAfk();
 

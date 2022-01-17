@@ -9,13 +9,15 @@ import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Predicate;
 
 public class ServerUtils {
     public static final List<Integer> httpHistoryDelayList = new ArrayList<>();
+    public static double getMillisecondPerTick(){
+        return MathUtils.getAverageValue(RDICeleTech.getServer().lastTickLengths) * 1.0E-6D;
+    }
     public static void executeCommandOnServer(String command){
         executeCommandOnSource(command,RDICeleTech.getServer().getCommandSource());
     }

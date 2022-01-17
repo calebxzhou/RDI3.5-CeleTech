@@ -11,12 +11,12 @@ public abstract class IronGolemEntityMixin {
             method= "Lnet/minecraft/entity/passive/IronGolemEntity;createIronGolemAttributes()Lnet/minecraft/entity/attribute/DefaultAttributeContainer$Builder;",
     constant = @Constant(doubleValue = 100.0D))
     private static double modifyIronGolemHealth(double constant){
-        return 500.0D;
+        return 200.0D;
     }
     @ModifyConstant(
             method= "Lnet/minecraft/entity/passive/IronGolemEntity;createIronGolemAttributes()Lnet/minecraft/entity/attribute/DefaultAttributeContainer$Builder;",
             constant = @Constant(doubleValue = 0.25D))
     private static double modifyIronGolemSpeed(double constant){
-        return 0.55D;
+        return 0.4D;
     }
 }

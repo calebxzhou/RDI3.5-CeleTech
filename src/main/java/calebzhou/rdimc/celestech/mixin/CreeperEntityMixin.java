@@ -12,22 +12,22 @@ import org.spongepowered.asm.mixin.injection.ModifyConstant;
 public abstract class CreeperEntityMixin {
 
     @Shadow @Mutable
-    private int fuseTime = 10;
+    private int fuseTime = 40;
     @Shadow @Mutable
-    private int explosionRadius = 6;
+    private int explosionRadius = 4;
 
     @ModifyConstant(
             method = "Lnet/minecraft/entity/mob/CreeperEntity;initGoals()V",
             constant = @Constant(floatValue = 8.0F)
     )
     private float changeRadius(float constant){
-        return 24f;
+        return 12f;
     }
     @ModifyConstant(
             method = "Lnet/minecraft/entity/mob/CreeperEntity;createCreeperAttributes()Lnet/minecraft/entity/attribute/DefaultAttributeContainer$Builder;",
             constant = @Constant(doubleValue = 0.25D)
     )
     private static double changeSpeed(double spd){
-        return 0.4D;
+        return 0.35D;
     }
 }

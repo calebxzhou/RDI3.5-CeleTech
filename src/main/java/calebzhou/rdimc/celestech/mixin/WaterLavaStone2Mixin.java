@@ -24,7 +24,7 @@ public abstract class WaterLavaStone2Mixin {
         //如果水把岩浆冲灭了
         if (world.getFluidState(pos).isStill()) {
             PlayerEntity player = WorldUtils.getNearestPlayer(world,pos);
-            TextUtils.sendChatMessage(player,"您可能不小心把岩浆冲灭了, 可以使用/island melt指令来熔化黑曜石");
+           // TextUtils.sendChatMessage(player,"您可能不小心把岩浆冲灭了, 可以使用/island melt指令来熔化黑曜石");
             return;
         }
         //如果生成石头

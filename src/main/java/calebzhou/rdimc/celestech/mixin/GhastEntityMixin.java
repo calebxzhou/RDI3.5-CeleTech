@@ -68,7 +68,7 @@ class GhastShootMixin{
     )
     private void changeCd2(CallbackInfo ci){
         if(cooldown<=-40){
-            cooldown=5;
+            cooldown=8;
             this.ghast.setShooting(true);
         }
     }
@@ -76,5 +76,5 @@ class GhastShootMixin{
 
 @Mixin(FireballEntity.class)
 class FireballSpeedMixin{
-    @Shadow @Mutable private int explosionPower=4;
+    @Shadow @Mutable private int explosionPower=2;
 }

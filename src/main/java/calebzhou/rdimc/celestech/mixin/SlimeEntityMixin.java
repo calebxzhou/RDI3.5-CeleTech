@@ -20,10 +20,10 @@ public abstract class SlimeEntityMixin {
     )
     private void setSize(int size, boolean heal, CallbackInfo ci){
         int i = MathHelper.clamp((int)size, (int)1, (int)127);
-        ((SlimeEntity) ((Object) (this))).getAttributeInstance(EntityAttributes.GENERIC_MAX_HEALTH).setBaseValue((double)(i*i*i*i));
+        ((SlimeEntity) ((Object) (this))).getAttributeInstance(EntityAttributes.GENERIC_MAX_HEALTH).setBaseValue((double)(i*i*2));
         ((SlimeEntity) ((Object) (this))).getAttributeInstance(EntityAttributes.GENERIC_MOVEMENT_SPEED).setBaseValue((double)(0.8F + 0.1F * (float)i));
-        ((SlimeEntity) ((Object) (this))).getAttributeInstance(EntityAttributes.GENERIC_ATTACK_DAMAGE).setBaseValue((double)i*i);
-        ((SlimeEntity) ((Object) (this))).setHealth(i*i*i*i);
+        ((SlimeEntity) ((Object) (this))).getAttributeInstance(EntityAttributes.GENERIC_ATTACK_DAMAGE).setBaseValue((double)i*2);
+        ((SlimeEntity) ((Object) (this))).setHealth(i*i*2);
     }
 
 }

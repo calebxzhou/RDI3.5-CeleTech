@@ -18,11 +18,5 @@ import org.spongepowered.asm.mixin.injection.ModifyConstant;
 @Mixin(EntityAttributes.class)
 public class EntityAttributesMixin {
 
-    @ModifyConstant(
-        method = "<clinit>()V",
-            constant = @Constant(doubleValue = 20.0D)
-    )
-    private static double changeHealth(double h){
-        return 50.0D;
-    }
+
 }

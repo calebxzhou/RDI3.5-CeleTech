@@ -40,7 +40,7 @@ public abstract class ZombieEntityMixin extends MobEntity {
             constant = @Constant(doubleValue = 0.23000000417232513D)
     )
     private static double changeSpeed(double spd){
-        return 0.50D;
+        return 0.30D;
     }
 
     @ModifyConstant(
@@ -48,7 +48,7 @@ public abstract class ZombieEntityMixin extends MobEntity {
             constant = @Constant(doubleValue = 3.0D)
     )
     private static double changeAtk(double spd){
-        return 6.0D;
+        return 5.0D;
     }
 
             /**

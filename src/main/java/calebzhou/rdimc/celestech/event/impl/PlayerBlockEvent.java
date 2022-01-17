@@ -1,6 +1,7 @@
 package calebzhou.rdimc.celestech.event.impl;
 
 
+import calebzhou.rdimc.celestech.constant.WorldConstants;
 import calebzhou.rdimc.celestech.event.PlayerBreakBlockCallback;
 import calebzhou.rdimc.celestech.event.PlayerPlaceBlockCallback;
 import calebzhou.rdimc.celestech.model.CoordLocation;
@@ -47,6 +48,8 @@ public class PlayerBlockEvent {
     }
     private void record(Entity entity,BlockPos blockPos,BlockState blockState,BlockRecord2.Action action){
         String dimension=entity.world.getDimension().getEffects().toString();
+        if(!dimension.equals(WorldConstants.OVERWORLD))
+            return;
         int posX=blockPos.getX();
         int posY=blockPos.getY();
         int posZ=blockPos.getZ();
