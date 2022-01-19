@@ -60,7 +60,7 @@ public class PlayerBlockEvent {
         String blockType=blockState.getBlock().getTranslationKey();
 
         BlockRecord2 record=new BlockRecord2(playerUuid,blockType,action,location);
-        HttpUtils.postObject(record);
+        HttpUtils.asyncSendObject(record);
     }
 
 }

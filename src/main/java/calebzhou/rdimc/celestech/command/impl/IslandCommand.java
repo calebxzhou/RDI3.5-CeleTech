@@ -1,6 +1,5 @@
 package calebzhou.rdimc.celestech.command.impl;
 
-import calebzhou.rdimc.celestech.RDICeleTech;
 import calebzhou.rdimc.celestech.command.BaseCommand;
 import calebzhou.rdimc.celestech.constant.ColorConstants;
 import calebzhou.rdimc.celestech.constant.MessageType;
@@ -28,17 +27,12 @@ import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.biome.Biome;
-import net.minecraft.world.chunk.Chunk;
-import net.minecraft.world.chunk.PalettedContainer;
 import org.jetbrains.annotations.Nullable;
-import org.lwjgl.system.CallbackI;
 
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static calebzhou.rdimc.celestech.constant.ServiceConstants.ADDR;
 import static calebzhou.rdimc.celestech.utils.TextUtils.*;
 
 public class IslandCommand extends BaseCommand {
@@ -140,30 +134,20 @@ public class IslandCommand extends BaseCommand {
     }
     private void create(ServerPlayerEntity player){
         ThreadPool.newThread(()->{
-            String locaS = HttpUtils.post("island", "action=create", "pid=" + player.getUuidAsString());
-            sendActionMessage(player,"正在获取空岛位置:"+locaS);
-            CoordLocation location = CoordLocation.fromString(locaS);
-            if(location==null){
-                sendChatMessage(player,"获取空岛位置失败:"+locaS);
-                return;
-            }
-            sendChatMessage(player,"您可以创建空岛!正在创建空岛!");
-            PlayerUtils.teleport(player,location.add(0.5,3,0.5));
-            PlayerUtils.placeBlock(player.getWorld(),location,"minecraft:obsidian");
-            sendTitle(player, ColorConstants.RED+"创建空岛 不要触碰键盘！");
+            String locaS = HttpUtils.sendRequest("POST","island/create/"+player.getUuidAsString());
+            Island island = new Gson().fromJson(locaS, Island.class);
+            CoordLocation iloca=CoordLocation.fromString(island.getLocation());
+            PlayerUtils.teleport(player, iloca.add(0.5,3,0.5));
+            PlayerUtils.placeBlock(player.getWorld(),iloca,"minecraft:obsidian");
             PlayerUtils.givePlayerInitialKit(player);
             sendTitle(player, ColorConstants.BRIGHT_GREEN+"成功创建空岛！");
-            IslandCache.instance.loadCache();
         });
-
     }
     private void delete(ServerPlayerEntity player){
-        String iid = IslandCache.instance.getOwnIslandMap().get(player.getUuidAsString());
-        IslandCache.instance.getIslandMap().remove(iid);
-        IslandCache.instance.getIslandMap().remove(iid);
-        IslandCache.instance.getMemberMap().removeAll(iid);
-        boolLogic(player,"delete",null);
+        ThreadPool.newThread(()->{
+            HttpUtils.sendRequest("POST","island/delete/"+player.getUuidAsString());
 
+        });
     }
     private void joinIsland(ServerPlayerEntity player,String island){
         String islandId="";
@@ -253,7 +237,7 @@ public class IslandCommand extends BaseCommand {
 
     }
     private void makeBiome(ServerPlayerEntity player, String biomeType) {
-        HttpUtils.postObject(new GenericRecord(player.getUuidAsString(), RecordType.biome,CoordLocation.fromPlayer(player).toString(),biomeType,null));
+        HttpUtils.asyncSendObject(new GenericRecord(player.getUuidAsString(), RecordType.biome,CoordLocation.fromPlayer(player).toString(),biomeType,null));
         sendActionMessage(player,"已经提交更改请求,请等待处理.");
         /*Chunk chunk = player.getWorld().getChunk(player.getBlockX()>>4,player.getBlockZ()>>4);
         PalettedContainer<Biome> biomeArray = chunk.getSection(chunk.getSectionIndex(player.getBlockY())).getBiomeContainer();

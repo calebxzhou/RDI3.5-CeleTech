@@ -16,7 +16,6 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.ActionResult;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class PlayerChatEvent {
 
@@ -40,7 +39,7 @@ public class PlayerChatEvent {
             GenericRecord cr = new GenericRecord(player.getUuidAsString(), RecordType.chat, player.getEntityName(), null, EncodingUtils.getUTF8StringFromGBKString(msg));
             //保存到缓存
             ChatRecordCache.instance.getRecordList().add(cr);
-            HttpUtils.postObject(cr);
+            HttpUtils.asyncSendObject(cr);
             //聊天 挂机玩家 提示
             if (msg.length() >= 3) ServerUtils.getAfkPlayerListDo(entry -> entry.getKey().contains(msg), player);
             //censor

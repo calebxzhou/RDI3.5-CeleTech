@@ -1,31 +1,79 @@
 package calebzhou.rdimc.celestech.utils;
 
+import calebzhou.rdimc.celestech.model.ApiResponse;
 import com.google.gson.Gson;
-import net.minecraft.server.network.ServerPlayerEntity;
 
 import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
-import java.util.LinkedHashMap;
-import java.util.Map;
 
 import static calebzhou.rdimc.celestech.constant.ServiceConstants.ADDR;
 
 public class HttpUtils {
-    //类名= url
-    public static <T extends Serializable> void postObject(T object){
-        postObject(object.getClass().getSimpleName(),object,"");
+    public static URL getFullUrl(String shortUrl){
+        try {
+            return new URL(ADDR + shortUrl);
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public static ApiResponse sendRequest(String type, String shortUrl, String... params){
+        URL url=getFullUrl(shortUrl);
+        String param=concatParams(params);
+        HttpURLConnection connection = null;
+        try {
+            connection = (HttpURLConnection) url.openConnection();
+            connection.setRequestMethod(type);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        connection.setConnectTimeout(15000);
+        connection.setReadTimeout(60000);
+        // 默认值为：false，当向远程服务器传送数据/写数据时，需要设置为true
+        connection.setDoOutput(true);
+        // 默认值为：true，当前向远程服务读取数据时，设置为true，该参数可有可无
+        connection.setDoInput(true);
+        // 设置传入参数的格式:请求参数应该是 name1=value1&name2=value2 的形式。
+        connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded; charset=utf-8");
+
+        String result = null;
+        try(OutputStream os = connection.getOutputStream();
+            InputStream is=connection.getInputStream();
+            BufferedReader br=new BufferedReader(new InputStreamReader(is, StandardCharsets.UTF_8))
+        ){
+            os.write(param.getBytes(StandardCharsets.UTF_8));
+            if (connection.getResponseCode() == 200) {
+                StringBuffer sbf = new StringBuffer();
+                String temp = null;
+                while ((temp = br.readLine()) != null) {
+                    sbf.append(temp);
+                }
+                result = sbf.toString();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        connection.disconnect();
+        return new Gson().fromJson(result,ApiResponse.class);
+    }
+    //类名= url POST
+    public static <T extends Serializable> void asyncSendObject(T object){
+        asyncSendObject(object.getClass().getSimpleName(),object,"");
+    }
+    //param &开头 POST
+    public static <T extends Serializable> void asyncSendObject(String shortUrl, T object, String params){
+        asyncSendObject("POST",shortUrl,object,params);
+
     }
     //param &开头
-    public static <T extends Serializable> void postObject(String shortUrl,T object,String params){
-        ThreadPool.newThread(()->{
-            post(shortUrl, "obj="+new Gson().toJson(object),params);
-        });
-
+    public static <T extends Serializable> void asyncSendObject(String type,String shortUrl, T object, String params){
+        ThreadPool.newThread(()-> sendRequest(type,shortUrl, "obj="+new Gson().toJson(object),params));
     }
     private static String concatParams(String ... params){
         StringBuilder sb = new StringBuilder();
@@ -35,7 +83,7 @@ public class HttpUtils {
         });
         return sb.toString();
     }
-    public static String post(String shortUrl,String... params){
+    /*public static String post(String shortUrl,String... params){
         return doPost(ADDR+shortUrl,concatParams(params));
     }
     public static String get(String shortUrl,String... params){
@@ -48,7 +96,6 @@ public class HttpUtils {
         BufferedReader br;
         String result = null;
         try {
-            System.out.println(fullUrl);
             URL url = new URL(fullUrl);
             connection = (HttpURLConnection) url.openConnection();
             connection.setRequestMethod("GET");
@@ -80,7 +127,6 @@ public class HttpUtils {
         ServerUtils.recordHttpReqDelay(t1,t2);
         return result;
     }
-
     public static String doPost(String httpUrl, String param) {
         long startTime = System.currentTimeMillis();
         HttpURLConnection connection = null;
@@ -154,5 +200,5 @@ public class HttpUtils {
         long endTime = System.currentTimeMillis();
         ServerUtils.recordHttpReqDelay(startTime,endTime);
         return result;
-    }
+    }*/
 }

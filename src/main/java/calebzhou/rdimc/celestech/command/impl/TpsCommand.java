@@ -2,6 +2,7 @@ package calebzhou.rdimc.celestech.command.impl;
 
 import calebzhou.rdimc.celestech.RDICeleTech;
 import calebzhou.rdimc.celestech.command.BaseCommand;
+import calebzhou.rdimc.celestech.command.NoArgCommand;
 import calebzhou.rdimc.celestech.model.thread.PlayerMotionThread;
 import calebzhou.rdimc.celestech.utils.MathUtils;
 import calebzhou.rdimc.celestech.utils.ServerUtils;
@@ -15,17 +16,13 @@ import net.minecraft.server.network.ServerPlayerEntity;
 
 import static calebzhou.rdimc.celestech.utils.TextUtils.sendChatMessage;
 
-public class TpsCommand extends BaseCommand {
+public class TpsCommand extends NoArgCommand {
     public TpsCommand(String name, int permissionLevel) {
         super(name, permissionLevel);
     }
 
-    @Override
-    public LiteralArgumentBuilder<ServerCommandSource> setExecution() {
-        return builder.executes((context) -> execute(context.getSource()));
-    }
 
-    private int execute(ServerCommandSource source) throws CommandSyntaxException {
+    protected int execute(ServerCommandSource source)  {
         tps(source);
         list(source);
         return 1;
@@ -59,7 +56,7 @@ public class TpsCommand extends BaseCommand {
             if (i == 22)
                 squaresToSend += "§c";
         }
-        sendChatMessage(player,"[" + Math.round(ratio * 100) + "%/"+meanTPS*5+"tps]" + squaresToSend);
+        sendChatMessage(player,"[" + Math.round(ratio * 100) + "%/"+meanTPS+"tps]" + squaresToSend);
         sendChatMessage(player,Math.round(meanTickTime) + ".0ms");
         StringBuilder sb=new StringBuilder();
         ServerUtils.httpHistoryDelayList.stream().forEach((e)->{

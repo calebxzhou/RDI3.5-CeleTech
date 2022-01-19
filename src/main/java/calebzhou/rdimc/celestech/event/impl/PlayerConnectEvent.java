@@ -9,7 +9,6 @@ import calebzhou.rdimc.celestech.model.record.RecordType;
 import calebzhou.rdimc.celestech.model.record.UuidNameRecord;
 import calebzhou.rdimc.celestech.utils.*;
 import net.minecraft.util.ActionResult;
-import org.apache.logging.log4j.core.jmx.Server;
 
 import static calebzhou.rdimc.celestech.constant.ServiceConstants.ADDR;
 
@@ -17,8 +16,8 @@ public class PlayerConnectEvent {
     public PlayerConnectEvent(){
         //连接服务器
         PlayerConnectServerCallback.EVENT.register(((connection, player) -> {
-            HttpUtils.postObject(new UuidNameRecord(player.getUuidAsString(), player.getEntityName()));
-            HttpUtils.postObject(new GenericRecord(player.getUuidAsString(), RecordType.login, player.getIp(), null,null));
+            HttpUtils.asyncSendObject(new UuidNameRecord(player.getUuidAsString(), player.getEntityName()));
+            HttpUtils.asyncSendObject(new GenericRecord(player.getUuidAsString(), RecordType.login, player.getIp(), null,null));
             //发送天气预报
             ThreadPool.newThread(()-> {
                         ChatRecordCache.instance.loadCache();
@@ -42,7 +41,7 @@ public class PlayerConnectEvent {
         }));
         //断开服务器
         PlayerDisconnectServerCallback.EVENT.register((player -> {
-            HttpUtils.postObject(new GenericRecord(player.getUuidAsString(), RecordType.logout, null, null,null));
+            HttpUtils.asyncSendObject(new GenericRecord(player.getUuidAsString(), RecordType.logout, null, null,null));
             ThreadPool.stopPlayerThread(player);
             ServerUtils.save();
             return ActionResult.PASS;
