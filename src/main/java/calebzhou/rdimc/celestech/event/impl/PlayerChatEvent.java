@@ -39,12 +39,12 @@ public class PlayerChatEvent {
             if (censorship.stream().anyMatch(msg::contains)) {
                 return ActionResult.FAIL;
             }
-            RDICeleTech.getServer().getPlayerManager().getPlayerList().forEach(p -> {
+            /*RDICeleTech.getServer().getPlayerManager().getPlayerList().forEach(p -> {
                 TextUtils.sendChatMessage(p, String.format(chatFormat,
                         "全> ",//status.getRange().getDesp(),
                         player.getEntityName(),
                         msg));
-            });
+            });*/
             //broadcast(player,msg);
             return ActionResult.PASS;
         }));

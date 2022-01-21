@@ -14,12 +14,18 @@ public class CommandRegister {
         commands.add(new CreateCommand("create",0));
         commands.add(new DeleteCommand("delete",0));
         commands.add(new HomeCommand("home",0));
+        commands.add(new InviteCommand("invite",0));
+        commands.add(new KickCommand("kick",0));
         commands.add(new LocateCommand("locate",0));
+        commands.add(new QuitCommand("quit",0));
+        commands.add(new SlowfallCommand("slowfall",0));
+        commands.add(new SpawnCommand("spawn",0));
+        commands.add(new SpawnCommand("back",0));
         commands.add(new TpaCommand("tpa",0));
         commands.add(new TpreqCommand("tpreq",0));
         commands.add(new TpsCommand("tps",0));
-        commands.add(new SpawnCommand("spawn",0));
-        commands.add(new SlowfallCommand("slowfall",0));
+
+
 
 
         RegisterCommandsCallback.EVENT.register(((dispatcher, environment) -> {

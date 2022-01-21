@@ -1,6 +1,7 @@
 package calebzhou.rdimc.celestech.command.impl;
 
 import calebzhou.rdimc.celestech.command.NoArgCommand;
+import calebzhou.rdimc.celestech.constant.MessageType;
 import calebzhou.rdimc.celestech.model.ApiResponse;
 import calebzhou.rdimc.celestech.model.CoordLocation;
 import calebzhou.rdimc.celestech.model.Island;
@@ -20,11 +21,13 @@ public class CreateCommand extends NoArgCommand {
     @Override
     protected void onExecute(ServerPlayerEntity player) {
         ApiResponse<Island> response = HttpUtils.sendRequest("POST", "island/" + player.getUuidAsString());
+        sendChatMessage(player,"开始创建空岛,请您不要触摸键盘 或者 鼠标.", MessageType.INFO);
         if (response.getType().equals("success")) {
+            player.addStatusEffect(new StatusEffectInstance(StatusEffects.SLOW_FALLING,20*30,1));
             Island island = response.getData(Island.class);
             CoordLocation iloca = CoordLocation.fromString(island.getLocation());
-            player.addStatusEffect(new StatusEffectInstance(StatusEffects.SLOW_FALLING,20*10,1));
-            PlayerUtils.teleport(player, iloca.add(0.5, 6, 0.5));
+
+            PlayerUtils.teleport(player, iloca.add(0.5, 12, 0.5));
             PlayerUtils.placeBlock(player.getWorld(), iloca, "minecraft:obsidian");
             PlayerUtils.givePlayerInitialKit(player);
         }

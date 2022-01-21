@@ -39,12 +39,12 @@ public abstract class PlayerChatMixin {
      * @author
      */
     @Inject(method="Lnet/minecraft/server/network/ServerPlayNetworkHandler;handleMessage(Lnet/minecraft/server/filter/TextStream$Message;)V",
-            at=@At(value="INVOKE",target = "Lnet/minecraft/server/MinecraftServer;getPlayerManager()Lnet/minecraft/server/PlayerManager;"))
+            at=@At(value="INVOKE",target = "Lnet/minecraft/server/MinecraftServer;getPlayerManager()Lnet/minecraft/server/PlayerManager;"), cancellable = true)
     private void handleMessage(TextStream.Message message, CallbackInfo ci) {
 
                 //String string2 = message.getFiltered();
                 ActionResult result = PlayerChatCallback.EVENT.invoker().call(player, message);
-                if(result == ActionResult.FAIL) return;
+                if(result == ActionResult.FAIL) ci.cancel();
                 /*this.server.getPlayerManager().broadcast(text2, (player) -> {
                     return this.player.shouldFilterMessagesSentTo(player) ? text : text2;
                 }, MessageType.CHAT, this.player.getUuid());*/

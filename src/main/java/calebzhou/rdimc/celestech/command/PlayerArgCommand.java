@@ -20,6 +20,12 @@ import java.util.UUID;
 import static calebzhou.rdimc.celestech.utils.TextUtils.*;
 
 public abstract class PlayerArgCommand extends BaseCommand {
+    private boolean isAsync = false;
+
+    public PlayerArgCommand(String name, int permissionLevel, boolean isAsync) {
+        super(name, permissionLevel);
+        this.isAsync = isAsync;
+    }
 
     public PlayerArgCommand(String command, int permissionLevel) {
         super(command, permissionLevel);
@@ -33,7 +39,10 @@ public abstract class PlayerArgCommand extends BaseCommand {
 
     private int execute(ServerCommandSource source, ServerPlayerEntity toPlayer) throws CommandSyntaxException {
         ServerPlayerEntity fromPlayer = source.getPlayer();
-        onExecute(fromPlayer,toPlayer);
+        if(isAsync)
+            ThreadPool.newThread(()->onExecute(fromPlayer,toPlayer));
+        else
+            onExecute(fromPlayer,toPlayer);
 
         return Command.SINGLE_SUCCESS;
     }

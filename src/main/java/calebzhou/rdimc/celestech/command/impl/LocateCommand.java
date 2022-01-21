@@ -17,7 +17,7 @@ public class LocateCommand extends NoArgCommand {
 
     @Override
     protected void onExecute(ServerPlayerEntity player) {
-        if(PlayerUtils.getDimensionName(player).equals("minecraft:the_nether") && !player.getEntityName().equals("sampsonnzx")){
+        if(PlayerUtils.getDimensionName(player).equals("minecraft:the_nether")){
             sendChatMessage(player,"您只能在自己的岛屿上设置传送点.", MessageType.ERROR);
             return;
         }

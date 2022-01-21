@@ -16,7 +16,7 @@ public class GhastEntityMixin {
             ,constant = @Constant(doubleValue = 10.0D)
     )
     private static double change(double d){
-        return 200.0D;
+        return 40.0D;
     }
 }
 @Mixin(GhastEntity.GhastMoveControl.class)
@@ -76,5 +76,5 @@ class GhastShootMixin{
 
 @Mixin(FireballEntity.class)
 class FireballSpeedMixin{
-    @Shadow @Mutable private int explosionPower=2;
+    @Shadow @Mutable private int explosionPower=3;
 }

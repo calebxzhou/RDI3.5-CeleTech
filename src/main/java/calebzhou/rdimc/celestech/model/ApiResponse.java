@@ -12,7 +12,9 @@ public class ApiResponse<T extends Serializable> implements Serializable {
 
     public ApiResponse() {
     }
-
+    public boolean isSuccess(){
+        return type.equalsIgnoreCase("success");
+    }
     public String getType() {
         return type;
     }

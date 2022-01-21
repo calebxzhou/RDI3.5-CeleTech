@@ -25,24 +25,29 @@ public class DeleteCommand extends NoArgCommand {
     @Override
     protected void onExecute(ServerPlayerEntity player) {
         ApiResponse<Island> resp = HttpUtils.sendRequest("GET","island/"+player.getUuidAsString(),"idType=pid");
+        Island data;CoordLocation location = null;
         try {
-            Island data = resp.getData(Island.class);
-            CoordLocation location = CoordLocation.fromString(data.getLocation());
-            ApiResponse response = HttpUtils.sendRequest("DELETE","island/"+player.getUuidAsString());
-            int offset=50;
-            Vec3i v1 = new Vec3i(location.getPosiX() ,location.getPosiY(), location.getPosiZ());
-            Vec3i v2= v1;
-            v1.add(-offset,-offset,-offset);
-            v2.add(offset,offset,offset);
-            WorldUtils.fill(player.getWorld(), BlockBox.create(v1,v2), Blocks.AIR.getDefaultState());
-            player.getInventory().clear();
-            player.kill();
-            PlayerUtils.teleport(player, WorldConstants.SPAWN_LOCA);
-            player.setSpawnPoint(World.OVERWORLD,new BlockPos(WorldConstants.SPAWN_LOCA.getPosiX(), WorldConstants.SPAWN_LOCA.getPosiY(), WorldConstants.SPAWN_LOCA.getPosiZ()),0,true,false);
-            sendChatMessage(player,response);
+                        data = resp.getData(Island.class);
+            location = CoordLocation.fromString(data.getLocation());
         } catch (NullPointerException e) {
             sendChatMessage(player,"您没有空岛!", MessageType.ERROR);
         }
+        ApiResponse response = HttpUtils.sendRequest("DELETE","island/"+player.getUuidAsString());
+        if(!response.isSuccess()){
+            sendChatMessage(player,response);
+            return;
+        }
+        int offset=50;
+        Vec3i v1 = new Vec3i(location.getPosiX() ,location.getPosiY(), location.getPosiZ());
+        Vec3i v2= v1;
+        v1.add(-offset,-offset,-offset);
+        v2.add(offset,offset,offset);
+        WorldUtils.fill(player.getWorld(), BlockBox.create(v1,v2), Blocks.AIR.getDefaultState());
+        player.getInventory().clear();
+        player.kill();
+        PlayerUtils.teleport(player, WorldConstants.SPAWN_LOCA);
+        player.setSpawnPoint(World.OVERWORLD,new BlockPos(WorldConstants.SPAWN_LOCA.getPosiX(), WorldConstants.SPAWN_LOCA.getPosiY(), WorldConstants.SPAWN_LOCA.getPosiZ()),0,true,false);
+        sendChatMessage(player,response);
     }
 
 }

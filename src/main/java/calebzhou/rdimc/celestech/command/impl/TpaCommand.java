@@ -59,7 +59,6 @@ public class TpaCommand extends PlayerArgCommand {
         MutableText tpwait= getClickableContentComp(ColorConstants.GOLD+"[等我一下]"+ ColorConstants.RESET,"稍等"," ");
         MutableText tpdeny= getClickableContentComp(ColorConstants.RED+"[拒绝]"+ ColorConstants.RESET,"/tpreq false_false_"+fromPlayerId," ");
         sendChatMessage(toPlayer,tpyes.append(tpyes2).append(tpwait).append(tpdeny));
-        System.out.println(tpaMap.toString());
         ThreadPool.newThread(()->{
             try {
                 Thread.sleep(15*1000);
