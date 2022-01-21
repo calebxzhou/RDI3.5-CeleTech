@@ -3,6 +3,7 @@ package calebzhou.rdimc.celestech.utils;
 import calebzhou.rdimc.celestech.RDICeleTech;
 import calebzhou.rdimc.celestech.constant.ColorConstants;
 import calebzhou.rdimc.celestech.constant.MessageType;
+import calebzhou.rdimc.celestech.model.ApiResponse;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.minecraft.command.CommandSource;
 import net.minecraft.entity.player.PlayerEntity;
@@ -28,6 +29,11 @@ public final class TextUtils {
         if(player==null) return;
         player.sendMessage(textComponent, actionBar);
     }
+
+    //给玩家发送信息，在聊天框
+    public static void sendChatMessage(PlayerEntity player, ApiResponse content) {
+        sendChatMessage(player,content.getMessage(),MessageType.valueOf(content.getType().toUpperCase(Locale.ROOT)));
+    }
     public static void sendChatMessage(PlayerEntity player, String content, MessageType messageType){
         switch (messageType){
             case ERROR -> sendChatMessage(player,ERROR_PREFIX+content);
@@ -36,10 +42,10 @@ public final class TextUtils {
         }
 
     }
-    //给玩家发送信息，在聊天框
     public static void sendChatMessage(PlayerEntity player, String content) {
         sendChatMessage(player,new LiteralText(content));
     }
+
     public static void sendChatMessage(ServerCommandSource source , String content){
         source.sendFeedback(new LiteralText(content),false);
     }

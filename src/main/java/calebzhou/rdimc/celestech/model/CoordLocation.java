@@ -58,15 +58,15 @@ public class CoordLocation {
     public double getPosZ() {
         return posZ;
     }
-    public double getPosiX() {
+    public int getPosiX() {
         return (int)posX;
     }
 
-    public double getPosiY() {
+    public int getPosiY() {
         return (int)posY;
     }
 
-    public double getPosiZ() {
+    public int getPosiZ() {
         return (int)posZ;
     }
 }

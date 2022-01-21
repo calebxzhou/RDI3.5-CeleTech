@@ -1,21 +1,16 @@
 package calebzhou.rdimc.celestech.model;
 
+import com.google.gson.Gson;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.Serializable;
 
-public class ApiResponse implements Serializable {
+public class ApiResponse<T extends Serializable> implements Serializable {
     private String type;
     private String message;
-    private Object data;
+    private String data;
 
     public ApiResponse() {
-    }
-
-    public ApiResponse(String type, String message, @Nullable Object data) {
-        this.type = type;
-        this.message = message;
-        this.data = data;
     }
 
     public String getType() {
@@ -35,11 +30,12 @@ public class ApiResponse implements Serializable {
     }
 
     @Nullable
-    public Object getData() {
-        return data;
+    public T getData(Class<T> modelTypeClz) {
+        return new Gson().fromJson((String) data,modelTypeClz);
     }
 
-    public void setData(Object data) {
-        this.data = data;
+    @Override
+    public String toString() {
+        return new Gson().toJson(this);
     }
 }

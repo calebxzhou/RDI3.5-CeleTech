@@ -6,9 +6,6 @@ import calebzhou.rdimc.celestech.event.impl.PlayerBlockEvent;
 import calebzhou.rdimc.celestech.event.impl.PlayerChatEvent;
 import calebzhou.rdimc.celestech.event.impl.PlayerConnectEvent;
 import calebzhou.rdimc.celestech.event.impl.PlayerMiscEvent;
-import calebzhou.rdimc.celestech.model.cache.ChatRecordCache;
-import calebzhou.rdimc.celestech.model.cache.IslandCache;
-import calebzhou.rdimc.celestech.model.cache.UuidNameCache;
 import calebzhou.rdimc.celestech.utils.ServerUtils;
 import com.google.common.collect.ImmutableMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
@@ -24,14 +21,14 @@ import org.apache.logging.log4j.Logger;
 import java.util.HashMap;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class RDICeleTech implements ModInitializer {
     // This logger is used to write text to the console and the log file.
     // It is considered best practice to use your mod id as the logger's name.
     // That way, it's clear which mod wrote info, warnings, and errors.
     public static final Logger LOGGER = LogManager.getLogger("modid");
-    public static final HashMap<String, TpaCommand.PlayerTpaRequest> tpaRequestMap = new HashMap<>();
-
+    public static final ConcurrentHashMap<String,String> tpaMap = new ConcurrentHashMap<>();
     private static MinecraftServer server;
 
     @Override
@@ -48,36 +45,15 @@ public class RDICeleTech implements ModInitializer {
         new PlayerConnectEvent();
         new PlayerMiscEvent();
         new PlayerChatEvent();
-        loadCache();
-        //10分钟清理一次缓存
-        new Timer("clearCacheTask").schedule(new TimerTask() {
-            @Override
-            public void run() {
-                clearCache();
-            }
-        },10*60*1000);
         new Timer("saveAll").schedule(new TimerTask() {
             @Override
             public void run() {
                 ServerUtils.save();
             }
         },1*60*1000);
-        new Timer("loadCacheTsk").schedule(new TimerTask() {
-            @Override
-            public void run() {
-                IslandCache.instance.loadCache();
-                UuidNameCache.instance.loadCache();
-            }
-        },10*60*1000);
-    }
-    public static void clearCache(){
-        //ServerCache.lavaGenStoneMap.clear();
 
     }
 
-    public static void loadCache(){
-        IslandCache.instance.loadCache();
-    }
     public static MinecraftServer getServer() {
         return server;
     }

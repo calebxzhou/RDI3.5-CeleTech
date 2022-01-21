@@ -30,37 +30,24 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(ServerPlayNetworkHandler.class)
 public abstract class PlayerChatMixin {
     @Shadow
-    private ServerPlayerEntity player;
+    public ServerPlayerEntity player;
     @Shadow @Final
     private MinecraftServer server;
     private int messageCooldown;
-    /*@Inject(method = "handleMessage(Lnet/minecraft/server/filter/TextStream$Message;)V",
-    at = @At(value = "INVOKE",
-            target = "net/minecraft/server/MinecraftServer.getPlayerManager ()Lnet/minecraft/server/PlayerManager;",
-            shift = At.Shift.AFTER,
-    ordinal = 0))
-    private void handleMsg(TextStream.Message message, CallbackInfo i){
-
-            i.cancel();
-    }*/
 
     /**
      * @author
      */
-    @Overwrite
-    private void handleMessage(TextStream.Message message) {
-        this.player.updateLastActionTime();
-        String string = message.getRaw();
-        if (string.startsWith("/")) {
-            RDICeleTech.getServer().getCommandManager().execute(player.getCommandSource(),string);
-        } else {
+    @Inject(method="Lnet/minecraft/server/network/ServerPlayNetworkHandler;handleMessage(Lnet/minecraft/server/filter/TextStream$Message;)V",
+            at=@At(value="INVOKE",target = "Lnet/minecraft/server/MinecraftServer;getPlayerManager()Lnet/minecraft/server/PlayerManager;"))
+    private void handleMessage(TextStream.Message message, CallbackInfo ci) {
+
                 //String string2 = message.getFiltered();
                 ActionResult result = PlayerChatCallback.EVENT.invoker().call(player, message);
                 if(result == ActionResult.FAIL) return;
                 /*this.server.getPlayerManager().broadcast(text2, (player) -> {
                     return this.player.shouldFilterMessagesSentTo(player) ? text : text2;
                 }, MessageType.CHAT, this.player.getUuid());*/
-        }
 
 
 

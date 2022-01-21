@@ -1,15 +1,33 @@
 package calebzhou.rdimc.celestech.utils;
 
+import com.google.common.collect.Lists;
+import net.minecraft.block.Block;
+import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
+import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.command.argument.BlockStateArgument;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.fluid.Fluids;
+import net.minecraft.server.command.FillCommand;
+import net.minecraft.server.command.SetBlockCommand;
+import net.minecraft.server.world.ServerWorld;
+import net.minecraft.util.Clearable;
+import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.LightType;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
 
+import java.util.Iterator;
+import java.util.List;
+
 public class WorldUtils {
 
+    public static void fill(ServerWorld serverWorld, BlockBox range, BlockState block){
+        for (BlockPos blockPos : BlockPos.iterate(range.getMinX(), range.getMinY(), range.getMinZ(), range.getMaxX(), range.getMaxY(), range.getMaxZ())) {
+            serverWorld.setBlockState(blockPos, block);
+        }
+    }
     public static int getDayTime(World world) {
         return (int)(world.getTimeOfDay() % 24000L);
     }

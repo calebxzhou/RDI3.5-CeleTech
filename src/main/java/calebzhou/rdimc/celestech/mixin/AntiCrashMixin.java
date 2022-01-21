@@ -3,17 +3,17 @@ package calebzhou.rdimc.celestech.mixin;
 import calebzhou.rdimc.celestech.utils.ServerUtils;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.passive.AnimalEntity;
 import net.minecraft.entity.passive.VillagerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.server.world.ServerWorld;
+import net.minecraft.server.world.ChunkTicketManager;
+import net.minecraft.server.world.ServerChunkManager;
+import net.minecraft.server.world.ThreadedAnvilChunkStorage;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraft.world.chunk.BlockEntityTickInvoker;
-import org.apache.commons.lang3.RandomUtils;
+import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Final;
@@ -158,4 +158,22 @@ public abstract class AntiCrashMixin {
             LOGGER.error(e.getCause()+e.getMessage());
         }
     }
+}
+@Mixin(ServerChunkManager.class)
+class AntiChunkCrash{
+    @Shadow @Final
+    private ChunkTicketManager ticketManager;
+    @Shadow @Final
+    public ThreadedAnvilChunkStorage threadedAnvilChunkStorage;
+    @Redirect(method = "Lnet/minecraft/server/world/ServerChunkManager;tick()Z",
+    at=@At(value = "INVOKE",target = "Lnet/minecraft/server/world/ChunkTicketManager;tick(Lnet/minecraft/server/world/ThreadedAnvilChunkStorage;)Z"))
+    private boolean nocrashTick(ChunkTicketManager instance, ThreadedAnvilChunkStorage chunkStorage){
+        try{
+            return this.ticketManager.tick(this.threadedAnvilChunkStorage);
+        }catch (Throwable t){
+            LogManager.getLogger().error(t.toString());
+        }
+        return false;
+    }
+
 }

@@ -2,9 +2,6 @@ package calebzhou.rdimc.celestech.command;
 
 import calebzhou.rdimc.celestech.command.impl.*;
 import calebzhou.rdimc.celestech.event.RegisterCommandsCallback;
-import com.mojang.brigadier.CommandDispatcher;
-import net.minecraft.command.CommandSource;
-import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.util.ActionResult;
 
 import java.util.ArrayList;
@@ -14,12 +11,13 @@ public class CommandRegister {
     public CommandRegister(){
 
 
-        commands.add(new IslandCommand("island",0));
+        commands.add(new CreateCommand("create",0));
+        commands.add(new DeleteCommand("delete",0));
+        commands.add(new HomeCommand("home",0));
+        commands.add(new LocateCommand("locate",0));
         commands.add(new TpaCommand("tpa",0));
-        commands.add(new TpyesCommand("tpyes",0));
+        commands.add(new TpreqCommand("tpreq",0));
         commands.add(new TpsCommand("tps",0));
-        commands.add(new TelladCommand("tellad",0));
-        //commands.add(new ChatRangeCommand("chatrange",0));
         commands.add(new SpawnCommand("spawn",0));
         commands.add(new SlowfallCommand("slowfall",0));
 

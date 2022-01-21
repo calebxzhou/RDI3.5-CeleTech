@@ -1,17 +1,10 @@
 package calebzhou.rdimc.celestech.command.impl;
 
 import calebzhou.rdimc.celestech.RDICeleTech;
-import calebzhou.rdimc.celestech.command.BaseCommand;
 import calebzhou.rdimc.celestech.command.NoArgCommand;
-import calebzhou.rdimc.celestech.model.thread.PlayerMotionThread;
 import calebzhou.rdimc.celestech.utils.MathUtils;
 import calebzhou.rdimc.celestech.utils.ServerUtils;
 import calebzhou.rdimc.celestech.utils.TimeUtils;
-import com.mojang.brigadier.arguments.StringArgumentType;
-import com.mojang.brigadier.builder.LiteralArgumentBuilder;
-import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import net.minecraft.server.command.CommandManager;
-import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 
 import static calebzhou.rdimc.celestech.utils.TextUtils.sendChatMessage;
@@ -21,14 +14,13 @@ public class TpsCommand extends NoArgCommand {
         super(name, permissionLevel);
     }
 
-
-    protected int execute(ServerCommandSource source)  {
-        tps(source);
-        list(source);
-        return 1;
+    @Override
+    protected void onExecute(ServerPlayerEntity fromPlayer) {
+        tps(fromPlayer);
+        list(fromPlayer);
     }
 
-    private void list(ServerCommandSource player) {
+    private void list(ServerPlayerEntity player) {
         StringBuilder sb=new StringBuilder();
         ServerUtils.getAfkPlayerList().stream().forEach(e->{
             sb.append(e.getKey());
@@ -40,7 +32,7 @@ public class TpsCommand extends NoArgCommand {
         sendChatMessage(player,"挂机列表:"+(sb.length()==0?"无":sb.toString()));
     }
 
-    private void tps(ServerCommandSource player) {
+    private void tps(ServerPlayerEntity player) {
         double meanTickTime = MathUtils.getAverageValue(RDICeleTech.getServer().lastTickLengths) * 1.0E-6D;
         double stdTickTime = 120.0;
         double meanTPS = Math.min(1000.0 / meanTickTime, 20);

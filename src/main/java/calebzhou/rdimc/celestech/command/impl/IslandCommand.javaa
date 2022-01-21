@@ -4,6 +4,7 @@ import calebzhou.rdimc.celestech.command.BaseCommand;
 import calebzhou.rdimc.celestech.constant.ColorConstants;
 import calebzhou.rdimc.celestech.constant.MessageType;
 import calebzhou.rdimc.celestech.constant.WorldConstants;
+import calebzhou.rdimc.celestech.model.ApiResponse;
 import calebzhou.rdimc.celestech.model.CoordLocation;
 import calebzhou.rdimc.celestech.model.Island;
 import calebzhou.rdimc.celestech.model.cache.IslandCache;
@@ -41,15 +42,12 @@ public class IslandCommand extends BaseCommand {
     }
     public static final ArrayList<String> subcommands=new ArrayList<>();
     static{
-        subcommands.add("create");
-        subcommands.add("delete");
         subcommands.add("join");
         subcommands.add("quit");
         subcommands.add("invite");
         subcommands.add("kick");
         subcommands.add("home");
         subcommands.add("sethome");
-       // subcommands.add("melt");
         subcommands.add("biome-");
     }
     public static final SuggestionProvider<ServerCommandSource> SUGGESTION_PROVIDER = (context, builder) ->
@@ -134,8 +132,8 @@ public class IslandCommand extends BaseCommand {
     }
     private void create(ServerPlayerEntity player){
         ThreadPool.newThread(()->{
-            String locaS = HttpUtils.sendRequest("POST","island/create/"+player.getUuidAsString());
-            Island island = new Gson().fromJson(locaS, Island.class);
+            ApiResponse locaS = HttpUtils.sendRequest("POST","island/create/"+player.getUuidAsString());
+            Island island = new Gson().fromJson(((String) locaS.getData()), Island.class);
             CoordLocation iloca=CoordLocation.fromString(island.getLocation());
             PlayerUtils.teleport(player, iloca.add(0.5,3,0.5));
             PlayerUtils.placeBlock(player.getWorld(),iloca,"minecraft:obsidian");
@@ -203,8 +201,8 @@ public class IslandCommand extends BaseCommand {
                 });
                 return;
             }
-            /*String locaS = HttpUtils.post("island", "action=home", "pid=" + player.getUuidAsString());
-            sendActionMessage(player,locaS);*/
+            String locaS = HttpUtils.post("island", "action=home", "pid=" + player.getUuidAsString());
+            sendActionMessage(player,locaS);
             CoordLocation location = CoordLocation.fromString(island.getLocation());
             if(location==null){
                 sendChatMessage(player,"获取空岛位置失败:"+location);

@@ -3,16 +3,18 @@ package calebzhou.rdimc.celestech.utils;
 import calebzhou.rdimc.celestech.model.ApiResponse;
 import com.google.gson.Gson;
 
-import java.io.*;
-import java.net.HttpURLConnection;
+import java.io.IOException;
+import java.io.Serializable;
 import java.net.MalformedURLException;
+import java.net.URI;
 import java.net.URL;
-import java.nio.charset.StandardCharsets;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
 import java.util.Arrays;
 
-import static calebzhou.rdimc.celestech.constant.ServiceConstants.ADDR;
-
 public class HttpUtils {
+    private static final String ADDR="http://localhost:26888/";
     public static URL getFullUrl(String shortUrl){
         try {
             return new URL(ADDR + shortUrl);
@@ -22,45 +24,44 @@ public class HttpUtils {
         return null;
     }
 
-    public static ApiResponse sendRequest(String type, String shortUrl, String... params){
-        URL url=getFullUrl(shortUrl);
-        String param=concatParams(params);
-        HttpURLConnection connection = null;
+    public static String sendRequestRaw(String type, String shortUrl, String... params){
+        HttpClient client = HttpClient.newHttpClient();
+        HttpRequest.Builder builder = HttpRequest.newBuilder();
+        if(type.equalsIgnoreCase("GET")){
+            builder=builder.GET().uri(URI.create(ADDR+shortUrl+"?"+concatParamString(params)));
+        }
+        else  if(type.equalsIgnoreCase("POST")){
+            builder=builder.POST(concatParams(params)).uri(URI.create(ADDR+shortUrl));
+        }
+        else  if(type.equalsIgnoreCase("PUT")){
+            builder=builder.PUT(concatParams(params)).uri(URI.create(ADDR+shortUrl));
+        }
+        else  if(type.equalsIgnoreCase("DELETE")) {
+            builder = builder.DELETE().uri(URI.create(ADDR+shortUrl+"?"+concatParamString(params)));;
+
+        }
+
+        HttpRequest request = builder.setHeader("User-Agent", "RDI-MC-Client")
+                .header("Content-Type", "application/x-www-form-urlencoded;charset=utf-8")
+                .build();
         try {
-            connection = (HttpURLConnection) url.openConnection();
-            connection.setRequestMethod(type);
-        } catch (IOException e) {
+            HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+            return  response.body() ;
+        } catch (IOException | InterruptedException e) {
             e.printStackTrace();
+            return null;
         }
 
-        connection.setConnectTimeout(15000);
-        connection.setReadTimeout(60000);
-        // 默认值为：false，当向远程服务器传送数据/写数据时，需要设置为true
-        connection.setDoOutput(true);
-        // 默认值为：true，当前向远程服务读取数据时，设置为true，该参数可有可无
-        connection.setDoInput(true);
-        // 设置传入参数的格式:请求参数应该是 name1=value1&name2=value2 的形式。
-        connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded; charset=utf-8");
 
-        String result = null;
-        try(OutputStream os = connection.getOutputStream();
-            InputStream is=connection.getInputStream();
-            BufferedReader br=new BufferedReader(new InputStreamReader(is, StandardCharsets.UTF_8))
-        ){
-            os.write(param.getBytes(StandardCharsets.UTF_8));
-            if (connection.getResponseCode() == 200) {
-                StringBuffer sbf = new StringBuffer();
-                String temp = null;
-                while ((temp = br.readLine()) != null) {
-                    sbf.append(temp);
-                }
-                result = sbf.toString();
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        connection.disconnect();
-        return new Gson().fromJson(result,ApiResponse.class);
+    }
+
+
+    public static <T extends Serializable> ApiResponse sendRequest(String type, String shortUrl,String... params){
+        String requestRaw = sendRequestRaw(type, shortUrl, params);
+        ApiResponse response = new Gson().fromJson(requestRaw, ApiResponse.class);
+        return response;
+
+
     }
     //类名= url POST
     public static <T extends Serializable> void asyncSendObject(T object){
@@ -75,7 +76,10 @@ public class HttpUtils {
     public static <T extends Serializable> void asyncSendObject(String type,String shortUrl, T object, String params){
         ThreadPool.newThread(()-> sendRequest(type,shortUrl, "obj="+new Gson().toJson(object),params));
     }
-    private static String concatParams(String ... params){
+    private static HttpRequest.BodyPublisher concatParams(String ... params){
+        return HttpRequest.BodyPublishers.ofString(concatParamString(params));
+    }
+    private static String concatParamString(String ... params){
         StringBuilder sb = new StringBuilder();
         Arrays.stream(params).forEach((param)->{
             sb.append(param);

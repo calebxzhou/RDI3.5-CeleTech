@@ -2,9 +2,12 @@ package calebzhou.rdimc.celestech.command.impl;
 
 import calebzhou.rdimc.celestech.RDICeleTech;
 import calebzhou.rdimc.celestech.command.BaseCommand;
+import calebzhou.rdimc.celestech.command.PlayerArgCommand;
 import calebzhou.rdimc.celestech.constant.ColorConstants;
+import calebzhou.rdimc.celestech.constant.MessageType;
 import calebzhou.rdimc.celestech.utils.ServerUtils;
 import calebzhou.rdimc.celestech.utils.TextUtils;
+import calebzhou.rdimc.celestech.utils.ThreadPool;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
@@ -17,74 +20,54 @@ import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.MutableText;
 
+import java.util.HashMap;
+import java.util.TimerTask;
 import java.util.UUID;
 
+import static calebzhou.rdimc.celestech.RDICeleTech.tpaMap;
 import static calebzhou.rdimc.celestech.utils.TextUtils.*;
 
-public class TpaCommand extends BaseCommand {
+public class TpaCommand extends PlayerArgCommand {
 
     public TpaCommand(String command, int permissionLevel) {
         super(command, permissionLevel);
     }
-    public static final SuggestionProvider<ServerCommandSource> SUGGESTION_PROVIDER = (context, builder) -> CommandSource.suggestMatching(ServerUtils.getOnlinePlayerList(), builder);
-    @Override
-    public LiteralArgumentBuilder<ServerCommandSource> setExecution() {
-        return builder.then(
-                CommandManager.argument("targetPlayer", EntityArgumentType.players())
-                        .suggests(SUGGESTION_PROVIDER)
-                        .executes(context ->
-                                execute(context.getSource(), EntityArgumentType.getPlayer(context, "targetPlayer"))
-                        )
-        );
-    }
 
-    private int execute(ServerCommandSource source, ServerPlayerEntity toPlayer) throws CommandSyntaxException {
-        ServerPlayerEntity fromPlayer = source.getPlayer();
-        String fromPlayerName = fromPlayer.getDisplayName().getString();
-        String toPlayerName = toPlayer.getDisplayName().getString();
-        if(fromPlayer==toPlayer){
-            sendChatMessage(fromPlayer,"禁止原地TP");
-            return Command.SINGLE_SUCCESS;
+    @Override
+    protected void onExecute(ServerPlayerEntity fromPlayer, ServerPlayerEntity toPlayer) {
+        String fromPlayerId = fromPlayer.getUuidAsString();
+        String toPlayerId = toPlayer.getUuidAsString();
+        if(fromPlayerId.equals(toPlayerId)){
+            sendChatMessage(fromPlayer,"禁止原地TP", MessageType.ERROR);
+            return;
         }
         if(fromPlayer.experienceLevel<3){
-            sendChatMessage(fromPlayer,"经验不足！如果您想要加入对方空岛,请通过/island join-空岛编号 命令");
-            return 1;
+            sendChatMessage(fromPlayer,"经验不足,您需要3级经验.", MessageType.ERROR);
+            return;
         }
-        if(RDICeleTech.tpaRequestMap.containsKey(fromPlayer.getUuidAsString())){
-            sendChatMessage(fromPlayer,"您已经给发送过传送请求了");
-            sendClickableContent(fromPlayer,"点击此处可以删除您发送过的所有传送请求。","tpaclear");
-            return 1;
-        }
-        fromPlayer.experienceLevel -= 3;
-        sendChatMessage(fromPlayer,"传送请求已发送给"+toPlayerName);
 
-        String reqid= UUID.randomUUID().toString().substring(1,8);
-        PlayerTpaRequest preq=new PlayerTpaRequest(fromPlayer,toPlayer);
-        RDICeleTech.tpaRequestMap.put(reqid,preq);
-        sendChatMessage(fromPlayer,"已经发送传送请求给"+toPlayerName+", 请求ID:"+reqid);
-        sendChatMessage(toPlayer, ColorConstants.ORANGE+fromPlayerName+"想要传送到你的身边。");
-        sendChatMessage(toPlayer, ColorConstants.ORANGE+"为防止恶意破坏，请谨慎接受传送请求。");
-        MutableText tpyes= getClickableContentComp(ColorConstants.BRIGHT_GREEN+"[接受]"+ ColorConstants.RESET,"/tpyes "+reqid," ");
+        if(tpaMap.containsKey(fromPlayer.getUuidAsString())){
+            sendChatMessage(fromPlayer,"您已经发送过传送请求了", MessageType.ERROR);
+            return ;
+        }
+        tpaMap.put(fromPlayerId,toPlayerId);
+        sendChatMessage(fromPlayer,"已经发送传送请求，15秒后传送请求将失效。",MessageType.INFO);
+        fromPlayer.experienceLevel-=3;
+        sendChatMessage(toPlayer, ColorConstants.ORANGE+fromPlayer.getEntityName()+"想要传送到你的身边。");
+        MutableText tpyes= getClickableContentComp(ColorConstants.BRIGHT_GREEN+"[接受]"+ ColorConstants.RESET,"/tpreq true_false_"+fromPlayerId," ");
+        MutableText tpyes2= getClickableContentComp(ColorConstants.AQUA+"[以仅参观模式接受]"+ ColorConstants.RESET,"/tpreq true_true_"+fromPlayerId,"对方将没有破坏权限!");
         MutableText tpwait= getClickableContentComp(ColorConstants.GOLD+"[等我一下]"+ ColorConstants.RESET,"稍等"," ");
-        sendChatMessage(toPlayer,tpyes.append(tpwait));
-
-        return Command.SINGLE_SUCCESS;
+        MutableText tpdeny= getClickableContentComp(ColorConstants.RED+"[拒绝]"+ ColorConstants.RESET,"/tpreq false_false_"+fromPlayerId," ");
+        sendChatMessage(toPlayer,tpyes.append(tpyes2).append(tpwait).append(tpdeny));
+        System.out.println(tpaMap.toString());
+        ThreadPool.newThread(()->{
+            try {
+                Thread.sleep(15*1000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            tpaMap.remove(fromPlayerId);
+        });
     }
 
-    public class PlayerTpaRequest {
-        public PlayerTpaRequest(PlayerEntity fromPlayer, PlayerEntity toPlayer) {
-            this.fromPlayer = fromPlayer;
-            this.toPlayer = toPlayer;
-        }
-        private PlayerEntity fromPlayer;
-        private PlayerEntity toPlayer;
-
-        public PlayerEntity getFromPlayer() {
-            return fromPlayer;
-        }
-
-        public PlayerEntity getToPlayer() {
-            return toPlayer;
-        }
-    }
 }
