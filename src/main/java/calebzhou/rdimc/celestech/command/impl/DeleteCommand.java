@@ -27,7 +27,7 @@ public class DeleteCommand extends NoArgCommand {
         ApiResponse<Island> resp = HttpUtils.sendRequest("GET","island/"+player.getUuidAsString(),"idType=pid");
         Island data;CoordLocation location = null;
         try {
-                        data = resp.getData(Island.class);
+            data = resp.getData(Island.class);
             location = CoordLocation.fromString(data.getLocation());
         } catch (NullPointerException e) {
             sendChatMessage(player,"您没有空岛!", MessageType.ERROR);

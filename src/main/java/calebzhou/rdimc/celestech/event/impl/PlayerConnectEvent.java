@@ -23,7 +23,7 @@ public class PlayerConnectEvent {
                                         TimeUtils.getComparedDateTime(e.getRecTime()),
                                         e.getSrc(),
                                         e.getContent())));*/
-                //TextUtils.sendChatMessage(player, HttpUtils.doGet(ADDR+"getWeather?ip="+player.getIp()));
+                TextUtils.sendChatMessage(player, HttpUtils.sendRequest("GET","api_v1_public/getWeather","ip="+player.getIp()));
                 TextUtils.sendChatMessage(player, TimeUtils.getTimeChineseString()+"好,"+player.getDisplayName().getString()+",欢迎回到RDI。");
                 //载入聊天缓存
 

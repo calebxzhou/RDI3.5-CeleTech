@@ -1,7 +1,9 @@
 package calebzhou.rdimc.celestech.model;
 
+import calebzhou.rdimc.celestech.constant.WorldConstants;
 import com.google.gson.Gson;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.util.math.BlockPos;
 
 //坐标位置，XYZ
 public class CoordLocation {
@@ -36,6 +38,10 @@ public class CoordLocation {
     public static CoordLocation fromPlayer(ServerPlayerEntity player){
         return new CoordLocation(player.getWorld().getDimension().getEffects().toString(),
                 (int)player.getX(), (int)player.getY(), (int)player.getZ());
+    }
+    public static CoordLocation fromBlockPos(String world, BlockPos bpos){
+        return new CoordLocation(world,
+                bpos.getX(), bpos.getY(),bpos.getZ());
     }
     public String toString() {
         return String.format("%s,%s,%s,%s",dimension,posX,posY,posZ);

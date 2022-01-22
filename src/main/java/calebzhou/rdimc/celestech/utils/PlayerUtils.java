@@ -2,6 +2,7 @@ package calebzhou.rdimc.celestech.utils;
 
 import calebzhou.rdimc.celestech.RDICeleTech;
 import calebzhou.rdimc.celestech.constant.ColorConstants;
+import calebzhou.rdimc.celestech.constant.WorldConstants;
 import calebzhou.rdimc.celestech.model.CoordLocation;
 import calebzhou.rdimc.celestech.model.thread.LoadingBarThread;
 import net.minecraft.block.Blocks;
@@ -38,6 +39,9 @@ public class PlayerUtils {
     public static String  getDimensionName(Entity player){
         return player.getWorld().getDimension().getEffects().toString();
     }
+    public static boolean isOverworld(Entity entity){
+        return  getDimensionName(entity).equals(WorldConstants.OVERWORLD);
+    }
     //传送到指定位置
     public static void teleportPlayer(PlayerEntity player, String world, double x, double y, double z, float w, float p){
         String cmd="execute as %player in %world rotated %yaw %pitch run tp %x %y %z"
@@ -69,7 +73,7 @@ public class PlayerUtils {
         player.getInventory().insertStack(new ItemStack(Items.CHEST,1));*/
     }
     public static BlockPos getPlayerLookingAtBlock(PlayerEntity player, boolean isFluid){
-        BlockHitResult rays=(BlockHitResult) player.raycast(20.0D,0.0f,isFluid);
+        BlockHitResult rays=(BlockHitResult) player.raycast(64.0D,0.0f,isFluid);
         return rays.getBlockPos();
     }
     //通过玩家名获取对象

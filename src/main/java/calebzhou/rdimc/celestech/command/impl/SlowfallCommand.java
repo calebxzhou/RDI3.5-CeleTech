@@ -36,7 +36,7 @@ public class SlowfallCommand extends OneArgCommand {
             TextUtils.sendChatMessage(player,"这个世界太沉了呀");
             return ;
         }
-        player.addStatusEffect(new StatusEffectInstance(StatusEffects.SLOW_FALLING,20*10,level+1));
+        player.addStatusEffect(new StatusEffectInstance(StatusEffects.SLOW_FALLING,20*10,level-1));
     }
 
 

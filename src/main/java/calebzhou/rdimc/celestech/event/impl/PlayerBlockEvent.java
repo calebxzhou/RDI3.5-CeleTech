@@ -6,7 +6,7 @@ import calebzhou.rdimc.celestech.event.PlayerBreakBlockCallback;
 import calebzhou.rdimc.celestech.event.PlayerPlaceBlockCallback;
 import calebzhou.rdimc.celestech.model.CoordLocation;
 import calebzhou.rdimc.celestech.model.cache.LavaStoneCache;
-import calebzhou.rdimc.celestech.model.record.BlockRecord2;
+import calebzhou.rdimc.celestech.model.record.BlockRecord;
 import calebzhou.rdimc.celestech.utils.HttpUtils;
 import net.fabricmc.fabric.api.event.player.UseBlockCallback;
 import net.minecraft.block.BlockState;
@@ -21,7 +21,7 @@ import net.minecraft.util.math.BlockPos;
 public class PlayerBlockEvent {
     public PlayerBlockEvent(){
         PlayerBreakBlockCallback.EVENT.register(((player, blockPos, blockState) -> {
-            record(player,blockPos,blockState,BlockRecord2.Action.BREAK);
+            record(player,blockPos,blockState, BlockRecord.Action.BREAK);
             //如果玩家破坏了刷石机生成的石头
             if((blockState.getBlock()== Blocks.STONE || blockState.getBlock()== Blocks.COBBLESTONE)
                     && LavaStoneCache.instance.getMap().get(blockPos)!=null){
@@ -34,7 +34,7 @@ public class PlayerBlockEvent {
             return ActionResult.PASS;
         }));
         PlayerPlaceBlockCallback.EVENT.register(((player, blockPos, blockState) -> {
-            record(player,blockPos,blockState,BlockRecord2.Action.PLACE);
+            record(player,blockPos,blockState, BlockRecord.Action.PLACE);
             return ActionResult.PASS;
         }));
         UseBlockCallback.EVENT.register(((player, world, hand, hitResult) -> {
@@ -46,8 +46,9 @@ public class PlayerBlockEvent {
             return ActionResult.PASS;
         }));
     }
-    private void record(Entity entity,BlockPos blockPos,BlockState blockState,BlockRecord2.Action action){
+    private void record(Entity entity, BlockPos blockPos, BlockState blockState, BlockRecord.Action action){
         String dimension=entity.world.getDimension().getEffects().toString();
+        //只记录主世界,如果不是主世界就不记录
         if(!dimension.equals(WorldConstants.OVERWORLD))
             return;
         int posX=blockPos.getX();
@@ -59,7 +60,7 @@ public class PlayerBlockEvent {
         String playerUuid=entity instanceof PlayerEntity ?entity.getUuidAsString() : entity.getEntityName();
         String blockType=blockState.getBlock().getTranslationKey();
 
-        BlockRecord2 record=new BlockRecord2(playerUuid,blockType,action,location);
+        BlockRecord record=new BlockRecord(playerUuid,blockType,action,location);
         HttpUtils.asyncSendObject(record);
     }
 

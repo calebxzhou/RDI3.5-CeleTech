@@ -7,7 +7,7 @@ import com.google.gson.Gson;
 import java.io.Serializable;
 import java.sql.Timestamp;
 
-public class BlockRecord2 implements Serializable {
+public class BlockRecord implements Serializable {
     String pid;
     String blockType;
     String blockAction;
@@ -17,7 +17,7 @@ public class BlockRecord2 implements Serializable {
         return new Gson().toJson(this);
     }
 
-    public BlockRecord2(String pid, String blockType, Action blockAction, CoordLocation location) {
+    public BlockRecord(String pid, String blockType, Action blockAction, CoordLocation location) {
         this.pid = pid;
         this.blockType = blockType;
         this.blockAction = blockAction.toString();
