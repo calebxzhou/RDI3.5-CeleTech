@@ -10,13 +10,14 @@ public class CommandRegister {
     private final ArrayList<BaseCommand> commands = new ArrayList<>();
     public CommandRegister(){
 
-
+        commands.add(new BiomeCommand("chunkbiome",0));
         commands.add(new CreateCommand("create",0));
         commands.add(new DeleteCommand("delete",0));
         commands.add(new DisconnectCommand("disconnect",0));
         commands.add(new HomeCommand("home",0));
         commands.add(new InviteCommand("invite",0));
         commands.add(new KickCommand("kick",0));
+        commands.add(new LeapCommand("leap",0));
         commands.add(new LocateCommand("locate",0));
         commands.add(new QuitCommand("quit",0));
         commands.add(new SlowfallCommand("slowfall",0));

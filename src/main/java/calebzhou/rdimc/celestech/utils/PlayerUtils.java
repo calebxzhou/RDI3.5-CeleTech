@@ -22,6 +22,11 @@ import net.minecraft.world.World;
 import java.util.UUID;
 
 public class PlayerUtils {
+    public static boolean checkExpLevel(PlayerEntity player,int level){
+        if(player.experienceLevel<level) return false;
+        player.experienceLevel-=level;
+        return true;
+    }
     //添加缓降效果
     public static void addSlowFallEffect(PlayerEntity player){
         player.addStatusEffect(new StatusEffectInstance(StatusEffects.SLOW_FALLING,40,1));
