@@ -13,6 +13,10 @@ public class FoodDirectEatMixin {
      */
     @Overwrite
     public int getMaxUseTime(ItemStack stack) {
-        return 0;
+        if (stack.getItem().isFood()) {
+            return 1;
+        } else {
+            return 0;
+        }
     }
 }

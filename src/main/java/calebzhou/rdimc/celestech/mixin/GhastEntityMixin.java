@@ -16,7 +16,7 @@ public class GhastEntityMixin {
             ,constant = @Constant(doubleValue = 10.0D)
     )
     private static double change(double d){
-        return 40.0D;
+        return 5.0D;
     }
 }
 @Mixin(GhastEntity.GhastMoveControl.class)
@@ -26,7 +26,7 @@ class GhastMoveMixin{
             ,constant = @Constant(doubleValue = 0.1D)
     )
     private static double change(double d){
-        return 0.4D;
+        return 0.2D;
     }
 }
 @Mixin(GhastEntity.FlyRandomlyGoal.class)
@@ -36,7 +36,7 @@ class GhastFlyMixin{
             ,constant = @Constant(doubleValue = 1.0D)
     )
     private static double change(double d){
-        return 4.0D;
+        return 1.2D;
     }
 }
 @Mixin(GhastEntity.ShootFireballGoal.class)
@@ -68,7 +68,7 @@ class GhastShootMixin{
     )
     private void changeCd2(CallbackInfo ci){
         if(cooldown<=-40){
-            cooldown=8;
+            cooldown=9;
             this.ghast.setShooting(true);
         }
     }
@@ -76,5 +76,5 @@ class GhastShootMixin{
 
 @Mixin(FireballEntity.class)
 class FireballSpeedMixin{
-    @Shadow @Mutable private int explosionPower=3;
+    @Shadow @Mutable private int explosionPower=4;
 }

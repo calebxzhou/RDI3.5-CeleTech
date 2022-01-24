@@ -25,7 +25,7 @@ public class SpawnCommand extends NoArgCommand {
             return ;
         }
         PlayerUtils.teleport(player, WorldConstants.SPAWN_LOCA);
-        player.interactionManager.changeGameMode(GameMode.SURVIVAL);
+        ServerUtils.executeCommandOnServer("gamemode survival "+player.getEntityName());
     }
 
 

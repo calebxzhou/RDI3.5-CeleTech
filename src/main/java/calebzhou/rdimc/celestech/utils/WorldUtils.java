@@ -17,12 +17,24 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.LightType;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
+import net.minecraft.world.biome.Biome;
+import net.minecraft.world.chunk.Chunk;
+import net.minecraft.world.chunk.PalettedContainer;
 
 import java.util.Iterator;
 import java.util.List;
 
 public class WorldUtils {
-
+    public static void changeBiome(BlockPos bpos,ServerWorld world,Biome biome){
+        Chunk chunk = world.getChunk(bpos.getX()>>4,bpos.getZ()>>4);
+        int sectionYindex = (bpos.getY()+64)>>4;
+        PalettedContainer<Biome> biomeArray = chunk.getSection(sectionYindex).getBiomeContainer();
+        int mx=bpos.getX()&3;
+        int my=bpos.getY()&3;
+        int mz=bpos.getZ()&3;
+        biomeArray.swap(mx,my,mz, biome);
+        chunk.setShouldSave(true);
+    }
     public static void fill(ServerWorld serverWorld, BlockBox range, BlockState block){
         for (BlockPos blockPos : BlockPos.iterate(range.getMinX(), range.getMinY(), range.getMinZ(), range.getMaxX(), range.getMaxY(), range.getMaxZ())) {
             serverWorld.setBlockState(blockPos, block);

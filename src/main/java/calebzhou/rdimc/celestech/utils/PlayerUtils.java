@@ -4,6 +4,7 @@ import calebzhou.rdimc.celestech.RDICeleTech;
 import calebzhou.rdimc.celestech.constant.ColorConstants;
 import calebzhou.rdimc.celestech.constant.WorldConstants;
 import calebzhou.rdimc.celestech.model.CoordLocation;
+import calebzhou.rdimc.celestech.model.PlayerLocation;
 import calebzhou.rdimc.celestech.model.thread.LoadingBarThread;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.Entity;
@@ -24,7 +25,7 @@ import java.util.UUID;
 public class PlayerUtils {
     public static boolean checkExpLevel(PlayerEntity player,int level){
         if(player.experienceLevel<level) return false;
-        player.experienceLevel-=level;
+        player.addExperienceLevels(-level);
         return true;
     }
     //添加缓降效果
@@ -35,6 +36,9 @@ public class PlayerUtils {
     //传送,通过CoordLocation
     public static void teleport(PlayerEntity player, CoordLocation location){
         teleportPlayer(player,"minecraft:overworld", location.getPosX(), location.getPosY(), location.getPosZ(), 0f,0f);
+    }
+    public static void teleport(PlayerEntity player, PlayerLocation location){
+        teleportPlayer(player,"minecraft:overworld", location.getPosX(), location.getPosY(), location.getPosZ(), location.getYaw(),location.getPitch());
     }
     //传送1到2 玩家
     public static void teleportPlayer(PlayerEntity player1,PlayerEntity player2){

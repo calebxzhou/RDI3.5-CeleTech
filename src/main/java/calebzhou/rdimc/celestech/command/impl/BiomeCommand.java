@@ -4,34 +4,58 @@ import calebzhou.rdimc.celestech.command.OneArgCommand;
 import calebzhou.rdimc.celestech.constant.MessageType;
 import calebzhou.rdimc.celestech.utils.PlayerUtils;
 import calebzhou.rdimc.celestech.utils.TextUtils;
+import calebzhou.rdimc.celestech.utils.WorldUtils;
 import net.fabricmc.fabric.api.biome.v1.BiomeSelectors;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.BlockBox;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3i;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.BiomeKeys;
 import net.minecraft.world.biome.BuiltinBiomes;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.PalettedContainer;
+import org.lwjgl.system.MathUtil;
 
 public class BiomeCommand extends OneArgCommand {
     public BiomeCommand(String name, int permissionLevel) {
         super(name, permissionLevel);
     }
 
+    //x1,y1,z1,x2,y2,z2,biome
     @Override
     protected void onExecute(ServerPlayerEntity player, String arg) {
-        if(!PlayerUtils.checkExpLevel(player,10)){
-            TextUtils.sendChatMessage(player,"变更您所在区块的生物群系需要10级经验！", MessageType.ERROR);
-            return;
+        try {
+            String[] split = arg.split(",");
+            String biomeName = split[6];
+            Biome biome = player.getServer().getRegistryManager().get(Registry.BIOME_KEY).get(new Identifier(biomeName));
+            if(biome==null){
+                TextUtils.sendChatMessage(player,"生物群系"+biomeName+"不存在 ,请您输入生物群系的标识符。", MessageType.ERROR);
+                return;
+            }
+            Vec3i xyz1=new Vec3i(Integer.parseInt(split[0]),Integer.parseInt(split[1]),Integer.parseInt(split[2]));
+            Vec3i xyz2=new Vec3i(Integer.parseInt(split[3]),Integer.parseInt(split[4]),Integer.parseInt(split[5]));
+            double dist = Math.sqrt(xyz1.getSquaredDistance(xyz2))*1.5;
+            if(!PlayerUtils.checkExpLevel(player,(int)dist)){
+                TextUtils.sendChatMessage(player,"变更您指定这一区域的生物群系，需要"+(int)dist+"级经验！", MessageType.ERROR);
+                return;
+            }
+            BlockBox blockBox = new BlockBox(xyz1.getX(),xyz1.getY(),xyz1.getZ(),xyz2.getX(),xyz2.getY(),xyz2.getZ());
+            BlockPos.stream(blockBox).forEach(blockPos ->
+                WorldUtils.changeBiome(blockPos,player.getWorld(),biome)
+            );
+
+            TextUtils.sendChatMessage(player,"成功将您所在区域的生物群系变更为"+biomeName+"，区块重新加载后生效",MessageType.SUCCESS);
+        }catch (NumberFormatException  e){
+            TextUtils.sendChatMessage(player,"数字格式错误！",MessageType.ERROR);
+        }catch (ArrayIndexOutOfBoundsException e){
+            TextUtils.sendChatMessage(player,"参数数量错误。正确方法例：/此指令 0,-64,0,256,320,256,desert：把0,64,0 到 256,320,256这一范围的 生物群系 变成 沙漠",MessageType.ERROR);
         }
-        Chunk chunk = player.getWorld().getChunk(player.getBlockX()>>4,player.getBlockZ()>>4);
-        PalettedContainer<Biome> biomeArray = chunk.getSection(player.getBlockY()).getBiomeContainer();
-        Biome biome = player.getServer().getRegistryManager().get(Registry.BIOME_KEY).get(new Identifier(arg));
-        if(biome==null)
-            TextUtils.sendChatMessage(player,"生物群系"+arg+"不存在"+"，请您输入生物群系的标识符。", MessageType.ERROR);
-        biomeArray.swap(player.getBlockX(),player.getBlockY(),player.getBlockZ(), biome);
-        chunk.setShouldSave(true);
+        catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
 /*

@@ -25,7 +25,7 @@ public class GlowSquidEntityMixin {
     public static boolean canSpawn(EntityType<? extends LivingEntity> type, ServerWorldAccess world, SpawnReason reason, BlockPos pos, Random random) {
         return world.getBlockState(pos).isOf(Blocks.WATER) && pos.getY() <= world.getSeaLevel() - 33
                 &&
-                random.nextInt(8)==0;
+                random.nextInt(12)==0;
     }
 
 }

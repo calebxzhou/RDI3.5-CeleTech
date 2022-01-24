@@ -5,8 +5,12 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.ItemEntity;
+import net.minecraft.entity.mob.MobEntity;
+import net.minecraft.entity.mob.ZombieEntity;
 import net.minecraft.entity.passive.AnimalEntity;
 import net.minecraft.entity.passive.VillagerEntity;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.vehicle.MinecartEntity;
 import net.minecraft.server.world.ChunkTicketManager;
 import net.minecraft.server.world.ServerChunkManager;
 import net.minecraft.server.world.ThreadedAnvilChunkStorage;
@@ -44,13 +48,24 @@ public abstract class AntiCrashMixin {
             long t2=System.currentTimeMillis();
             long dt=t2-t1;
             if(dt>ENTITY_TICK_LIMIT){
+                if(ent instanceof PlayerEntity){
+                    return;
+                }
                 if(ent instanceof VillagerEntity) {
                     return;
                 }
                 if(ent instanceof AnimalEntity) {
                     return;
                 }
-                if(ent instanceof ItemEntity && ServerUtils.getMillisecondPerTick()<75){
+                if(ent instanceof ItemEntity ite){
+                    if(ite.getStack().hasNbt())
+                        return;
+                }
+                if(ent instanceof MobEntity mobEnt) {
+                    if(mobEnt.isPersistent())
+                        return;
+                }
+                if(ent instanceof MinecartEntity){
                     return;
                 }
                 ent.remove(Entity.RemovalReason.DISCARDED);
