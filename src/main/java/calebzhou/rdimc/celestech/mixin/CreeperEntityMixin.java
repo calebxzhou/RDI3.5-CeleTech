@@ -14,7 +14,7 @@ public abstract class CreeperEntityMixin {
     @Shadow @Mutable
     private int fuseTime = 40;
     @Shadow @Mutable
-    private int explosionRadius = 4;
+    private int explosionRadius = 8;
 
     @ModifyConstant(
             method = "Lnet/minecraft/entity/mob/CreeperEntity;initGoals()V",

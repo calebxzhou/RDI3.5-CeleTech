@@ -11,11 +11,19 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 import java.util.UUID;
 
 @Mixin(ServerPlayNetworkHandler.class)
-public abstract class ServerPlayNetworkMixin {
+public abstract class MixinNoBroadcastJoinExit {
     //退出服务器不显示"XXX退出"
     @Redirect(method ="Lnet/minecraft/server/network/ServerPlayNetworkHandler;onDisconnected(Lnet/minecraft/text/Text;)V",
             at=@At(value = "INVOKE",target = "Lnet/minecraft/server/PlayerManager;broadcast(Lnet/minecraft/text/Text;Lnet/minecraft/network/MessageType;Ljava/util/UUID;)V"))
     private void noBroadcastDisconnecting(PlayerManager instance, Text message, MessageType type, UUID sender){
-        System.out.println(message.getString());
+        //System.out.println(message.getString());
+    }
+}
+@Mixin(PlayerManager.class)
+class NoJoin{
+    @Redirect(method = "Lnet/minecraft/server/PlayerManager;onPlayerConnect(Lnet/minecraft/network/ClientConnection;Lnet/minecraft/server/network/ServerPlayerEntity;)V",
+    at=@At(value = "INVOKE",target = "Lnet/minecraft/server/PlayerManager;broadcast(Lnet/minecraft/text/Text;Lnet/minecraft/network/MessageType;Ljava/util/UUID;)V"))
+    private void nojoinsay(PlayerManager instance, Text message, MessageType type, UUID sender){
+
     }
 }

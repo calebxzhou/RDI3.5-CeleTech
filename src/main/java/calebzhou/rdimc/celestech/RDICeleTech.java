@@ -45,12 +45,12 @@ public class RDICeleTech implements ModInitializer {
         new PlayerConnectEvent();
         new PlayerMiscEvent();
         new PlayerChatEvent();
-        new Timer("saveAll").schedule(new TimerTask() {
+        /*new Timer("saveAll").schedule(new TimerTask() {
             @Override
             public void run() {
                 ServerUtils.save();
             }
-        },1*60*1000);
+        },1*60*1000);*/
 
     }
 

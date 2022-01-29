@@ -1,6 +1,8 @@
 package calebzhou.rdimc.celestech.command;
 
 import calebzhou.rdimc.celestech.command.impl.*;
+import calebzhou.rdimc.celestech.command.impl.island.*;
+import calebzhou.rdimc.celestech.command.impl.protect.SetProtectCommand;
 import calebzhou.rdimc.celestech.event.RegisterCommandsCallback;
 import net.minecraft.util.ActionResult;
 
@@ -26,6 +28,9 @@ public class CommandRegister {
         commands.add(new TpaCommand("tpa",0));
         commands.add(new TpreqCommand("tpreq",0));
         commands.add(new TpsCommand("tps",0));
+        commands.add(new PayExperienceCommand("pay",0));
+        commands.add(new SetProtectCommand("protect",0));
+        commands.add(new TrashCommand("trash",0));
 
 
 

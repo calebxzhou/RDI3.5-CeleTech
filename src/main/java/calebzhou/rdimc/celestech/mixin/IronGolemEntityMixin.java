@@ -11,7 +11,7 @@ public abstract class IronGolemEntityMixin {
             method= "Lnet/minecraft/entity/passive/IronGolemEntity;createIronGolemAttributes()Lnet/minecraft/entity/attribute/DefaultAttributeContainer$Builder;",
     constant = @Constant(doubleValue = 100.0D))
     private static double modifyIronGolemHealth(double constant){
-        return 200.0D;
+        return 300.0D;
     }
     @ModifyConstant(
             method= "Lnet/minecraft/entity/passive/IronGolemEntity;createIronGolemAttributes()Lnet/minecraft/entity/attribute/DefaultAttributeContainer$Builder;",

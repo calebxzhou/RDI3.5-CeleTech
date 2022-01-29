@@ -17,10 +17,10 @@ public abstract class PlayerBaseThread extends Thread{
         try {
             Thread.sleep(500);
             //玩家下线则终止线程
-            if(!ThreadPool.isPlayerThreadStarted(playerName) || player == null){
+            /*if(!ThreadPool.isPlayerThreadStarted(playerName) || player == null){
                 this.interrupt();
                 return;
-            }
+            }*/
             refreshPlayer();
             execute();
         } catch (InterruptedException e) {

@@ -5,7 +5,6 @@ import calebzhou.rdimc.celestech.constant.WorldConstants;
 import calebzhou.rdimc.celestech.event.PlayerBreakBlockCallback;
 import calebzhou.rdimc.celestech.event.PlayerPlaceBlockCallback;
 import calebzhou.rdimc.celestech.model.CoordLocation;
-import calebzhou.rdimc.celestech.model.cache.LavaStoneCache;
 import calebzhou.rdimc.celestech.model.record.BlockRecord;
 import calebzhou.rdimc.celestech.utils.HttpUtils;
 import net.fabricmc.fabric.api.event.player.UseBlockCallback;
@@ -22,7 +21,7 @@ public class PlayerBlockEvent {
     public PlayerBlockEvent(){
         PlayerBreakBlockCallback.EVENT.register(((player, blockPos, blockState) -> {
             record(player,blockPos,blockState, BlockRecord.Action.BREAK);
-            //如果玩家破坏了刷石机生成的石头
+            /*//如果玩家破坏了刷石机生成的石头
             if((blockState.getBlock()== Blocks.STONE || blockState.getBlock()== Blocks.COBBLESTONE)
                     && LavaStoneCache.instance.getMap().get(blockPos)!=null){
 
@@ -30,7 +29,7 @@ public class PlayerBlockEvent {
                 LavaStoneCache.instance.getMap().remove(blockPos);
                 player.experienceProgress += 0.05f;
 
-            }
+            }*/
             return ActionResult.PASS;
         }));
         PlayerPlaceBlockCallback.EVENT.register(((player, blockPos, blockState) -> {

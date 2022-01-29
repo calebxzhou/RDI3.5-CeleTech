@@ -48,6 +48,9 @@ public abstract class AntiCrashMixin {
             long t2=System.currentTimeMillis();
             long dt=t2-t1;
             if(dt>ENTITY_TICK_LIMIT){
+                if(ent instanceof MinecartEntity){
+                    return;
+                }
                 if(ent instanceof PlayerEntity){
                     return;
                 }
@@ -60,15 +63,14 @@ public abstract class AntiCrashMixin {
                 if(ent instanceof ItemEntity ite){
                     if(ite.getStack().hasNbt())
                         return;
+                    ent.remove(Entity.RemovalReason.DISCARDED);
                 }
                 if(ent instanceof MobEntity mobEnt) {
                     if(mobEnt.isPersistent())
                         return;
+                    ent.remove(Entity.RemovalReason.DISCARDED);
                 }
-                if(ent instanceof MinecartEntity){
-                    return;
-                }
-                ent.remove(Entity.RemovalReason.DISCARDED);
+
             }
         } catch (Throwable var6) {
             LOGGER.error(var6.getMessage());
@@ -113,16 +115,15 @@ public abstract class AntiCrashMixin {
             boolean explicit = false;
             if(mspt>100){
                 BLOCKENTITY_TICK_LIMIT=10;
-                BLOCKENTITY_TICK_FROZEN=300;
+                BLOCKENTITY_TICK_FROZEN=80;
                 explicit=true;
             }else if(mspt>60){
                 BLOCKENTITY_TICK_LIMIT=15;
-                BLOCKENTITY_TICK_FROZEN=150;
-                explicit=true;
+                BLOCKENTITY_TICK_FROZEN=40;
             }else
             if(mspt>50){
                 BLOCKENTITY_TICK_LIMIT=25;
-                BLOCKENTITY_TICK_FROZEN=70;
+                BLOCKENTITY_TICK_FROZEN=20;
             }
             /*if(size>4096){
                 BLOCKENTITY_TICK_LIMIT=20;
@@ -180,11 +181,14 @@ class AntiChunkCrash{
     private ChunkTicketManager ticketManager;
     @Shadow @Final
     public ThreadedAnvilChunkStorage threadedAnvilChunkStorage;
+    @Shadow @Final private static Logger LOGGER;
+
     @Redirect(method = "Lnet/minecraft/server/world/ServerChunkManager;tick()Z",
     at=@At(value = "INVOKE",target = "Lnet/minecraft/server/world/ChunkTicketManager;tick(Lnet/minecraft/server/world/ThreadedAnvilChunkStorage;)Z"))
     private boolean nocrashTick(ChunkTicketManager instance, ThreadedAnvilChunkStorage chunkStorage){
         try{
-            return this.ticketManager.tick(this.threadedAnvilChunkStorage);
+            boolean tick =  this.ticketManager.tick(this.threadedAnvilChunkStorage);
+            return tick;
         }catch (Throwable t){
             LogManager.getLogger().error(t.toString());
         }

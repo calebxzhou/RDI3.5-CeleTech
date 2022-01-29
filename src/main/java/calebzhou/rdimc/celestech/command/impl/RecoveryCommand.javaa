@@ -1,0 +1,53 @@
+package calebzhou.rdimc.celestech.command.impl;
+
+import calebzhou.rdimc.celestech.command.NoArgCommand;
+import calebzhou.rdimc.celestech.constant.MessageType;
+import calebzhou.rdimc.celestech.utils.PlayerUtils;
+import calebzhou.rdimc.celestech.utils.TextUtils;
+import com.google.common.base.Joiner;
+import net.minecraft.item.ItemStack;
+import net.minecraft.server.network.ServerPlayerEntity;
+import org.apache.commons.lang3.StringUtils;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
+
+public class RecoveryCommand extends NoArgCommand {
+    public static final HashMap<String, List<ItemStack>> deathDropItemMap = new HashMap<>();
+    public RecoveryCommand(String name, int permissionLevel) {
+        super(name, permissionLevel);
+    }
+
+    @Override
+    protected void onExecute(ServerPlayerEntity player) {
+        final String name= player.getEntityName();
+        List<ItemStack> itemList = deathDropItemMap.get(name);
+        if(itemList==null){
+            TextUtils.sendChatMessage(player,"您没有物品可供取回。", MessageType.ERROR);
+            return;
+        }
+        ArrayList<String> successList = new ArrayList<>();
+        HashMap<String,Integer> failMap = new HashMap<>();
+        for (ItemStack itemStack : itemList) {
+            String itemName = itemStack.toHoverableText().getString();
+            int expLvlNeed = 1;
+            if (itemStack.hasNbt() && itemStack.getNbt() != null) {
+                expLvlNeed = (itemStack.getNbt().getSize() * 3);
+            }
+            if (PlayerUtils.checkExpLevel(player, expLvlNeed)) {
+                player.getInventory().insertStack(itemStack);
+                successList.add(itemName);
+                deathDropItemMap.remove(name);
+            } else {
+                failMap.put(itemName,expLvlNeed);
+            }
+        }
+        if(!successList.isEmpty())
+            TextUtils.sendChatMessage(player,"成功恢复了："+ StringUtils.join(successList,","),MessageType.SUCCESS);
+        if(!failMap.isEmpty())
+            TextUtils.sendChatMessage(player,"恢复失败了："+ Joiner.on(",").withKeyValueSeparator("=").join(failMap)+",原因是经验不足。(物品名称=经验需求)",MessageType.ERROR);
+    }
+}

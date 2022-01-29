@@ -1,4 +1,4 @@
-package calebzhou.rdimc.celestech.command.impl;
+package calebzhou.rdimc.celestech.command.impl.island;
 
 import calebzhou.rdimc.celestech.command.NoArgCommand;
 import calebzhou.rdimc.celestech.constant.MessageType;
@@ -22,7 +22,7 @@ public class HomeCommand extends NoArgCommand {
 
     @Override
     protected void onExecute(ServerPlayerEntity player) {
-        if(PlayerUtils.getDimensionName(player).equals("minecraft:the_nether") && !player.getEntityName().equals("sampsonnzx")){
+        if(!PlayerUtils.isOverworld(player)){
             sendChatMessage(player,"引力太强, 无法离开此地.", MessageType.ERROR);
             return;
         }

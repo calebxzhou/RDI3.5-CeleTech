@@ -34,5 +34,5 @@ public abstract class NoArgCommand extends BaseCommand{
         return Command.SINGLE_SUCCESS;
     }
 
-    protected abstract void onExecute(ServerPlayerEntity fromPlayer);
+    protected abstract void onExecute(ServerPlayerEntity player);
 }

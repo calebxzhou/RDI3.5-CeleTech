@@ -33,13 +33,13 @@ public class PlayerConnectEvent {
 
            // PlayerUtils.teleport(player, new CoordLocation(0,138,0));
             //载入玩家路径监控
-            ThreadPool.startPlayerThread(player);
+          //  ThreadPool.startPlayerThread(player);
             return ActionResult.PASS;
         }));
         //断开服务器
         PlayerDisconnectServerCallback.EVENT.register((player -> {
             HttpUtils.asyncSendObject(new GenericRecord(player.getUuidAsString(), RecordType.logout, null, null,null));
-            ThreadPool.stopPlayerThread(player);
+          //  ThreadPool.stopPlayerThread(player);
             ServerUtils.save();
             return ActionResult.PASS;
         }));

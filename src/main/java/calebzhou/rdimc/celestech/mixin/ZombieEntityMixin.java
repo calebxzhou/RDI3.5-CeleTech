@@ -28,13 +28,7 @@ public abstract class ZombieEntityMixin extends MobEntity {
     protected ZombieEntityMixin(EntityType<? extends MobEntity> entityType, World world) {
         super(entityType, world);
     }
-    @Inject(
-            method = "Lnet/minecraft/entity/mob/ZombieEntity;initCustomGoals()V",
-            at = @At("HEAD")
-    )
-    private void initGoal(CallbackInfo ci){
-        //goalSelector.add(1,new EntityBreakBlockGoal(this));
-    }
+
     @ModifyConstant(
             method = "Lnet/minecraft/entity/mob/ZombieEntity;createZombieAttributes()Lnet/minecraft/entity/attribute/DefaultAttributeContainer$Builder;",
             constant = @Constant(doubleValue = 0.23000000417232513D)
@@ -57,16 +51,7 @@ public abstract class ZombieEntityMixin extends MobEntity {
     @Overwrite
     public void initEquipment(LocalDifficulty difficulty) {
         super.initEquipment(difficulty);
-            int i = this.random.nextInt(10);
-            switch (i){
-                case 0 -> this.equipStack(EquipmentSlot.MAINHAND, new ItemStack(Items.STONE_PICKAXE));
-                case 1 -> this.equipStack(EquipmentSlot.MAINHAND, new ItemStack(Items.IRON_PICKAXE));
-                case 2 -> this.equipStack(EquipmentSlot.MAINHAND, new ItemStack(Items.STONE_AXE));
-                case 3 -> this.equipStack(EquipmentSlot.MAINHAND, new ItemStack(Items.IRON_AXE));
-                case 4 -> this.equipStack(EquipmentSlot.MAINHAND, new ItemStack(Items.STONE_SWORD));
-                case 5 -> this.equipStack(EquipmentSlot.MAINHAND, new ItemStack(Items.IRON_SWORD));
-                default -> {}
-            }
+             this.equipStack(EquipmentSlot.MAINHAND, new ItemStack(Items.IRON_SWORD));
 
     }
 }

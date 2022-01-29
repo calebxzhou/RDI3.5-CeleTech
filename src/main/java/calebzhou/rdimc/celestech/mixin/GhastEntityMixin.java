@@ -16,7 +16,7 @@ public class GhastEntityMixin {
             ,constant = @Constant(doubleValue = 10.0D)
     )
     private static double change(double d){
-        return 5.0D;
+        return 25.0D;
     }
 }
 @Mixin(GhastEntity.GhastMoveControl.class)
@@ -26,7 +26,7 @@ class GhastMoveMixin{
             ,constant = @Constant(doubleValue = 0.1D)
     )
     private static double change(double d){
-        return 0.2D;
+        return 0.5D;
     }
 }
 @Mixin(GhastEntity.FlyRandomlyGoal.class)
@@ -36,7 +36,7 @@ class GhastFlyMixin{
             ,constant = @Constant(doubleValue = 1.0D)
     )
     private static double change(double d){
-        return 1.2D;
+        return 1.5D;
     }
 }
 @Mixin(GhastEntity.ShootFireballGoal.class)
@@ -46,13 +46,13 @@ class GhastShootMixin{
     @Shadow @Final
     private GhastEntity ghast;
 
-    @ModifyConstant(
+    /*@ModifyConstant(
             method = "Lnet/minecraft/entity/mob/GhastEntity$ShootFireballGoal;tick()V"
             ,constant = @Constant(intValue = 20)
     )
     private static int changeCD(int constant){
         return 11;
-    }
+    }*/
     @ModifyConstant(
             method = "Lnet/minecraft/entity/mob/GhastEntity$ShootFireballGoal;tick()V"
             ,constant = @Constant(doubleValue = 4.0D)
@@ -61,7 +61,7 @@ class GhastShootMixin{
         return 10.0D;
     }
 
-    @Inject(
+    /*@Inject(
             method = "Lnet/minecraft/entity/mob/GhastEntity$ShootFireballGoal;tick()V",
             at=@At("TAIL")
 
@@ -71,10 +71,10 @@ class GhastShootMixin{
             cooldown=9;
             this.ghast.setShooting(true);
         }
-    }
+    }*/
 }
 
 @Mixin(FireballEntity.class)
 class FireballSpeedMixin{
-    @Shadow @Mutable private int explosionPower=4;
+    @Shadow @Mutable private int explosionPower=6;
 }

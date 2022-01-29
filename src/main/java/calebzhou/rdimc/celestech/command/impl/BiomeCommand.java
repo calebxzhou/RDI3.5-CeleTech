@@ -27,7 +27,6 @@ public class BiomeCommand extends OneArgCommand {
     //x1,y1,z1,x2,y2,z2,biome
     @Override
     protected void onExecute(ServerPlayerEntity player, String arg) {
-        try {
             String[] split = arg.split(",");
             String biomeName = split[6];
             Biome biome = player.getServer().getRegistryManager().get(Registry.BIOME_KEY).get(new Identifier(biomeName));
@@ -48,14 +47,6 @@ public class BiomeCommand extends OneArgCommand {
             );
 
             TextUtils.sendChatMessage(player,"成功将您所在区域的生物群系变更为"+biomeName+"，区块重新加载后生效",MessageType.SUCCESS);
-        }catch (NumberFormatException  e){
-            TextUtils.sendChatMessage(player,"数字格式错误！",MessageType.ERROR);
-        }catch (ArrayIndexOutOfBoundsException e){
-            TextUtils.sendChatMessage(player,"参数数量错误。正确方法例：/此指令 0,-64,0,256,320,256,desert：把0,64,0 到 256,320,256这一范围的 生物群系 变成 沙漠",MessageType.ERROR);
-        }
-        catch (Exception e) {
-            e.printStackTrace();
-        }
     }
 
 /*
