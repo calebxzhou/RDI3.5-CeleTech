@@ -7,12 +7,11 @@ import net.minecraft.util.math.BlockPos;
 
 //坐标位置，XYZ
 public class CoordLocation {
-    public static final String OVERWORLD = "minecraft:overworld";
     String dimension;
     double posX,posY,posZ;
 
     public CoordLocation(double posX, double posY, double posZ) {
-        this.dimension = OVERWORLD;
+        this.dimension = WorldConstants.DEFAULT_WORLD;
         this.posX = posX;
         this.posY = posY;
         this.posZ = posZ;

@@ -26,7 +26,7 @@ public class ServerUtils {
         server.getCommandManager().execute(source,command);
     }
     //获取在线玩家 名称
-    public static List<String> getOnlinePlayerList(){
+    public static List<String> getOnlinePlayerNameList(){
         return RDICeleTech.getServer().getPlayerManager().getPlayerList().stream()
                 .map(PlayerEntity::getEntityName).toList();
     }
@@ -34,7 +34,7 @@ public class ServerUtils {
     public static List<Map.Entry<String,Integer>> getAfkPlayerList(){
         return PlayerMotionThread.afkPlayersMap.entrySet().stream()
                 //在线玩家与挂机玩家map取交集
-                .filter(singleAfkEntry -> getOnlinePlayerList().contains(singleAfkEntry.getKey()))
+                .filter(singleAfkEntry -> getOnlinePlayerNameList().contains(singleAfkEntry.getKey()))
                 .toList();
     }
     //挂机玩家 做什么?

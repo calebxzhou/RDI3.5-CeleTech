@@ -20,16 +20,12 @@ import net.minecraft.util.math.BlockPos;
 public class PlayerBlockEvent {
     public PlayerBlockEvent(){
         PlayerBreakBlockCallback.EVENT.register(((player, blockPos, blockState) -> {
+            //如果玩家破坏了石头 不记录
+            if(blockState.getBlock()== Blocks.STONE || blockState.getBlock()== Blocks.COBBLESTONE){
+                return ActionResult.PASS;
+            }
             record(player,blockPos,blockState, BlockRecord.Action.BREAK);
-            /*//如果玩家破坏了刷石机生成的石头
-            if((blockState.getBlock()== Blocks.STONE || blockState.getBlock()== Blocks.COBBLESTONE)
-                    && LavaStoneCache.instance.getMap().get(blockPos)!=null){
 
-                //TODO 加经验 随机爆物品
-                LavaStoneCache.instance.getMap().remove(blockPos);
-                player.experienceProgress += 0.05f;
-
-            }*/
             return ActionResult.PASS;
         }));
         PlayerPlaceBlockCallback.EVENT.register(((player, blockPos, blockState) -> {
@@ -48,7 +44,7 @@ public class PlayerBlockEvent {
     private void record(Entity entity, BlockPos blockPos, BlockState blockState, BlockRecord.Action action){
         String dimension=entity.world.getDimension().getEffects().toString();
         //只记录主世界,如果不是主世界就不记录
-        if(!dimension.equals(WorldConstants.OVERWORLD))
+        if(!dimension.equals(WorldConstants.DEFAULT_WORLD))
             return;
         int posX=blockPos.getX();
         int posY=blockPos.getY();

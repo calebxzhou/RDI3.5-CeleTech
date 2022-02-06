@@ -22,7 +22,7 @@ public class SetProtectCommand extends OneArgCommand {
             TextUtils.sendChatMessage(player,"将您指定的区域设置成保护区，需要"+(int)dist+"级经验。", MessageType.ERROR);
             return;
         }
-        HttpUtils.sendRequest("POST","protect",arg);
+        HttpUtils.sendRequest("POST","protect/"+arg,"pid="+player.getUuidAsString());
 
 
     }

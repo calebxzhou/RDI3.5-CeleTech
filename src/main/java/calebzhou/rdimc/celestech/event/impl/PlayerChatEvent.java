@@ -30,22 +30,12 @@ public class PlayerChatEvent {
     public PlayerChatEvent() {
         PlayerChatCallback.EVENT.register(((player, message) -> {
             String msg = message.getRaw();
-            //上传消息
-            GenericRecord cr = new GenericRecord(player.getUuidAsString(), RecordType.chat, player.getEntityName(), null, EncodingUtils.getUTF8StringFromGBKString(msg));
-            HttpUtils.asyncSendObject(cr);
             //聊天 挂机玩家 提示
             if (msg.length() >= 3) ServerUtils.getAfkPlayerListDo(entry -> entry.getKey().contains(msg), player);
             //censor
             if (censorship.stream().anyMatch(msg::contains)) {
                 return ActionResult.FAIL;
             }
-            /*RDICeleTech.getServer().getPlayerManager().getPlayerList().forEach(p -> {
-                TextUtils.sendChatMessage(p, String.format(chatFormat,
-                        "全> ",//status.getRange().getDesp(),
-                        player.getEntityName(),
-                        msg));
-            });*/
-            //broadcast(player,msg);
             return ActionResult.PASS;
         }));
     }

@@ -14,3 +14,4 @@ accessible class net/minecraft/entity/mob/PhantomEntity$PhantomMoveControl
 accessible class net/minecraft/entity/mob/GhastEntity$GhastMoveControl
 accessible class net/minecraft/entity/mob/GhastEntity$FlyRandomlyGoal
 accessible class net/minecraft/entity/mob/GhastEntity$ShootFireballGoal
+accessible class net/minecraft/server/network/ServerLoginNetworkHandler$State

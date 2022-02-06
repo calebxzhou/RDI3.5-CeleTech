@@ -41,8 +41,10 @@ public abstract class OneArgCommand extends BaseCommand {
                 onExecute(player,args);
         }catch (NumberFormatException  e){
             TextUtils.sendChatMessage(player,"数字格式错误", MessageType.ERROR);
-        }catch (ArrayIndexOutOfBoundsException e){
+        }catch (IndexOutOfBoundsException e){
             TextUtils.sendChatMessage(player,"参数数量错误",MessageType.ERROR);
+        }catch (IllegalArgumentException e){
+            TextUtils.sendChatMessage(player,"参数类型错误",MessageType.ERROR);
         }catch (NullPointerException e){
             TextUtils.sendChatMessage(player,"目标不能为空！",MessageType.ERROR);
         }catch (Exception e) {

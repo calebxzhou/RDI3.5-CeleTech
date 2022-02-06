@@ -14,10 +14,8 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.RaycastContext;
 import net.minecraft.world.World;
 
 import java.util.UUID;
@@ -49,7 +47,7 @@ public class PlayerUtils {
         return player.getWorld().getDimension().getEffects().toString();
     }
     public static boolean isOverworld(Entity entity){
-        return  getDimensionName(entity).equals(WorldConstants.OVERWORLD);
+        return  getDimensionName(entity).equals(WorldConstants.DEFAULT_WORLD);
     }
     //传送到指定位置
     public static void teleportPlayer(PlayerEntity player, String world, double x, double y, double z, float w, float p){
@@ -73,8 +71,8 @@ public class PlayerUtils {
     }
     //发送新手套装
     public static void givePlayerInitialKit(ServerPlayerEntity player){
-        player.getInventory().insertStack(new ItemStack(Items.BIRCH_SAPLING,1));
-        player.getInventory().insertStack(new ItemStack(Items.DIRT,1));
+        player.getInventory().insertStack(new ItemStack(Items.OAK_SAPLING,1));
+       // player.getInventory().insertStack(new ItemStack(Items.DIRT,1));
        /* player.getInventory().insertStack(new ItemStack(Items.WATER_BUCKET,1));
         player.getInventory().insertStack(new ItemStack(Items.LAVA_BUCKET,1));*/
         /*player.getInventory().insertStack(new ItemStack(Items.GRASS_BLOCK,8));

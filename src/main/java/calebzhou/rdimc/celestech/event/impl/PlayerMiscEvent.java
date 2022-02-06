@@ -24,7 +24,5 @@ public class PlayerMiscEvent {
 
     }
 
-    public void randomDropHandler(PlayerEntity player){
 
-    }
 }

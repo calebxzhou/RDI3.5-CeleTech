@@ -26,7 +26,7 @@ public abstract class EndermanEntityMixin {
             )
     )
     private boolean everythingpickup(BlockState instance, Tag tag){
-        if(!PlayerUtils.getDimensionName(enderman).equals(WorldConstants.OVERWORLD))
+        if(!PlayerUtils.getDimensionName(enderman).equals(WorldConstants.DEFAULT_WORLD))
             return false;
         if(instance.getBlock() == Blocks.WATER || instance.getBlock() == Blocks.LAVA)
             return false;

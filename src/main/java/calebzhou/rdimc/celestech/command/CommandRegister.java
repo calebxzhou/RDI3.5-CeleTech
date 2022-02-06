@@ -22,9 +22,11 @@ public class CommandRegister {
         commands.add(new LeapCommand("leap",0));
         commands.add(new LocateCommand("locate",0));
         commands.add(new QuitCommand("quit",0));
+        commands.add(new ChatRangeCommand("chatrange",0));
         commands.add(new SlowfallCommand("slowfall",0));
         commands.add(new SpawnCommand("spawn",0));
         commands.add(new SpawnCommand("back",0));
+        commands.add(new RollCommand("roll",0));
         commands.add(new TpaCommand("tpa",0));
         commands.add(new TpreqCommand("tpreq",0));
         commands.add(new TpsCommand("tps",0));

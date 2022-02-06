@@ -31,6 +31,7 @@ public class CreateCommand extends NoArgCommand {
 
             PlayerUtils.teleport(player, iloca.add(0.5, 12, 0.5));
             PlayerUtils.placeBlock(player.getWorld(), iloca, "minecraft:obsidian");
+            PlayerUtils.placeBlock(player.getWorld(), iloca.add(-1,0,0), "minecraft:dirt");
             PlayerUtils.givePlayerInitialKit(player);
 
         }

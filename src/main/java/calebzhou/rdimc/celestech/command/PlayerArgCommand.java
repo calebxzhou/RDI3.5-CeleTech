@@ -1,7 +1,5 @@
 package calebzhou.rdimc.celestech.command;
 
-import calebzhou.rdimc.celestech.RDICeleTech;
-import calebzhou.rdimc.celestech.constant.ColorConstants;
 import calebzhou.rdimc.celestech.utils.ServerUtils;
 import calebzhou.rdimc.celestech.utils.ThreadPool;
 import com.mojang.brigadier.Command;
@@ -13,11 +11,6 @@ import net.minecraft.command.argument.EntityArgumentType;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.text.MutableText;
-
-import java.util.UUID;
-
-import static calebzhou.rdimc.celestech.utils.TextUtils.*;
 
 public abstract class PlayerArgCommand extends BaseCommand {
     private boolean isAsync = false;
@@ -30,7 +23,7 @@ public abstract class PlayerArgCommand extends BaseCommand {
     public PlayerArgCommand(String command, int permissionLevel) {
         super(command, permissionLevel);
     }
-    public static final SuggestionProvider<ServerCommandSource> SUGGESTION_PROVIDER = (context, builder) -> CommandSource.suggestMatching(ServerUtils.getOnlinePlayerList(), builder);
+    public static final SuggestionProvider<ServerCommandSource> SUGGESTION_PROVIDER = (context, builder) -> CommandSource.suggestMatching(ServerUtils.getOnlinePlayerNameList(), builder);
     @Override
     public LiteralArgumentBuilder<ServerCommandSource> setExecution() {
         return builder.then(CommandManager.argument("targetPlayer", EntityArgumentType.players()).suggests(SUGGESTION_PROVIDER)
