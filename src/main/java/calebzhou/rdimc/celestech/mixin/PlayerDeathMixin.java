@@ -1,5 +1,6 @@
 package calebzhou.rdimc.celestech.mixin;
 
+import calebzhou.rdimc.celestech.RDICeleTech;
 import calebzhou.rdimc.celestech.constant.MessageType;
 import calebzhou.rdimc.celestech.event.PlayerDeathCallback;
 import calebzhou.rdimc.celestech.utils.PlayerUtils;
@@ -17,7 +18,9 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.util.ActionResult;
+import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3i;
 import net.minecraft.world.World;
 import org.apache.commons.lang3.RandomUtils;
 import org.spongepowered.asm.mixin.Mixin;
@@ -61,10 +64,13 @@ public abstract class PlayerDeathMixin {
         boolean isSetChestSuccessful;
         World world=player.getWorld();
         BlockPos chestPos = player.getBlockPos();
-        isSetChestSuccessful = world.setBlockState(chestPos,Blocks.CHEST.getDefaultState());
+        if(new BlockBox(-100,-64,-100,100,320,100).contains(new Vec3i(chestPos.getX(), chestPos.getY(), chestPos.getZ())))
+            isSetChestSuccessful = false;
+        else
+            isSetChestSuccessful = world.setBlockState(chestPos,Blocks.CHEST.getDefaultState());
         ArrayList<ItemStack> dropItemList = new ArrayList<>();
         for(int i=0;i<dropSlotAmount;i++){
-            int ran= RandomUtils.nextInt(1,35);
+            int ran= RDICeleTech.RANDOM.nextInt(1,35);
             ItemStack stack2Drop = player.getInventory().getStack(ran);
             if(stack2Drop.isEmpty() || stack2Drop.getItem() == Items.AIR)
                 continue;

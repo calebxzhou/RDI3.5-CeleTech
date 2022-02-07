@@ -26,17 +26,21 @@ public class ChatRangeCommand extends OneArgCommand {
         if(range=='a'){
             //chatRangeMap.put(pid, ServerUtils.getOnlinePlayerNameList());
             chatRangeMap.remove(pid);
-            TextUtils.sendChatMessage(player,"成功设定为[全服]聊天。", MessageType.SUCCESS);
+            TextUtils.sendChatMessage(player,"成功设定为[全服]聊天。您的聊天内容全服均可见。", MessageType.SUCCESS);
         }else if(range=='i'){
-            ApiResponse response = HttpUtils.sendRequest("GET","island/"+pid);
+            ApiResponse response = HttpUtils.sendRequest("GET","island/"+pid,"idType=pid");
             Island island = (Island) response.getData(Island.class);
+            if(island==null){
+                TextUtils.sendChatMessage(player,"您没有岛屿！",MessageType.ERROR);
+                return;
+            }
             List<String> members = island.getMembers();
             if(members==null || members.isEmpty()){
-                TextUtils.sendChatMessage(player,"您的空岛没有成员！",MessageType.ERROR);
+                TextUtils.sendChatMessage(player,"您的空岛没有成员，因此不能使用此指令。",MessageType.ERROR);
                 return;
             }
             chatRangeMap.put(pid,members);
-            TextUtils.sendChatMessage(player,"成功设定为[岛内]聊天。", MessageType.SUCCESS);
+            TextUtils.sendChatMessage(player,"成功设定为[岛内]聊天。您的聊天内容仅同岛好友可见。", MessageType.SUCCESS);
         }
     }
 }

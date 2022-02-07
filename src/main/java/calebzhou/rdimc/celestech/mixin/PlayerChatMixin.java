@@ -76,7 +76,7 @@ public abstract class PlayerChatMixin {
                 ServerPlayerEntity player = PlayerUtils.getPlayerByUuid(toSend);
                 TextUtils.sendChatMessage(player,serverMessage);
             }
-            TextUtils.sendChatMessage(player,serverMessage);
+            //TextUtils.sendChatMessage(player,serverMessage);
         }else{
             instance.broadcast(serverMessage,playerMessageFactory,type,sender);
         }

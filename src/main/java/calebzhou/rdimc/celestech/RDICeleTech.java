@@ -19,6 +19,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.util.HashMap;
+import java.util.SplittableRandom;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.ConcurrentHashMap;
@@ -29,6 +30,7 @@ public class RDICeleTech implements ModInitializer {
     // That way, it's clear which mod wrote info, warnings, and errors.
     public static final Logger LOGGER = LogManager.getLogger("modid");
     public static final ConcurrentHashMap<String,String> tpaMap = new ConcurrentHashMap<>();
+    public static final SplittableRandom RANDOM = new SplittableRandom();
     private static MinecraftServer server;
 
     @Override

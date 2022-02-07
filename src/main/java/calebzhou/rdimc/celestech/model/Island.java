@@ -5,6 +5,7 @@ import com.google.gson.Gson;
 
 import java.io.Serializable;
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -45,7 +46,7 @@ public class Island implements Serializable {
     }
 
     public List<String> getMembers() {
-        return Arrays.asList(members);
+        return members==null?new ArrayList<>():Arrays.asList(members);
     }
 
     public void setMembers(String[] members) {

@@ -7,6 +7,7 @@ import org.spongepowered.asm.mixin.injection.ModifyConstant;
 
 @Mixin(IronGolemEntity.class)
 public abstract class IronGolemEntityMixin {
+    //铁傀儡增加血量
     @ModifyConstant(
             method= "Lnet/minecraft/entity/passive/IronGolemEntity;createIronGolemAttributes()Lnet/minecraft/entity/attribute/DefaultAttributeContainer$Builder;",
     constant = @Constant(doubleValue = 100.0D))

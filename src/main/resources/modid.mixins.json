@@ -10,7 +10,6 @@
     "CreeperEntityMixin",
     "EndermanEntityMixin",
     "EndermanEntityMixin2",
-    "EntityAttributesMixin",
     "ExplosionBehaviorMixin",
     "FireballSpeedMixin",
     "FireBlockMixin",

@@ -6,6 +6,7 @@ import calebzhou.rdimc.celestech.constant.WorldConstants;
 import calebzhou.rdimc.celestech.model.CoordLocation;
 import calebzhou.rdimc.celestech.model.PlayerLocation;
 import calebzhou.rdimc.celestech.model.thread.LoadingBarThread;
+import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.effect.StatusEffectInstance;
@@ -62,8 +63,8 @@ public class PlayerUtils {
         ServerUtils.executeCommandOnServer(cmd);
     }
     //在世界放置方块
-    public static void placeBlock(World world, CoordLocation location, String blockId){
-       world.setBlockState(new BlockPos(location.getPosiX(),location.getPosiY(),location.getPosiZ()), Blocks.OBSIDIAN.getDefaultState());
+    public static void placeBlock(World world, CoordLocation location, BlockState blockState){
+       world.setBlockState(new BlockPos(location.getPosiX(),location.getPosiY(),location.getPosiZ()), blockState);
     }
     //发送进度条
     public static void sendLoading(ServerPlayerEntity player){

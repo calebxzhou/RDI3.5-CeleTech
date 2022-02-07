@@ -55,8 +55,8 @@ public abstract class MixinAllowOfflineMode{
             JsonObject rootObj = JsonParser.parseString(json1).getAsJsonObject();
             String id = rootObj.get("id").getAsString();
             //成功获取了id就是正版玩家，进入正版验证
-                System.out.println("zheng");
-                connection.send(packet);
+            LOGGER.info("此人是正版 "+id);
+            connection.send(packet);
         }catch (IllegalStateException|NullPointerException e){
             System.out.println(profile.getName()+"不是正版");
             profile = toOfflineProfile(profile);

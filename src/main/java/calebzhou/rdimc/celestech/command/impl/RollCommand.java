@@ -29,7 +29,7 @@ public class RollCommand extends OneArgCommand {
             return;
         }
 
-        ApiResponse<RollPrize[]> response = HttpUtils.sendRequest("GET", "prize");
+        ApiResponse<RollPrize[]> response = HttpUtils.sendRequest("GET", "prize","count="+rollTimes);
         RollPrize[] data = response.getData(RollPrize[].class);
         List<String> dataList = Arrays.stream(data).map(RollPrize::getDescr).collect(Collectors.toList());
         for(int i=0;i<rollTimes;++i){

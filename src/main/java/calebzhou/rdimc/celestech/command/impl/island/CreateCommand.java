@@ -8,6 +8,7 @@ import calebzhou.rdimc.celestech.model.CoordLocation;
 import calebzhou.rdimc.celestech.model.Island;
 import calebzhou.rdimc.celestech.utils.HttpUtils;
 import calebzhou.rdimc.celestech.utils.PlayerUtils;
+import net.minecraft.block.Blocks;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -30,13 +31,12 @@ public class CreateCommand extends NoArgCommand {
             CoordLocation iloca = CoordLocation.fromString(island.getLocation());
 
             PlayerUtils.teleport(player, iloca.add(0.5, 12, 0.5));
-            PlayerUtils.placeBlock(player.getWorld(), iloca, "minecraft:obsidian");
-            PlayerUtils.placeBlock(player.getWorld(), iloca.add(-1,0,0), "minecraft:dirt");
+            PlayerUtils.placeBlock(player.getWorld(), iloca, Blocks.OBSIDIAN.getDefaultState());
+            PlayerUtils.placeBlock(player.getWorld(), iloca.add(-1,0,0), Blocks.GRASS_BLOCK.getDefaultState());
             PlayerUtils.givePlayerInitialKit(player);
-
+            sendChatMessage(player,"请至公告群中查看空岛教程。",MessageType.INFO);
         }
         sendChatMessage(player, response);
-        sendClickableContent(player, ColorConstants.GOLD+"点击[这里]进行空岛创建的下一步","/disconnect 空岛创建完成了，重新连接服务器以继续");
     }
 
 }

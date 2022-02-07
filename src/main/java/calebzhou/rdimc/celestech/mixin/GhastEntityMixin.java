@@ -1,13 +1,19 @@
 package calebzhou.rdimc.celestech.mixin;
 
+import calebzhou.rdimc.celestech.RDICeleTech;
+import net.minecraft.entity.EntityType;
+import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.mob.GhastEntity;
 import net.minecraft.entity.projectile.FireballEntity;
-import org.spongepowered.asm.mixin.Final;
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Mutable;
-import org.spongepowered.asm.mixin.Shadow;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.Difficulty;
+import net.minecraft.world.WorldAccess;
+import org.spongepowered.asm.mixin.*;
 import org.spongepowered.asm.mixin.injection.*;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+
+import java.util.Random;
+
 //恶魂 增强
 @Mixin(GhastEntity.class)
 public class GhastEntityMixin {
@@ -18,6 +24,13 @@ public class GhastEntityMixin {
     private static double change(double d){
         return 25.0D;
     }
+    /**
+     * @author
+     */
+    @Overwrite
+    public static boolean canSpawn(EntityType<GhastEntity> type, WorldAccess world, SpawnReason spawnReason, BlockPos pos, Random random) {
+        return RDICeleTech.RANDOM.nextInt(5) == 0 && GhastEntity.canMobSpawn(type, world, spawnReason, pos, random);
+    }
 }
 @Mixin(GhastEntity.GhastMoveControl.class)
 class GhastMoveMixin{
@@ -26,7 +39,7 @@ class GhastMoveMixin{
             ,constant = @Constant(doubleValue = 0.1D)
     )
     private static double change(double d){
-        return 0.5D;
+        return 0.2D;
     }
 }
 @Mixin(GhastEntity.FlyRandomlyGoal.class)
@@ -58,7 +71,7 @@ class GhastShootMixin{
             ,constant = @Constant(doubleValue = 4.0D)
     )
     private static double changeSped(double constant){
-        return 10.0D;
+        return 5.0D;
     }
 
     /*@Inject(
@@ -76,5 +89,5 @@ class GhastShootMixin{
 
 @Mixin(FireballEntity.class)
 class FireballSpeedMixin{
-    @Shadow @Mutable private int explosionPower=6;
+    @Shadow @Mutable private int explosionPower=3;
 }
