@@ -103,11 +103,11 @@ public final class TextUtils {
     }
 
     //发送标题
-    public static void sendTitle(ServerPlayerEntity target,String title){
+    public static void sendTitle(ServerPlayerEntity target,String title,TitleType type){
         ArrayList list = new ArrayList();
         list.add(target);
         try {
-            sendTitle(list,new LiteralText(title),TitleType.TITLE);
+            sendTitle(list,new LiteralText(title),type);
         } catch (CommandSyntaxException e) {
             e.printStackTrace();
         }
@@ -130,7 +130,4 @@ public final class TextUtils {
 
 
     }
-}
-enum TitleType{
-    TITLE,SUBTITLE
 }

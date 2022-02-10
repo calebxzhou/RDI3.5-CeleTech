@@ -12,15 +12,15 @@ public class CommandRegister {
     private final ArrayList<BaseCommand> commands = new ArrayList<>();
     public CommandRegister(){
 
-        commands.add(new BiomeCommand("chunkbiome",0));
+        commands.add(new BiomeCommand("bio",0));
         commands.add(new CreateCommand("create",0));
-        commands.add(new DeleteCommand("delete",0));
+        commands.add(new DeleteCommand("del",0));
         commands.add(new HomeCommand("home",0));
         commands.add(new InviteCommand("invite",0));
         commands.add(new KickCommand("kick",0));
         commands.add(new IslandCommand("island",0));
         commands.add(new LeapCommand("leap",0));
-        commands.add(new LocateCommand("locate",0));
+        commands.add(new LocateCommand("loca",0));
         commands.add(new QuitCommand("quit",0));
         commands.add(new ChatRangeCommand("chatrange",0));
         commands.add(new SlowfallCommand("slowfall",0));
@@ -33,6 +33,7 @@ public class CommandRegister {
         commands.add(new PayExperienceCommand("pay",0));
         commands.add(new SetProtectCommand("protect",0));
         commands.add(new TrashCommand("trash",0));
+        commands.add(new VirtualStructureCommand("vs",0));
         //commands.add(new JoinCommand("join",0));
 
 

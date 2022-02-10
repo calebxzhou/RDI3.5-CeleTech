@@ -5,7 +5,7 @@ import org.apache.commons.lang3.RandomUtils;
 import java.io.Serializable;
 
 public class RollPrize implements Serializable {
-    enum Type{
+    public enum Type{
         item,
         creature,
         exp

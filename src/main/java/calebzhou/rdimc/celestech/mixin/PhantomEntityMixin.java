@@ -14,14 +14,14 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 @Mixin(PhantomEntity.class)
 public class PhantomEntityMixin {
     //不着火
-    @Redirect(
+    /*@Redirect(
             method = "Lnet/minecraft/entity/mob/PhantomEntity;tickMovement()V"
             ,at = @At(
                     value = "INVOKE",
             target = "Lnet/minecraft/entity/mob/PhantomEntity;setOnFireFor(I)V"
     )
     )
-    private void setFire(PhantomEntity instance, int i){}
+    private void setFire(PhantomEntity instance, int i){}*/
 
     @ModifyConstant(
             method = "Lnet/minecraft/entity/mob/PhantomEntity;onSizeChanged()V"
@@ -34,9 +34,8 @@ public class PhantomEntityMixin {
 }
 @Mixin(PhantomEntity.PhantomMoveControl.class)
 class PhantomMoveMixin{
-    @Shadow
-    @Mutable
-    private float targetSpeed = 0.4F;
+
+    private final float targetSpeed = 0.4F;
 
     @ModifyConstant(
             method = "Lnet/minecraft/entity/mob/PhantomEntity$PhantomMoveControl;tick()V",
