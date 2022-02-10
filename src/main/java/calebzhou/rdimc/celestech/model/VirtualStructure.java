@@ -64,6 +64,7 @@ public class VirtualStructure implements Serializable {
 
 
     public enum Type implements Serializable{
+        clear,//清除所有！！
         swamp_hut,
         mansion,
         monument;

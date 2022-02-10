@@ -51,7 +51,7 @@ public class RDICeleTech implements ModInitializer {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            new Timer().schedule(new SpawnMobTimer(),0,60*2*1000);
+            new Timer().schedule(new SpawnMobTimer(),0,60*3*1000);
         });
         new PlayerBlockEvent();
         new CommandRegister();

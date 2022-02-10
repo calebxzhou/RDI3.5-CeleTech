@@ -10,16 +10,16 @@ public class MixinWitch {
     @ModifyConstant(method = "Lnet/minecraft/entity/mob/WitchEntity;createWitchAttributes()Lnet/minecraft/entity/attribute/DefaultAttributeContainer$Builder;",
     constant = @Constant(doubleValue = 0.25D))
     private static double speedUp(double constant){
-        return 0.6D;
+        return 0.5D;
     }
     @ModifyConstant(method = "Lnet/minecraft/entity/mob/WitchEntity;createWitchAttributes()Lnet/minecraft/entity/attribute/DefaultAttributeContainer$Builder;",
             constant = @Constant(doubleValue = 26.0D))
     private static double healthUp(double constant){
-        return 50.0D;
+        return 30.0D;
     }
     @ModifyConstant(method = "Lnet/minecraft/entity/mob/WitchEntity;initGoals()V",
             constant = @Constant(intValue = 60))
     private int intervalMinus(int constant){
-        return 10;
+        return 50;
     }
 }

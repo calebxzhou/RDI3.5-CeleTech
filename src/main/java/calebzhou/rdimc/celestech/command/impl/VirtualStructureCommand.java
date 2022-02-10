@@ -26,14 +26,24 @@ public class VirtualStructureCommand extends AreaArgCommand {
         VirtualStructure.Type type = VirtualStructure.Type.valueOf(nameArg);
         VirtualStructure structure = new VirtualStructure(player.getEntityName(),type , BorderedBox.fromString(arg));
         switch (type){
+            case clear -> {
+                VirtualStructure.STRUCTURE_MAP.remove(player.getEntityName());
+                try {
+                    RDICeleTech.writeFiles();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                TextUtils.sendChatMessage(player,"成功移除了您设置过的所有结构区块~",MessageType.SUCCESS);
+                return;
+            }
             case swamp_hut -> {
                 if(!structure.getRange().isSizeSmallerThan(7,7,9)){
                     TextUtils.sendChatMessage(player,"沼泽小屋的尺寸必须为7x7x9，当前为"+structure.getRange().getSizeStringX(),MessageType.ERROR);
                     return;
                 }
-                xp=30;
-
+                xp=50;
             }
+
 
         }
         if(!PlayerUtils.checkExpLevel(player,xp)){
