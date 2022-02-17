@@ -1,24 +1,20 @@
 package calebzhou.rdimc.celestech.command.impl;
 
 import calebzhou.rdimc.celestech.RDICeleTech;
-import calebzhou.rdimc.celestech.command.OneArgCommand;
+import calebzhou.rdimc.celestech.command.BaseCommand;
 import calebzhou.rdimc.celestech.constant.ColorConstants;
 import calebzhou.rdimc.celestech.constant.MessageType;
-import calebzhou.rdimc.celestech.model.ApiResponse;
 import calebzhou.rdimc.celestech.model.RollPrize;
 import calebzhou.rdimc.celestech.utils.*;
-import lombok.SneakyThrows;
 import net.minecraft.server.network.ServerPlayerEntity;
-import org.apache.commons.lang3.RandomUtils;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class RollCommand extends OneArgCommand {
+public class RollCommand extends BaseCommand {
     public RollCommand(String name, int permissionLevel) {
         super(name, permissionLevel,true);
     }

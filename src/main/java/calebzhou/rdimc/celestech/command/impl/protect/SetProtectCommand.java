@@ -1,6 +1,7 @@
 package calebzhou.rdimc.celestech.command.impl.protect;
 
-import calebzhou.rdimc.celestech.command.OneArgCommand;
+import calebzhou.rdimc.celestech.command.AreaArgCommand;
+import calebzhou.rdimc.celestech.command.BaseCommand;
 import calebzhou.rdimc.celestech.constant.MessageType;
 import calebzhou.rdimc.celestech.utils.HttpUtils;
 import calebzhou.rdimc.celestech.utils.PlayerUtils;
@@ -8,7 +9,7 @@ import calebzhou.rdimc.celestech.utils.TextUtils;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.math.Vec3i;
 
-public class SetProtectCommand extends OneArgCommand {
+public class SetProtectCommand extends AreaArgCommand {
     public SetProtectCommand(String name, int permissionLevel) {
         super(name, permissionLevel,true);
     }

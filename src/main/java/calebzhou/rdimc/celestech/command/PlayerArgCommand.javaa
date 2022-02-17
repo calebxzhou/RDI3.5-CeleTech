@@ -13,10 +13,9 @@ import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 
 public abstract class PlayerArgCommand extends BaseCommand {
-    private boolean isAsync = false;
 
     public PlayerArgCommand(String name, int permissionLevel, boolean isAsync) {
-        super(name, permissionLevel);
+        super(name, permissionLevel,false);
         this.isAsync = isAsync;
     }
 
@@ -31,7 +30,7 @@ public abstract class PlayerArgCommand extends BaseCommand {
     }
 
     private int execute(ServerCommandSource source, ServerPlayerEntity toPlayer) throws CommandSyntaxException {
-        ServerPlayerEntity fromPlayer = source.getPlayer();
+        ServerPlayerEntity fromPlayer,String arg = source.getPlayer();
         if(isAsync)
             ThreadPool.newThread(()->onExecute(fromPlayer,toPlayer));
         else
@@ -40,5 +39,5 @@ public abstract class PlayerArgCommand extends BaseCommand {
         return Command.SINGLE_SUCCESS;
     }
 
-    protected abstract void onExecute(ServerPlayerEntity fromPlayer,ServerPlayerEntity toPlayer);
+    protected abstract void onExecute(ServerPlayerEntity fromPlayer,String arg,ServerPlayerEntity toPlayer);
 }

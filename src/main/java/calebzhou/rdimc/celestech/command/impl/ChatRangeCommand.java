@@ -1,18 +1,17 @@
 package calebzhou.rdimc.celestech.command.impl;
 
-import calebzhou.rdimc.celestech.command.OneArgCommand;
+import calebzhou.rdimc.celestech.command.BaseCommand;
 import calebzhou.rdimc.celestech.constant.MessageType;
 import calebzhou.rdimc.celestech.model.ApiResponse;
 import calebzhou.rdimc.celestech.model.Island;
 import calebzhou.rdimc.celestech.utils.HttpUtils;
-import calebzhou.rdimc.celestech.utils.ServerUtils;
 import calebzhou.rdimc.celestech.utils.TextUtils;
 import net.minecraft.server.network.ServerPlayerEntity;
 
 import java.util.HashMap;
 import java.util.List;
 
-public class ChatRangeCommand extends OneArgCommand {
+public class ChatRangeCommand extends BaseCommand {
     //玩家id vs 聊天对象玩家列表
     public static final HashMap<String, List<String>> chatRangeMap = new HashMap<>();
     public ChatRangeCommand(String name, int permissionLevel) {

@@ -6,9 +6,15 @@ import org.jetbrains.annotations.Nullable;
 import java.io.Serializable;
 
 public class ApiResponse<T extends Serializable> implements Serializable {
-    private String type;
+    private String type;//success error info
     private String message;
     private String data;
+
+    public ApiResponse(String type, String message, String data) {
+        this.type = type;
+        this.message = message;
+        this.data = data;
+    }
 
     public ApiResponse() {
     }

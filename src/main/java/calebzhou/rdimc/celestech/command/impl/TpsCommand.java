@@ -1,7 +1,7 @@
 package calebzhou.rdimc.celestech.command.impl;
 
 import calebzhou.rdimc.celestech.RDICeleTech;
-import calebzhou.rdimc.celestech.command.NoArgCommand;
+import calebzhou.rdimc.celestech.command.BaseCommand;
 import calebzhou.rdimc.celestech.utils.MathUtils;
 import calebzhou.rdimc.celestech.utils.ServerUtils;
 import calebzhou.rdimc.celestech.utils.TimeUtils;
@@ -9,13 +9,13 @@ import net.minecraft.server.network.ServerPlayerEntity;
 
 import static calebzhou.rdimc.celestech.utils.TextUtils.sendChatMessage;
 
-public class TpsCommand extends NoArgCommand {
+public class TpsCommand extends BaseCommand {
     public TpsCommand(String name, int permissionLevel) {
-        super(name, permissionLevel);
+        super(name, permissionLevel,false);
     }
 
     @Override
-    protected void onExecute(ServerPlayerEntity fromPlayer) {
+    protected void onExecute(ServerPlayerEntity fromPlayer,String arg) {
         tps(fromPlayer);
         list(fromPlayer);
     }

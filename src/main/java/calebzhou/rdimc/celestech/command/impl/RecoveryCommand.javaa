@@ -15,14 +15,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class RecoveryCommand extends NoArgCommand {
+public class RecoveryCommand extends BaseCommand {
     public static final HashMap<String, List<ItemStack>> deathDropItemMap = new HashMap<>();
     public RecoveryCommand(String name, int permissionLevel) {
-        super(name, permissionLevel);
+        super(name, permissionLevel,false);
     }
 
     @Override
-    protected void onExecute(ServerPlayerEntity player) {
+    protected void onExecute(ServerPlayerEntity player,String arg) {
         final String name= player.getEntityName();
         List<ItemStack> itemList = deathDropItemMap.get(name);
         if(itemList==null){

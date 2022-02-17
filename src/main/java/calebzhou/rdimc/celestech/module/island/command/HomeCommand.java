@@ -1,6 +1,6 @@
-package calebzhou.rdimc.celestech.command.impl.island;
+package calebzhou.rdimc.celestech.module.island.command;
 
-import calebzhou.rdimc.celestech.command.NoArgCommand;
+import calebzhou.rdimc.celestech.command.BaseCommand;
 import calebzhou.rdimc.celestech.constant.MessageType;
 import calebzhou.rdimc.celestech.model.ApiResponse;
 import calebzhou.rdimc.celestech.model.CoordLocation;
@@ -15,18 +15,18 @@ import java.util.Objects;
 
 import static calebzhou.rdimc.celestech.utils.TextUtils.sendChatMessage;
 
-public class HomeCommand extends NoArgCommand {
+public class HomeCommand extends BaseCommand {
     public HomeCommand(String name, int permissionLevel) {
         super(name, permissionLevel,true);
     }
 
     @Override
-    protected void onExecute(ServerPlayerEntity player) {
+    protected void onExecute(ServerPlayerEntity player,String arg) {
         if(!PlayerUtils.isOverworld(player)){
             sendChatMessage(player,"引力太强, 无法离开此地.", MessageType.ERROR);
             return;
         }
-        ApiResponse<Island> response = HttpUtils.sendRequest("GET","island/"+player.getUuidAsString(),"idType=pid");
+        ApiResponse<Island> response = HttpUtils.sendRequestV2("GET","island/"+player.getUuidAsString(),"idType=pid");
         try {
             if(response.isSuccess()){
                 player.addStatusEffect(new StatusEffectInstance(StatusEffects.SLOW_FALLING,20*2,0));

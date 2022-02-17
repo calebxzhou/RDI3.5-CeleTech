@@ -1,13 +1,13 @@
-package calebzhou.rdimc.celestech.command.impl.island;
+package calebzhou.rdimc.celestech.module.island.command;
 
-import calebzhou.rdimc.celestech.command.OneArgCommand;
+import calebzhou.rdimc.celestech.command.BaseCommand;
 import calebzhou.rdimc.celestech.constant.MessageType;
 import calebzhou.rdimc.celestech.model.ApiResponse;
 import calebzhou.rdimc.celestech.utils.HttpUtils;
 import calebzhou.rdimc.celestech.utils.TextUtils;
 import net.minecraft.server.network.ServerPlayerEntity;
 
-public class JoinCommand extends OneArgCommand {
+public class JoinCommand extends BaseCommand {
     public JoinCommand(String command, int permissionLevel) {
         super(command, permissionLevel, true);
     }
@@ -19,7 +19,7 @@ public class JoinCommand extends OneArgCommand {
             TextUtils.sendChatMessage(player,"例如 /join 12312312", MessageType.INFO);
             return;
         }
-        ApiResponse response = HttpUtils.sendRequest("PUT", "island/" + arg, "member=" + player.getUuidAsString(),"iid="+arg);
+        ApiResponse response = HttpUtils.sendRequestV2("PUT", "island/" + arg, "member=" + player.getUuidAsString(),"iid="+arg);
         TextUtils.sendChatMessage(player,"您成功加入了空岛！");
         TextUtils.sendChatMessage(player,response);
     }

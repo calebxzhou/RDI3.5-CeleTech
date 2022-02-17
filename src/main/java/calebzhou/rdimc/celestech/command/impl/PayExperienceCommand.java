@@ -1,15 +1,14 @@
 package calebzhou.rdimc.celestech.command.impl;
 
-import calebzhou.rdimc.celestech.command.OneArgCommand;
+import calebzhou.rdimc.celestech.command.BaseCommand;
 import calebzhou.rdimc.celestech.constant.MessageType;
 import calebzhou.rdimc.celestech.utils.PlayerUtils;
-import calebzhou.rdimc.celestech.utils.ServerUtils;
 import calebzhou.rdimc.celestech.utils.TextUtils;
 import net.minecraft.server.network.ServerPlayerEntity;
 
-public class PayExperienceCommand extends OneArgCommand {
+public class PayExperienceCommand extends BaseCommand {
     public PayExperienceCommand(String name, int permissionLevel) {
-        super(name, permissionLevel);
+        super(name, permissionLevel,false);
     }
 
     @Override

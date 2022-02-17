@@ -1,25 +1,22 @@
 package calebzhou.rdimc.celestech.command.impl;
 
-import calebzhou.rdimc.celestech.command.NoArgCommand;
+import calebzhou.rdimc.celestech.command.BaseCommand;
 import calebzhou.rdimc.celestech.constant.MessageType;
-import calebzhou.rdimc.celestech.constant.WorldConstants;
-import calebzhou.rdimc.celestech.model.CoordLocation;
 import calebzhou.rdimc.celestech.model.PlayerLocation;
 import calebzhou.rdimc.celestech.utils.PlayerUtils;
-import calebzhou.rdimc.celestech.utils.TextUtils;
 import net.minecraft.block.Blocks;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.math.BlockPos;
 
 import static calebzhou.rdimc.celestech.utils.TextUtils.*;
 
-public class LeapCommand extends NoArgCommand {
+public class LeapCommand extends BaseCommand {
     public LeapCommand(String name, int permissionLevel) {
-        super(name, permissionLevel);
+        super(name, permissionLevel,false);
     }
 
     @Override
-    protected void onExecute(ServerPlayerEntity fromPlayer) {
+    protected void onExecute(ServerPlayerEntity fromPlayer,String arg) {
         BlockPos lookingAtBlock = PlayerUtils.getPlayerLookingAtBlock(fromPlayer, false);
         if(lookingAtBlock==null){
             sendChatMessage(fromPlayer,"您需要瞄准64格以内的方块以传送。", MessageType.ERROR);

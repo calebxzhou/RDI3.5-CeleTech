@@ -1,7 +1,12 @@
 package calebzhou.rdimc.celestech.utils;
 
 import calebzhou.rdimc.celestech.model.ApiResponse;
+import calebzhou.rdimc.celestech.module.island.IslandException;
 import com.google.gson.Gson;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import net.minecraft.client.realms.Request;
+import org.apache.commons.lang3.StringUtils;
 
 import java.io.IOException;
 import java.io.Serializable;
@@ -58,12 +63,29 @@ public class HttpUtils {
         }
     }
 
-    public static <T extends Serializable> ApiResponse sendRequest(String type, String shortUrl,String... params){
+    public static ApiResponse sendRequest(String type, String shortUrl,String... params){
         String requestRaw = sendRequestRaw(type, shortUrl, params);
         ApiResponse response = new Gson().fromJson(requestRaw, ApiResponse.class);
         return response;
+    }
 
-
+    public static ApiResponse sendRequestV2(String type, String shortUrl,String... params){
+        String requestRaw = sendRequestRaw(type, shortUrl, params);
+        JsonObject rootObj = JsonParser.parseString(requestRaw).getAsJsonPrimitive().getAsJsonObject();
+        //出现错误 handler
+        JsonObject errorObj = rootObj.getAsJsonObject("error");
+        if (errorObj != null) {
+            String errorMsg = errorObj.get("message").getAsString();
+            throw new IslandException(errorMsg);
+        }
+        //-------------
+        JsonObject succObj = rootObj.getAsJsonObject("response");
+        if(succObj != null){
+            String succMsg = succObj.get("message").getAsString();
+            ApiResponse response = new ApiResponse<>("success",succMsg,succObj.get("body").getAsString());
+            return response;
+        }
+        return null;
     }
     //类名= url POST
     public static <T extends Serializable> void asyncSendObject(T object){

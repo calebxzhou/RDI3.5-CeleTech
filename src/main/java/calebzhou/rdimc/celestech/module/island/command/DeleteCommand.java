@@ -1,6 +1,6 @@
-package calebzhou.rdimc.celestech.command.impl.island;
+package calebzhou.rdimc.celestech.module.island.command;
 
-import calebzhou.rdimc.celestech.command.NoArgCommand;
+import calebzhou.rdimc.celestech.command.BaseCommand;
 import calebzhou.rdimc.celestech.constant.MessageType;
 import calebzhou.rdimc.celestech.constant.WorldConstants;
 import calebzhou.rdimc.celestech.model.ApiResponse;
@@ -18,13 +18,12 @@ import net.minecraft.world.World;
 
 import static calebzhou.rdimc.celestech.utils.TextUtils.sendChatMessage;
 
-public class DeleteCommand extends NoArgCommand {
+public class DeleteCommand extends BaseCommand {
     public DeleteCommand(String name, int permissionLevel) {
         super(name, permissionLevel,true);
     }
-    @Override
-    protected void onExecute(ServerPlayerEntity player) {
-        ApiResponse<Island> resp = HttpUtils.sendRequest("GET","island/"+player.getUuidAsString(),"idType=pid");
+    protected void onExecute(ServerPlayerEntity player,String arg) {
+        ApiResponse<Island> resp = HttpUtils.sendRequestV2("GET","island/"+player.getUuidAsString(),"idType=pid");
         Island data;CoordLocation location = null;
         try {
             data = resp.getData(Island.class);

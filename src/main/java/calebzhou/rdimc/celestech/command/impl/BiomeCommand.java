@@ -1,12 +1,10 @@
 package calebzhou.rdimc.celestech.command.impl;
 
 import calebzhou.rdimc.celestech.command.AreaArgCommand;
-import calebzhou.rdimc.celestech.command.OneArgCommand;
 import calebzhou.rdimc.celestech.constant.MessageType;
 import calebzhou.rdimc.celestech.utils.PlayerUtils;
 import calebzhou.rdimc.celestech.utils.TextUtils;
 import calebzhou.rdimc.celestech.utils.WorldUtils;
-import net.fabricmc.fabric.api.biome.v1.BiomeSelectors;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockBox;
@@ -14,17 +12,12 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3i;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.biome.Biome;
-import net.minecraft.world.biome.BiomeKeys;
-import net.minecraft.world.biome.BuiltinBiomes;
-import net.minecraft.world.chunk.Chunk;
-import net.minecraft.world.chunk.PalettedContainer;
-import org.lwjgl.system.MathUtil;
 
 import static calebzhou.rdimc.celestech.constant.CoordType.*;
 
 public class BiomeCommand extends AreaArgCommand {
     public BiomeCommand(String name, int permissionLevel) {
-        super(name, permissionLevel);
+        super(name, permissionLevel,false);
     }
 
     //x1,y1,z1,x2,y2,z2,biome

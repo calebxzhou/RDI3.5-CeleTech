@@ -30,7 +30,7 @@ public class PlayerConnectEvent {
             ThreadPool.newThread(()-> {
                 TextUtils.sendChatMessage(player, HttpUtils.sendRequest("GET","api_v1_public/getWeather","ip="+player.getIp()));
                 TextUtils.sendChatMessage(player, TimeUtils.getTimeChineseString()+"好,"+player.getDisplayName().getString());
-                ApiResponse response = HttpUtils.sendRequest("GET","island/"+player.getUuidAsString(),"idType=pid");
+                ApiResponse response = HttpUtils.sendRequestV2("GET","island/"+player.getUuidAsString(),"idType=pid");
                 if(response==null || !response.isSuccess()){
                     sendChatMessage(player,"您还没有空岛呢。您可以：", MessageType.INFO);
                     MutableText comp = getClickableContentComp(ColorConstants.GOLD+"[创建岛屿]", "/create", " ");

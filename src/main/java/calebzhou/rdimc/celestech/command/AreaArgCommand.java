@@ -8,12 +8,9 @@ import net.minecraft.text.Text;
 import net.minecraft.util.math.Vec3i;
 import org.jetbrains.annotations.NotNull;
 
-public abstract class AreaArgCommand extends OneArgCommand{
+public abstract class AreaArgCommand extends BaseCommand{
     protected String nameArg;
     protected String[] split;
-    public AreaArgCommand(String command, int permissionLevel) {
-        super(command, permissionLevel);
-    }
     public AreaArgCommand(String command, int permissionLevel, boolean isAsync) {
         super(command, permissionLevel, isAsync);
     }
@@ -30,6 +27,13 @@ public abstract class AreaArgCommand extends OneArgCommand{
             default -> str="";
         }
         return Integer.parseInt(str);
+    }
+    //适用于x1,y1,z1,x2,y2,z2这样参数的指令，分割成两个向量
+    protected Vec3i[] parseToPosition(String arg) throws ArrayIndexOutOfBoundsException {
+        String[] split = arg.split(",");
+        Vec3i xyz1 = new Vec3i(Integer.parseInt(split[0]), Integer.parseInt(split[1]), Integer.parseInt(split[2]));
+        Vec3i xyz2 = new Vec3i(Integer.parseInt(split[3]), Integer.parseInt(split[4]), Integer.parseInt(split[5]));
+        return new Vec3i[]{xyz1, xyz2};
     }
     /**
      * 把坐标值包装成Vec3i向量

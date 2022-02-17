@@ -16,7 +16,7 @@ import java.util.List;
 
 public class VirtualStructureCommand extends AreaArgCommand {
     public VirtualStructureCommand(String name, int permissionLevel) {
-        super(name, permissionLevel);
+        super(name, permissionLevel,false);
     }
 
     @Override

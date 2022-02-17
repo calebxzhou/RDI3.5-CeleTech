@@ -1,6 +1,6 @@
 package calebzhou.rdimc.celestech.command.impl;
 
-import calebzhou.rdimc.celestech.command.OneArgCommand;
+import calebzhou.rdimc.celestech.command.BaseCommand;
 import calebzhou.rdimc.celestech.constant.MessageType;
 import calebzhou.rdimc.celestech.utils.PlayerUtils;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -10,10 +10,10 @@ import static calebzhou.rdimc.celestech.RDICeleTech.tpaMap;
 import static calebzhou.rdimc.celestech.utils.TextUtils.sendChatMessage;
 import static calebzhou.rdimc.celestech.utils.TextUtils.sendClickableContent;
 
-public class TpreqCommand extends OneArgCommand {
+public class TpreqCommand extends BaseCommand {
 
     public TpreqCommand(String command, int permissionLevel) {
-        super(command, permissionLevel);
+        super(command, permissionLevel,false);
     }
 
     @Override
@@ -23,7 +23,7 @@ public class TpreqCommand extends OneArgCommand {
             boolean accept= Boolean.parseBoolean(split[0]);
             boolean visitOnly= Boolean.parseBoolean(split[1]);
             String fromPlayerId=split[2];
-            ServerPlayerEntity fromPlayer = PlayerUtils.getPlayerByUuid(fromPlayerId);
+            ServerPlayerEntity fromPlayer=  PlayerUtils.getPlayerByUuid(fromPlayerId);
             if(toPlayer ==null){
                 sendChatMessage(toPlayer,fromPlayer.getEntityName()+"不在线，您无法传送到对方。",MessageType.ERROR);
                 return;

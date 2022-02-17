@@ -1,7 +1,6 @@
-package calebzhou.rdimc.celestech.command.impl.island;
+package calebzhou.rdimc.celestech.module.island.command;
 
-import calebzhou.rdimc.celestech.command.NoArgCommand;
-import calebzhou.rdimc.celestech.constant.ColorConstants;
+import calebzhou.rdimc.celestech.command.BaseCommand;
 import calebzhou.rdimc.celestech.constant.MessageType;
 import calebzhou.rdimc.celestech.model.ApiResponse;
 import calebzhou.rdimc.celestech.model.CoordLocation;
@@ -16,14 +15,14 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import static calebzhou.rdimc.celestech.utils.TextUtils.sendChatMessage;
 import static calebzhou.rdimc.celestech.utils.TextUtils.sendClickableContent;
 
-public class CreateCommand extends NoArgCommand {
+public class CreateCommand extends BaseCommand {
     public CreateCommand(String name, int permissionLevel) {
         super(name, permissionLevel,true);
     }
 
     @Override
-    protected void onExecute(ServerPlayerEntity player) {
-        ApiResponse<Island> response = HttpUtils.sendRequest("POST", "island/" + player.getUuidAsString());
+    protected void onExecute(ServerPlayerEntity player,String arg) {
+        ApiResponse<Island> response = HttpUtils.sendRequestV2("POST", "island/" + player.getUuidAsString());
         sendChatMessage(player,"开始创建空岛,请您不要触摸键盘 或者 鼠标.", MessageType.INFO);
         if (response.getType().equals("success")) {
             player.addStatusEffect(new StatusEffectInstance(StatusEffects.SLOW_FALLING,20*30,1));
