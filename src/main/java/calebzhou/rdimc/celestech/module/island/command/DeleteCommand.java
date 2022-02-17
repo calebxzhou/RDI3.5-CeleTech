@@ -23,21 +23,18 @@ public class DeleteCommand extends BaseCommand {
         super(name, permissionLevel,true);
     }
     protected void onExecute(ServerPlayerEntity player,String arg) {
-        ApiResponse<Island> resp = HttpUtils.sendRequestV2("GET","island/"+player.getUuidAsString(),"idType=pid");
-        Island data;CoordLocation location = null;
+        ApiResponse<Island> resp = HttpUtils.sendRequestV2("GET","v2/island/"+player.getUuidAsString());
+        Island data;
+        CoordLocation location = null;
         try {
             data = resp.getData(Island.class);
             location = CoordLocation.fromString(data.getLocation());
         } catch (NullPointerException e) {
             sendChatMessage(player,"您没有空岛!", MessageType.ERROR);
         }
-        ApiResponse response = HttpUtils.sendRequest("DELETE","island/"+player.getUuidAsString());
+        ApiResponse response = HttpUtils.sendRequestV2("DELETE","v2/island/"+player.getUuidAsString());
         if(!response.isSuccess()){
             sendChatMessage(player,response);
-            return;
-        }
-        if(location==null){
-            sendChatMessage(player,"您没有空岛!", MessageType.ERROR);
             return;
         }
         int offset=100;

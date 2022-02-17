@@ -19,7 +19,7 @@ public class KickCommand extends BaseCommand {
             TextUtils.sendChatMessage(fromPlayer,"您不可以踢出自己!!", MessageType.ERROR);
             return;
         }
-        ApiResponse response = HttpUtils.sendRequestV2("DELETE", "island/" + fromPlayer.getUuidAsString(), "isOwner=true","member=" + PlayerUtils.getPlayerByName(kickPlayer).getUuidAsString());
+        ApiResponse response = HttpUtils.sendRequestV2("DELETE", "v2/island/" + fromPlayer.getUuidAsString(), "isOwner=true","member=" + PlayerUtils.getPlayerByName(kickPlayer).getUuidAsString());
         TextUtils.sendChatMessage(fromPlayer,response);
         TextUtils.sendChatMessage(PlayerUtils.getPlayerByName(kickPlayer),fromPlayer.getEntityName()+"删除了他的空岛!");
 

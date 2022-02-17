@@ -19,7 +19,7 @@ public class JoinCommand extends BaseCommand {
             TextUtils.sendChatMessage(player,"例如 /join 12312312", MessageType.INFO);
             return;
         }
-        ApiResponse response = HttpUtils.sendRequestV2("PUT", "island/" + arg, "member=" + player.getUuidAsString(),"iid="+arg);
+        ApiResponse response = HttpUtils.sendRequestV2("PUT", "v2/island/" + arg, "member=" + player.getUuidAsString(),"iid="+arg);
         TextUtils.sendChatMessage(player,"您成功加入了空岛！");
         TextUtils.sendChatMessage(player,response);
     }

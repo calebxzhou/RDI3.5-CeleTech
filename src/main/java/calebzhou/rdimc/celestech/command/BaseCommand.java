@@ -1,8 +1,12 @@
 package calebzhou.rdimc.celestech.command;
 
 import calebzhou.rdimc.celestech.constant.MessageType;
+import calebzhou.rdimc.celestech.function.PlayerLoadingBar;
+import calebzhou.rdimc.celestech.module.island.IslandException;
 import calebzhou.rdimc.celestech.utils.TextUtils;
 import calebzhou.rdimc.celestech.utils.ThreadPool;
+import com.google.common.collect.LinkedHashMultimap;
+import com.google.common.collect.Multimap;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.minecraft.command.argument.MessageArgumentType;
@@ -11,9 +15,13 @@ import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
-import net.minecraft.util.math.Vec3i;
+
+import java.util.Arrays;
+import java.util.IntSummaryStatistics;
 
 public abstract class BaseCommand {
+    //指令执行时间map
+    public static final Multimap<String,Integer> execTimeMap = LinkedHashMultimap.create();
     //指令英文名称
     private final String commandName;
     //是否异步执行
@@ -38,27 +46,44 @@ public abstract class BaseCommand {
     }
 
     protected int execute(ServerCommandSource source, Text arg) throws CommandSyntaxException {
+        long t1=System.currentTimeMillis();
         ServerPlayerEntity player = source.getPlayer();
-        if(isAsync){
-            ThreadPool.newThread(()->{
-                try {
-                    onExecute(player,arg.getString());
-                } catch (NumberFormatException e) {
+        if(execTimeMap.size()>1024)
+            execTimeMap.clear();
+        //if(isAsync){
+        ThreadPool.newThread(()->{
+            IntSummaryStatistics summaryStats = execTimeMap.get(commandName).stream()
+                    .mapToInt((a) -> a)
+                    .summaryStatistics();
+            double average = summaryStats.getAverage();
+            PlayerLoadingBar.send(player,average);
+            try {
+                onExecute(player, arg.getString());
+            }catch (IslandException e){
+                    TextUtils.sendChatMessage(player,e.getMessage(),MessageType.ERROR);
+                /*} catch (NumberFormatException e) {
                     TextUtils.sendChatMessage(player, "数字格式错误", MessageType.ERROR);
                 } catch (IndexOutOfBoundsException e) {
                     TextUtils.sendChatMessage(player, "参数数量错误", MessageType.ERROR);
                 } catch (IllegalArgumentException e) {
                     TextUtils.sendChatMessage(player, "参数类型错误", MessageType.ERROR);
                 } catch (NullPointerException e) {
-                    TextUtils.sendChatMessage(player, "目标不能为空！", MessageType.ERROR);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    TextUtils.sendChatMessage(player, e.getMessage(), MessageType.ERROR);
-                }
-            });
-        } else{
+                    TextUtils.sendChatMessage(player, "目标不能为空！", MessageType.ERROR);*/
+            } catch (Exception e) {
+                e.printStackTrace();
+                TextUtils.sendChatMessage(player, e.getMessage(), MessageType.ERROR);
+            }finally {
+                long t2=System.currentTimeMillis();
+                int deltaT = (int) (t2-t1);
+                execTimeMap.put(commandName,deltaT);
+            }
+
+        });
+        /*} else{
             try {
                 onExecute(player, arg.getString());
+            }catch (IslandException e){
+                TextUtils.sendChatMessage(player,e.getMessage(),MessageType.ERROR);
             } catch (NumberFormatException e) {
                 TextUtils.sendChatMessage(player, "数字格式错误", MessageType.ERROR);
             } catch (IndexOutOfBoundsException e) {
@@ -71,7 +96,8 @@ public abstract class BaseCommand {
                 e.printStackTrace();
                 TextUtils.sendChatMessage(player, e.getMessage(), MessageType.ERROR);
             }
-        }
+        }*/
+
         return 1;
     }
 

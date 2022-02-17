@@ -22,7 +22,7 @@ public class CreateCommand extends BaseCommand {
 
     @Override
     protected void onExecute(ServerPlayerEntity player,String arg) {
-        ApiResponse<Island> response = HttpUtils.sendRequestV2("POST", "island/" + player.getUuidAsString());
+        ApiResponse<Island> response = HttpUtils.sendRequestV2("POST", "v2/island/" + player.getUuidAsString());
         sendChatMessage(player,"开始创建空岛,请您不要触摸键盘 或者 鼠标.", MessageType.INFO);
         if (response.getType().equals("success")) {
             player.addStatusEffect(new StatusEffectInstance(StatusEffects.SLOW_FALLING,20*30,1));

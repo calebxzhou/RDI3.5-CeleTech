@@ -21,7 +21,7 @@ public class LocateCommand extends BaseCommand {
             sendChatMessage(player,"您只能在自己的岛屿上设置传送点.", MessageType.ERROR);
             return;
         }
-        ApiResponse response = HttpUtils.sendRequestV2("PUT","island/"+player.getUuidAsString(),"location="+CoordLocation.fromPlayer(player).toString());
+        ApiResponse response = HttpUtils.sendRequestV2("PUT","v2/island/"+player.getUuidAsString(),"location="+CoordLocation.fromPlayer(player).toString());
 
         sendChatMessage(player,response);
     }

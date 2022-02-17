@@ -5,6 +5,7 @@ import calebzhou.rdimc.celestech.module.island.IslandException;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.google.gson.JsonPrimitive;
 import net.minecraft.client.realms.Request;
 import org.apache.commons.lang3.StringUtils;
 
@@ -19,7 +20,7 @@ import java.net.http.HttpResponse;
 import java.util.Arrays;
 
 public class HttpUtils {
-    private static final String ADDR="http://www.davisoft.cn:26888/";
+    private static final String ADDR="http://localhost:26888/";
     public static URL getFullUrl(String shortUrl){
         try {
             return new URL(ADDR + shortUrl);
@@ -71,7 +72,7 @@ public class HttpUtils {
 
     public static ApiResponse sendRequestV2(String type, String shortUrl,String... params){
         String requestRaw = sendRequestRaw(type, shortUrl, params);
-        JsonObject rootObj = JsonParser.parseString(requestRaw).getAsJsonPrimitive().getAsJsonObject();
+        JsonObject rootObj = JsonParser.parseString(requestRaw).getAsJsonObject();
         //出现错误 handler
         JsonObject errorObj = rootObj.getAsJsonObject("error");
         if (errorObj != null) {
@@ -81,8 +82,8 @@ public class HttpUtils {
         //-------------
         JsonObject succObj = rootObj.getAsJsonObject("response");
         if(succObj != null){
-            String succMsg = succObj.get("message").getAsString();
-            ApiResponse response = new ApiResponse<>("success",succMsg,succObj.get("body").getAsString());
+            String succMsg = succObj.get("message")==null?"":succObj.get("message").getAsString();
+            ApiResponse response = new ApiResponse<>("success",succMsg,succObj.get("body")==null?"":succObj.get("body").toString());
             return response;
         }
         return null;

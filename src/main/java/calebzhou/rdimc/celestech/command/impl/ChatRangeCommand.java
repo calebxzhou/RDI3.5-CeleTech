@@ -27,7 +27,7 @@ public class ChatRangeCommand extends BaseCommand {
             chatRangeMap.remove(pid);
             TextUtils.sendChatMessage(player,"成功设定为[全服]聊天。您的聊天内容全服均可见。", MessageType.SUCCESS);
         }else if(range=='i'){
-            ApiResponse response = HttpUtils.sendRequest("GET","island/"+pid,"idType=pid");
+            ApiResponse response = HttpUtils.sendRequest("GET","v2/island/"+pid,"idType=pid");
             Island island = (Island) response.getData(Island.class);
             if(island==null){
                 TextUtils.sendChatMessage(player,"您没有岛屿！",MessageType.ERROR);

@@ -19,7 +19,7 @@ public class InviteCommand extends BaseCommand {
             TextUtils.sendChatMessage(player,"您不可以邀请自己加入岛屿!",MessageType.ERROR);
             return;
         }
-        ApiResponse response = HttpUtils.sendRequestV2("PUT", "island/" + player.getUuidAsString(), "member=" + PlayerUtils.getPlayerByName(invitedPlayer).getUuidAsString());
+        ApiResponse response = HttpUtils.sendRequestV2("PUT", "v2/island/" + player.getUuidAsString(), "member=" + PlayerUtils.getPlayerByName(invitedPlayer).getUuidAsString());
         TextUtils.sendChatMessage(player,"您邀请了"+invitedPlayer);
         TextUtils.sendChatMessage(player,response);
         if(response.isSuccess()){

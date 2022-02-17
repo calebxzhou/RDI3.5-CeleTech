@@ -26,7 +26,7 @@ public class HomeCommand extends BaseCommand {
             sendChatMessage(player,"引力太强, 无法离开此地.", MessageType.ERROR);
             return;
         }
-        ApiResponse<Island> response = HttpUtils.sendRequestV2("GET","island/"+player.getUuidAsString(),"idType=pid");
+        ApiResponse<Island> response = HttpUtils.sendRequestV2("GET","v2/island/"+player.getUuidAsString(),"idType=pid");
         try {
             if(response.isSuccess()){
                 player.addStatusEffect(new StatusEffectInstance(StatusEffects.SLOW_FALLING,20*2,0));

@@ -16,7 +16,7 @@ public class IslandCommand extends BaseCommand {
 
     @Override
     protected void onExecute(ServerPlayerEntity player,String arg) {
-        ApiResponse<Island> response = HttpUtils.sendRequestV2("GET","island/"+player.getUuidAsString(),"idType=pid");
+        ApiResponse<Island> response = HttpUtils.sendRequestV2("GET","v2/island/"+player.getUuidAsString(),"idType=pid");
         try {
             if(response.isSuccess()){
                 sendChatMessage(player,"岛id："+response.getData(Island.class).getIslandId());

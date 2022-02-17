@@ -13,7 +13,7 @@ public class QuitCommand extends BaseCommand {
 
     @Override
     protected void onExecute(ServerPlayerEntity player,String arg) {
-        ApiResponse response = HttpUtils.sendRequestV2("DELETE", "island/" + player.getUuidAsString(), "isOwner=false");
+        ApiResponse response = HttpUtils.sendRequestV2("DELETE", "v2/island/" + player.getUuidAsString(), "isOwner=false");
         TextUtils.sendChatMessage(player,response);
     }
 }
