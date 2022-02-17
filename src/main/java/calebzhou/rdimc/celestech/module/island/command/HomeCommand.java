@@ -22,20 +22,17 @@ public class HomeCommand extends BaseCommand {
 
     @Override
     protected void onExecute(ServerPlayerEntity player,String arg) {
-        if(!PlayerUtils.isOverworld(player)){
+        /*if(!PlayerUtils.isOverworld(player)){
             sendChatMessage(player,"引力太强, 无法离开此地.", MessageType.ERROR);
             return;
-        }
-        ApiResponse<Island> response = HttpUtils.sendRequestV2("GET","v2/island/"+player.getUuidAsString(),"idType=pid");
-        try {
+        }*/
+        ApiResponse<Island> response = HttpUtils.sendRequestV2("GET","v2/island/"+player.getUuidAsString());
             if(response.isSuccess()){
                 player.addStatusEffect(new StatusEffectInstance(StatusEffects.SLOW_FALLING,20*2,0));
                 PlayerUtils.teleport(player, Objects.requireNonNull(CoordLocation.fromString(Objects.requireNonNull(response.getData(Island.class)).getLocation()).add(0.5,2,0.5)));
             }
             sendChatMessage(player,response);
-        } catch (NullPointerException e) {
-            sendChatMessage(player,"空岛不存在!",MessageType.ERROR);
-        }
+
 
     }
 

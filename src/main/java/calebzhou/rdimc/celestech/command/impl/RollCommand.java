@@ -16,7 +16,7 @@ import java.util.stream.Collectors;
 
 public class RollCommand extends BaseCommand {
     public RollCommand(String name, int permissionLevel) {
-        super(name, permissionLevel,true);
+        super(name, permissionLevel,true,2000);
     }
 
     @Override
@@ -34,21 +34,33 @@ public class RollCommand extends BaseCommand {
         List<RollPrize> prizeSuccessList = new ArrayList<>();
         for(int i=0;i<rollTimes;++i){
             TextUtils.sendChatMessage(player,String.format("第%d次抽奖..",i+1),MessageType.INFO);
+            final RollPrize prize = dataList.get(RDICeleTech.RANDOM.nextInt(0,dataList.size()-1));
+            final List<String> itemStrListCopy = itemStrList;
+            ThreadPool.newThread(()->{
+                //随机打乱显示
+                for(int j=0;j<10;++j){
+                    List<String> itemStrListCopy2 = itemStrListCopy;
+                    if(rollTimes%2==0)
+                        itemStrListCopy2 = itemStrListCopy.stream().map(as-> ColorConstants.GOLD + as).collect(Collectors.toList());
+                    Collections.shuffle(itemStrListCopy2);
+                    String itemStr = Arrays.toString(itemStrListCopy2.toArray());
+                    TextUtils.sendActionMessage(player, itemStr.substring(itemStr.length()/2-10,itemStr.length()/2+10));
+                    try {
+                        Thread.sleep(200);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+
+            });
+
             try {
                 Thread.sleep(2000);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-            RollPrize prize = dataList.get(RDICeleTech.RANDOM.nextInt(0,dataList.size()-1));
-            List<String> itemStrListCopy = itemStrList;
-            //随机打乱显示
-            if(rollTimes%2==0)
-                itemStrListCopy = itemStrListCopy.stream().map(as-> ColorConstants.GOLD + as).collect(Collectors.toList());
-            Collections.shuffle(itemStrListCopy);
-            String itemStr = Arrays.toString(itemStrListCopy.toArray());
 
 
-            TextUtils.sendActionMessage(player, itemStr.substring(itemStr.length()/2-10,itemStr.length()/2+10));
             if(!prize.getPrizeSuccessful()){
                 TextUtils.sendChatMessage(player, String.format("您什么都没有抽到。",i+1), MessageType.ERROR);
                 continue;

@@ -27,13 +27,19 @@ public abstract class BaseCommand {
     //是否异步执行
     private final boolean isAsync;
 
+    protected long commandExecBaseTimeMs = 0;
 
     public BaseCommand(String name, int permissionLevel,boolean isAsync) {
         this.commandName = name;
         this.builder = CommandManager.literal(name).requires(source -> source.hasPermissionLevel(permissionLevel));
         this.isAsync = isAsync;
     }
-
+    public BaseCommand(String name, int permissionLevel,boolean isAsync,long commandExecBaseTimeMs) {
+        this.commandName = name;
+        this.builder = CommandManager.literal(name).requires(source -> source.hasPermissionLevel(permissionLevel));
+        this.isAsync = isAsync;
+        this.commandExecBaseTimeMs=commandExecBaseTimeMs;
+    }
     protected LiteralArgumentBuilder<ServerCommandSource> builder;
 
     public LiteralArgumentBuilder<ServerCommandSource> getBuilder() {
@@ -56,7 +62,7 @@ public abstract class BaseCommand {
                     .mapToInt((a) -> a)
                     .summaryStatistics();
             double average = summaryStats.getAverage();
-            PlayerLoadingBar.send(player,average);
+            PlayerLoadingBar.send(player,commandExecBaseTimeMs+average);
             try {
                 onExecute(player, arg.getString());
             }catch (IslandException e){
@@ -73,6 +79,7 @@ public abstract class BaseCommand {
                 e.printStackTrace();
                 TextUtils.sendChatMessage(player, e.getMessage(), MessageType.ERROR);
             }finally {
+
                 long t2=System.currentTimeMillis();
                 int deltaT = (int) (t2-t1);
                 execTimeMap.put(commandName,deltaT);

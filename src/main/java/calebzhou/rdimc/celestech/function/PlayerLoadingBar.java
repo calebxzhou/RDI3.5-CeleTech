@@ -27,12 +27,12 @@ public class PlayerLoadingBar extends Thread {
 
     @Override
     public void run() {
-        ServerBossBar bossBar = new ServerBossBar(new LiteralText("指令运行中"), BossBar.Color.GREEN, BossBar.Style.PROGRESS);
+        ServerBossBar bossBar = new ServerBossBar(new LiteralText("指令运行中"), BossBar.Color.BLUE, BossBar.Style.PROGRESS);
         bossBar.setPercent(0.0f);
         int percent = 100;
         player.networkHandler.sendPacket(BossBarS2CPacket.add(bossBar));
         for(int i=0;i<percent;++i){
-            bossBar.setPercent((float) (0.01*i));
+            bossBar.setPercent((float) (0.015*i));
             try {
                 Thread.sleep((long) (timeElapseMs/percent));
             } catch (InterruptedException e) {
