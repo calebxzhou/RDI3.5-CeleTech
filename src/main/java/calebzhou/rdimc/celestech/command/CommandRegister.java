@@ -1,9 +1,10 @@
 package calebzhou.rdimc.celestech.command;
 
 import calebzhou.rdimc.celestech.command.impl.*;
-import calebzhou.rdimc.celestech.command.impl.protect.SetProtectCommand;
+import calebzhou.rdimc.celestech.module.protect.SetProtectCommand;
 import calebzhou.rdimc.celestech.event.RegisterCommandsCallback;
 import calebzhou.rdimc.celestech.module.island.command.*;
+import calebzhou.rdimc.celestech.module.structure.VirtualStructureCommand;
 import net.minecraft.util.ActionResult;
 
 import java.util.ArrayList;

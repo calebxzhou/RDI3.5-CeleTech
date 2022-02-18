@@ -1,4 +1,4 @@
-package calebzhou.rdimc.celestech.command.impl;
+package calebzhou.rdimc.celestech.module.structure;
 
 import calebzhou.rdimc.celestech.RDICeleTech;
 import calebzhou.rdimc.celestech.command.AreaArgCommand;

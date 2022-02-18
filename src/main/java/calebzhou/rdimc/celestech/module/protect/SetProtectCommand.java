@@ -1,4 +1,4 @@
-package calebzhou.rdimc.celestech.command.impl.protect;
+package calebzhou.rdimc.celestech.module.protect;
 
 import calebzhou.rdimc.celestech.command.AreaArgCommand;
 import calebzhou.rdimc.celestech.constant.MessageType;
