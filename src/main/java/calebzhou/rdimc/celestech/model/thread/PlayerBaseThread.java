@@ -12,28 +12,23 @@ public abstract class PlayerBaseThread extends Thread{
         this.playerName=playerName;
         this.player= PlayerUtils.getPlayerByName(playerName);
     }
-    @Override
-    public void run() {
-        try {
-            Thread.sleep(500);
-            //玩家下线则终止线程
-            /*if(!ThreadPool.isPlayerThreadStarted(playerName) || player == null){
-                this.interrupt();
-                return;
-            }*/
-            refreshPlayer();
-            execute();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-
-        } catch (NullPointerException e){
-            //获取不到玩家
-            this.interrupt();
-            return;
-        }
-    }
-    protected abstract void execute() throws InterruptedException;
     protected void refreshPlayer(){
         this.player = PlayerUtils.getPlayerByName(playerName);
     }
+
+    @Override
+    public void run() {
+        try {
+            while (true){
+                Thread.sleep(500);
+                refreshPlayer();
+                execute();
+            }
+        } catch (NullPointerException|InterruptedException e){
+            //获取不到玩家
+            this.interrupt();
+        }
+    }
+    protected abstract void execute() throws InterruptedException;
+
 }

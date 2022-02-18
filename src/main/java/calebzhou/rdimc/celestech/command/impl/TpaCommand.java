@@ -1,5 +1,6 @@
 package calebzhou.rdimc.celestech.command.impl;
 
+import calebzhou.rdimc.celestech.command.ArgCommand;
 import calebzhou.rdimc.celestech.command.BaseCommand;
 import calebzhou.rdimc.celestech.constant.ColorConstants;
 import calebzhou.rdimc.celestech.constant.MessageType;
@@ -12,14 +13,14 @@ import static calebzhou.rdimc.celestech.RDICeleTech.tpaMap;
 import static calebzhou.rdimc.celestech.utils.TextUtils.getClickableContentComp;
 import static calebzhou.rdimc.celestech.utils.TextUtils.sendChatMessage;
 
-public class TpaCommand extends BaseCommand {
+public class TpaCommand extends BaseCommand implements ArgCommand {
 
     public TpaCommand(String command, int permissionLevel) {
         super(command, permissionLevel,false);
     }
 
     @Override
-    protected void onExecute(ServerPlayerEntity fromPlayer, String toPlayer) {
+    public void onExecute(ServerPlayerEntity fromPlayer, String toPlayer) {
         String fromPlayerId = fromPlayer.getUuidAsString();
         ServerPlayerEntity toPlayero = PlayerUtils.getPlayerByName(toPlayer);
         String toPlayerId = toPlayero.getUuidAsString();

@@ -20,7 +20,7 @@ import java.net.http.HttpResponse;
 import java.util.Arrays;
 
 public class HttpUtils {
-    private static final String ADDR="http://localhost:26888/";
+    private static final String ADDR="http://www.davisoft.cn:26888/";
     public static URL getFullUrl(String shortUrl){
         try {
             return new URL(ADDR + shortUrl);

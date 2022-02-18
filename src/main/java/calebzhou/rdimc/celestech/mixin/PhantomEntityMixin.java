@@ -62,6 +62,6 @@ class PhantomSpawnerMixin{
 
     )
     private int changeAmount(int c){
-        return 20;
+        return 26;
     }
 }

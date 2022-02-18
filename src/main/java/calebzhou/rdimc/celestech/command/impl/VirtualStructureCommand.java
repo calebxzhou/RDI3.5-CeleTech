@@ -2,7 +2,7 @@ package calebzhou.rdimc.celestech.command.impl;
 
 import calebzhou.rdimc.celestech.RDICeleTech;
 import calebzhou.rdimc.celestech.command.AreaArgCommand;
-import calebzhou.rdimc.celestech.constant.CoordType;
+import calebzhou.rdimc.celestech.command.ArgCommand;
 import calebzhou.rdimc.celestech.constant.MessageType;
 import calebzhou.rdimc.celestech.model.BorderedBox;
 import calebzhou.rdimc.celestech.model.VirtualStructure;
@@ -14,13 +14,13 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class VirtualStructureCommand extends AreaArgCommand {
+public class VirtualStructureCommand extends AreaArgCommand implements ArgCommand {
     public VirtualStructureCommand(String name, int permissionLevel) {
         super(name, permissionLevel,false);
     }
 
     @Override
-    protected void onExecute(ServerPlayerEntity player, String arg) {
+    public void onExecute(ServerPlayerEntity player, String arg) {
         super.onExecute(player, arg);
         int xp = 2;
         VirtualStructure.Type type = VirtualStructure.Type.valueOf(nameArg);

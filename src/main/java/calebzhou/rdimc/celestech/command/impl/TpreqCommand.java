@@ -1,5 +1,6 @@
 package calebzhou.rdimc.celestech.command.impl;
 
+import calebzhou.rdimc.celestech.command.ArgCommand;
 import calebzhou.rdimc.celestech.command.BaseCommand;
 import calebzhou.rdimc.celestech.constant.MessageType;
 import calebzhou.rdimc.celestech.utils.PlayerUtils;
@@ -10,14 +11,14 @@ import static calebzhou.rdimc.celestech.RDICeleTech.tpaMap;
 import static calebzhou.rdimc.celestech.utils.TextUtils.sendChatMessage;
 import static calebzhou.rdimc.celestech.utils.TextUtils.sendClickableContent;
 
-public class TpreqCommand extends BaseCommand {
+public class TpreqCommand extends BaseCommand implements ArgCommand {
 
     public TpreqCommand(String command, int permissionLevel) {
         super(command, permissionLevel,false);
     }
 
     @Override
-    protected void onExecute(ServerPlayerEntity toPlayer, String arg) {
+    public void onExecute(ServerPlayerEntity toPlayer, String arg) {
         try {
             String[] split = arg.split("_");
             boolean accept= Boolean.parseBoolean(split[0]);

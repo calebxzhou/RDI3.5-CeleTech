@@ -8,6 +8,6 @@ import org.spongepowered.asm.mixin.Shadow;
 
 @Mixin(SpawnHelper.class)
 public class MixinSpawnHelper {
-    @Shadow @Final @Mutable
-    static int CHUNK_AREA = 1;
+    /*@Shadow @Final @Mutable
+    static int CHUNK_AREA = 1;*/
 }

@@ -1,14 +1,11 @@
 package calebzhou.rdimc.celestech.command;
 
 import calebzhou.rdimc.celestech.constant.CoordType;
-import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.text.Text;
 import net.minecraft.util.math.Vec3i;
 import org.jetbrains.annotations.NotNull;
 
-public abstract class AreaArgCommand extends BaseCommand{
+public abstract class AreaArgCommand extends BaseCommand implements ArgCommand{
     protected String nameArg;
     protected String[] split;
     public AreaArgCommand(String command, int permissionLevel, boolean isAsync) {
@@ -54,7 +51,7 @@ public abstract class AreaArgCommand extends BaseCommand{
         }
     }
 
-    protected void onExecute(ServerPlayerEntity player, String arg){
+    public void onExecute(ServerPlayerEntity player, String arg){
         split = arg.split(",");
         nameArg = split[6];
     }

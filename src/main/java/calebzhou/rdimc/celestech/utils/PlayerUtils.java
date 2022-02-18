@@ -5,9 +5,7 @@ import calebzhou.rdimc.celestech.constant.ColorConstants;
 import calebzhou.rdimc.celestech.constant.WorldConstants;
 import calebzhou.rdimc.celestech.model.CoordLocation;
 import calebzhou.rdimc.celestech.model.PlayerLocation;
-import calebzhou.rdimc.celestech.model.thread.LoadingBarThread;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
@@ -34,10 +32,10 @@ public class PlayerUtils {
     }
     //传送,通过CoordLocation
     public static void teleport(PlayerEntity player, CoordLocation location){
-        teleportPlayer(player,"minecraft:overworld", location.getPosX(), location.getPosY(), location.getPosZ(), 0f,0f);
+        teleportPlayer(player,WorldConstants.DEFAULT_WORLD, location.getPosX(), location.getPosY(), location.getPosZ(), 0f,0f);
     }
     public static void teleport(PlayerEntity player, PlayerLocation location){
-        teleportPlayer(player,"minecraft:overworld", location.getPosX(), location.getPosY(), location.getPosZ(), location.getYaw(),location.getPitch());
+        teleportPlayer(player,WorldConstants.DEFAULT_WORLD, location.getPosX(), location.getPosY(), location.getPosZ(), location.getYaw(),location.getPitch());
     }
     //传送1到2 玩家
     public static void teleportPlayer(PlayerEntity player1,PlayerEntity player2){
@@ -66,19 +64,9 @@ public class PlayerUtils {
     public static void placeBlock(World world, CoordLocation location, BlockState blockState){
        world.setBlockState(new BlockPos(location.getPosiX(),location.getPosiY(),location.getPosiZ()), blockState);
     }
-    //发送进度条
-    public static void sendLoading(ServerPlayerEntity player){
-        ThreadPool.newThread(new LoadingBarThread(player,1500));
-    }
     //发送新手套装
     public static void givePlayerInitialKit(ServerPlayerEntity player){
         player.getInventory().insertStack(new ItemStack(Items.OAK_SAPLING,1));
-       // player.getInventory().insertStack(new ItemStack(Items.DIRT,1));
-       /* player.getInventory().insertStack(new ItemStack(Items.WATER_BUCKET,1));
-        player.getInventory().insertStack(new ItemStack(Items.LAVA_BUCKET,1));*/
-        /*player.getInventory().insertStack(new ItemStack(Items.GRASS_BLOCK,8));
-        player.getInventory().insertStack(new ItemStack(Items.DIRT,16));
-        player.getInventory().insertStack(new ItemStack(Items.CHEST,1));*/
     }
     public static BlockPos getPlayerLookingAtBlock(PlayerEntity player, boolean isFluid){
         BlockHitResult rays=(BlockHitResult) player.raycast(64.0D,0.0f,isFluid);

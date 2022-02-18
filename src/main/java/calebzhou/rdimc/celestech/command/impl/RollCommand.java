@@ -1,6 +1,7 @@
 package calebzhou.rdimc.celestech.command.impl;
 
 import calebzhou.rdimc.celestech.RDICeleTech;
+import calebzhou.rdimc.celestech.command.ArgCommand;
 import calebzhou.rdimc.celestech.command.BaseCommand;
 import calebzhou.rdimc.celestech.constant.ColorConstants;
 import calebzhou.rdimc.celestech.constant.MessageType;
@@ -14,13 +15,13 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class RollCommand extends BaseCommand {
+public class RollCommand extends BaseCommand implements ArgCommand {
     public RollCommand(String name, int permissionLevel) {
-        super(name, permissionLevel,true,2000);
+        super(name, permissionLevel,true);
     }
 
     @Override
-    protected void onExecute(ServerPlayerEntity player, String arg) {
+    public void onExecute(ServerPlayerEntity player, String arg) {
         final int rollTimes = Integer.parseInt(arg);
         if(!PlayerUtils.checkExpLevel(player,rollTimes)){
             TextUtils.sendChatMessage(player,"您的经验不足，抽奖需要"+rollTimes+"级经验");

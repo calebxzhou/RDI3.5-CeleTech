@@ -22,7 +22,7 @@ public class MixinMoreZombiePiglin {
      */
     @Overwrite
     public void randomTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
-        if (world.getDimension().isNatural() && world.getGameRules().getBoolean(GameRules.DO_MOB_SPAWNING) && RDICeleTech.RANDOM.nextInt(20) < world.getDifficulty().getId()) {
+        if (world.getDimension().isNatural() && world.getGameRules().getBoolean(GameRules.DO_MOB_SPAWNING) && RDICeleTech.RANDOM.nextInt(1000) < world.getDifficulty().getId()) {
             ZombifiedPiglinEntity entity;
             while (world.getBlockState(pos).isOf((NetherPortalBlock)(Object)this)) {
                 pos = pos.down();

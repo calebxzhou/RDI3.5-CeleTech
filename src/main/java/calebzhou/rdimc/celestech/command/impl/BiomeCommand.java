@@ -1,6 +1,7 @@
 package calebzhou.rdimc.celestech.command.impl;
 
 import calebzhou.rdimc.celestech.command.AreaArgCommand;
+import calebzhou.rdimc.celestech.constant.CoordType;
 import calebzhou.rdimc.celestech.constant.MessageType;
 import calebzhou.rdimc.celestech.utils.PlayerUtils;
 import calebzhou.rdimc.celestech.utils.TextUtils;
@@ -22,15 +23,15 @@ public class BiomeCommand extends AreaArgCommand {
 
     //x1,y1,z1,x2,y2,z2,biome
     @Override
-    protected void onExecute(ServerPlayerEntity player, String arg) {
+    public void onExecute(ServerPlayerEntity player, String arg) {
             super.onExecute(player, arg);
             Biome biome = player.getServer().getRegistryManager().get(Registry.BIOME_KEY).get(new Identifier(nameArg));
             if(biome==null){
                 TextUtils.sendChatMessage(player,"生物群系"+nameArg+"不存在 ,请您输入生物群系的标识符。", MessageType.ERROR);
                 return;
             }
-            Vec3i xyz1=getCoordVec(x1);
-            Vec3i xyz2=getCoordVec(x2);
+            Vec3i xyz1=getCoordVec(CoordType.xyz1);
+            Vec3i xyz2=getCoordVec(CoordType.xyz2);
             double dist = Math.sqrt(xyz1.getSquaredDistance(xyz2))*1.5;
             if(!PlayerUtils.checkExpLevel(player,(int)dist)){
                 TextUtils.sendChatMessage(player,"变更您指定这一区域的生物群系，需要"+(int)dist+"级经验！", MessageType.ERROR);
