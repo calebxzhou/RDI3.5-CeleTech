@@ -1,7 +1,7 @@
 package calebzhou.rdimc.celestech.command;
 
 import calebzhou.rdimc.celestech.command.impl.*;
-import calebzhou.rdimc.celestech.module.protect.SetProtectCommand;
+import calebzhou.rdimc.celestech.module.protect.ProtectSetCommand;
 import calebzhou.rdimc.celestech.event.RegisterCommandsCallback;
 import calebzhou.rdimc.celestech.module.island.command.*;
 import calebzhou.rdimc.celestech.module.structure.VirtualStructureCommand;
@@ -15,12 +15,13 @@ public class CommandRegister {
 
         commands.add(new BiomeCommand("bio",0));
         commands.add(new CreateCommand("create",0));
-        commands.add(new DeleteCommand("del",0));
+        commands.add(new DeleteCommand("delete",0));
         commands.add(new HomeCommand("home",0));
         commands.add(new InviteCommand("invite",0));
         commands.add(new KickCommand("kick",0));
         commands.add(new IslandCommand("island",0));
         commands.add(new LeapCommand("leap",0));
+        commands.add(new BindCommand("bind",0));
         commands.add(new LocateCommand("loca",0));
         commands.add(new QuitCommand("quit",0));
         commands.add(new ChatRangeCommand("chatrange",0));
@@ -32,7 +33,7 @@ public class CommandRegister {
         commands.add(new TpreqCommand("tpreq",0));
         commands.add(new TpsCommand("tps",0));
         commands.add(new PayExperienceCommand("pay",0));
-        commands.add(new SetProtectCommand("protect",0));
+        commands.add(new ProtectSetCommand("protect-set",0));
         commands.add(new TrashCommand("trash",0));
         commands.add(new VirtualStructureCommand("vs",0));
         //commands.add(new JoinCommand("join",0));

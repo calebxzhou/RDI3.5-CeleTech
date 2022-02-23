@@ -16,10 +16,7 @@ public class PayExperienceCommand extends BaseCommand implements ArgCommand {
     public void onExecute(ServerPlayerEntity player, String arg) {
         String[] split = arg.split(",");
         int exp = Integer.parseInt(split[1]);
-        if(!PlayerUtils.checkExpLevel(player,exp)){
-            TextUtils.sendChatMessage(player,"您没有这么多经验", MessageType.ERROR);
-            return;
-        }
+        PlayerUtils.checkExpLevel(player,exp);
         ServerPlayerEntity toPlayer = PlayerUtils.getPlayerByName(split[0]);
         toPlayer.experienceLevel+=exp;
         TextUtils.sendChatMessage(toPlayer,player.getEntityName()+"给了您"+exp+"级经验.");

@@ -1,5 +1,6 @@
 package calebzhou.rdimc.celestech.utils;
 
+import calebzhou.rdimc.celestech.RDICeleTech;
 import calebzhou.rdimc.celestech.model.ApiResponse;
 import calebzhou.rdimc.celestech.module.island.IslandException;
 import com.google.gson.Gson;
@@ -20,7 +21,7 @@ import java.net.http.HttpResponse;
 import java.util.Arrays;
 
 public class HttpUtils {
-    private static final String ADDR="http://www.davisoft.cn:26888/";
+    private static final String ADDR= RDICeleTech.DEBUG?"http://localhost:26888/":"http://www.davisoft.cn:26888/";
     public static URL getFullUrl(String shortUrl){
         try {
             return new URL(ADDR + shortUrl);

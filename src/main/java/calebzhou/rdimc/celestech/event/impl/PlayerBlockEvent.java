@@ -41,7 +41,7 @@ public class PlayerBlockEvent {
             return ActionResult.PASS;
         }));
 
-        //右键单击方块事件
+
         UseBlockCallback.EVENT.register(((player, world, hand, hitResult) -> {
             BlockPos blockPos = hitResult.getBlockPos();
             BlockState blockState = world.getBlockState(blockPos);
@@ -50,7 +50,7 @@ public class PlayerBlockEvent {
             if(blockState.getBlock() instanceof SaplingBlock)
                 new SaplingEvents(player, blockPos,blockState, ((SaplingBlock) blockState.getBlock()));
             //如果玩家使用金锄头右键点击（选择区域点）
-            if(player.getMainHandStack().getItem() == Items.GOLDEN_HOE){
+            /*if(player.getMainHandStack().getItem() == Items.GOLDEN_HOE){
                 Collection<BlockPos> clp = AreaSelection.map.get(pid);
                 int points = clp.size();
                 if(points>=2){
@@ -67,14 +67,14 @@ public class PlayerBlockEvent {
                     AreaSelection.map.put(pid, blockPos);
                 }
 
-            }
+            }*/
             return ActionResult.PASS;
         }));
     }
     private void record(Entity entity, BlockPos blockPos, BlockState blockState, BlockRecord.Action action){
         String dimension=entity.world.getDimension().getEffects().toString();
         //只记录主世界,如果不是主世界就不记录
-        if(!dimension.equals(WorldConstants.DEFAULT_WORLD))
+        if(!entity.world.getDimension().equals(RDICeleTech.getServer().getOverworld()))
             return;
         int posX=blockPos.getX();
         int posY=blockPos.getY();

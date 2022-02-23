@@ -1,9 +1,10 @@
 package calebzhou.rdimc.celestech.module.structure;
 
 import calebzhou.rdimc.celestech.RDICeleTech;
-import calebzhou.rdimc.celestech.command.AreaArgCommand;
 import calebzhou.rdimc.celestech.command.ArgCommand;
+import calebzhou.rdimc.celestech.command.BaseCommand;
 import calebzhou.rdimc.celestech.constant.MessageType;
+import calebzhou.rdimc.celestech.model.AreaSelection;
 import calebzhou.rdimc.celestech.model.BorderedBox;
 import calebzhou.rdimc.celestech.model.VirtualStructure;
 import calebzhou.rdimc.celestech.utils.PlayerUtils;
@@ -14,17 +15,16 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class VirtualStructureCommand extends AreaArgCommand implements ArgCommand {
+public class VirtualStructureCommand extends BaseCommand implements ArgCommand {
     public VirtualStructureCommand(String name, int permissionLevel) {
         super(name, permissionLevel,false);
     }
 
     @Override
-    public void onExecute(ServerPlayerEntity player, String arg) {
-        super.onExecute(player, arg);
+    public void onExecute(ServerPlayerEntity player, String nameArg) {
         int xp = 2;
         VirtualStructure.Type type = VirtualStructure.Type.valueOf(nameArg);
-        VirtualStructure structure = new VirtualStructure(player.getEntityName(),type , BorderedBox.fromString(arg));
+        VirtualStructure structure = new VirtualStructure(player.getEntityName(),type , BorderedBox.fromVec3i(AreaSelection.getPlayerSelectedArea(player.getUuidAsString())));
         switch (type){
             case clear -> {
                 VirtualStructure.STRUCTURE_MAP.remove(player.getEntityName());
@@ -46,11 +46,7 @@ public class VirtualStructureCommand extends AreaArgCommand implements ArgComman
 
 
         }
-        if(!PlayerUtils.checkExpLevel(player,xp)){
-            TextUtils.sendChatMessage(player,"您的经验不足，修改这个结构需要"+xp+"级经验。",MessageType.ERROR);
-            return;
-        }
-
+        PlayerUtils.checkExpLevel(player,xp);
         List<VirtualStructure> list = VirtualStructure.STRUCTURE_MAP.get(player.getEntityName());
         if(list==null)
             list=new ArrayList<>();

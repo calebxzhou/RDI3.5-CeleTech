@@ -16,7 +16,9 @@ import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.util.Identifier;
 import net.minecraft.village.TradeOffers;
 import net.minecraft.world.Difficulty;
 import org.apache.commons.io.FileUtils;
@@ -31,14 +33,19 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class RDICeleTech implements ModInitializer {
+    public static final boolean DEBUG = true;
     // This logger is used to write text to the console and the log file.
     // It is considered best practice to use your mod id as the logger's name.
     // That way, it's clear which mod wrote info, warnings, and errors.
+    public static final String MOD_ID="rdict3";
     public static final Logger LOGGER = LogManager.getLogger("rdict3");
 
 
     public static final ConcurrentHashMap<String,String> tpaMap = new ConcurrentHashMap<>();
-
+    //离线模式玩家列表
+    public static final List<String> offlineModePlayerList = new ArrayList<>();
+    //隐身玩家列表
+    public static final List<String> hidePlayerList = new ArrayList<>();
 
 
     public static final SplittableRandom RANDOM = new SplittableRandom();
@@ -57,7 +64,7 @@ public class RDICeleTech implements ModInitializer {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            //new Timer().schedule(new SpawnMobTimer(),0,60*3*1000);
+            new Timer().schedule(new SpawnMobTimer(),0,60*6*1000);
         });
         new PlayerBlockEvent();
         new CommandRegister();
@@ -65,6 +72,7 @@ public class RDICeleTech implements ModInitializer {
         new PlayerMiscEvent();
         new PlayerChatEvent();
 
+        new Networking();
 
 
     }

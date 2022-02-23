@@ -22,12 +22,8 @@ public class LeapCommand extends BaseCommand implements ArgCommand {
     public void onExecute(ServerPlayerEntity fromPlayer, String arg) {
         BlockPos lookingAtBlock = BlockPos.fromLong(Long.parseLong(arg));
         double distance = lookingAtBlock.getSquaredDistance(new Vec3i(fromPlayer.getX(), fromPlayer.getY(), fromPlayer.getZ()));
-        if(!PlayerUtils.checkExpLevel(fromPlayer, (int) Math.sqrt(distance/10))){
-            sendChatMessage(fromPlayer,"您的经验不足，本操作需要1级经验。",MessageType.ERROR);
-            return;
-        }
-
-        PlayerUtils.teleport(fromPlayer, PlayerLocation.fromBlockPos(lookingAtBlock.add(0,2,0),PlayerUtils.getDimensionName(fromPlayer), fromPlayer.getYaw(), fromPlayer.getPitch()));
+        PlayerUtils.checkExpLevel(fromPlayer, (int) Math.cbrt(distance)/2);
+        PlayerUtils.teleport(fromPlayer, PlayerLocation.fromBlockPos(lookingAtBlock.add(0,2,0),fromPlayer.getWorld(), fromPlayer.getYaw(), fromPlayer.getPitch()));
         sendChatMessage(fromPlayer,"传送成功！",MessageType.SUCCESS);
     }
 }

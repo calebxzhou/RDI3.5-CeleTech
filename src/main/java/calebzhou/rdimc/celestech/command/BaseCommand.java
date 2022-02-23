@@ -74,11 +74,11 @@ public abstract class BaseCommand {
                 if(StringUtils.isEmpty(arg.getString()))
                     throw new IslandException("指令参数不可为空！");
             onExecute(player, arg.getString());
-        }catch (IslandException e){
+        }catch (IslandException|AreaException e){
             TextUtils.sendChatMessage(player,e.getMessage(), MessageType.ERROR);
-                /*} catch (NumberFormatException e) {
+                } catch (NumberFormatException e) {
                     TextUtils.sendChatMessage(player, "数字格式错误", MessageType.ERROR);
-                } catch (IndexOutOfBoundsException e) {
+                /*} catch (IndexOutOfBoundsException e) {
                     TextUtils.sendChatMessage(player, "参数数量错误", MessageType.ERROR);
                 } catch (IllegalArgumentException e) {
                     TextUtils.sendChatMessage(player, "参数类型错误", MessageType.ERROR);

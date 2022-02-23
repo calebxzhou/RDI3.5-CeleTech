@@ -10,6 +10,8 @@ import calebzhou.rdimc.celestech.model.Island;
 import calebzhou.rdimc.celestech.model.record.GenericRecord;
 import calebzhou.rdimc.celestech.model.record.RecordType;
 import calebzhou.rdimc.celestech.model.record.UuidNameRecord;
+import calebzhou.rdimc.celestech.module.island.IslandException;
+import calebzhou.rdimc.celestech.module.island.IslandInfoS2CPacket;
 import calebzhou.rdimc.celestech.utils.*;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
@@ -30,13 +32,22 @@ public class PlayerConnectEvent {
             ThreadPool.newThread(()-> {
                 TextUtils.sendChatMessage(player, HttpUtils.sendRequest("GET","api_v1_public/getWeather","ip="+player.getIp()));
                 TextUtils.sendChatMessage(player, TimeUtils.getTimeChineseString()+"好,"+player.getDisplayName().getString());
-                ApiResponse response = HttpUtils.sendRequestV2("GET","v2/island/"+player.getUuidAsString());
-                if(response==null || !response.isSuccess()){
-                    sendChatMessage(player,"您还没有空岛呢。您可以：", MessageType.INFO);
-                    MutableText comp = getClickableContentComp(ColorConstants.GOLD+"[创建岛屿]", "/create", " ");
-                    MutableText comp1 = getClickableContentComp(ColorConstants.AQUA+"[加入朋友的岛屿]", "", "岛主输入/invite "+player.getEntityName()+"即可");
-                    sendChatMessage(player,comp.append(comp1));
-                }
+                ApiResponse<Island> response = null;
+                boolean hasIsland = true;
+                        try {
+                            response = HttpUtils.sendRequestV2("GET","v2/island/"+player.getUuidAsString());
+                            player.networkHandler.sendPacket(new IslandInfoS2CPacket(response.getData(Island.class)));
+                        } catch (NullPointerException| IslandException e) {
+                            hasIsland=false;
+                        }
+                        if(response==null || !response.isSuccess() || !hasIsland){
+                            sendChatMessage(player,"您还没有空岛呢。您可以：", MessageType.INFO);
+                            MutableText comp = getClickableContentComp(ColorConstants.GOLD+"[创建岛屿]", "/create", " ");
+                            MutableText comp1 = getClickableContentComp(ColorConstants.AQUA+"[加入朋友的岛屿]", "", "岛主输入/invite "+player.getEntityName()+"即可");
+                            sendChatMessage(player,comp.append(comp1));
+                        }
+
+
 
             }
             );

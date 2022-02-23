@@ -23,10 +23,7 @@ public class RollCommand extends BaseCommand implements ArgCommand {
     @Override
     public void onExecute(ServerPlayerEntity player, String arg) {
         final int rollTimes = Integer.parseInt(arg);
-        if(!PlayerUtils.checkExpLevel(player,rollTimes)){
-            TextUtils.sendChatMessage(player,"您的经验不足，抽奖需要"+rollTimes+"级经验");
-            return;
-        }
+        PlayerUtils.checkExpLevel(player,rollTimes);
 
         String resp = HttpUtils.sendRequestRaw("GET", "prize","count="+rollTimes);
 

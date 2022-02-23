@@ -61,6 +61,7 @@ public abstract class MixinAllowOfflineMode{
             System.out.println(profile.getName()+"不是正版");
             profile = toOfflineProfile(profile);
             this.state=ServerLoginNetworkHandler.State.READY_TO_ACCEPT;
+            RDICeleTech.offlineModePlayerList.add(profile.getName());
         }catch (Exception e){
             e.printStackTrace();
         }

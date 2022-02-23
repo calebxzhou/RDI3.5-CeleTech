@@ -14,10 +14,6 @@ public class SpawnCommand extends BaseCommand {
     }
     @Override
     protected void onExecute(ServerPlayerEntity player,String arg) {
-        /*if(!PlayerUtils.getDimensionName(player).equals(WorldConstants.DEFAULT_WORLD)){
-            TextUtils.sendChatMessage(player,"引力太强了!", MessageType.ERROR);
-            return ;
-        }*/
         PlayerUtils.teleport(player, WorldConstants.SPAWN_LOCA);
         ServerUtils.executeCommandOnServer("gamemode survival "+player.getEntityName());
     }

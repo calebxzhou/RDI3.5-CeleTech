@@ -6,7 +6,7 @@ import org.spongepowered.asm.mixin.injection.Constant;
 import org.spongepowered.asm.mixin.injection.ModifyConstant;
 
 @Mixin(DimensionType.class)
-public class MixinNether {
+public class MixinNetherCoordRatio {
     //1:8变成8:1
     @ModifyConstant(
             method = "<clinit>()V",

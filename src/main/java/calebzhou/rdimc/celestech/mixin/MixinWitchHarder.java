@@ -6,7 +6,7 @@ import org.spongepowered.asm.mixin.injection.Constant;
 import org.spongepowered.asm.mixin.injection.ModifyConstant;
 
 @Mixin(WitchEntity.class)
-public class MixinWitch {
+public class MixinWitchHarder {
     @ModifyConstant(method = "Lnet/minecraft/entity/mob/WitchEntity;createWitchAttributes()Lnet/minecraft/entity/attribute/DefaultAttributeContainer$Builder;",
     constant = @Constant(doubleValue = 0.25D))
     private static double speedUp(double constant){

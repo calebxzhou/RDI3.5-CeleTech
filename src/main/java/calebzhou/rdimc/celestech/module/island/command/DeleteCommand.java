@@ -46,7 +46,7 @@ public class DeleteCommand extends BaseCommand {
         player.getInventory().clear();
         player.kill();
         PlayerUtils.teleport(player, WorldConstants.SPAWN_LOCA);
-        player.setSpawnPoint(World.OVERWORLD,new BlockPos(WorldConstants.SPAWN_LOCA.getPosiX(), WorldConstants.SPAWN_LOCA.getPosiY(), WorldConstants.SPAWN_LOCA.getPosiZ()),0,true,false);
+        player.setSpawnPoint(World.OVERWORLD,new BlockPos(WorldConstants.SPAWN_LOCA.getPosX(), WorldConstants.SPAWN_LOCA.getPosY(), WorldConstants.SPAWN_LOCA.getPosZ()),0,true,false);
         sendChatMessage(player,response);
     }
 

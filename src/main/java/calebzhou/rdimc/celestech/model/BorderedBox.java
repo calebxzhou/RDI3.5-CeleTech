@@ -1,6 +1,7 @@
 package calebzhou.rdimc.celestech.model;
 
 import calebzhou.rdimc.celestech.RDICeleTech;
+import net.minecraft.util.math.Vec3i;
 
 import java.io.Serializable;
 
@@ -30,6 +31,11 @@ public class BorderedBox implements Serializable {
         int y2=Integer.parseInt(split[4]);
         int z2=Integer.parseInt(split[5]);
         return new BorderedBox(x1,y1,z1,x2,y2,z2);
+    }
+    public static BorderedBox fromVec3i(Vec3i[] vec){
+        Vec3i v1 = vec[0];
+        Vec3i v2 = vec[1];
+        return new BorderedBox(v1.getX(), v1.getY(), v1.getZ(), v2.getX(), v2.getY(), v2.getZ());
     }
     public String getSizeStringX(){
         return String.format("%dx%dx%d",Math.abs(x1-x2),Math.abs(y1-y2),Math.abs(z1-z2));
