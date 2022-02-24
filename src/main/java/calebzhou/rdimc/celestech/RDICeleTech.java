@@ -9,6 +9,7 @@ import calebzhou.rdimc.celestech.event.impl.PlayerMiscEvent;
 import calebzhou.rdimc.celestech.model.AreaSelection;
 import calebzhou.rdimc.celestech.model.VirtualStructure;
 import calebzhou.rdimc.celestech.model.thread.SpawnMobTimer;
+import calebzhou.rdimc.celestech.utils.NetworkUtils;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
@@ -33,7 +34,7 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class RDICeleTech implements ModInitializer {
-    public static final boolean DEBUG = true;
+    public static final boolean DEBUG = false;
     // This logger is used to write text to the console and the log file.
     // It is considered best practice to use your mod id as the logger's name.
     // That way, it's clear which mod wrote info, warnings, and errors.
@@ -72,7 +73,7 @@ public class RDICeleTech implements ModInitializer {
         new PlayerMiscEvent();
         new PlayerChatEvent();
 
-        new Networking();
+        new NetworkUtils();
 
 
     }

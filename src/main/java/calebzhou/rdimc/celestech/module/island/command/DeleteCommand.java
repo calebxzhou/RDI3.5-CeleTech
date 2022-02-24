@@ -6,9 +6,7 @@ import calebzhou.rdimc.celestech.constant.WorldConstants;
 import calebzhou.rdimc.celestech.model.ApiResponse;
 import calebzhou.rdimc.celestech.model.CoordLocation;
 import calebzhou.rdimc.celestech.model.Island;
-import calebzhou.rdimc.celestech.utils.HttpUtils;
-import calebzhou.rdimc.celestech.utils.PlayerUtils;
-import calebzhou.rdimc.celestech.utils.WorldUtils;
+import calebzhou.rdimc.celestech.utils.*;
 import net.minecraft.block.Blocks;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.math.BlockBox;
@@ -23,31 +21,8 @@ public class DeleteCommand extends BaseCommand {
         super(name, permissionLevel,true);
     }
     protected void onExecute(ServerPlayerEntity player,String arg) {
-        ApiResponse<Island> resp = HttpUtils.sendRequestV2("GET","v2/island/"+player.getUuidAsString());
-        Island data;
-        CoordLocation location = null;
-        try {
-            data = resp.getData(Island.class);
-            location = CoordLocation.fromString(data.getLocation());
-        } catch (NullPointerException e) {
-            sendChatMessage(player,"您没有空岛!", MessageType.ERROR);
-        }
-        ApiResponse response = HttpUtils.sendRequestV2("DELETE","v2/island/"+player.getUuidAsString());
-        if(!response.isSuccess()){
-            sendChatMessage(player,response);
-            return;
-        }
-        int offset=100;
-        Vec3i v1 = new Vec3i(location.getPosiX() ,-64, location.getPosiZ());
-        Vec3i v2= new Vec3i(location.getPosiX() ,320, location.getPosiZ());
-        v1.add(-offset,0,-offset);
-        v2.add(offset,0,offset);
-        WorldUtils.fill(player.getWorld(), BlockBox.create(v1,v2), Blocks.AIR.getDefaultState());
-        player.getInventory().clear();
-        player.kill();
-        PlayerUtils.teleport(player, WorldConstants.SPAWN_LOCA);
-        player.setSpawnPoint(World.OVERWORLD,new BlockPos(WorldConstants.SPAWN_LOCA.getPosX(), WorldConstants.SPAWN_LOCA.getPosY(), WorldConstants.SPAWN_LOCA.getPosZ()),0,true,false);
-        sendChatMessage(player,response);
+        TextUtils.sendChatMessage(player,"/confirm-delete");
+        //NetworkUtils.sendPacketS2C(player,NetworkUtils.ISLAND_INFO,"confirm-delete");
     }
 
 }

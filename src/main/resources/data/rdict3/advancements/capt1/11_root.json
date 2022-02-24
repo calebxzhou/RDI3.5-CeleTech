@@ -1,0 +1,30 @@
+{
+  "display": {
+    "icon": {
+      "item": "skyutils:wooden_hammer"
+    },
+    "title": "第一章 有中生无",
+    "frame": "task",
+    "description": "合成一个木锤。",
+    "background": "minecraft:textures/gui/advancements/backgrounds/stone.png"
+  },
+  "criteria": {
+    "make_hammer": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "skyutils:wooden_hammer"
+            ]
+          }
+        ]
+      }
+    }
+  },
+  "requirements": [
+    [
+      "make_hammer"
+    ]
+  ]
+}

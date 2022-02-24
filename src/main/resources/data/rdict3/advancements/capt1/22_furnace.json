@@ -1,0 +1,33 @@
+{
+  "parent": "rdict3:capt1/18_cobblestone",
+  "display": {
+    "icon": {
+      "item": "minecraft:furnace"
+    },
+    "title": "2.2 熔炉",
+    "frame": "task",
+    "description": "用圆石合成熔炉。",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "furnace": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "minecraft:furnace"
+            ]
+          }
+        ]
+      }
+    }
+  },
+  "requirements": [
+    [
+      "furnace"
+    ]
+  ]
+}

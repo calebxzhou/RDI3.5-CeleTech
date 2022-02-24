@@ -74,7 +74,7 @@ public abstract class BaseCommand {
                 if(StringUtils.isEmpty(arg.getString()))
                     throw new IslandException("指令参数不可为空！");
             onExecute(player, arg.getString());
-        }catch (IslandException|AreaException e){
+        }catch (IslandException|AreaException|ExperienceException e){
             TextUtils.sendChatMessage(player,e.getMessage(), MessageType.ERROR);
                 } catch (NumberFormatException e) {
                     TextUtils.sendChatMessage(player, "数字格式错误", MessageType.ERROR);

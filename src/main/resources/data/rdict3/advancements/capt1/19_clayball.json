@@ -1,0 +1,33 @@
+{
+  "parent": "rdict3:capt1/18_cobblestone",
+  "display": {
+    "icon": {
+      "item": "minecraft:clay_ball"
+    },
+    "title": "1.9 黏土球",
+    "description": "锤圆石->锤砂砾->锤沙子....",
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "clay_ball_get": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "minecraft:clay_ball"
+            ]
+          }
+        ]
+      }
+    }
+  },
+  "requirements": [
+    [
+      "clay_ball_get"
+    ]
+  ]
+}

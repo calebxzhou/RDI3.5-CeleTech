@@ -1,0 +1,33 @@
+{
+  "parent": "rdict3:capt1/27_cook_crucible",
+  "display": {
+    "icon": {
+      "item": "skyutils:water_crucible"
+    },
+    "title": "2.9 水坩埚",
+    "frame": "task",
+    "description": "使用坩埚采集加湿器中的水。",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "water_crucible": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "skyutils:water_crucible"
+            ]
+          }
+        ]
+      }
+    }
+  },
+  "requirements": [
+    [
+      "water_crucible"
+    ]
+  ]
+}

@@ -1,0 +1,33 @@
+{
+  "parent": "rdict3:capt1/26_kiln",
+  "display": {
+    "icon": {
+      "item": "skyutils:crucible"
+    },
+    "title": "2.7 烤坩埚",
+    "frame": "task",
+    "description": "将生坩埚使用窑炉烤成熟坩埚。",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "crucible": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "skyutils:crucible"
+            ]
+          }
+        ]
+      }
+    }
+  },
+  "requirements": [
+    [
+      "crucible"
+    ]
+  ]
+}

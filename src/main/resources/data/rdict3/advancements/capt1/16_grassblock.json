@@ -1,0 +1,33 @@
+{
+  "parent": "rdict3:capt1/15_sapling",
+  "display": {
+    "icon": {
+      "item": "minecraft:grass_block"
+    },
+    "title": "1.6 堆肥的产物",
+    "description": "树苗堆肥成草方块",
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "get_grass_block": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "minecraft:grass_block"
+            ]
+          }
+        ]
+      }
+    }
+  },
+  "requirements": [
+    [
+      "get_grass_block"
+    ]
+  ]
+}

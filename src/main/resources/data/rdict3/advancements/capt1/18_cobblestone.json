@@ -1,0 +1,33 @@
+{
+  "parent": "rdict3:capt1/17_pebble",
+  "display": {
+    "icon": {
+      "item": "minecraft:cobblestone"
+    },
+    "title": "1.8 大石块",
+    "description": "4小石块->圆石",
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "cobblestone_get": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "minecraft:cobblestone"
+            ]
+          }
+        ]
+      }
+    }
+  },
+  "requirements": [
+    [
+      "cobblestone_get"
+    ]
+  ]
+}

@@ -50,7 +50,7 @@ public class PlayerBlockEvent {
             if(blockState.getBlock() instanceof SaplingBlock)
                 new SaplingEvents(player, blockPos,blockState, ((SaplingBlock) blockState.getBlock()));
             //如果玩家使用金锄头右键点击（选择区域点）
-            /*if(player.getMainHandStack().getItem() == Items.GOLDEN_HOE){
+            if(player.getMainHandStack().getItem() == Items.GOLDEN_HOE){
                 Collection<BlockPos> clp = AreaSelection.map.get(pid);
                 int points = clp.size();
                 if(points>=2){
@@ -67,7 +67,7 @@ public class PlayerBlockEvent {
                     AreaSelection.map.put(pid, blockPos);
                 }
 
-            }*/
+            }
             return ActionResult.PASS;
         }));
     }

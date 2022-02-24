@@ -16,6 +16,7 @@ public class CommandRegister {
         commands.add(new BiomeCommand("bio",0));
         commands.add(new CreateCommand("create",0));
         commands.add(new DeleteCommand("delete",0));
+        commands.add(new ConfirmDeleteCommand("confirm-delete",0));
         commands.add(new HomeCommand("home",0));
         commands.add(new InviteCommand("invite",0));
         commands.add(new KickCommand("kick",0));

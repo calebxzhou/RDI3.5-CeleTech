@@ -33,6 +33,7 @@
     "MixinNetherCoordRatio",
     "MixinNoBroadcastJoinExit",
     "MixinNoSendGameMode",
+    "MixinNoVanillaHelp",
     "MixinProtocolVersion",
     "MixinSaveBandwidth",
     "MixinSpawnHelper",

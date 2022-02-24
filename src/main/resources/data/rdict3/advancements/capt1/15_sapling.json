@@ -1,0 +1,33 @@
+{
+  "parent": "rdict3:capt1/14_composter",
+  "display": {
+    "icon": {
+      "item": "minecraft:oak_sapling"
+    },
+    "title": "1.5 获取树苗",
+    "description": "击打树叶获得橡树树苗",
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "get_oak_sapling": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "minecraft:oak_sapling"
+            ]
+          }
+        ]
+      }
+    }
+  },
+  "requirements": [
+    [
+      "get_oak_sapling"
+    ]
+  ]
+}

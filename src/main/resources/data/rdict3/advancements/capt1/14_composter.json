@@ -1,0 +1,33 @@
+{
+  "parent": "rdict3:capt1/13_condenser",
+  "display": {
+    "icon": {
+      "item": "minecraft:composter"
+    },
+    "title": "1.4 堆肥桶",
+    "description": "制造一个堆肥桶",
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "composter": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "minecraft:composter"
+            ]
+          }
+        ]
+      }
+    }
+  },
+  "requirements": [
+    [
+      "composter"
+    ]
+  ]
+}

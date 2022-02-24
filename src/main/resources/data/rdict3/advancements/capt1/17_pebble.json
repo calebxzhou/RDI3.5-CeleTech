@@ -1,0 +1,33 @@
+{
+  "parent": "rdict3:capt1/14_composter",
+  "display": {
+    "icon": {
+      "item": "skyutils:pebble"
+    },
+    "title": "1.7 小石块",
+    "description": "锤泥土得到小石块",
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "get_pebble": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "skyutils:pebble"
+            ]
+          }
+        ]
+      }
+    }
+  },
+  "requirements": [
+    [
+      "get_pebble"
+    ]
+  ]
+}

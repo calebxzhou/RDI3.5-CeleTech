@@ -5,7 +5,9 @@ import calebzhou.rdimc.celestech.constant.MessageType;
 import calebzhou.rdimc.celestech.model.ApiResponse;
 import calebzhou.rdimc.celestech.model.CoordLocation;
 import calebzhou.rdimc.celestech.model.Island;
+import calebzhou.rdimc.celestech.model.IslandS2CInfo;
 import calebzhou.rdimc.celestech.utils.HttpUtils;
+import calebzhou.rdimc.celestech.utils.NetworkUtils;
 import calebzhou.rdimc.celestech.utils.PlayerUtils;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
@@ -29,7 +31,8 @@ public class HomeCommand extends BaseCommand {
         ApiResponse<Island> response = HttpUtils.sendRequestV2("GET","v2/island/"+player.getUuidAsString());
             if(response.isSuccess()){
                 player.addStatusEffect(new StatusEffectInstance(StatusEffects.SLOW_FALLING,20*2,0));
-                PlayerUtils.teleport(player, Objects.requireNonNull(CoordLocation.fromString(Objects.requireNonNull(response.getData(Island.class)).getLocation()).add(0.5,2,0.5)));
+                Island island = response.getData(Island.class);
+                PlayerUtils.teleport(player, Objects.requireNonNull(CoordLocation.fromString(Objects.requireNonNull(island).getLocation()).add(0.5,2,0.5)));
             }
             sendChatMessage(player,response);
 

@@ -1,0 +1,33 @@
+{
+  "parent": "rdict3:capt1/11_root",
+  "display": {
+    "icon": {
+      "item": "skyutils:woodchips"
+    },
+    "title": "1.2 木片",
+    "description": "使用木锤击打树干,获得木片.",
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "get_woodchip": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "skyutils:woodchips"
+            ]
+          }
+        ]
+      }
+    }
+  },
+  "requirements": [
+    [
+      "get_woodchip"
+    ]
+  ]
+}

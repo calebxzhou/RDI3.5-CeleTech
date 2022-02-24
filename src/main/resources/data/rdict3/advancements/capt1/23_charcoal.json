@@ -1,0 +1,33 @@
+{
+  "parent": "rdict3:capt1/22_furnace",
+  "display": {
+    "icon": {
+      "item": "minecraft:oak_log"
+    },
+    "title": "2.3 木头烤木头=？",
+    "frame": "task",
+    "description": "将原木制成木炭。",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "oak_log": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "minecraft:oak_log"
+            ]
+          }
+        ]
+      }
+    }
+  },
+  "requirements": [
+    [
+      "oak_log"
+    ]
+  ]
+}

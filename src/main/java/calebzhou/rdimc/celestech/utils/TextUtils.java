@@ -1,17 +1,12 @@
 package calebzhou.rdimc.celestech.utils;
 
-import calebzhou.rdimc.celestech.Networking;
 import calebzhou.rdimc.celestech.RDICeleTech;
 import calebzhou.rdimc.celestech.constant.ColorConstants;
 import calebzhou.rdimc.celestech.constant.MessageType;
 import calebzhou.rdimc.celestech.model.ApiResponse;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
-import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
-import net.minecraft.command.CommandSource;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.Packet;
-import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.packet.s2c.play.SubtitleS2CPacket;
 import net.minecraft.network.packet.s2c.play.TitleS2CPacket;
 import net.minecraft.server.PlayerManager;
@@ -39,9 +34,6 @@ public final class TextUtils {
         sendChatMessage(player,content.getMessage(),MessageType.valueOf(content.getType().toUpperCase(Locale.ROOT)));
     }
     public static void sendChatMessage(PlayerEntity player, String content, MessageType messageType){
-        PacketByteBuf buf = PacketByteBufs.create();
-        buf.writeString(messageType.toString()+":"+content);
-        ServerPlayNetworking.send((ServerPlayerEntity) player, Networking.NETWORK_COMMAND_STATUS,buf);
         switch (messageType){
             case ERROR -> sendChatMessage(player,ERROR_PREFIX+content);
             case INFO -> sendChatMessage(player,INFO_PREFIX+content);
