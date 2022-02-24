@@ -1,10 +1,10 @@
 {
-  "parent": "rdict3:capt1/27_cook_crucible",
+  "parent": "rdict3:capt1/116_cook_crucible",
   "display": {
     "icon": {
       "item": "skyutils:lava_crucible"
     },
-    "title": "2.8 岩浆坩埚",
+    "title": "1.17 岩浆坩埚",
     "frame": "task",
     "description": "使用熟坩埚、圆石、木炭块放进窑炉，制成岩浆坩埚。",
     "show_toast": true,

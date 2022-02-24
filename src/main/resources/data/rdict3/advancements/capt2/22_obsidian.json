@@ -1,25 +1,26 @@
 {
-  "parent": "rdict3:capt1/27_cook_crucible",
+  "parent": "rdict3:capt2/21_root",
   "display": {
     "icon": {
-      "item": "skyutils:water_crucible"
+      "item": "minecraft:obsidian"
     },
-    "title": "2.9 水坩埚",
+    "title": "2.2 黑曜石",
+    "description": "浇灭10桶岩浆，得到10黑曜石。",
     "frame": "task",
-    "description": "使用坩埚采集加湿器中的水。",
     "show_toast": true,
     "announce_to_chat": true,
     "hidden": false
   },
   "criteria": {
-    "water_crucible": {
+    "obsidian2": {
       "trigger": "minecraft:inventory_changed",
       "conditions": {
         "items": [
           {
             "items": [
-              "skyutils:water_crucible"
-            ]
+              "minecraft:obsidian"
+            ],
+            "count": 10
           }
         ]
       }
@@ -27,7 +28,7 @@
   },
   "requirements": [
     [
-      "water_crucible"
+      "obsidian2"
     ]
   ]
 }

@@ -1,24 +1,24 @@
 {
-  "parent": "rdict3:capt1/19_clayball",
+  "parent": "rdict3:capt1/115_kiln",
   "display": {
     "icon": {
-      "item": "skyutils:raw_crucible"
+      "item": "skyutils:crucible"
     },
-    "title": "2.1 坩埚",
+    "title": "1.16 烤坩埚",
     "frame": "task",
-    "description": "用黏土球合成一个坩埚。",
+    "description": "将生坩埚使用窑炉烤成熟坩埚。",
     "show_toast": true,
     "announce_to_chat": true,
     "hidden": false
   },
   "criteria": {
-    "raw_crucible": {
+    "crucible": {
       "trigger": "minecraft:inventory_changed",
       "conditions": {
         "items": [
           {
             "items": [
-              "skyutils:raw_crucible"
+              "skyutils:crucible"
             ]
           }
         ]
@@ -27,7 +27,7 @@
   },
   "requirements": [
     [
-      "raw_crucible"
+      "crucible"
     ]
   ]
 }

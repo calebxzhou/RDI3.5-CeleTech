@@ -1,25 +1,26 @@
 {
-  "parent": "rdict3:capt1/21_crucible",
+  "parent": "rdict3:capt2/23_gold_nugget",
   "display": {
     "icon": {
-      "item": "minecraft:stripped_oak_log"
+      "item": "minecraft:golden_apple"
     },
-    "title": "2.4 树扒皮",
+    "title": "2.4 金苹果",
+    "description": "合成金苹果。",
     "frame": "task",
-    "description": "使用木斧右键单击橡树原木，制成去皮橡树原木并采集。",
     "show_toast": true,
     "announce_to_chat": true,
     "hidden": false
   },
   "criteria": {
-    "stripped_oak_log": {
+    "golden_apple2": {
       "trigger": "minecraft:inventory_changed",
       "conditions": {
         "items": [
           {
             "items": [
-              "minecraft:stripped_oak_log"
-            ]
+              "minecraft:golden_apple"
+            ],
+            "count": 1
           }
         ]
       }
@@ -27,7 +28,7 @@
   },
   "requirements": [
     [
-      "stripped_oak_log"
+      "golden_apple2"
     ]
   ]
 }

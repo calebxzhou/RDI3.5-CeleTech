@@ -1,24 +1,24 @@
 {
-  "parent": "rdict3:capt1/26_kiln",
+  "parent": "rdict3:capt1/18_cobblestone",
   "display": {
     "icon": {
-      "item": "skyutils:crucible"
+      "item": "minecraft:furnace"
     },
-    "title": "2.7 烤坩埚",
+    "title": "1.11 熔炉",
     "frame": "task",
-    "description": "将生坩埚使用窑炉烤成熟坩埚。",
+    "description": "用圆石合成熔炉。",
     "show_toast": true,
     "announce_to_chat": true,
     "hidden": false
   },
   "criteria": {
-    "crucible": {
+    "furnace": {
       "trigger": "minecraft:inventory_changed",
       "conditions": {
         "items": [
           {
             "items": [
-              "skyutils:crucible"
+              "minecraft:furnace"
             ]
           }
         ]
@@ -27,7 +27,7 @@
   },
   "requirements": [
     [
-      "crucible"
+      "furnace"
     ]
   ]
 }

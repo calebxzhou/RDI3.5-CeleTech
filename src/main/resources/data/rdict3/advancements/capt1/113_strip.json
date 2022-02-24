@@ -1,0 +1,33 @@
+{
+  "parent": "rdict3:capt1/110_crucible",
+  "display": {
+    "icon": {
+      "item": "minecraft:stripped_oak_log"
+    },
+    "title": "1.13 树扒皮",
+    "frame": "task",
+    "description": "使用木斧右键单击橡树原木，制成去皮橡树原木并采集。",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "stripped_oak_log": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "minecraft:stripped_oak_log"
+            ]
+          }
+        ]
+      }
+    }
+  },
+  "requirements": [
+    [
+      "stripped_oak_log"
+    ]
+  ]
+}

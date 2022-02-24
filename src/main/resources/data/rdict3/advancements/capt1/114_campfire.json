@@ -1,24 +1,24 @@
 {
-  "parent": "rdict3:capt1/22_furnace",
+  "parent": "rdict3:capt1/112_charcoal",
   "display": {
     "icon": {
-      "item": "minecraft:oak_log"
+      "item": "minecraft:campfire"
     },
-    "title": "2.3 木头烤木头=？",
+    "title": "1.14 营火",
     "frame": "task",
-    "description": "将原木制成木炭。",
+    "description": "使用木棍、木炭和去皮原木合成营火。",
     "show_toast": true,
     "announce_to_chat": true,
     "hidden": false
   },
   "criteria": {
-    "oak_log": {
+    "campfire": {
       "trigger": "minecraft:inventory_changed",
       "conditions": {
         "items": [
           {
             "items": [
-              "minecraft:oak_log"
+              "minecraft:campfire"
             ]
           }
         ]
@@ -27,7 +27,7 @@
   },
   "requirements": [
     [
-      "oak_log"
+      "campfire"
     ]
   ]
 }

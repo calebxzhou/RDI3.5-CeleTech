@@ -1,25 +1,26 @@
 {
-  "parent": "rdict3:capt1/23_charcoal",
+  "parent": "rdict3:capt2/22_obsidian",
   "display": {
     "icon": {
-      "item": "minecraft:campfire"
+      "item": "minecraft:gold_nugget"
     },
-    "title": "2.5 营火",
+    "title": "2.3 我爱金粒",
+    "description": "杀死僵尸猪灵得到金粒。",
     "frame": "task",
-    "description": "使用木棍、木炭和去皮原木合成营火。",
     "show_toast": true,
     "announce_to_chat": true,
     "hidden": false
   },
   "criteria": {
-    "campfire": {
+    "gold_nugget2": {
       "trigger": "minecraft:inventory_changed",
       "conditions": {
         "items": [
           {
             "items": [
-              "minecraft:campfire"
-            ]
+              "minecraft:gold_nugget"
+            ],
+            "count": 1
           }
         ]
       }
@@ -27,7 +28,7 @@
   },
   "requirements": [
     [
-      "campfire"
+      "gold_nugget2"
     ]
   ]
 }

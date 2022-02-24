@@ -1,24 +1,24 @@
 {
-  "parent": "rdict3:capt1/18_cobblestone",
+  "parent": "rdict3:capt1/111_furnace",
   "display": {
     "icon": {
-      "item": "minecraft:furnace"
+      "item": "minecraft:oak_log"
     },
-    "title": "2.2 熔炉",
+    "title": "1.12 木头烤木头=？",
     "frame": "task",
-    "description": "用圆石合成熔炉。",
+    "description": "将原木制成木炭。",
     "show_toast": true,
     "announce_to_chat": true,
     "hidden": false
   },
   "criteria": {
-    "furnace": {
+    "oak_log": {
       "trigger": "minecraft:inventory_changed",
       "conditions": {
         "items": [
           {
             "items": [
-              "minecraft:furnace"
+              "minecraft:oak_log"
             ]
           }
         ]
@@ -27,7 +27,7 @@
   },
   "requirements": [
     [
-      "furnace"
+      "oak_log"
     ]
   ]
 }

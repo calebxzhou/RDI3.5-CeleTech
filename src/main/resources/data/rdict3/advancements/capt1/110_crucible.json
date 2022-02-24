@@ -1,24 +1,24 @@
 {
-  "parent": "rdict3:capt1/25_campfire",
+  "parent": "rdict3:capt1/19_clayball",
   "display": {
     "icon": {
-      "item": "skyutils:kiln"
+      "item": "skyutils:raw_crucible"
     },
-    "title": "2.6 窑炉",
+    "title": "1.10 坩埚",
     "frame": "task",
-    "description": "使用黏土块和营火合成窑炉。",
+    "description": "用黏土球合成一个坩埚。",
     "show_toast": true,
     "announce_to_chat": true,
     "hidden": false
   },
   "criteria": {
-    "kiln": {
+    "raw_crucible": {
       "trigger": "minecraft:inventory_changed",
       "conditions": {
         "items": [
           {
             "items": [
-              "skyutils:kiln"
+              "skyutils:raw_crucible"
             ]
           }
         ]
@@ -27,7 +27,7 @@
   },
   "requirements": [
     [
-      "kiln"
+      "raw_crucible"
     ]
   ]
 }

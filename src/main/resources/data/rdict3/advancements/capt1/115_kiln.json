@@ -1,0 +1,33 @@
+{
+  "parent": "rdict3:capt1/114_campfire",
+  "display": {
+    "icon": {
+      "item": "skyutils:kiln"
+    },
+    "title": "1.15 窑炉",
+    "frame": "task",
+    "description": "使用黏土块和营火合成窑炉。",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "kiln": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "skyutils:kiln"
+            ]
+          }
+        ]
+      }
+    }
+  },
+  "requirements": [
+    [
+      "kiln"
+    ]
+  ]
+}
