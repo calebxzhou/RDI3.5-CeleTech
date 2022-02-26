@@ -21,8 +21,8 @@ public class DeleteCommand extends BaseCommand {
         super(name, permissionLevel,true);
     }
     protected void onExecute(ServerPlayerEntity player,String arg) {
-        TextUtils.sendChatMessage(player,"/confirm-delete");
-        //NetworkUtils.sendPacketS2C(player,NetworkUtils.ISLAND_INFO,"confirm-delete");
+        //TextUtils.sendChatMessage(player,"/confirm-delete");
+        NetworkUtils.sendPacketS2C(player,NetworkUtils.ISLAND_INFO,"confirm-delete");
     }
 
 }

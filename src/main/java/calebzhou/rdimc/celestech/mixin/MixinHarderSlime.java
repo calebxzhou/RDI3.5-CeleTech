@@ -6,12 +6,11 @@ import net.minecraft.util.math.MathHelper;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 //增加史莱姆移动速度
 @Mixin(SlimeEntity.class)
-public abstract class SlimeEntityMixin {
+public abstract class MixinHarderSlime {
     @Inject(method = "Lnet/minecraft/entity/mob/SlimeEntity;setSize(IZ)V",
             at = @At(value = "TAIL"))
     private void setSize(int size, boolean heal, CallbackInfo ci){

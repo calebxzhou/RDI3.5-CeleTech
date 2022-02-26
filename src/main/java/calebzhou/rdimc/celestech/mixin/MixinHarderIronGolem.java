@@ -6,7 +6,7 @@ import org.spongepowered.asm.mixin.injection.Constant;
 import org.spongepowered.asm.mixin.injection.ModifyConstant;
 
 @Mixin(IronGolemEntity.class)
-public abstract class IronGolemEntityMixin {
+public abstract class MixinHarderIronGolem {
     //铁傀儡增加血量
     @ModifyConstant(
             method= "Lnet/minecraft/entity/passive/IronGolemEntity;createIronGolemAttributes()Lnet/minecraft/entity/attribute/DefaultAttributeContainer$Builder;",

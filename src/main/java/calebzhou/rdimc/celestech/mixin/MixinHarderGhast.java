@@ -6,17 +6,15 @@ import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.mob.GhastEntity;
 import net.minecraft.entity.projectile.FireballEntity;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.Difficulty;
 import net.minecraft.world.WorldAccess;
 import org.spongepowered.asm.mixin.*;
 import org.spongepowered.asm.mixin.injection.*;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.util.Random;
 
 //恶魂 增强
 @Mixin(GhastEntity.class)
-public class GhastEntityMixin {
+public class MixinHarderGhast {
     @ModifyConstant(
             method = "Lnet/minecraft/entity/mob/GhastEntity;createGhastAttributes()Lnet/minecraft/entity/attribute/DefaultAttributeContainer$Builder;"
             ,constant = @Constant(doubleValue = 10.0D)

@@ -15,7 +15,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 //提高弓箭的杀伤力
 @Mixin(PersistentProjectileEntity.class)
-public abstract class ArrowDamageMixin {
+public abstract class MixinArrowDamangeUp {
     @Shadow @Mutable
     private int punch = 1;
 

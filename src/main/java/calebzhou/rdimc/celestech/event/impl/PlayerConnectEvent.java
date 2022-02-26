@@ -56,7 +56,7 @@ public class PlayerConnectEvent {
             hasIsland=false;
         }
         if(response==null || !response.isSuccess() || !hasIsland){
-            //NetworkUtils.sendPacketS2C(player,NetworkUtils.ISLAND_INFO,"404");
+            NetworkUtils.sendPacketS2C(player,NetworkUtils.ISLAND_INFO,"404");
             /*sendChatMessage(player,"您还没有空岛呢。您可以：", MessageType.INFO);
             MutableText comp = getClickableContentComp(ColorConstants.GOLD+"[创建岛屿]", "/create", " ");
             MutableText comp1 = getClickableContentComp(ColorConstants.AQUA+"[加入朋友的岛屿]", "", "岛主输入/invite "+player.getEntityName()+"即可");

@@ -6,7 +6,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
 
 @Mixin(Item.class)
-public class FoodDirectEatMixin {
+public class MixinFoodInstantEat {
     /**
      * @author
      * 食物直接吃 没有延迟

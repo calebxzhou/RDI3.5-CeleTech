@@ -34,7 +34,7 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class RDICeleTech implements ModInitializer {
-    public static final boolean DEBUG = false;
+    public static final boolean DEBUG = true;
     // This logger is used to write text to the console and the log file.
     // It is considered best practice to use your mod id as the logger's name.
     // That way, it's clear which mod wrote info, warnings, and errors.
@@ -65,7 +65,7 @@ public class RDICeleTech implements ModInitializer {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            new Timer().schedule(new SpawnMobTimer(),0,60*6*1000);
+            new Timer().schedule(new SpawnMobTimer(),0,60*10*1000);
         });
         new PlayerBlockEvent();
         new CommandRegister();

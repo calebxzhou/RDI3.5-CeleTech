@@ -12,6 +12,7 @@ import calebzhou.rdimc.celestech.model.CoordLocation;
 import calebzhou.rdimc.celestech.model.record.BlockRecord;
 import calebzhou.rdimc.celestech.utils.HttpUtils;
 import calebzhou.rdimc.celestech.utils.TextUtils;
+import net.fabricmc.fabric.api.event.player.AttackBlockCallback;
 import net.fabricmc.fabric.api.event.player.UseBlockCallback;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -19,6 +20,7 @@ import net.minecraft.block.SaplingBlock;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Items;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.math.BlockPos;
 
@@ -41,7 +43,14 @@ public class PlayerBlockEvent {
             return ActionResult.PASS;
         }));
 
+        AttackBlockCallback.EVENT.register(((player, world, hand, pos, direction) -> {
+            //如果玩家使用金锄头左键点击（选择区域点1）
+            if(player.getMainHandStack().getItem() == Items.GOLDEN_HOE){
+                handlePointSelection(player,pos,true);
 
+            }
+            return ActionResult.PASS;
+        }));
         UseBlockCallback.EVENT.register(((player, world, hand, hitResult) -> {
             BlockPos blockPos = hitResult.getBlockPos();
             BlockState blockState = world.getBlockState(blockPos);
@@ -49,23 +58,10 @@ public class PlayerBlockEvent {
             //如果是树苗，启动快速长树
             if(blockState.getBlock() instanceof SaplingBlock)
                 new SaplingEvents(player, blockPos,blockState, ((SaplingBlock) blockState.getBlock()));
-            //如果玩家使用金锄头右键点击（选择区域点）
+
+            //如果玩家使用金锄头右键点击（选择区域点2）
             if(player.getMainHandStack().getItem() == Items.GOLDEN_HOE){
-                Collection<BlockPos> clp = AreaSelection.map.get(pid);
-                int points = clp.size();
-                if(points>=2){
-                    AreaSelection.map.removeAll(pid);
-                    TextUtils.sendChatMessage(player,"您选择的区域点数量，超过了2个，请重新选择。", MessageType.ERROR);
-                }else{
-                    String msg = String.format("您成功选择了第%d个区域点，位置在%s", points+1, blockPos.toShortString());
-                    if(points==0){
-                        msg= ColorConstants.AQUA+msg;
-                    }else if(points==1){
-                        msg = ColorConstants.BRIGHT_GREEN+msg;
-                    }
-                    TextUtils.sendChatMessage(player,msg);
-                    AreaSelection.map.put(pid, blockPos);
-                }
+                handlePointSelection(player,blockPos,false);
 
             }
             return ActionResult.PASS;
@@ -73,9 +69,7 @@ public class PlayerBlockEvent {
     }
     private void record(Entity entity, BlockPos blockPos, BlockState blockState, BlockRecord.Action action){
         String dimension=entity.world.getDimension().getEffects().toString();
-        //只记录主世界,如果不是主世界就不记录
-        if(!entity.world.getDimension().equals(RDICeleTech.getServer().getOverworld()))
-            return;
+
         int posX=blockPos.getX();
         int posY=blockPos.getY();
         int posZ=blockPos.getZ();
@@ -87,6 +81,26 @@ public class PlayerBlockEvent {
 
         BlockRecord record=new BlockRecord(playerUuid,blockType,action,location);
         HttpUtils.asyncSendObject(record);
+    }
+    /**
+     * @param left_right 左手点1 true 右手点2 false
+     * */
+    private void handlePointSelection(PlayerEntity player,BlockPos blockPos,boolean left_right){
+        String pid = player.getUuidAsString();
+        AreaSelection area = AreaSelection.map.get(pid);
+        if(area==null)
+            area = new AreaSelection();
+        if(left_right){
+            //左手
+            area.setPos1(blockPos);
+            TextUtils.sendChatMessage(player,ColorConstants.AQUA+"您成功选择了点1："+blockPos.toShortString());
+        }else{
+            //右手
+            area.setPos2(blockPos);
+            TextUtils.sendChatMessage(player, ColorConstants.BRIGHT_GREEN+"您成功选择了点2："+blockPos.toShortString());
+        }
+
+        AreaSelection.map.put(pid, area);
     }
 
 }

@@ -9,12 +9,9 @@ import net.minecraft.world.explosion.Explosion;
 import net.minecraft.world.explosion.ExplosionBehavior;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
-import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(ExplosionBehavior.class)
-public class ExplosionBehaviorMixin {
+public class MixinChestNeverBoom {
     /**
      * @author 有数据的方块不会被炸
      */

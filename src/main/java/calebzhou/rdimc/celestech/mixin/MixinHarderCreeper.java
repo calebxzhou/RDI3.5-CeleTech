@@ -9,7 +9,7 @@ import org.spongepowered.asm.mixin.injection.Constant;
 import org.spongepowered.asm.mixin.injection.ModifyConstant;
 
 @Mixin(CreeperEntity.class)
-public abstract class CreeperEntityMixin {
+public abstract class MixinHarderCreeper {
 
     @Shadow @Mutable
     private int fuseTime = 40;

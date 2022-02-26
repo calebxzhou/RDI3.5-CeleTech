@@ -12,6 +12,7 @@ import static calebzhou.rdimc.celestech.RDICeleTech.MOD_ID;
 public class NetworkUtils {
     public static final Identifier COMMAND_STATUS =new Identifier(MOD_ID,"command_status");
     public static final Identifier ISLAND_INFO =new Identifier(MOD_ID,"island_info");
+    public static final Identifier MOB_SPAWN =new Identifier(MOD_ID,"mob_spawn");
     public static void sendPacketS2C(PlayerEntity player, Identifier packType,String content){
         ServerPlayerEntity sp = (ServerPlayerEntity) player;
         PacketByteBuf buf = PacketByteBufs.create();

@@ -1,6 +1,5 @@
 package calebzhou.rdimc.celestech.mixin;
 
-import calebzhou.rdimc.celestech.RDICeleTech;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
@@ -24,7 +23,7 @@ import java.util.Map;
 import static calebzhou.rdimc.celestech.RDICeleTech.copyToFastUtilMap;
 
 @Mixin(TradeOffers.class)
-public abstract class TradeOffersMixin {
+public abstract class MixinMoreTradeOffers {
     @Shadow @Mutable
     public static final Map<VillagerProfession, Int2ObjectMap<TradeOffers.Factory[]>> PROFESSION_TO_LEVELED_TRADE = Util.make(Maps.newHashMap(), (map) -> {
         map.put(VillagerProfession.FARMER,

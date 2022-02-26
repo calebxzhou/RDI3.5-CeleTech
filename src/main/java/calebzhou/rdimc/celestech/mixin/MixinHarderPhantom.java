@@ -3,25 +3,12 @@ package calebzhou.rdimc.celestech.mixin;
 import net.minecraft.entity.mob.PhantomEntity;
 import net.minecraft.world.gen.PhantomSpawner;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Mutable;
-import org.spongepowered.asm.mixin.Shadow;
-import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Constant;
 import org.spongepowered.asm.mixin.injection.ModifyConstant;
-import org.spongepowered.asm.mixin.injection.Redirect;
 
 //幻翼加速
 @Mixin(PhantomEntity.class)
-public class PhantomEntityMixin {
-    //不着火
-    /*@Redirect(
-            method = "Lnet/minecraft/entity/mob/PhantomEntity;tickMovement()V"
-            ,at = @At(
-                    value = "INVOKE",
-            target = "Lnet/minecraft/entity/mob/PhantomEntity;setOnFireFor(I)V"
-    )
-    )
-    private void setFire(PhantomEntity instance, int i){}*/
+public class MixinHarderPhantom {
 
     @ModifyConstant(
             method = "Lnet/minecraft/entity/mob/PhantomEntity;onSizeChanged()V"
