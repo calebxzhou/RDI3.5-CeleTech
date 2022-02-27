@@ -34,7 +34,5 @@ public class SaplingEvents {
         }
     }
 
-    public void grow(){
-        block.grow(((ServerWorld) player.getWorld()),player.getRandom(),blockPos,blockState);
-    }
+
 }

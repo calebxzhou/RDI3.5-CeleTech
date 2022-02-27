@@ -6,9 +6,10 @@ import calebzhou.rdimc.celestech.event.impl.PlayerBlockEvent;
 import calebzhou.rdimc.celestech.event.impl.PlayerChatEvent;
 import calebzhou.rdimc.celestech.event.impl.PlayerConnectEvent;
 import calebzhou.rdimc.celestech.event.impl.PlayerMiscEvent;
-import calebzhou.rdimc.celestech.model.AreaSelection;
 import calebzhou.rdimc.celestech.model.VirtualStructure;
 import calebzhou.rdimc.celestech.model.thread.SpawnMobTimer;
+import calebzhou.rdimc.celestech.module.fasttree.FastTree;
+import calebzhou.rdimc.celestech.module.recording.block.RecordBlockEvent;
 import calebzhou.rdimc.celestech.utils.NetworkUtils;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.reflect.TypeToken;
@@ -17,9 +18,7 @@ import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
-import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.util.Identifier;
 import net.minecraft.village.TradeOffers;
 import net.minecraft.world.Difficulty;
 import org.apache.commons.io.FileUtils;
@@ -38,7 +37,7 @@ public class RDICeleTech implements ModInitializer {
     // This logger is used to write text to the console and the log file.
     // It is considered best practice to use your mod id as the logger's name.
     // That way, it's clear which mod wrote info, warnings, and errors.
-    public static final String MOD_ID="rdict3";
+    public static final String MODID ="rdict3";
     public static final Logger LOGGER = LogManager.getLogger("rdict3");
 
 
@@ -74,8 +73,11 @@ public class RDICeleTech implements ModInitializer {
         new PlayerChatEvent();
 
         new NetworkUtils();
-
-
+loadModules();
+    }
+    private void loadModules(){
+        new RecordBlockEvent();
+        new FastTree();
     }
     public static void writeFiles() throws IOException{
         LOGGER.info("写入文件中...");

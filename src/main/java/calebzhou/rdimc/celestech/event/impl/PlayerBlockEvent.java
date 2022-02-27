@@ -29,19 +29,7 @@ import java.util.Collection;
 //实体与方块交互的相关事件
 public class PlayerBlockEvent {
     public PlayerBlockEvent(){
-        PlayerBreakBlockCallback.EVENT.register(((player, blockPos, blockState) -> {
-            //如果玩家破坏了石头 不记录
-            if(blockState.getBlock()== Blocks.STONE || blockState.getBlock()== Blocks.COBBLESTONE){
-                return ActionResult.PASS;
-            }
-            record(player,blockPos,blockState, BlockRecord.Action.BREAK);
 
-            return ActionResult.PASS;
-        }));
-        PlayerPlaceBlockCallback.EVENT.register(((player, blockPos, blockState) -> {
-            record(player,blockPos,blockState, BlockRecord.Action.PLACE);
-            return ActionResult.PASS;
-        }));
 
         AttackBlockCallback.EVENT.register(((player, world, hand, pos, direction) -> {
             //如果玩家使用金锄头左键点击（选择区域点1）
@@ -56,9 +44,9 @@ public class PlayerBlockEvent {
             BlockState blockState = world.getBlockState(blockPos);
             String pid = player.getUuidAsString();
             //如果是树苗，启动快速长树
-            if(blockState.getBlock() instanceof SaplingBlock)
+            /*if(blockState.getBlock() instanceof SaplingBlock)
                 new SaplingEvents(player, blockPos,blockState, ((SaplingBlock) blockState.getBlock()));
-
+*/
             //如果玩家使用金锄头右键点击（选择区域点2）
             if(player.getMainHandStack().getItem() == Items.GOLDEN_HOE){
                 handlePointSelection(player,blockPos,false);
@@ -67,21 +55,7 @@ public class PlayerBlockEvent {
             return ActionResult.PASS;
         }));
     }
-    private void record(Entity entity, BlockPos blockPos, BlockState blockState, BlockRecord.Action action){
-        String dimension=entity.world.getDimension().getEffects().toString();
 
-        int posX=blockPos.getX();
-        int posY=blockPos.getY();
-        int posZ=blockPos.getZ();
-        if(posY==0 && posX==0 && posZ==0)
-            return;
-        CoordLocation location =new CoordLocation(dimension,posX,posY,posZ);
-        String playerUuid=entity instanceof PlayerEntity ?entity.getUuidAsString() : entity.getEntityName();
-        String blockType=blockState.getBlock().getTranslationKey();
-
-        BlockRecord record=new BlockRecord(playerUuid,blockType,action,location);
-        HttpUtils.asyncSendObject(record);
-    }
     /**
      * @param left_right 左手点1 true 右手点2 false
      * */
