@@ -43,10 +43,6 @@ public class PlayerBlockEvent {
             BlockPos blockPos = hitResult.getBlockPos();
             BlockState blockState = world.getBlockState(blockPos);
             String pid = player.getUuidAsString();
-            //如果是树苗，启动快速长树
-            /*if(blockState.getBlock() instanceof SaplingBlock)
-                new SaplingEvents(player, blockPos,blockState, ((SaplingBlock) blockState.getBlock()));
-*/
             //如果玩家使用金锄头右键点击（选择区域点2）
             if(player.getMainHandStack().getItem() == Items.GOLDEN_HOE){
                 handlePointSelection(player,blockPos,false);

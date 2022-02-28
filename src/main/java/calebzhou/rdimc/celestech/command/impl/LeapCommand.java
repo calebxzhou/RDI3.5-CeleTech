@@ -20,10 +20,10 @@ public class LeapCommand extends BaseCommand implements ArgCommand {
 
     @Override
     public void onExecute(ServerPlayerEntity fromPlayer, String arg) {
-        BlockPos lookingAtBlock = BlockPos.fromLong(Long.parseLong(arg));
+        /*BlockPos lookingAtBlock = BlockPos.fromLong(Long.parseLong(arg));
         double distance = lookingAtBlock.getSquaredDistance(new Vec3i(fromPlayer.getX(), fromPlayer.getY(), fromPlayer.getZ()));
         PlayerUtils.checkExpLevel(fromPlayer, (int) Math.cbrt(distance)/2);
-        PlayerUtils.teleport(fromPlayer, PlayerLocation.fromBlockPos(lookingAtBlock.add(0,2,0),fromPlayer.getWorld(), fromPlayer.getYaw(), fromPlayer.getPitch()));
-        sendChatMessage(fromPlayer,"传送成功！",MessageType.SUCCESS);
+        PlayerUtils.teleport(fromPlayer, PlayerLocation.fromBlockPos(lookingAtBlock.add(0,2,0),fromPlayer.getWorld(), fromPlayer.getYaw(), fromPlayer.getPitch()));*/
+        sendChatMessage(fromPlayer,"请升级新版客户端，才能使用本功能。",MessageType.ERROR);
     }
 }

@@ -5,6 +5,9 @@ import calebzhou.rdimc.celestech.module.protect.ProtectSetCommand;
 import calebzhou.rdimc.celestech.event.RegisterCommandsCallback;
 import calebzhou.rdimc.celestech.module.island.command.*;
 import calebzhou.rdimc.celestech.module.structure.VirtualStructureCommand;
+import calebzhou.rdimc.celestech.module.teleport.SpawnCommand;
+import calebzhou.rdimc.celestech.module.teleport.TpaCommand;
+import calebzhou.rdimc.celestech.module.teleport.TpreqCommand;
 import net.minecraft.util.ActionResult;
 
 import java.util.ArrayList;

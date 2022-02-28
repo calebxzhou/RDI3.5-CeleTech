@@ -1,7 +1,7 @@
 package calebzhou.rdimc.celestech.command;
 
 import calebzhou.rdimc.celestech.constant.MessageType;
-import calebzhou.rdimc.celestech.function.PlayerLoadingBar;
+import calebzhou.rdimc.celestech.module.LoadingBar;
 import calebzhou.rdimc.celestech.module.island.IslandException;
 import calebzhou.rdimc.celestech.utils.TextUtils;
 import calebzhou.rdimc.celestech.utils.ThreadPool;
@@ -17,7 +17,6 @@ import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 import org.apache.commons.lang3.StringUtils;
 
-import java.util.Arrays;
 import java.util.IntSummaryStatistics;
 
 public abstract class BaseCommand {
@@ -68,7 +67,7 @@ public abstract class BaseCommand {
                 .mapToInt((a) -> a)
                 .summaryStatistics();
         double average = summaryStats.getAverage();
-        PlayerLoadingBar.send(player,average);
+        LoadingBar.send(player,average);
         try {
             if(BaseCommand.this instanceof ArgCommand)
                 if(StringUtils.isEmpty(arg.getString()))

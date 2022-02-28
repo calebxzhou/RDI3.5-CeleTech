@@ -1,24 +1,22 @@
-package calebzhou.rdimc.celestech.function;
+package calebzhou.rdimc.celestech.module;
 
-import calebzhou.rdimc.celestech.constant.ColorConstants;
-import calebzhou.rdimc.celestech.utils.TextUtils;
 import net.minecraft.entity.boss.BossBar;
 import net.minecraft.entity.boss.ServerBossBar;
 import net.minecraft.network.packet.s2c.play.BossBarS2CPacket;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.LiteralText;
 
-public class PlayerLoadingBar extends Thread {
+public class LoadingBar extends Thread {
 
     public static void send(ServerPlayerEntity player, double timeElapseMs){
-        new PlayerLoadingBar(player, timeElapseMs).start();
+        new LoadingBar(player, timeElapseMs).start();
     }
 
 
     private final ServerPlayerEntity player;
     private final double timeElapseMs;
 
-    public PlayerLoadingBar(ServerPlayerEntity player, double timeElapseMs) {
+    public LoadingBar(ServerPlayerEntity player, double timeElapseMs) {
         this.player = player;
         this.timeElapseMs = timeElapseMs;
     }

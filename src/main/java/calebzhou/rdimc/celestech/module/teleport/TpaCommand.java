@@ -1,4 +1,4 @@
-package calebzhou.rdimc.celestech.command.impl;
+package calebzhou.rdimc.celestech.module.teleport;
 
 import calebzhou.rdimc.celestech.command.ArgCommand;
 import calebzhou.rdimc.celestech.command.BaseCommand;

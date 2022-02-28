@@ -46,18 +46,8 @@ public abstract class PlayerChatMixin {
     private MinecraftServer server;
 
 
-    @Inject(method= "handleMessage(Lnet/minecraft/server/filter/TextStream$Message;)V",
-            at=@At("HEAD"))
-    private void recordMsg(TextStream.Message message, CallbackInfo ci) {
-        String msg = message.getRaw();
-        //上传消息
-        GenericRecord cr = new GenericRecord(player.getUuidAsString(), RecordType.chat, player.getEntityName(), null, EncodingUtils.getUTF8StringFromGBKString(msg));
-        HttpUtils.asyncSendObject(cr);
-    }
-
-
-    @Inject(method= "handleMessage(Lnet/minecraft/server/filter/TextStream$Message;)V",
-            at=@At(value="INVOKE",target = "Lnet/minecraft/server/MinecraftServer;getPlayerManager()Lnet/minecraft/server/PlayerManager;",ordinal = 0), cancellable = true)
+     @Inject(method= "handleMessage(Lnet/minecraft/server/filter/TextStream$Message;)V",
+            at=@At(value="HEAD"), cancellable = true)
     private void handleMessage(TextStream.Message message, CallbackInfo ci) {
         ActionResult result = PlayerChatCallback.EVENT.invoker().call(player, message);
         if(result == ActionResult.FAIL) ci.cancel();
