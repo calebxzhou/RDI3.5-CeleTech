@@ -25,7 +25,11 @@ public class Leap implements NetworkReceivableC2S {
     }
     private void teleport(BlockPos lookingAtBlock, ServerPlayerEntity fromPlayer){
         double distance = lookingAtBlock.getSquaredDistance(new Vec3i(fromPlayer.getX(), fromPlayer.getY(), fromPlayer.getZ()));
-        PlayerUtils.checkExpLevel(fromPlayer, (int) Math.cbrt(distance)/2);
+        int levelNeed = (int) Math.cbrt(distance) / 2;
+        if(fromPlayer.experienceLevel<levelNeed) {
+               sendChatMessage(fromPlayer,"经验不足，需要"+levelNeed+"经验！");
+               return;
+        }
         PlayerUtils.teleport(fromPlayer, PlayerLocation.fromBlockPos(lookingAtBlock.add(0,2,0),fromPlayer.getWorld(), fromPlayer.getYaw(), fromPlayer.getPitch()));
         sendChatMessage(fromPlayer,"传送成功！", MessageType.SUCCESS);
     }

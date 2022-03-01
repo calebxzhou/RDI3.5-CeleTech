@@ -4,10 +4,7 @@ import calebzhou.rdimc.celestech.RDICeleTech;
 import calebzhou.rdimc.celestech.event.PlayerChatCallback;
 import calebzhou.rdimc.celestech.model.record.GenericRecord;
 import calebzhou.rdimc.celestech.model.record.RecordType;
-import calebzhou.rdimc.celestech.utils.EncodingUtils;
-import calebzhou.rdimc.celestech.utils.HttpUtils;
-import calebzhou.rdimc.celestech.utils.ServerUtils;
-import calebzhou.rdimc.celestech.utils.TextUtils;
+import calebzhou.rdimc.celestech.utils.*;
 import net.minecraft.util.ActionResult;
 
 import java.util.HashSet;
@@ -28,7 +25,7 @@ public class PlayerChatEvent {
 
 
     public PlayerChatEvent() {
-        PlayerChatCallback.EVENT.register(((player, message) -> {
+        PlayerChatCallback.EVENT.register(IdentifierUtils.byClass(this.getClass()),((player, message) -> {
             String msg = message.getRaw();
             //聊天 挂机玩家 提示
             if (msg.length() >= 3) ServerUtils.getAfkPlayerListDo(entry -> entry.getKey().contains(msg), player);

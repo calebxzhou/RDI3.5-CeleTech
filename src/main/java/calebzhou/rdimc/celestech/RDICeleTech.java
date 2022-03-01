@@ -2,12 +2,12 @@ package calebzhou.rdimc.celestech;
 
 import calebzhou.rdimc.celestech.command.CommandRegister;
 import calebzhou.rdimc.celestech.constant.FileConst;
-import calebzhou.rdimc.celestech.event.impl.PlayerBlockEvent;
 import calebzhou.rdimc.celestech.event.impl.PlayerChatEvent;
 import calebzhou.rdimc.celestech.model.VirtualStructure;
 import calebzhou.rdimc.celestech.model.thread.SpawnMobTimer;
+import calebzhou.rdimc.celestech.module.*;
 import calebzhou.rdimc.celestech.module.fasttree.FastTree;
-import calebzhou.rdimc.celestech.module.record.RecordBlockEvent;
+import calebzhou.rdimc.celestech.module.record.*;
 import calebzhou.rdimc.celestech.utils.NetworkUtils;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.reflect.TypeToken;
@@ -64,18 +64,25 @@ public class RDICeleTech implements ModInitializer {
             }
             new Timer().schedule(new SpawnMobTimer(),0,60*10*1000);
         });
-        new PlayerBlockEvent();
         new CommandRegister();
-        new PlayerConnectEvent();
-        new PlayerMiscEvent();
         new PlayerChatEvent();
 
         new NetworkUtils();
-loadModules();
+        loadModules();
     }
     private void loadModules(){
-        new RecordBlockEvent();
-        new FastTree();
+        new AfkDetect().registerNetworking();
+        new CheckIslandOnJoin().registerCallbacks();
+        new Leap().registerNetworking();
+        new SelectArea().registerCallbacks();
+        new Weather().registerCallbacks();
+        new RecordBlockEvent().registerCallbacks();
+        new RecordPlayerAttackEntity().registerCallbacks();
+        new RecordPlayerChat().registerCallbacks();
+        new RecordPlayerDeath().registerCallbacks();
+        new RecordPlayerLogin().registerCallbacks();
+        new RecordPlayerLogout().registerCallbacks();
+        new RecordPlayerUuidName().registerCallbacks();
     }
     public static void writeFiles() throws IOException{
         LOGGER.info("写入文件中...");
@@ -88,7 +95,7 @@ loadModules();
             LOGGER.info("没有配置存储文件夹，正在创建！");
             FileConst.FOLDER.mkdir();
         }
-        if(!VirtualStructure.STRUCTURE_FILE.exists()){
+        /*if(!VirtualStructure.STRUCTURE_FILE.exists()){
             LOGGER.info("没有结构存储文件，正在创建！");
             VirtualStructure.STRUCTURE_FILE.createNewFile();
         }
@@ -101,7 +108,7 @@ loadModules();
             LOGGER.info("结构文件读入成功！");
         }else{
             LOGGER.info("结构文件为空...");
-        }
+        }*/
     }
 
     public static MinecraftServer getServer() {

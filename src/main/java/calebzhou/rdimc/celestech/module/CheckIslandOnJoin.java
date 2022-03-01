@@ -6,6 +6,7 @@ import calebzhou.rdimc.celestech.model.ApiResponse;
 import calebzhou.rdimc.celestech.model.Island;
 import calebzhou.rdimc.celestech.module.island.IslandException;
 import calebzhou.rdimc.celestech.utils.HttpUtils;
+import calebzhou.rdimc.celestech.utils.IdentifierUtils;
 import calebzhou.rdimc.celestech.utils.NetworkUtils;
 import calebzhou.rdimc.celestech.utils.ThreadPool;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -31,9 +32,9 @@ public class CheckIslandOnJoin implements CallbackRegisterable {
 
     @Override
     public void registerCallbacks() {
-        PlayerConnectServerCallback.EVENT.register(((connection, player) -> {
+        PlayerConnectServerCallback.EVENT.register(IdentifierUtils.byClass(this.getClass()),((connection, player) -> {
             ThreadPool.newThread(()-> checkHasIsland(player));
-            return ActionResult.SUCCESS;
+            return ActionResult.PASS;
         }));
     }
 }

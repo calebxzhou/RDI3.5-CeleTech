@@ -6,6 +6,7 @@ import calebzhou.rdimc.celestech.event.PlayerPlaceBlockCallback;
 import calebzhou.rdimc.celestech.model.CoordLocation;
 import calebzhou.rdimc.celestech.model.record.BlockRecord;
 import calebzhou.rdimc.celestech.utils.HttpUtils;
+import calebzhou.rdimc.celestech.utils.IdentifierUtils;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.Entity;
@@ -32,19 +33,19 @@ public class RecordBlockEvent implements CallbackRegisterable {
 
         BlockRecord record=new BlockRecord(playerUuid,blockType,action,location);
         HttpUtils.asyncSendObject(record);
-        return ActionResult.SUCCESS;
+        return ActionResult.PASS;
     }
 
     @Override
     public void registerCallbacks() {
-        PlayerBreakBlockCallback.EVENT.register(((player, blockPos, blockState) -> {
+        PlayerBreakBlockCallback.EVENT.register(IdentifierUtils.byClass(this.getClass()),(player, blockPos, blockState) -> {
             //如果玩家破坏了石头 不记录
             if(blockState.getBlock()== Blocks.STONE || blockState.getBlock()== Blocks.COBBLESTONE){
                 return ActionResult.PASS;
             }
             return record(player,blockPos,blockState, BlockRecord.Action.BREAK);
-        }));
-        PlayerPlaceBlockCallback.EVENT.register(((player, blockPos, blockState) -> record(player,blockPos,blockState, BlockRecord.Action.PLACE)));
+        });
+        PlayerPlaceBlockCallback.EVENT.register(IdentifierUtils.byClass(this.getClass()),((player, blockPos, blockState) -> record(player,blockPos,blockState, BlockRecord.Action.PLACE)));
 
     }
 }

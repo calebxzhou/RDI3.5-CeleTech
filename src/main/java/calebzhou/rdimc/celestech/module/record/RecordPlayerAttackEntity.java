@@ -2,6 +2,7 @@ package calebzhou.rdimc.celestech.module.record;
 
 import calebzhou.rdimc.celestech.api.CallbackRegisterable;
 import calebzhou.rdimc.celestech.utils.HttpUtils;
+import calebzhou.rdimc.celestech.utils.IdentifierUtils;
 import net.fabricmc.fabric.api.event.player.AttackEntityCallback;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -21,10 +22,10 @@ public class RecordPlayerAttackEntity implements CallbackRegisterable {
 
     @Override
     public void registerCallbacks() {
-        AttackEntityCallback.EVENT.register((player, world, hand, entity, hitResult) -> {
+        AttackEntityCallback.EVENT.register(IdentifierUtils.byClass(this.getClass()),(player, world, hand, entity, hitResult) -> {
             if(entity instanceof LivingEntity livingEntity){
                 insertMobAttackRecord(player,livingEntity);
-                return ActionResult.SUCCESS;
+                return ActionResult.PASS;
             }
 
             return ActionResult.PASS;

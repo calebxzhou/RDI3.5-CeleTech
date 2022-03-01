@@ -8,6 +8,7 @@ import calebzhou.rdimc.celestech.module.structure.VirtualStructureCommand;
 import calebzhou.rdimc.celestech.module.teleport.SpawnCommand;
 import calebzhou.rdimc.celestech.module.teleport.TpaCommand;
 import calebzhou.rdimc.celestech.module.teleport.TpreqCommand;
+import calebzhou.rdimc.celestech.utils.IdentifierUtils;
 import net.minecraft.util.ActionResult;
 
 import java.util.ArrayList;
@@ -45,7 +46,7 @@ public class CommandRegister {
 
 
 
-        RegisterCommandsCallback.EVENT.register(((dispatcher, environment) -> {
+        RegisterCommandsCallback.EVENT.register(IdentifierUtils.byClass(this.getClass()),((dispatcher, environment) -> {
             commands.forEach((cmd) -> {
                 if (cmd.setExecution() != null) {
                     dispatcher.register(cmd.getBuilder());

@@ -2,10 +2,7 @@ package calebzhou.rdimc.celestech.module;
 
 import calebzhou.rdimc.celestech.api.CallbackRegisterable;
 import calebzhou.rdimc.celestech.event.PlayerConnectServerCallback;
-import calebzhou.rdimc.celestech.utils.HttpUtils;
-import calebzhou.rdimc.celestech.utils.TextUtils;
-import calebzhou.rdimc.celestech.utils.ThreadPool;
-import calebzhou.rdimc.celestech.utils.TimeUtils;
+import calebzhou.rdimc.celestech.utils.*;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.ActionResult;
 
@@ -22,9 +19,9 @@ public class Weather implements CallbackRegisterable {
 
     @Override
     public void registerCallbacks() {
-        PlayerConnectServerCallback.EVENT.register(((connection, player) -> {
+        PlayerConnectServerCallback.EVENT.register(IdentifierUtils.byClass(this.getClass()),((connection, player) -> {
             ThreadPool.newThread(()->sendWeather(player));
-            return ActionResult.SUCCESS;
+            return ActionResult.PASS;
         }));
     }
 }
