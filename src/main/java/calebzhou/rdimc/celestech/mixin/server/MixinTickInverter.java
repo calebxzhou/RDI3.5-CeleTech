@@ -1,5 +1,6 @@
 package calebzhou.rdimc.celestech.mixin.server;
 
+import calebzhou.rdimc.celestech.RDICeleTech;
 import calebzhou.rdimc.celestech.module.ticking.TickInverter;
 import calebzhou.rdimc.celestech.utils.ServerUtils;
 import net.minecraft.block.Block;
@@ -11,8 +12,8 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraft.world.chunk.BlockEntityTickInvoker;
 import org.apache.commons.lang3.RandomUtils;
-import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Mutable;
@@ -29,7 +30,6 @@ public abstract class MixinTickInverter {
 
     private static final int ENTITY_TICK_LIMIT = 35;
 
-    @Shadow @Final protected static Logger LOGGER;
 
     @Redirect(method = "Lnet/minecraft/world/World;tickEntity(Ljava/util/function/Consumer;Lnet/minecraft/entity/Entity;)V",
             at = @At(value = "INVOKE",
@@ -38,7 +38,7 @@ public abstract class MixinTickInverter {
         try {
             TickInverter.INSTANCE.tickEntity(tickConsumer,(Entity) entity);
         } catch (Throwable var6) {
-            LOGGER.error(var6.getMessage());
+            RDICeleTech.LOGGER.error(var6.getMessage());
         }
     }
 
@@ -49,7 +49,7 @@ public abstract class MixinTickInverter {
         try {
             blockState.neighborUpdate((World)((Object) this), pos, sourceBlock, neighborPos, false);
         } catch (Throwable e) {
-            LOGGER.error(e.getMessage());
+            RDICeleTech.LOGGER.error(e.getMessage());
         }
     }
 
@@ -127,7 +127,7 @@ public abstract class MixinTickInverter {
 
 
         } catch (Throwable e) {
-            LOGGER.error(e.getCause()+e.getMessage());
+            RDICeleTech.LOGGER.error(e.getCause()+e.getMessage());
         }
     }
 }

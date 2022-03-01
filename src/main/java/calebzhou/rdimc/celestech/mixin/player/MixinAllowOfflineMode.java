@@ -5,40 +5,29 @@ import calebzhou.rdimc.celestech.RDICeleTech;
 import calebzhou.rdimc.celestech.utils.HttpUtils;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import com.google.gson.stream.JsonReader;
-import com.mojang.authlib.Agent;
 import com.mojang.authlib.GameProfile;
-import com.mojang.authlib.GameProfileRepository;
-import com.mojang.authlib.ProfileLookupCallback;
-import com.mojang.authlib.exceptions.AuthenticationUnavailableException;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.ClientConnection;
 import net.minecraft.network.Packet;
-import net.minecraft.server.MinecraftServer;
-import net.minecraft.server.ServerConfigHandler;
 import net.minecraft.server.network.ServerLoginNetworkHandler;
-import net.minecraft.text.TranslatableText;
-import net.minecraft.util.StringHelper;
 import net.minecraft.util.logging.UncaughtExceptionLogger;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Mutable;
 import org.spongepowered.asm.mixin.Shadow;
-import org.spongepowered.asm.mixin.injection.*;
-
-import java.util.Collection;
-import java.util.UUID;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Redirect;
 
 //@Mixin(ServerConfigHandler.class)
 @Mixin(ServerLoginNetworkHandler.class)
 public abstract class MixinAllowOfflineMode{
     @Shadow @Final public ClientConnection connection;
     @Shadow @Mutable
-    private GameProfile profile;
+    GameProfile profile;
     @Shadow @Mutable
-    private ServerLoginNetworkHandler.State state;
-    @Shadow @Final private static Logger LOGGER;
+    ServerLoginNetworkHandler.State state;
+    @Shadow @Final
+    static Logger LOGGER;
 
     @Redirect(
             method = "Lnet/minecraft/server/network/ServerLoginNetworkHandler;onHello(Lnet/minecraft/network/packet/c2s/login/LoginHelloC2SPacket;)V",

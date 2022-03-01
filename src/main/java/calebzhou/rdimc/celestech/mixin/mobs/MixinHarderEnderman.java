@@ -6,6 +6,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.mob.EndermanEntity;
 import net.minecraft.tag.Tag;
+import net.minecraft.tag.TagKey;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -22,10 +23,10 @@ public abstract class MixinHarderEnderman {
             method = "Lnet/minecraft/entity/mob/EndermanEntity$PickUpBlockGoal;tick()V",
             at = @At(
                     value = "INVOKE",
-                    target = "Lnet/minecraft/block/BlockState;isIn(Lnet/minecraft/tag/Tag;)Z"
+                    target = "Lnet/minecraft/block/BlockState;isIn(Lnet/minecraft/tag/TagKey;)Z"
             )
     )
-    private boolean everythingpickup(BlockState instance, Tag tag){
+    private boolean everythingpickup(BlockState instance, TagKey tagKey){
         if(!PlayerUtils.getDimensionName(enderman).equals(WorldConstants.DEFAULT_WORLD))
             return false;
         if(instance.getBlock() == Blocks.WATER || instance.getBlock() == Blocks.LAVA)

@@ -14,6 +14,7 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Clearable;
 import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.world.LightType;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
@@ -28,12 +29,12 @@ public class WorldUtils {
     public static void changeBiome(BlockPos bpos,ServerWorld world,Biome biome){
         Chunk chunk = world.getChunk(bpos.getX()>>4,bpos.getZ()>>4);
         int sectionYindex = (bpos.getY()+64)>>4;
-        PalettedContainer<Biome> biomeArray = chunk.getSection(sectionYindex).getBiomeContainer();
+        PalettedContainer<RegistryEntry<Biome>> biomeArray = chunk.getSection(sectionYindex).getBiomeContainer();
         int mx=bpos.getX()&3;
         int my=bpos.getY()&3;
         int mz=bpos.getZ()&3;
-        biomeArray.swap(mx,my,mz, biome);
-        chunk.setShouldSave(true);
+        biomeArray.swap(mx,my,mz, RegistryEntry.of(biome));
+        chunk.setNeedsSaving(true);
     }
     public static void fill(ServerWorld serverWorld, BlockBox range, BlockState block){
         for (BlockPos blockPos : BlockPos.iterate(range.getMinX(), range.getMinY(), range.getMinZ(), range.getMaxX(), range.getMaxY(), range.getMaxZ())) {

@@ -9,6 +9,8 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.item.map.MapIcon;
+import net.minecraft.tag.ConfiguredStructureFeatureTags;
+import net.minecraft.tag.TagKey;
 import net.minecraft.util.Util;
 import net.minecraft.village.TradeOffers;
 import net.minecraft.village.VillagerProfession;
@@ -228,10 +230,10 @@ public abstract class MixinMoreTradeOffers {
                 new TradeOffers.SellItemFactory(Items.MAP, 7, 1, 1)
 }, 2,new TradeOffers.Factory[]{
                 new TradeOffers.BuyForOneEmeraldFactory(Items.GLASS_PANE, 11, 16, 10),
-                new TradeOffers.SellMapFactory(13, StructureFeature.MONUMENT, MapIcon.Type.MONUMENT, 12, 5)
+                new TradeOffers.SellMapFactory(13, ConfiguredStructureFeatureTags.ON_OCEAN_EXPLORER_MAPS, "filled_map.monument", MapIcon.Type.MONUMENT, 12, 5)
 }, 3,new TradeOffers.Factory[]{
                 new TradeOffers.BuyForOneEmeraldFactory(Items.COMPASS, 1, 12, 20),
-                new TradeOffers.SellMapFactory(14, StructureFeature.MANSION, MapIcon.Type.MANSION, 12, 10)
+                new TradeOffers.SellMapFactory(14, ConfiguredStructureFeatureTags.ON_WOODLAND_EXPLORER_MAPS, "filled_map.mansion", MapIcon.Type.MANSION, 12, 10)
 }, 4,new TradeOffers.Factory[]{
                 new TradeOffers.SellItemFactory(Items.ITEM_FRAME, 7, 1, 15),
                 new TradeOffers.SellItemFactory(Items.WHITE_BANNER, 3, 1, 15),

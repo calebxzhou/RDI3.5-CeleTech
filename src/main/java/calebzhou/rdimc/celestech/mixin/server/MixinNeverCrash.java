@@ -59,7 +59,6 @@ class AntiChunkCrash{
     private ChunkTicketManager ticketManager;
     @Shadow @Final
     public ThreadedAnvilChunkStorage threadedAnvilChunkStorage;
-    @Shadow @Final private static Logger LOGGER;
 
     @Redirect(method = "Lnet/minecraft/server/world/ServerChunkManager;tick()Z",
             at=@At(value = "INVOKE",target = "Lnet/minecraft/server/world/ChunkTicketManager;tick(Lnet/minecraft/server/world/ThreadedAnvilChunkStorage;)Z"))
