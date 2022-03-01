@@ -48,7 +48,7 @@ public class RDICeleTech implements ModInitializer {
 
     public static final SplittableRandom RANDOM = new SplittableRandom();
     private static MinecraftServer server;
-    public static final int VERSION =0x3B5;
+    public static final int VERSION =0x350;
     @Override
     public void onInitialize() {
         // This code runs as soon as Minecraft is in a mod-load-ready state.

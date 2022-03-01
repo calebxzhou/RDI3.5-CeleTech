@@ -4,7 +4,6 @@ import calebzhou.rdimc.celestech.command.impl.*;
 import calebzhou.rdimc.celestech.module.protect.ProtectSetCommand;
 import calebzhou.rdimc.celestech.event.RegisterCommandsCallback;
 import calebzhou.rdimc.celestech.module.island.command.*;
-import calebzhou.rdimc.celestech.module.structure.VirtualStructureCommand;
 import calebzhou.rdimc.celestech.module.teleport.SpawnCommand;
 import calebzhou.rdimc.celestech.module.teleport.TpaCommand;
 import calebzhou.rdimc.celestech.module.teleport.TpreqCommand;
@@ -40,7 +39,6 @@ public class CommandRegister {
         commands.add(new PayExperienceCommand("pay",0));
         commands.add(new ProtectSetCommand("protect-set",0));
         commands.add(new TrashCommand("trash",0));
-        commands.add(new VirtualStructureCommand("vs",0));
         //commands.add(new JoinCommand("join",0));
 
 

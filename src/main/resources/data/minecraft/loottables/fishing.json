@@ -1,0 +1,555 @@
+{
+  "type": "minecraft:fishing",
+  "pools": [
+    {
+      "rolls": 1,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "weight": 2,
+          "name": "minecraft:cod"
+        },
+        {
+          "type": "minecraft:item",
+          "weight": 2,
+          "name": "minecraft:salmon"
+        },
+        {
+          "type": "minecraft:item",
+          "weight": 1,
+          "name": "minecraft:tropical_fish",
+          "conditions": [
+            {
+              "condition": "minecraft:location_check",
+              "predicate": {
+                "biome": "minecraft:warm_ocean",
+                "dimension": "minecraft:overworld"
+              }
+            }
+          ]
+        },
+        {
+          "type": "minecraft:item",
+          "weight": 1,
+          "name": "minecraft:pufferfish",
+          "conditions": [
+            {
+              "condition": "minecraft:location_check",
+              "predicate": {
+                "biome": "minecraft:warm_ocean",
+                "dimension": "minecraft:overworld"
+              }
+            }
+          ]
+        }
+      ],
+      "conditions": [
+        {
+          "condition": "minecraft:location_check",
+          "predicate": {
+            "dimension": "minecraft:overworld"
+          }
+        }
+      ]
+    },
+    {
+      "rolls": 1,
+      "entries": [
+        {
+          "type": "minecraft:empty",
+          "weight": 36
+        },
+        {
+          "type": "minecraft:item",
+          "weight": 18,
+          "name": "minecraft:poisonous_potato"
+        },
+        {
+          "type": "minecraft:item",
+          "weight": 12,
+          "name": "minecraft:glass_bottle"
+        },
+        {
+          "type": "minecraft:item",
+          "weight": 38,
+          "name": "minecraft:stick",
+          "functions": [
+            {
+              "function": "minecraft:set_count",
+              "count": {
+                "min": 1,
+                "max": 3
+              }
+            }
+          ]
+        },
+        {
+          "type": "minecraft:item",
+          "weight": 44,
+          "name": "minecraft:kelp",
+          "functions": [
+            {
+              "function": "minecraft:set_count",
+              "count": {
+                "min": 1,
+                "max": 3
+              }
+            }
+          ]
+        },
+        {
+          "type": "minecraft:item",
+          "weight": 36,
+          "name": "minecraft:dirt",
+          "functions": [
+            {
+              "function": "minecraft:set_count",
+              "count": {
+                "min": 1,
+                "max": 4
+              }
+            }
+          ]
+        },
+        {
+          "type": "minecraft:item",
+          "weight": 8,
+          "name": "minecraft:bucket"
+        },
+        {
+          "type": "minecraft:item",
+          "weight": 12,
+          "name": "minecraft:iron_nugget",
+          "functions": [
+            {
+              "function": "minecraft:set_count",
+              "count": {
+                "min": 1,
+                "max": 2
+              }
+            }
+          ]
+        },
+        {
+          "type": "minecraft:item",
+          "weight": 5,
+          "name": "minecraft:leather_boots",
+          "functions": [
+            {
+              "function": "minecraft:set_damage",
+              "damage": {
+                "min": 10,
+                "max": 30
+              }
+            }
+          ]
+        },
+        {
+          "type": "minecraft:item",
+          "weight": 3,
+          "name": "minecraft:bow",
+          "functions": [
+            {
+              "function": "minecraft:set_damage",
+              "damage": {
+                "min": 100,
+                "max": 200
+              }
+            },
+            {
+              "function": "minecraft:enchant_with_levels",
+              "levels": {
+                "min": 1,
+                "max": 5
+              }
+            },
+            {
+              "function": "minecraft:enchant_randomly",
+              "enchantments": [
+                "minecraft:punch",
+                "minecraft:sharpness",
+                "minecraft:unbreaking",
+                "minecraft:power",
+                "minecraft:mending",
+                "minecraft:flame"
+              ]
+            }
+          ]
+        },
+        {
+          "type": "minecraft:item",
+          "weight": 3,
+          "name": "minecraft:suspicious_stew",
+          "functions": [
+            {
+              "function": "minecraft:set_lore",
+              "entity": "this",
+              "lore": [
+                {
+                  "text": "It looks, good ?",
+                  "color": "white"
+                }
+              ]
+            },
+            {
+              "function": "minecraft:set_stew_effect",
+              "effects": [
+                {
+                  "type": "minecraft:instant_health",
+                  "duration": 1
+                },
+                {
+                  "type": "minecraft:haste",
+                  "duration": {
+                    "min": 10,
+                    "max": 16
+                  }
+                },
+                {
+                  "type": "minecraft:absorption",
+                  "duration": {
+                    "min": 10,
+                    "max": 12
+                  }
+                },
+                {
+                  "type": "minecraft:speed",
+                  "duration": {
+                    "min": 8,
+                    "max": 18
+                  }
+                },
+                {
+                  "type": "minecraft:jump_boost",
+                  "duration": {
+                    "min": 8,
+                    "max": 22
+                  }
+                },
+                {
+                  "type": "minecraft:slow_falling",
+                  "duration": {
+                    "min": 10,
+                    "max": 14
+                  }
+                },
+                {
+                  "type": "minecraft:fire_resistance",
+                  "duration": {
+                    "min": 10,
+                    "max": 30
+                  }
+                },
+                {
+                  "type": "minecraft:strength",
+                  "duration": {
+                    "min": 6,
+                    "max": 20
+                  }
+                },
+                {
+                  "type": "minecraft:regeneration",
+                  "duration": {
+                    "min": 4,
+                    "max": 10
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "minecraft:item",
+          "weight": 5,
+          "name": "minecraft:suspicious_stew",
+          "functions": [
+            {
+              "function": "minecraft:set_lore",
+              "entity": "this",
+              "lore": [
+                {
+                  "text": "There is a negligeable chance that this thing is edible...",
+                  "color": "white"
+                }
+              ]
+            },
+            {
+              "function": "minecraft:set_stew_effect",
+              "effects": [
+                {
+                  "type": "minecraft:absorption",
+                  "duration": {
+                    "min": 160,
+                    "max": 320
+                  }
+                },
+                {
+                  "type": "minecraft:levitation",
+                  "duration": {
+                    "min": 4,
+                    "max": 12
+                  }
+                },
+                {
+                  "type": "minecraft:slowness",
+                  "duration": {
+                    "min": 10,
+                    "max": 26
+                  }
+                },
+                {
+                  "type": "minecraft:instant_damage",
+                  "duration": 1
+                },
+                {
+                  "type": "minecraft:wither",
+                  "duration": {
+                    "min": 8,
+                    "max": 12
+                  }
+                },
+                {
+                  "type": "minecraft:nausea",
+                  "duration": {
+                    "min": 10,
+                    "max": 12
+                  }
+                },
+                {
+                  "type": "minecraft:poison",
+                  "duration": {
+                    "min": 10,
+                    "max": 14
+                  }
+                },
+                {
+                  "type": "minecraft:blindness",
+                  "duration": {
+                    "min": 10,
+                    "max": 20
+                  }
+                },
+                {
+                  "type": "minecraft:mining_fatigue",
+                  "duration": {
+                    "min": 8,
+                    "max": 14
+                  }
+                },
+                {
+                  "type": "minecraft:hunger",
+                  "duration": {
+                    "min": 8,
+                    "max": 12
+                  }
+                },
+                {
+                  "type": "minecraft:weakness",
+                  "duration": {
+                    "min": 8,
+                    "max": 22
+                  }
+                },
+                {
+                  "type": "minecraft:bad_omen",
+                  "duration": {
+                    "min": 1200,
+                    "max": 3600
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "minecraft:item",
+          "weight": 6,
+          "name": "minecraft:bowl"
+        },
+        {
+          "type": "minecraft:item",
+          "weight": 4,
+          "name": "minecraft:sponge"
+        },
+        {
+          "type": "minecraft:item",
+          "weight": 1,
+          "name": "minecraft:nautilus_shell",
+          "functions": [
+            {
+              "function": "minecraft:set_count",
+              "count": {
+                "min": 0,
+                "max": 1
+              }
+            }
+          ]
+        },
+        {
+          "type": "minecraft:group",
+          "children": [
+            {
+              "type": "minecraft:item",
+              "weight": 1,
+              "name": "minecraft:map",
+              "functions": [
+                {
+                  "function": "minecraft:set_name",
+                  "entity": "this",
+                  "name": "Buried treasure map"
+                },
+                {
+                  "function": "minecraft:exploration_map",
+                  "destination": "buried_treasure",
+                  "decoration": "red_x"
+                }
+              ]
+            },
+            {
+              "type": "minecraft:item",
+              "weight": 1,
+              "name": "minecraft:map",
+              "functions": [
+                {
+                  "function": "minecraft:set_name",
+                  "entity": "this",
+                  "name": "Ocean ruins map"
+                },
+                {
+                  "function": "minecraft:exploration_map",
+                  "destination": "ocean_ruin",
+                  "decoration": "red_x"
+                }
+              ]
+            },
+            {
+              "type": "minecraft:item",
+              "weight": 1,
+              "name": "minecraft:map",
+              "functions": [
+                {
+                  "function": "minecraft:set_name",
+                  "entity": "this",
+                  "name": "Shipwreck map"
+                },
+                {
+                  "function": "minecraft:exploration_map",
+                  "destination": "shipwreck",
+                  "decoration": "red_x"
+                }
+              ]
+            },
+            {
+              "type": "minecraft:item",
+              "weight": 1,
+              "name": "minecraft:map",
+              "functions": [
+                {
+                  "function": "minecraft:set_name",
+                  "entity": "this",
+                  "name": "Monument map"
+                },
+                {
+                  "function": "minecraft:exploration_map",
+                  "destination": "monument",
+                  "decoration": "red_x"
+                }
+              ]
+            },
+            {
+              "type": "minecraft:item",
+              "weight": 1,
+              "name": "minecraft:fishing_rod",
+              "functions": [
+                {
+                  "function": "minecraft:enchant_randomly",
+                  "enchantments": [
+                    "minecraft:luck_of_the_sea",
+                    "minecraft:sharpness",
+                    "minecraft:mending",
+                    "minecraft:unbreaking",
+                    "minecraft:lure",
+                    "minecraft:knockback"
+                  ]
+                },
+                {
+                  "function": "minecraft:enchant_with_levels",
+                  "levels": {
+                    "min": 1,
+                    "max": 5
+                  }
+                }
+              ]
+            },
+            {
+              "type": "minecraft:item",
+              "weight": 30,
+              "name": "minecraft:seagrass",
+              "functions": [
+                {
+                  "function": "minecraft:set_count",
+                  "count": {
+                    "min": 1,
+                    "max": 4
+                  }
+                }
+              ]
+            },
+            {
+              "type": "minecraft:item",
+              "weight": 6,
+              "name": "minecraft:sea_pickle",
+              "functions": [
+                {
+                  "function": "minecraft:set_count",
+                  "count": 1
+                }
+              ],
+              "conditions": [
+                {
+                  "condition": "minecraft:location_check",
+                  "predicate": {
+                    "biome": "minecraft:warm_ocean",
+                    "dimension": "minecraft:overworld"
+                  }
+                }
+              ]
+            },
+            {
+              "type": "minecraft:item",
+              "weight": 1,
+              "name": "minecraft:trident",
+              "functions": [
+                {
+                  "function": "minecraft:enchant_randomly",
+                  "enchantments": [
+                    "minecraft:sharpness",
+                    "minecraft:looting",
+                    "minecraft:loyalty",
+                    "minecraft:riptide",
+                    "minecraft:channeling",
+                    "minecraft:mending",
+                    "minecraft:unbreaking"
+                  ]
+                },
+                {
+                  "function": "minecraft:enchant_with_levels",
+                  "levels": {
+                    "min": 1,
+                    "max": 5
+                  }
+                }
+              ],
+              "conditions": [
+                {
+                  "condition": "minecraft:random_chance",
+                  "chance": 0.01
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
