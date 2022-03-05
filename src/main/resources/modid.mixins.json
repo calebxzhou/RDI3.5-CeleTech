@@ -4,6 +4,7 @@
   "package": "calebzhou.rdimc.celestech.mixin",
   "compatibilityLevel": "JAVA_17",
   "mixins": [
+    "AccessDensityFunctions",
     "AccessServerWorld",
     "AccessStructureLocator",
     "AccessThreadedAnvilChunkStorage",
@@ -32,6 +33,7 @@
     "player.MixinDeathMessage",
     "player.MixinFoodInstantEat",
     "player.MixinNoVanillaHelp",
+    "player.MixinQuickDrown",
     "player.PlayerBreakBlockMixin",
     "player.PlayerChatMixin",
     "player.PlayerConnectServerMixin",
@@ -54,7 +56,8 @@
     "world.MixinFireSpeedUp",
     "world.MixinImproveSweetBerryDamage",
     "world.MixinLavaSpeed",
-    "world.MixinMoreTradeOffers"
+    "world.MixinMoreTradeOffers",
+    "world.MixinOceanOverworld"
   ],
   "client": [
   ],
