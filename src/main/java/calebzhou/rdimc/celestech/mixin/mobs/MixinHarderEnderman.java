@@ -1,12 +1,7 @@
 package calebzhou.rdimc.celestech.mixin.mobs;
 
-import calebzhou.rdimc.celestech.constant.WorldConstants;
-import calebzhou.rdimc.celestech.utils.PlayerUtils;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
 import net.minecraft.entity.mob.EndermanEntity;
-import net.minecraft.tag.Tag;
-import net.minecraft.tag.TagKey;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -19,7 +14,7 @@ public abstract class MixinHarderEnderman {
     @Shadow
     private EndermanEntity enderman;
     //小黑能够捡起所有物品
-    @Redirect(
+    /*@Redirect(
             method = "Lnet/minecraft/entity/mob/EndermanEntity$PickUpBlockGoal;tick()V",
             at = @At(
                     value = "INVOKE",
@@ -35,7 +30,7 @@ public abstract class MixinHarderEnderman {
             return false;
 
         else  return true;
-    }
+    }*/
 }
 @Mixin(EndermanEntity.class)
 abstract class MixinHarderEnderman2 {

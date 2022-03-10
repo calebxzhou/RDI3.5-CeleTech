@@ -1,20 +1,12 @@
 package calebzhou.rdimc.celestech.utils;
 
-import com.google.common.collect.Lists;
-import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
-import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.command.argument.BlockStateArgument;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.fluid.Fluids;
-import net.minecraft.server.command.FillCommand;
-import net.minecraft.server.command.SetBlockCommand;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.Clearable;
 import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.world.LightType;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
@@ -22,19 +14,16 @@ import net.minecraft.world.biome.Biome;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.PalettedContainer;
 
-import java.util.Iterator;
-import java.util.List;
-
 public class WorldUtils {
     public static void changeBiome(BlockPos bpos,ServerWorld world,Biome biome){
         Chunk chunk = world.getChunk(bpos.getX()>>4,bpos.getZ()>>4);
         int sectionYindex = (bpos.getY()+64)>>4;
-        PalettedContainer<RegistryEntry<Biome>> biomeArray = chunk.getSection(sectionYindex).getBiomeContainer();
+        PalettedContainer<Biome> biomeArray = chunk.getSection(sectionYindex).getBiomeContainer();
         int mx=bpos.getX()&3;
         int my=bpos.getY()&3;
         int mz=bpos.getZ()&3;
-        biomeArray.swap(mx,my,mz, RegistryEntry.of(biome));
-        chunk.setNeedsSaving(true);
+        biomeArray.swap(mx,my,mz, (biome));
+        chunk.setShouldSave(true);
     }
     public static void fill(ServerWorld serverWorld, BlockBox range, BlockState block){
         for (BlockPos blockPos : BlockPos.iterate(range.getMinX(), range.getMinY(), range.getMinZ(), range.getMaxX(), range.getMaxY(), range.getMaxZ())) {

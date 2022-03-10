@@ -1,7 +1,7 @@
 package calebzhou.rdimc.celestech.mixin.mobs;
 
 import net.minecraft.entity.mob.PhantomEntity;
-import net.minecraft.world.spawner.PhantomSpawner;
+import net.minecraft.world.gen.PhantomSpawner;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.Constant;
 import org.spongepowered.asm.mixin.injection.ModifyConstant;
@@ -44,7 +44,7 @@ class PhantomMoveMixin{
 @Mixin(PhantomSpawner.class)
 class PhantomSpawnerMixin{
     @ModifyConstant(
-            method = "Lnet/minecraft/world/spawner/PhantomSpawner;spawn(Lnet/minecraft/server/world/ServerWorld;ZZ)I"
+            method = "Lnet/minecraft/world/gen/PhantomSpawner;spawn(Lnet/minecraft/server/world/ServerWorld;ZZ)I"
             ,constant = @Constant(intValue = 1,ordinal = 1)
 
     )

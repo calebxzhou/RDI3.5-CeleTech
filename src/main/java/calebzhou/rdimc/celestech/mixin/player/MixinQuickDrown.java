@@ -5,6 +5,8 @@ import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.LivingEntity;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
+import org.spongepowered.asm.mixin.injection.Constant;
+import org.spongepowered.asm.mixin.injection.ModifyConstant;
 
 @Mixin(LivingEntity.class)
 public class MixinQuickDrown {
@@ -26,5 +28,13 @@ public class MixinQuickDrown {
     @Overwrite
     public int getNextAirOnLand(int air) {
         return Math.min(air + 2, MAX_AIR);
+    }
+}
+@Mixin(LivingEntity.class)
+class MixinQuickDrown2 {
+    @ModifyConstant(method = "Lnet/minecraft/entity/LivingEntity;baseTick()V",
+    constant = @Constant(floatValue = 2.0f))
+    private static float drownDeath(float constant){
+        return 5.0f;
     }
 }

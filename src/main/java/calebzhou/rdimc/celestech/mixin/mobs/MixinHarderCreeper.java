@@ -28,6 +28,6 @@ public abstract class MixinHarderCreeper {
             constant = @Constant(doubleValue = 0.25D)
     )
     private static double changeSpeed(double spd){
-        return 0.35D;
+        return 0.4D;
     }
 }

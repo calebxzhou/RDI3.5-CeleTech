@@ -26,8 +26,6 @@ public abstract class MixinAllowOfflineMode{
     GameProfile profile;
     @Shadow @Mutable
     ServerLoginNetworkHandler.State state;
-    @Shadow @Final
-    static Logger LOGGER;
 
     @Redirect(
             method = "Lnet/minecraft/server/network/ServerLoginNetworkHandler;onHello(Lnet/minecraft/network/packet/c2s/login/LoginHelloC2SPacket;)V",
@@ -44,7 +42,7 @@ public abstract class MixinAllowOfflineMode{
             JsonObject rootObj = JsonParser.parseString(json1).getAsJsonObject();
             String id = rootObj.get("id").getAsString();
             //成功获取了id就是正版玩家，进入正版验证
-            LOGGER.info("此人是正版 "+id);
+            RDICeleTech.LOGGER.info("此人是正版 "+id);
             connection.send(packet);
         }catch (IllegalStateException|NullPointerException e){
             System.out.println(profile.getName()+"不是正版");
@@ -81,7 +79,7 @@ public abstract class MixinAllowOfflineMode{
                     state = ServerLoginNetworkHandler.State.READY_TO_ACCEPT;
                 }
         });
-        thread.setUncaughtExceptionHandler(new UncaughtExceptionLogger(LOGGER));
+        thread.setUncaughtExceptionHandler(new UncaughtExceptionLogger(RDICeleTech.LOGGER));
         thread.start();
     }
     @Shadow
