@@ -3,7 +3,7 @@
     "icon": {
       "item": "minecraft:apple"
     },
-    "title": "第二章 我的大空岛",
+    "title": "第二章 我的大岛屿",
     "frame": "task",
     "description": "获得苹果。",
     "background": "minecraft:textures/gui/advancements/backgrounds/stone.png"

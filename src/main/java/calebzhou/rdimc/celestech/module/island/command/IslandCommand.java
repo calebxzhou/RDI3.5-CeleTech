@@ -23,7 +23,7 @@ public class IslandCommand extends BaseCommand {
             }
 
         } catch (NullPointerException e) {
-            sendChatMessage(player,"空岛不存在!", MessageType.ERROR);
+            sendChatMessage(player,"岛屿不存在!", MessageType.ERROR);
         }
     }
 }

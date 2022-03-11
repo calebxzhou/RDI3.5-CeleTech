@@ -36,7 +36,7 @@ public class ChatRangeCommand extends BaseCommand implements ArgCommand {
             }
             List<String> members = island.getMembers();
             if(members==null || members.isEmpty()){
-                TextUtils.sendChatMessage(player,"您的空岛没有成员，因此不能使用此指令。",MessageType.ERROR);
+                TextUtils.sendChatMessage(player,"您的岛屿没有成员，因此不能使用此指令。",MessageType.ERROR);
                 return;
             }
             chatRangeMap.put(pid,members);

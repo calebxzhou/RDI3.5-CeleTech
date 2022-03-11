@@ -22,7 +22,7 @@ public class KickCommand extends BaseCommand implements ArgCommand {
         }
         ApiResponse response = HttpUtils.sendRequestV2("DELETE", "v2/island_crew/" + fromPlayer.getUuidAsString()+"/"+PlayerUtils.getPlayerByName(kickPlayer).getUuidAsString());
         TextUtils.sendChatMessage(fromPlayer,response);
-        TextUtils.sendChatMessage(PlayerUtils.getPlayerByName(kickPlayer),fromPlayer.getEntityName()+"删除了他的空岛!");
+        TextUtils.sendChatMessage(PlayerUtils.getPlayerByName(kickPlayer),fromPlayer.getEntityName()+"删除了他的岛屿!");
 
     }
 

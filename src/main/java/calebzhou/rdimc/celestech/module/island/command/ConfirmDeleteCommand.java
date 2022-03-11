@@ -31,19 +31,19 @@ public class ConfirmDeleteCommand extends BaseCommand {
             data = resp.getData(Island.class);
             location = CoordLocation.fromString(data.getLocation());
         } catch (NullPointerException e) {
-            sendChatMessage(player,"您没有空岛!", MessageType.ERROR);
+            sendChatMessage(player,"您没有岛屿!", MessageType.ERROR);
         }
         ApiResponse response = HttpUtils.sendRequestV2("DELETE","v2/island/"+player.getUuidAsString());
         if(!response.isSuccess()){
             sendChatMessage(player,response);
             return;
         }
-        int offset=100;
+        /*int offset=100;
         Vec3i v1 = new Vec3i(location.getPosiX() ,-64, location.getPosiZ());
         Vec3i v2= new Vec3i(location.getPosiX() ,320, location.getPosiZ());
         v1.add(-offset,0,-offset);
         v2.add(offset,0,offset);
-        WorldUtils.fill(player.getWorld(), BlockBox.create(v1,v2), Blocks.AIR.getDefaultState());
+        WorldUtils.fill(player.getWorld(), BlockBox.create(v1,v2), Blocks.AIR.getDefaultState());*/
         player.getInventory().clear();
         player.kill();
         PlayerUtils.teleport(player, WorldConstants.SPAWN_LOCA);

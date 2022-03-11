@@ -23,7 +23,7 @@ public class CreateCommand extends BaseCommand {
     @Override
     protected void onExecute(ServerPlayerEntity player,String arg) {
         ApiResponse<Island> response = HttpUtils.sendRequestV2("POST", "v2/island/" + player.getUuidAsString());
-        sendChatMessage(player,"开始创建空岛,请您不要触摸键盘 或者 鼠标.", MessageType.INFO);
+        sendChatMessage(player,"即将开始新的旅程，请稍等", MessageType.INFO);
         if (response.getType().equals("success")) {
             player.addStatusEffect(new StatusEffectInstance(StatusEffects.SLOW_FALLING,20*30,1));
             Island island = response.getData(Island.class);
@@ -33,7 +33,7 @@ public class CreateCommand extends BaseCommand {
             PlayerUtils.placeBlock(player.getWorld(), iloca, Blocks.OBSIDIAN.getDefaultState());
             PlayerUtils.placeBlock(player.getWorld(), iloca.add(-1,0,0), Blocks.GRASS_BLOCK.getDefaultState());
             PlayerUtils.givePlayerInitialKit(player);
-            sendChatMessage(player,"请至公告群中查看空岛教程。",MessageType.INFO);
+            sendChatMessage(player,"请至公告群中查看教程。",MessageType.INFO);
         }
         sendChatMessage(player, response);
     }
