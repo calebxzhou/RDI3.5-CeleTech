@@ -1,9 +1,8 @@
 package calebzhou.rdimc.celestech.model;
 
 import calebzhou.rdimc.celestech.RDICeleTech;
-import net.minecraft.util.math.Vec3i;
-
 import java.io.Serializable;
+import net.minecraft.core.Vec3i;
 
 public class BorderedBox implements Serializable {
     private int x1;

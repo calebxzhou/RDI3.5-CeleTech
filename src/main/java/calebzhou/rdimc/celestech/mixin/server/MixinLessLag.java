@@ -1,8 +1,8 @@
 package calebzhou.rdimc.celestech.mixin.server;
 
 import calebzhou.rdimc.celestech.ServerStatus;
+import net.minecraft.Util;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.util.Util;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -13,13 +13,13 @@ import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 @Mixin(MinecraftServer.class)
 public class MixinLessLag {
 
-    @Shadow private long timeReference;
+    @Shadow private long nextTickTime;
 
     //设置服务器延迟等级
     @Inject(method = "Lnet/minecraft/server/MinecraftServer;runServer()V",
-            at =@At(value = "INVOKE",target = "Lnet/minecraft/server/MinecraftServer;startTickMetrics()V"))
+            at =@At(value = "INVOKE",target = "Lnet/minecraft/server/MinecraftServer;startMetricsRecordingTick()V"))
     private void setServerStatus(CallbackInfo ci){
-        long milisBehind = Util.getMeasuringTimeMs()-timeReference;
+        long milisBehind = Util.getMillis()-nextTickTime;
         if(milisBehind>4000){
             ServerStatus.setStatus(ServerStatus.WORST);
         }else if(milisBehind>2200){

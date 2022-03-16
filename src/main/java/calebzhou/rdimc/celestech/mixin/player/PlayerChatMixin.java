@@ -9,22 +9,15 @@ import calebzhou.rdimc.celestech.model.record.GenericRecord;
 import calebzhou.rdimc.celestech.model.record.RecordType;
 import calebzhou.rdimc.celestech.utils.*;
 import com.mojang.brigadier.LiteralMessage;
-import net.minecraft.client.option.ChatVisibility;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.network.MessageType;
-import net.minecraft.network.listener.ServerPlayPacketListener;
-import net.minecraft.network.packet.s2c.play.GameMessageS2CPacket;
+import net.minecraft.network.chat.ChatType;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.server.PlayerManager;
-import net.minecraft.server.filter.TextStream;
-import net.minecraft.server.network.ServerPlayNetworkHandler;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.text.LiteralText;
-import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
-import net.minecraft.util.ActionResult;
-import net.minecraft.util.Formatting;
-import net.minecraft.util.Util;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.server.network.ServerGamePacketListenerImpl;
+import net.minecraft.server.network.TextFilter;
+import net.minecraft.server.players.PlayerList;
+import net.minecraft.world.InteractionResult;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
@@ -38,37 +31,37 @@ import java.util.List;
 import java.util.UUID;
 import java.util.function.Function;
 
-@Mixin(ServerPlayNetworkHandler.class)
+@Mixin(ServerGamePacketListenerImpl.class)
 public abstract class PlayerChatMixin {
     @Shadow
-    public ServerPlayerEntity player;
+    public ServerPlayer player;
     @Shadow @Final
     private MinecraftServer server;
 
 
-     @Inject(method= "handleMessage(Lnet/minecraft/server/filter/TextStream$Message;)V",
+     @Inject(method= "Lnet/minecraft/server/network/ServerGamePacketListenerImpl;handleChat(Lnet/minecraft/server/network/TextFilter$FilteredText;)V",
             at=@At(value="HEAD"), cancellable = true)
-    private void handleMessage(TextStream.Message message, CallbackInfo ci) {
-        ActionResult result = PlayerChatCallback.EVENT.invoker().call(player, message);
-        if(result == ActionResult.FAIL) ci.cancel();
+    private void handleMessage(TextFilter.FilteredText message, CallbackInfo ci) {
+        InteractionResult result = PlayerChatCallback.EVENT.invoker().call(player, message);
+        if(result == InteractionResult.FAIL) ci.cancel();
     }
 
 
-    @Redirect(method = "handleMessage(Lnet/minecraft/server/filter/TextStream$Message;)V",
-    at=@At(value="INVOKE",target = "Lnet/minecraft/server/PlayerManager;broadcast(Lnet/minecraft/text/Text;Ljava/util/function/Function;Lnet/minecraft/network/MessageType;Ljava/util/UUID;)V"))
-    private void sendAll(PlayerManager instance, Text serverMessage, Function<ServerPlayerEntity, Text> playerMessageFactory, MessageType type, UUID sender){
-        String pid = player.getUuidAsString();
+    @Redirect(method = "Lnet/minecraft/server/network/ServerGamePacketListenerImpl;handleChat(Lnet/minecraft/server/network/TextFilter$FilteredText;)V",
+    at=@At(value="INVOKE",target = "Lnet/minecraft/server/players/PlayerList;broadcastMessage(Lnet/minecraft/network/chat/Component;Ljava/util/function/Function;Lnet/minecraft/network/chat/ChatType;Ljava/util/UUID;)V"))
+    private void sendAll(PlayerList instance, Component serverMessage, Function<ServerPlayer, Component> playerMessageFactory, ChatType type, UUID sender){
+        String pid = player.getStringUUID();
         List<String> toSendList = ChatRangeCommand.chatRangeMap.get(pid);
         //岛内模式
         if(toSendList!=null){
-            serverMessage = new LiteralText(ColorConstants.AQUA+"岛内 >").append(serverMessage);
+            serverMessage = new TextComponent(ColorConstants.AQUA+"岛内 >").append(serverMessage);
             for(String toSend:toSendList){
-                ServerPlayerEntity player = PlayerUtils.getPlayerByUuid(toSend);
+                ServerPlayer player = PlayerUtils.getPlayerByUuid(toSend);
                 TextUtils.sendChatMessage(player,serverMessage);
             }
             //TextUtils.sendChatMessage(player,serverMessage);
         }else{
-            instance.broadcast(serverMessage,playerMessageFactory,type,sender);
+            instance.broadcastMessage(serverMessage,playerMessageFactory,type,sender);
         }
 
     }

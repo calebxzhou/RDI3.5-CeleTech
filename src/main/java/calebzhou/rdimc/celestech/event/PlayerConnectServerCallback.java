@@ -2,25 +2,22 @@ package calebzhou.rdimc.celestech.event;
 
 import net.fabricmc.fabric.api.event.Event;
 import net.fabricmc.fabric.api.event.EventFactory;
-import net.minecraft.block.BlockState;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.network.ClientConnection;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.util.ActionResult;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.network.Connection;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.InteractionResult;
 
 public interface PlayerConnectServerCallback {
     Event<PlayerConnectServerCallback> EVENT = EventFactory.createArrayBacked(PlayerConnectServerCallback.class,
             listeners -> (connection,player) ->{
                 for(PlayerConnectServerCallback listener:listeners){
-                    ActionResult result = listener.connect(connection,player);
-                    if(result != ActionResult.PASS) {
+                    InteractionResult result = listener.connect(connection,player);
+                    if(result != InteractionResult.PASS) {
                         return result;
                     }
                 }
-                return ActionResult.PASS;
+                return InteractionResult.PASS;
             }
     );
 
-    ActionResult connect(ClientConnection connection, ServerPlayerEntity player);
+    InteractionResult connect(Connection connection, ServerPlayer player);
 }

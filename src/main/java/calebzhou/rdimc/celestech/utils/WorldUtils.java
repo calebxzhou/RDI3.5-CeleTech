@@ -1,39 +1,39 @@
 package calebzhou.rdimc.celestech.utils;
 
-import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.fluid.Fluids;
-import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.math.BlockBox;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.LightType;
-import net.minecraft.world.World;
-import net.minecraft.world.WorldAccess;
-import net.minecraft.world.biome.Biome;
-import net.minecraft.world.chunk.Chunk;
-import net.minecraft.world.chunk.PalettedContainer;
+import net.minecraft.core.BlockPos;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.LevelAccessor;
+import net.minecraft.world.level.LightLayer;
+import net.minecraft.world.level.biome.Biome;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.chunk.ChunkAccess;
+import net.minecraft.world.level.chunk.PalettedContainer;
+import net.minecraft.world.level.levelgen.structure.BoundingBox;
+import net.minecraft.world.level.material.Fluids;
 
 public class WorldUtils {
-    public static void changeBiome(BlockPos bpos,ServerWorld world,Biome biome){
-        Chunk chunk = world.getChunk(bpos.getX()>>4,bpos.getZ()>>4);
+    public static void changeBiome(BlockPos bpos,ServerLevel world,Biome biome){
+        ChunkAccess chunk = world.getChunk(bpos.getX()>>4,bpos.getZ()>>4);
         int sectionYindex = (bpos.getY()+64)>>4;
-        PalettedContainer<Biome> biomeArray = chunk.getSection(sectionYindex).getBiomeContainer();
+        PalettedContainer<Biome> biomeArray = chunk.getSection(sectionYindex).getBiomes();
         int mx=bpos.getX()&3;
         int my=bpos.getY()&3;
         int mz=bpos.getZ()&3;
-        biomeArray.swap(mx,my,mz, (biome));
-        chunk.setShouldSave(true);
+        biomeArray.getAndSet(mx,my,mz, (biome));
+        chunk.setUnsaved(true);
     }
-    public static void fill(ServerWorld serverWorld, BlockBox range, BlockState block){
-        for (BlockPos blockPos : BlockPos.iterate(range.getMinX(), range.getMinY(), range.getMinZ(), range.getMaxX(), range.getMaxY(), range.getMaxZ())) {
-            serverWorld.setBlockState(blockPos, block);
+    public static void fill(ServerLevel serverWorld, BoundingBox range, BlockState block){
+        for (BlockPos blockPos : BlockPos.betweenClosed(range.minX(), range.minY(), range.minZ(), range.maxX(), range.maxY(), range.maxZ())) {
+            serverWorld.setBlockAndUpdate(blockPos, block);
         }
     }
-    public static int getDayTime(World world) {
-        return (int)(world.getTimeOfDay() % 24000L);
+    public static int getDayTime(Level world) {
+        return (int)(world.getDayTime() % 24000L);
     }
-    public static boolean isNearbyLava(World world, BlockPos blockPos){
+    public static boolean isNearbyLava(Level world, BlockPos blockPos){
         //范围
         final int range = 5;
         int maxX = blockPos.getX()+range;
@@ -53,20 +53,20 @@ public class WorldUtils {
 
     }
 
-    public static boolean canPositionSeeSun(World world, BlockPos pos){
+    public static boolean canPositionSeeSun(Level world, BlockPos pos){
         int dayTime = getDayTime(world);
         //阳光角度,面向北方从3点钟->12->9->6->3
         double sunDegree =  (dayTime / 24000f) * 360;
         return getSkyLight(world,pos)==15;
     }
-    public static int getSkyLight(World world,BlockPos bpos){
-        return world.getLightingProvider().get(LightType.SKY).getLightLevel(bpos);
+    public static int getSkyLight(Level world,BlockPos bpos){
+        return world.getLightEngine().getLayerListener(LightLayer.SKY).getLightValue(bpos);
     }
-    public static boolean isInWater(World world,BlockPos blockPos){
-        return world.getFluidState(blockPos).getFluid() == Fluids.WATER ||
-                world.getFluidState(blockPos).getFluid() == Fluids.FLOWING_WATER;
+    public static boolean isInWater(Level world,BlockPos blockPos){
+        return world.getFluidState(blockPos).getType() == Fluids.WATER ||
+                world.getFluidState(blockPos).getType() == Fluids.FLOWING_WATER;
     }
-    public static PlayerEntity getNearestPlayer(WorldAccess world, BlockPos pos){
-        return  world.getClosestPlayer(pos.getX(), pos.getY(), pos.getZ(), 20,false);
+    public static Player getNearestPlayer(LevelAccessor world, BlockPos pos){
+        return  world.getNearestPlayer(pos.getX(), pos.getY(), pos.getZ(), 20,false);
     }
 }

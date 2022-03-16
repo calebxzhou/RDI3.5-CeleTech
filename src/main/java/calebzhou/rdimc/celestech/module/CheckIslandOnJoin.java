@@ -9,18 +9,18 @@ import calebzhou.rdimc.celestech.utils.HttpUtils;
 import calebzhou.rdimc.celestech.utils.IdentifierUtils;
 import calebzhou.rdimc.celestech.utils.NetworkUtils;
 import calebzhou.rdimc.celestech.utils.ThreadPool;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.util.ActionResult;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.InteractionResult;
 
 public class CheckIslandOnJoin implements CallbackRegisterable {
     public CheckIslandOnJoin() {
 
     }
-    private void checkHasIsland (ServerPlayerEntity player){
+    private void checkHasIsland (ServerPlayer player){
         ApiResponse<Island> response = null;
         boolean hasIsland = true;
         try {
-            response = HttpUtils.sendRequestV2("GET","v2/island/"+player.getUuidAsString());
+            response = HttpUtils.sendRequestV2("GET","v2/island/"+player.getStringUUID());
         } catch (NullPointerException| IslandException e) {
             hasIsland=false;
         }
@@ -34,7 +34,7 @@ public class CheckIslandOnJoin implements CallbackRegisterable {
     public void registerCallbacks() {
         PlayerConnectServerCallback.EVENT.register(IdentifierUtils.byClass(this.getClass()),((connection, player) -> {
             ThreadPool.newThread(()-> checkHasIsland(player));
-            return ActionResult.PASS;
+            return InteractionResult.PASS;
         }));
     }
 }

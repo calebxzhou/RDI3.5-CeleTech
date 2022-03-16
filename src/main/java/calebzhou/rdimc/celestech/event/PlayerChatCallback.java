@@ -2,24 +2,22 @@ package calebzhou.rdimc.celestech.event;
 
 import net.fabricmc.fabric.api.event.Event;
 import net.fabricmc.fabric.api.event.EventFactory;
-import net.minecraft.entity.damage.DamageSource;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.server.filter.TextStream;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.util.ActionResult;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.server.network.TextFilter;
+import net.minecraft.world.InteractionResult;
 
 public interface PlayerChatCallback {
     Event<PlayerChatCallback> EVENT = EventFactory.createArrayBacked(PlayerChatCallback.class,
             listeners -> (player,message) ->{
                 for(PlayerChatCallback listener:listeners){
-                    ActionResult result = listener.call(player,message);
-                    if(result != ActionResult.PASS) {
+                    InteractionResult result = listener.call(player,message);
+                    if(result != InteractionResult.PASS) {
                         return result;
                     }
                 }
-                return ActionResult.PASS;
+                return InteractionResult.PASS;
             }
     );
 
-    ActionResult call(ServerPlayerEntity player, TextStream.Message message);
+    InteractionResult call(ServerPlayer player, TextFilter.FilteredText message);
 }

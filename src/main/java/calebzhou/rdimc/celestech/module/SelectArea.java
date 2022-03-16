@@ -7,40 +7,40 @@ import calebzhou.rdimc.celestech.utils.IdentifierUtils;
 import calebzhou.rdimc.celestech.utils.TextUtils;
 import net.fabricmc.fabric.api.event.player.AttackBlockCallback;
 import net.fabricmc.fabric.api.event.player.UseBlockCallback;
-import net.minecraft.block.BlockState;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.Items;
-import net.minecraft.util.ActionResult;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.level.block.state.BlockState;
 
 public class SelectArea implements CallbackRegisterable {
     @Override
     public void registerCallbacks() {
         AttackBlockCallback.EVENT.register(IdentifierUtils.byClass(this.getClass()),((player, world, hand, pos, direction) -> {
             //如果玩家使用金锄头左键点击（选择区域点1）
-            if(player.getMainHandStack().getItem() == Items.GOLDEN_HOE){
+            if(player.getMainHandItem().getItem() == Items.GOLDEN_HOE){
                 handlePointSelection(player,pos,true);
 
             }
-            return ActionResult.PASS;
+            return InteractionResult.PASS;
         }));
         UseBlockCallback.EVENT.register(IdentifierUtils.byClass(this.getClass()),((player, world, hand, hitResult) -> {
             BlockPos blockPos = hitResult.getBlockPos();
             BlockState blockState = world.getBlockState(blockPos);
-            String pid = player.getUuidAsString();
+            String pid = player.getStringUUID();
             //如果玩家使用金锄头右键点击（选择区域点2）
-            if(player.getMainHandStack().getItem() == Items.GOLDEN_HOE){
+            if(player.getMainHandItem().getItem() == Items.GOLDEN_HOE){
                 handlePointSelection(player,blockPos,false);
 
             }
-            return ActionResult.PASS;
+            return InteractionResult.PASS;
         }));
     }
     /**
      * @param left_right 左手点1 true 右手点2 false
      * */
-    private void handlePointSelection(PlayerEntity player, BlockPos blockPos, boolean left_right){
-        String pid = player.getUuidAsString();
+    private void handlePointSelection(Player player, BlockPos blockPos, boolean left_right){
+        String pid = player.getStringUUID();
         AreaSelection area = AreaSelection.map.get(pid);
         if(area==null)
             area = new AreaSelection();

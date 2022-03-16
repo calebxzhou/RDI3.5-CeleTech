@@ -9,15 +9,15 @@ import com.google.common.collect.LinkedHashMultimap;
 import com.google.common.collect.Multimap;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import net.minecraft.command.argument.MessageArgumentType;
-import net.minecraft.server.command.CommandManager;
-import net.minecraft.server.command.ServerCommandSource;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.text.LiteralText;
-import net.minecraft.text.Text;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.IntSummaryStatistics;
+import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.commands.Commands;
+import net.minecraft.commands.arguments.MessageArgument;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.server.level.ServerPlayer;
 
 public abstract class BaseCommand {
     //指令执行时间map
@@ -30,24 +30,24 @@ public abstract class BaseCommand {
 
     public BaseCommand(String name, int permissionLevel,boolean isAsync) {
         this.commandName = name;
-        this.builder = CommandManager.literal(name).requires(source -> source.hasPermissionLevel(permissionLevel));
+        this.builder = Commands.literal(name).requires(source -> source.hasPermission(permissionLevel));
         this.isAsync = isAsync;
     }
 
-    protected LiteralArgumentBuilder<ServerCommandSource> builder;
+    protected LiteralArgumentBuilder<CommandSourceStack> builder;
 
-    public LiteralArgumentBuilder<ServerCommandSource> getBuilder() {
+    public LiteralArgumentBuilder<CommandSourceStack> getBuilder() {
         return builder;
     }
 
-    public LiteralArgumentBuilder<ServerCommandSource> setExecution() {
-        return builder.executes(context -> execute(context.getSource(),new LiteralText(""))).then(CommandManager.argument("arg", MessageArgumentType.message())
-                .executes(context -> execute(context.getSource(), MessageArgumentType.getMessage(context, "arg"))));
+    public LiteralArgumentBuilder<CommandSourceStack> setExecution() {
+        return builder.executes(context -> execute(context.getSource(),new TextComponent(""))).then(Commands.argument("arg", MessageArgument.message())
+                .executes(context -> execute(context.getSource(), MessageArgument.getMessage(context, "arg"))));
     }
 
-    protected int execute(ServerCommandSource source, Text arg) throws CommandSyntaxException {
+    protected int execute(CommandSourceStack source, Component arg) throws CommandSyntaxException {
         long t1=System.currentTimeMillis();
-        ServerPlayerEntity player = source.getPlayer();
+        ServerPlayer player = source.getPlayerOrException();
         if(execTimeMap.size()>1024)
             execTimeMap.clear();
         if(isAsync){
@@ -62,7 +62,7 @@ public abstract class BaseCommand {
         return 1;
     }
 
-    private void runCommand(Text arg, long t1, ServerPlayerEntity player) {
+    private void runCommand(Component arg, long t1, ServerPlayer player) {
         IntSummaryStatistics summaryStats = execTimeMap.get(commandName).stream()
                 .mapToInt((a) -> a)
                 .summaryStatistics();
@@ -94,5 +94,5 @@ public abstract class BaseCommand {
         }
     }
 
-    protected abstract void onExecute(ServerPlayerEntity player, String arg);
+    protected abstract void onExecute(ServerPlayer player, String arg);
 }

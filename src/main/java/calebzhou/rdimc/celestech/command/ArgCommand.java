@@ -1,7 +1,7 @@
 package calebzhou.rdimc.celestech.command;
 
-import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.server.level.ServerPlayer;
 
 public interface ArgCommand {
-    void onExecute(ServerPlayerEntity player, String arg);
+    void onExecute(ServerPlayer player, String arg);
 }

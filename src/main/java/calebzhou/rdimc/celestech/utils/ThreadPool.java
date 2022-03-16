@@ -2,8 +2,6 @@ package calebzhou.rdimc.celestech.utils;
 
 import calebzhou.rdimc.celestech.model.thread.PlayerMotionThread;
 import calebzhou.rdimc.celestech.model.thread.PlayerTemperatureThread;
-import net.minecraft.server.network.ServerPlayerEntity;
-
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;

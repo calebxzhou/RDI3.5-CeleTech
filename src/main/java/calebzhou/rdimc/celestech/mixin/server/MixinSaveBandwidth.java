@@ -1,11 +1,10 @@
 package calebzhou.rdimc.celestech.mixin.server;
 
-import net.minecraft.network.Packet;
-import net.minecraft.network.packet.s2c.play.WorldTimeUpdateS2CPacket;
+import net.minecraft.network.protocol.Packet;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.server.PlayerManager;
-import net.minecraft.util.registry.RegistryKey;
-import net.minecraft.world.World;
+import net.minecraft.server.players.PlayerList;
+import net.minecraft.world.level.Level;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Redirect;
@@ -22,13 +21,13 @@ public class MixinSaveBandwidth {
     //不同步时间
     @Redirect(method = "Lnet/minecraft/server/MinecraftServer;tickWorlds(Ljava/util/function/BooleanSupplier;)V",
     at=@At(value = "INVOKE",target = "Lnet/minecraft/server/PlayerManager;sendToDimension(Lnet/minecraft/network/Packet;Lnet/minecraft/util/registry/RegistryKey;)V"))
-    private void noSyncWorldTime(PlayerManager instance, Packet<?> packet, RegistryKey<World> dimension){
+    private void noSyncWorldTime(PlayerList instance, Packet<?> packet, ResourceKey<Level> dimension){
 
     }
     //不显示玩家延迟
     @Redirect(method = "Lnet/minecraft/server/MinecraftServer;tickWorlds(Ljava/util/function/BooleanSupplier;)V",
             at=@At(value = "INVOKE",target = "Lnet/minecraft/server/PlayerManager;updatePlayerLatency()V"))
-    private void noUpdatePlayerPing(PlayerManager instance){
+    private void noUpdatePlayerPing(PlayerList instance){
 
     }
 

@@ -1,6 +1,6 @@
 package calebzhou.rdimc.celestech.mixin.world;
 
-import net.minecraft.block.SweetBerryBushBlock;
+import net.minecraft.world.level.block.SweetBerryBushBlock;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.Constant;
 import org.spongepowered.asm.mixin.injection.ModifyConstant;

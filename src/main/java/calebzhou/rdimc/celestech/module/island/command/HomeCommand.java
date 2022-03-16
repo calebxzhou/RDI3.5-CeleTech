@@ -9,11 +9,10 @@ import calebzhou.rdimc.celestech.model.IslandS2CInfo;
 import calebzhou.rdimc.celestech.utils.HttpUtils;
 import calebzhou.rdimc.celestech.utils.NetworkUtils;
 import calebzhou.rdimc.celestech.utils.PlayerUtils;
-import net.minecraft.entity.effect.StatusEffectInstance;
-import net.minecraft.entity.effect.StatusEffects;
-import net.minecraft.server.network.ServerPlayerEntity;
-
 import java.util.Objects;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.effect.MobEffects;
 
 import static calebzhou.rdimc.celestech.utils.TextUtils.sendChatMessage;
 
@@ -23,14 +22,10 @@ public class HomeCommand extends BaseCommand {
     }
 
     @Override
-    protected void onExecute(ServerPlayerEntity player,String arg) {
-        /*if(!PlayerUtils.isOverworld(player)){
-            sendChatMessage(player,"引力太强, 无法离开此地.", MessageType.ERROR);
-            return;
-        }*/
-        ApiResponse<Island> response = HttpUtils.sendRequestV2("GET","v2/island/"+player.getUuidAsString());
+    protected void onExecute(ServerPlayer player,String arg) {
+        ApiResponse<Island> response = HttpUtils.sendRequestV2("GET","v2/island/"+player.getStringUUID());
             if(response.isSuccess()){
-                player.addStatusEffect(new StatusEffectInstance(StatusEffects.SLOW_FALLING,20*2,0));
+                player.addEffect(new MobEffectInstance(MobEffects.SLOW_FALLING,20*2,0));
                 Island island = response.getData(Island.class);
                 PlayerUtils.teleport(player, Objects.requireNonNull(CoordLocation.fromString(Objects.requireNonNull(island).getLocation()).add(0.5,2,0.5)));
             }

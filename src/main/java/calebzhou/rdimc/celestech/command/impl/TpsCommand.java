@@ -5,7 +5,7 @@ import calebzhou.rdimc.celestech.command.BaseCommand;
 import calebzhou.rdimc.celestech.utils.MathUtils;
 import calebzhou.rdimc.celestech.utils.ServerUtils;
 import calebzhou.rdimc.celestech.utils.TimeUtils;
-import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.server.level.ServerPlayer;
 
 import static calebzhou.rdimc.celestech.utils.TextUtils.sendChatMessage;
 
@@ -15,12 +15,12 @@ public class TpsCommand extends BaseCommand {
     }
 
     @Override
-    protected void onExecute(ServerPlayerEntity fromPlayer,String arg) {
+    protected void onExecute(ServerPlayer fromPlayer,String arg) {
         tps(fromPlayer);
         list(fromPlayer);
     }
 
-    private void list(ServerPlayerEntity player) {
+    private void list(ServerPlayer player) {
         StringBuilder sb=new StringBuilder();
         ServerUtils.getAfkPlayerList().stream().forEach(e->{
             sb.append(e.getKey());
@@ -32,8 +32,8 @@ public class TpsCommand extends BaseCommand {
         sendChatMessage(player,"挂机列表:"+(sb.length()==0?"无":sb.toString()));
     }
 
-    private void tps(ServerPlayerEntity player) {
-        double meanTickTime = MathUtils.getAverageValue(RDICeleTech.getServer().lastTickLengths) * 1.0E-6D;
+    private void tps(ServerPlayer player) {
+        double meanTickTime = MathUtils.getAverageValue(RDICeleTech.getServer().tickTimes) * 1.0E-6D;
         double stdTickTime = 120.0;
         double meanTPS = Math.min(1000.0 / meanTickTime, 20);
         double ratio = meanTickTime / stdTickTime;

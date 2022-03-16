@@ -6,11 +6,10 @@ import calebzhou.rdimc.celestech.utils.HttpUtils;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.mojang.authlib.GameProfile;
-import net.minecraft.network.ClientConnection;
-import net.minecraft.network.Packet;
-import net.minecraft.server.network.ServerLoginNetworkHandler;
-import net.minecraft.util.logging.UncaughtExceptionLogger;
-import org.slf4j.Logger;
+import net.minecraft.DefaultUncaughtExceptionHandler;
+import net.minecraft.network.Connection;
+import net.minecraft.network.protocol.Packet;
+import net.minecraft.server.network.ServerLoginPacketListenerImpl;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Mutable;
@@ -19,25 +18,26 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Redirect;
 
 //@Mixin(ServerConfigHandler.class)
-@Mixin(ServerLoginNetworkHandler.class)
+@Mixin(ServerLoginPacketListenerImpl.class)
 public abstract class MixinAllowOfflineMode{
-    @Shadow @Final public ClientConnection connection;
+    @Shadow @Final public Connection connection;
     @Shadow @Mutable
-    GameProfile profile;
+    GameProfile gameProfile;
     @Shadow @Mutable
-    ServerLoginNetworkHandler.State state;
+    ServerLoginPacketListenerImpl.State state;
 
     @Redirect(
-            method = "Lnet/minecraft/server/network/ServerLoginNetworkHandler;onHello(Lnet/minecraft/network/packet/c2s/login/LoginHelloC2SPacket;)V",
+            method = "Lnet/minecraft/server/network/ServerLoginPacketListenerImpl;handleHello(Lnet/minecraft/network/protocol/login/ServerboundHelloPacket;)V",
             at=@At(
-                    target = "Lnet/minecraft/network/ClientConnection;send(Lnet/minecraft/network/Packet;)V",
+                    target = "Lnet/minecraft/network/Connection;send(Lnet/minecraft/network/protocol/Packet;)V",
                     value = "INVOKE"
             )
     )
-    private void asd213(ClientConnection instance, Packet<?> packet){
+    private void asd213(Connection instance, Packet<?> packet){
         System.out.println("Hello!");
         try{
-            String json1 = HttpUtils.sendRequestPublic("GET", "https://api.mojang.com/users/profiles/minecraft/" + profile.getName());
+            String json1 = HttpUtils.sendRequestPublic("GET", "https://api.mojang.com/users/profiles/minecraft/"
+                    + gameProfile.getName());
             System.out.println(json1);
             JsonObject rootObj = JsonParser.parseString(json1).getAsJsonObject();
             String id = rootObj.get("id").getAsString();
@@ -45,10 +45,10 @@ public abstract class MixinAllowOfflineMode{
             RDICeleTech.LOGGER.info("此人是正版 "+id);
             connection.send(packet);
         }catch (IllegalStateException|NullPointerException e){
-            System.out.println(profile.getName()+"不是正版");
-            profile = toOfflineProfile(profile);
-            this.state=ServerLoginNetworkHandler.State.READY_TO_ACCEPT;
-            RDICeleTech.offlineModePlayerList.add(profile.getName());
+            System.out.println(gameProfile.getName()+"不是正版");
+            gameProfile = createFakeProfile(gameProfile);
+            this.state=ServerLoginPacketListenerImpl.State.READY_TO_ACCEPT;
+            RDICeleTech.offlineModePlayerList.add(gameProfile.getName());
         }catch (Exception e){
             e.printStackTrace();
         }
@@ -57,7 +57,7 @@ public abstract class MixinAllowOfflineMode{
 
     }
     @Redirect(
-            method = "Lnet/minecraft/server/network/ServerLoginNetworkHandler;onKey(Lnet/minecraft/network/packet/c2s/login/LoginKeyC2SPacket;)V",
+            method = "Lnet/minecraft/server/network/ServerLoginPacketListenerImpl;handleKey(Lnet/minecraft/network/protocol/login/ServerboundKeyPacket;)V",
             at=@At(
                     target = "Ljava/lang/Thread;start()V",
                     value = "INVOKE"
@@ -66,7 +66,6 @@ public abstract class MixinAllowOfflineMode{
     private void asd(Thread instance){
         System.out.println("开始正版验证!");
         Thread thread= new Thread(() -> {
-                GameProfile gameProfile = profile;
                 String json1 = HttpUtils.sendRequestPublic("GET", "https://api.mojang.com/users/profiles/minecraft/" + gameProfile.getName());
                 JsonObject rootObj = JsonParser.parseString(json1).getAsJsonObject();
                 String id = rootObj.get("id").getAsString();
@@ -75,14 +74,14 @@ public abstract class MixinAllowOfflineMode{
                     instance.start();
                 }else{
                     //否则进入非正版验证
-                    profile = toOfflineProfile(gameProfile);
-                    state = ServerLoginNetworkHandler.State.READY_TO_ACCEPT;
+                    gameProfile = createFakeProfile(gameProfile);
+                    state = ServerLoginPacketListenerImpl.State.READY_TO_ACCEPT;
                 }
         });
-        thread.setUncaughtExceptionHandler(new UncaughtExceptionLogger(RDICeleTech.LOGGER));
+        thread.setUncaughtExceptionHandler(new DefaultUncaughtExceptionHandler(RDICeleTech.LOGGER));
         thread.start();
     }
     @Shadow
-    protected abstract GameProfile toOfflineProfile(GameProfile profile);
+    protected abstract GameProfile createFakeProfile(GameProfile profile);
 
 }

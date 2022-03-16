@@ -4,12 +4,11 @@ import calebzhou.rdimc.celestech.command.ArgCommand;
 import calebzhou.rdimc.celestech.command.BaseCommand;
 import calebzhou.rdimc.celestech.utils.HttpUtils;
 import calebzhou.rdimc.celestech.utils.JsonUtils;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.server.network.ServerPlayerEntity;
-
 import java.util.ArrayList;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.item.ItemStack;
 
 public class CloudRepoCommand extends BaseCommand implements ArgCommand {
     public CloudRepoCommand(String name, int permissionLevel) {
@@ -17,7 +16,7 @@ public class CloudRepoCommand extends BaseCommand implements ArgCommand {
     }
 
     @Override
-    public void onExecute(ServerPlayerEntity player, String arg) {
+    public void onExecute(ServerPlayer player, String arg) {
         CloudRepoAction action = CloudRepoAction.valueOf(arg);
         switch (action){
             case read -> {
@@ -26,15 +25,15 @@ public class CloudRepoCommand extends BaseCommand implements ArgCommand {
             case save -> save(player);
         }
     }
-    private void save(ServerPlayerEntity player){
-        PlayerInventory inventory = player.getInventory();
+    private void save(ServerPlayer player){
+        Inventory inventory = player.getInventory();
         ArrayList<String> itemStacks = new ArrayList<>();
         for (int i = 0; i <=35 ; i++) {
-            ItemStack stack = inventory.getStack(i);
-            NbtCompound stackNbt = stack.writeNbt(new NbtCompound());
+            ItemStack stack = inventory.getItem(i);
+            CompoundTag stackNbt = stack.save(new CompoundTag());
             itemStacks.add(stackNbt.toString());
         }
         String json = JsonUtils.getGson().toJson(itemStacks);
-        HttpUtils.sendRequestV2("POST","cloudrepo/"+player.getUuidAsString(),"obj="+json);
+        HttpUtils.sendRequestV2("POST","cloudrepo/"+player.getStringUUID(),"obj="+json);
     }
 }

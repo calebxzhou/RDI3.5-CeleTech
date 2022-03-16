@@ -4,15 +4,15 @@ import calebzhou.rdimc.celestech.api.CallbackRegisterable;
 import calebzhou.rdimc.celestech.utils.HttpUtils;
 import calebzhou.rdimc.celestech.utils.IdentifierUtils;
 import net.fabricmc.fabric.api.event.player.AttackEntityCallback;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.util.ActionResult;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
 
 public class RecordPlayerAttackEntity implements CallbackRegisterable {
     public RecordPlayerAttackEntity() {
 
     }
-    private void insertMobAttackRecord(PlayerEntity player, LivingEntity entity){
+    private void insertMobAttackRecord(Player player, LivingEntity entity){
         HttpUtils.sendRequestV2("POST","v2/mob_attack");
         /*EntityType<? extends LivingEntity> type = (EntityType<? extends LivingEntity>) entity.getType();
         double mobDamage = DefaultAttributeRegistry.get(type).getValue(EntityAttributes.GENERIC_ATTACK_DAMAGE);
@@ -25,10 +25,10 @@ public class RecordPlayerAttackEntity implements CallbackRegisterable {
         AttackEntityCallback.EVENT.register(IdentifierUtils.byClass(this.getClass()),(player, world, hand, entity, hitResult) -> {
             if(entity instanceof LivingEntity livingEntity){
                 insertMobAttackRecord(player,livingEntity);
-                return ActionResult.PASS;
+                return InteractionResult.PASS;
             }
 
-            return ActionResult.PASS;
+            return InteractionResult.PASS;
         });
     }
 }

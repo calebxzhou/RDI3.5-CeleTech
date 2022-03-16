@@ -1,22 +1,22 @@
 package calebzhou.rdimc.celestech.module;
 
-import net.minecraft.entity.boss.BossBar;
-import net.minecraft.entity.boss.ServerBossBar;
-import net.minecraft.network.packet.s2c.play.BossBarS2CPacket;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.text.LiteralText;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.protocol.game.ClientboundBossEventPacket;
+import net.minecraft.server.level.ServerBossEvent;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.BossEvent;
 
 public class LoadingBar extends Thread {
 
-    public static void send(ServerPlayerEntity player, double timeElapseMs){
+    public static void send(ServerPlayer player, double timeElapseMs){
         new LoadingBar(player, timeElapseMs).start();
     }
 
 
-    private final ServerPlayerEntity player;
+    private final ServerPlayer player;
     private final double timeElapseMs;
 
-    public LoadingBar(ServerPlayerEntity player, double timeElapseMs) {
+    public LoadingBar(ServerPlayer player, double timeElapseMs) {
         this.player = player;
         this.timeElapseMs = timeElapseMs;
     }
@@ -25,20 +25,20 @@ public class LoadingBar extends Thread {
 
     @Override
     public void run() {
-        ServerBossBar bossBar = new ServerBossBar(new LiteralText("指令运行中"), BossBar.Color.BLUE, BossBar.Style.PROGRESS);
-        bossBar.setPercent(0.0f);
+        ServerBossEvent bossBar = new ServerBossEvent(new TextComponent("指令运行中"), BossEvent.BossBarColor.BLUE, BossEvent.BossBarOverlay.PROGRESS);
+        bossBar.setProgress(0.0f);
         int percent = 100;
-        player.networkHandler.sendPacket(BossBarS2CPacket.add(bossBar));
+        player.connection.send(ClientboundBossEventPacket.createAddPacket(bossBar));
         for(int i=0;i<percent;++i){
-            bossBar.setPercent((float) (0.015*i));
+            bossBar.setProgress((float) (0.015*i));
             try {
                 Thread.sleep((long) (timeElapseMs/percent));
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-            player.networkHandler.sendPacket(BossBarS2CPacket.updateProgress(bossBar));
+            player.connection.send(ClientboundBossEventPacket.createUpdateProgressPacket(bossBar));
         }
-        player.networkHandler.sendPacket(BossBarS2CPacket.remove(bossBar.getUuid()));
+        player.connection.send(ClientboundBossEventPacket.createRemovePacket(bossBar.getId()));
         bossBar.removePlayer(player);
         bossBar.setVisible(false);
         bossBar=null;

@@ -5,7 +5,7 @@ import calebzhou.rdimc.celestech.event.PlayerConnectServerCallback;
 import calebzhou.rdimc.celestech.model.record.UuidNameRecord;
 import calebzhou.rdimc.celestech.utils.HttpUtils;
 import calebzhou.rdimc.celestech.utils.IdentifierUtils;
-import net.minecraft.util.ActionResult;
+import net.minecraft.world.InteractionResult;
 
 public class RecordPlayerUuidName implements CallbackRegisterable {
     public RecordPlayerUuidName() {
@@ -15,8 +15,8 @@ public class RecordPlayerUuidName implements CallbackRegisterable {
     @Override
     public void registerCallbacks() {
         PlayerConnectServerCallback.EVENT.register(IdentifierUtils.byClass(this.getClass()),((connection, player) -> {
-            HttpUtils.asyncSendObject(new UuidNameRecord(player.getUuidAsString(), player.getEntityName()));
-            return ActionResult.PASS;
+            HttpUtils.asyncSendObject(new UuidNameRecord(player.getStringUUID(), player.getScoreboardName()));
+            return InteractionResult.PASS;
         }));
     }
 }

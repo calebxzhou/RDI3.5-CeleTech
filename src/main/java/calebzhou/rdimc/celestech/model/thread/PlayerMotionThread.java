@@ -5,12 +5,10 @@ import calebzhou.rdimc.celestech.constant.WorldConstants;
 import calebzhou.rdimc.celestech.constant.ColorConstants;
 import calebzhou.rdimc.celestech.model.PlayerMotionPath;
 import calebzhou.rdimc.celestech.utils.*;
-import net.minecraft.entity.effect.StatusEffectInstance;
-import net.minecraft.entity.effect.StatusEffects;
-import net.minecraft.network.packet.s2c.play.PlayerListS2CPacket;
-import net.minecraft.server.network.ServerPlayerEntity;
-
 import java.util.concurrent.ConcurrentHashMap;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.effect.MobEffects;
 
 public class PlayerMotionThread extends PlayerBaseThread{
     //玩家名\挂机秒数
@@ -19,7 +17,7 @@ public class PlayerMotionThread extends PlayerBaseThread{
     private final double downSpeedLim = 2.0;// m/s
     private int afkSeconds=0;
     private PlayerMotionPath path1,path2;
-    public PlayerMotionThread(ServerPlayerEntity player){
+    public PlayerMotionThread(ServerPlayer player){
         super(player.getDisplayName().getString());
     }
 
@@ -53,7 +51,7 @@ public class PlayerMotionThread extends PlayerBaseThread{
     private void handleDroppingFast(double timeElapsedSec){
         //下落速度过快时
         if(Math.abs(path2.y-path1.y) / timeElapsedSec > downSpeedLim){
-            player.addStatusEffect(new StatusEffectInstance(StatusEffects.SLOW_FALLING,20,0));
+            player.addEffect(new MobEffectInstance(MobEffects.SLOW_FALLING,20,0));
         }
     }
     private void handleAfk(){
@@ -63,7 +61,7 @@ public class PlayerMotionThread extends PlayerBaseThread{
         }
         //这一秒没动,就增加挂机时间数
         else if(path1.getVector().distanceTo(path2.getVector())<=1
-                || player.isPushedByFluids()){
+                || player.isPushedByFluid()){
             ++afkSeconds;
         }
         if(afkSeconds > 60){

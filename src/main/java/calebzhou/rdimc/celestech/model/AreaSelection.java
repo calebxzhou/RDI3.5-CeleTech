@@ -4,12 +4,11 @@ import calebzhou.rdimc.celestech.command.AreaException;
 import com.google.common.collect.LinkedHashMultimap;
 import com.google.common.collect.Multimap;
 import it.unimi.dsi.fastutil.Hash;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Vec3i;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Vec3i;
 
 public class AreaSelection {
     public static final HashMap<String, AreaSelection> map = new HashMap<>();

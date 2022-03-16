@@ -7,13 +7,12 @@ import calebzhou.rdimc.celestech.constant.ColorConstants;
 import calebzhou.rdimc.celestech.constant.MessageType;
 import calebzhou.rdimc.celestech.model.RollPrize;
 import calebzhou.rdimc.celestech.utils.*;
-import net.minecraft.server.network.ServerPlayerEntity;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
+import net.minecraft.server.level.ServerPlayer;
 
 public class RollCommand extends BaseCommand implements ArgCommand {
     public RollCommand(String name, int permissionLevel) {
@@ -21,7 +20,7 @@ public class RollCommand extends BaseCommand implements ArgCommand {
     }
 
     @Override
-    public void onExecute(ServerPlayerEntity player, String arg) {
+    public void onExecute(ServerPlayer player, String arg) {
         final int rollTimes = Integer.parseInt(arg);
         PlayerUtils.checkExpLevel(player,rollTimes);
 
@@ -65,14 +64,14 @@ public class RollCommand extends BaseCommand implements ArgCommand {
             }
             TextUtils.sendChatMessage(player,"恭喜您抽中了"+prize.getDescr(), MessageType.SUCCESS);
             if(prize.getProba()<0.1){
-                TextUtils.sendGlobalChatMessage(player.getServer().getPlayerManager(), ColorConstants.GOLD+"恭喜"+player.getEntityName()+"抽中了"+ColorConstants.BRIGHT_GREEN+ColorConstants.BOLD+prize.getDescr());
+                TextUtils.sendGlobalChatMessage(player.getServer().getPlayerList(), ColorConstants.GOLD+"恭喜"+player.getScoreboardName()+"抽中了"+ColorConstants.BRIGHT_GREEN+ColorConstants.BOLD+prize.getDescr());
             }
             prizeSuccessList.add(prize);
         }
         if(prizeSuccessList.isEmpty()){
             TextUtils.sendChatMessage(player,"抽奖结束，您什么都没抽到。",MessageType.INFO);
             if(rollTimes>20){
-                TextUtils.sendGlobalChatMessage(player.getServer().getPlayerManager(), ColorConstants.GOLD+player.getEntityName()+"抽了"+rollTimes+"次奖，什么都没抽到。");
+                TextUtils.sendGlobalChatMessage(player.getServer().getPlayerList(), ColorConstants.GOLD+player.getScoreboardName()+"抽了"+rollTimes+"次奖，什么都没抽到。");
 
             }
             return;
@@ -81,7 +80,7 @@ public class RollCommand extends BaseCommand implements ArgCommand {
         prizeSuccessList.forEach(prize->{
             switch (prize.getType()){
                 case item -> {
-                    ServerUtils.executeCommandOnServer(String.format("give %s %s %d",player.getEntityName(),prize.getId(),prize.getCount()));
+                    ServerUtils.executeCommandOnServer(String.format("give %s %s %d",player.getScoreboardName(),prize.getId(),prize.getCount()));
                 }
                 case exp -> {
                     player.experienceLevel+=prize.getCount();

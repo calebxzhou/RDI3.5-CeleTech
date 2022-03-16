@@ -3,10 +3,10 @@ package calebzhou.rdimc.celestech.model.thread;
 import calebzhou.rdimc.celestech.utils.PlayerUtils;
 import calebzhou.rdimc.celestech.utils.ServerUtils;
 import calebzhou.rdimc.celestech.utils.ThreadPool;
-import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.server.level.ServerPlayer;
 
 public abstract class PlayerBaseThread extends Thread{
-    protected ServerPlayerEntity player;
+    protected ServerPlayer player;
     protected String playerName;
     public PlayerBaseThread(String playerName){
         this.playerName=playerName;

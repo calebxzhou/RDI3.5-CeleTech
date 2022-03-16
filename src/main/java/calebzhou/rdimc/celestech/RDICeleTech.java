@@ -17,8 +17,8 @@ import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.village.TradeOffers;
 import net.minecraft.world.Difficulty;
+import net.minecraft.world.entity.npc.VillagerTrades;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -56,7 +56,7 @@ public class RDICeleTech implements ModInitializer {
         // Proceed with mild caution.
         ServerLifecycleEvents.SERVER_STARTED.register((server) -> {
             RDICeleTech.server = server;
-            server.getSaveProperties().setDifficulty(Difficulty.HARD);
+            server.getWorldData().setDifficulty(Difficulty.HARD);
             try {
                 loadFiles();
             } catch (IOException e) {
@@ -115,7 +115,7 @@ public class RDICeleTech implements ModInitializer {
         return server;
     }
 
-    public static Int2ObjectMap<TradeOffers.Factory[]> copyToFastUtilMap(ImmutableMap<Integer, TradeOffers.Factory[]> map) {
+    public static Int2ObjectMap<VillagerTrades.ItemListing[]> copyToFastUtilMap(ImmutableMap<Integer, VillagerTrades.ItemListing[]> map) {
         return new Int2ObjectOpenHashMap(map);
     }
 

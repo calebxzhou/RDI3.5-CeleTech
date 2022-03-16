@@ -3,14 +3,6 @@ package calebzhou.rdimc.celestech.mixin.server;
 import calebzhou.rdimc.celestech.RDICeleTech;
 import calebzhou.rdimc.celestech.module.ticking.TickInverter;
 import calebzhou.rdimc.celestech.utils.ServerUtils;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.ItemEntity;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
-import net.minecraft.world.chunk.BlockEntityTickInvoker;
 import org.apache.commons.lang3.RandomUtils;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
@@ -24,8 +16,14 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 import java.util.HashMap;
 import java.util.List;
 import java.util.function.Consumer;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.entity.TickingBlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
 
-@Mixin(World.class)
+@Mixin(Level.class)
 public abstract class MixinTickInverter {
 
     private static final int ENTITY_TICK_LIMIT = 35;
@@ -45,9 +43,9 @@ public abstract class MixinTickInverter {
     @Redirect(method = "Lnet/minecraft/world/World;updateNeighbor(Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/block/Block;Lnet/minecraft/util/math/BlockPos;)V",
             at = @At(value = "INVOKE",
                     target = "Lnet/minecraft/block/BlockState;neighborUpdate(Lnet/minecraft/world/World;Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/block/Block;Lnet/minecraft/util/math/BlockPos;Z)V"))
-    private void updateNeigh(BlockState blockState, World world, BlockPos pos, Block sourceBlock, BlockPos neighborPos, boolean b){
+    private void updateNeigh(BlockState blockState, Level world, BlockPos pos, Block sourceBlock, BlockPos neighborPos, boolean b){
         try {
-            blockState.neighborUpdate((World)((Object) this), pos, sourceBlock, neighborPos, false);
+            blockState.neighborChanged((Level)((Object) this), pos, sourceBlock, neighborPos, false);
         } catch (Throwable e) {
             RDICeleTech.LOGGER.error(e.getMessage());
         }
@@ -55,14 +53,14 @@ public abstract class MixinTickInverter {
 
     //最重要的部分，防止机器卡顿
     @Shadow @Final @Mutable
-    protected List<BlockEntityTickInvoker> blockEntityTickers;
+    protected List<TickingBlockEntity> blockEntityTickers;
 
     @Shadow public abstract boolean breakBlock(BlockPos pos, boolean drop, @Nullable Entity breakingEntity, int maxUpdateDepth);
 
     @Redirect(method = "tickBlockEntities()V",
             at = @At(value = "INVOKE",
                     target = "Lnet/minecraft/world/chunk/BlockEntityTickInvoker;tick()V"))
-    private void tickBlockEntity(BlockEntityTickInvoker blockEntityTickInvoker){
+    private void tickBlockEntity(TickingBlockEntity blockEntityTickInvoker){
         try {
             TickInverter.INSTANCE.tickBlockEntity(blockEntityTickInvoker);
             /*double mspt=ServerUtils.getMillisecondPerTick();

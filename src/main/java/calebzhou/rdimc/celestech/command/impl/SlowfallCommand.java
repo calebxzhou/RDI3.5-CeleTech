@@ -5,9 +5,9 @@ import calebzhou.rdimc.celestech.constant.MessageType;
 import calebzhou.rdimc.celestech.constant.WorldConstants;
 import calebzhou.rdimc.celestech.utils.PlayerUtils;
 import calebzhou.rdimc.celestech.utils.TextUtils;
-import net.minecraft.entity.effect.StatusEffectInstance;
-import net.minecraft.entity.effect.StatusEffects;
-import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.effect.MobEffects;
 
 public class SlowfallCommand extends BaseCommand {
 
@@ -15,7 +15,7 @@ public class SlowfallCommand extends BaseCommand {
         super(command, permissionLevel,false);
     }
     @Override
-    protected void onExecute(ServerPlayerEntity player, String arg) {
+    protected void onExecute(ServerPlayer player, String arg) {
         int level=0;
         try {
             level = Integer.parseInt(arg);
@@ -27,7 +27,7 @@ public class SlowfallCommand extends BaseCommand {
             TextUtils.sendChatMessage(player,"这个世界太沉了呀");
             return ;
         }*/
-        player.addStatusEffect(new StatusEffectInstance(StatusEffects.SLOW_FALLING,20*10,level-1));
+        player.addEffect(new MobEffectInstance(MobEffects.SLOW_FALLING,20*10,level-1));
     }
 
 

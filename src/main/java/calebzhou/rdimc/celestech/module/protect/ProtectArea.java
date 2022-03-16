@@ -8,3 +8,5 @@ public class ProtectArea implements Serializable {
     String pid;
     BorderedBox range;
 }
+
+

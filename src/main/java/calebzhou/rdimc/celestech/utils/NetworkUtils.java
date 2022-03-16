@@ -2,21 +2,21 @@ package calebzhou.rdimc.celestech.utils;
 
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.network.PacketByteBuf;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.util.Identifier;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.player.Player;
 
 import static calebzhou.rdimc.celestech.RDICeleTech.MODID;
 
 public class NetworkUtils {
-    public static final Identifier COMMAND_STATUS =new Identifier(MODID,"command_status");
-    public static final Identifier ISLAND_INFO =new Identifier(MODID,"island_info");
-    public static final Identifier MOB_SPAWN =new Identifier(MODID,"mob_spawn");
-    public static void sendPacketS2C(PlayerEntity player, Identifier packType,String content){
-        ServerPlayerEntity sp = (ServerPlayerEntity) player;
-        PacketByteBuf buf = PacketByteBufs.create();
-        buf.writeString(content);
+    public static final ResourceLocation COMMAND_STATUS =new ResourceLocation(MODID,"command_status");
+    public static final ResourceLocation ISLAND_INFO =new ResourceLocation(MODID,"island_info");
+    public static final ResourceLocation MOB_SPAWN =new ResourceLocation(MODID,"mob_spawn");
+    public static void sendPacketS2C(Player player, ResourceLocation packType,String content){
+        ServerPlayer sp = (ServerPlayer) player;
+        FriendlyByteBuf buf = PacketByteBufs.create();
+        buf.writeUtf(content);
         ServerPlayNetworking.send(sp,packType,buf);
     }
 

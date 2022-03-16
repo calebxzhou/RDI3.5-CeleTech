@@ -8,9 +8,8 @@ import calebzhou.rdimc.celestech.module.teleport.SpawnCommand;
 import calebzhou.rdimc.celestech.module.teleport.TpaCommand;
 import calebzhou.rdimc.celestech.module.teleport.TpreqCommand;
 import calebzhou.rdimc.celestech.utils.IdentifierUtils;
-import net.minecraft.util.ActionResult;
-
 import java.util.ArrayList;
+import net.minecraft.world.InteractionResult;
 
 public class CommandRegister {
     private final ArrayList<BaseCommand> commands = new ArrayList<>();
@@ -50,7 +49,7 @@ public class CommandRegister {
                     dispatcher.register(cmd.getBuilder());
                 }
             });
-            return ActionResult.PASS;
+            return InteractionResult.PASS;
         }));
     }
 }

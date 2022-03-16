@@ -5,7 +5,7 @@ import calebzhou.rdimc.celestech.command.BaseCommand;
 import calebzhou.rdimc.celestech.model.ApiResponse;
 import calebzhou.rdimc.celestech.utils.HttpUtils;
 import calebzhou.rdimc.celestech.utils.TextUtils;
-import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.server.level.ServerPlayer;
 
 public class BindCommand extends BaseCommand implements ArgCommand {
     public BindCommand(String name, int permissionLevel) {
@@ -13,8 +13,8 @@ public class BindCommand extends BaseCommand implements ArgCommand {
     }
 
     @Override
-    public void onExecute(ServerPlayerEntity player, String arg) {
-        ApiResponse response = HttpUtils.sendRequestV2("POST", "v2/qbind/" + arg+"/"+player.getUuidAsString());
+    public void onExecute(ServerPlayer player, String arg) {
+        ApiResponse response = HttpUtils.sendRequestV2("POST", "v2/qbind/" + arg+"/"+player.getStringUUID());
         TextUtils.sendChatMessage(player,response);
     }
 }

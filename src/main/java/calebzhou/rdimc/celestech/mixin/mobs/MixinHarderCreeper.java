@@ -1,31 +1,26 @@
 package calebzhou.rdimc.celestech.mixin.mobs;
 
 
-import net.minecraft.entity.mob.CreeperEntity;
+import net.minecraft.world.entity.monster.Creeper;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Mutable;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.Constant;
 import org.spongepowered.asm.mixin.injection.ModifyConstant;
 
-@Mixin(CreeperEntity.class)
+//苦力怕更容易爆炸
+@Mixin(Creeper.class)
 public abstract class MixinHarderCreeper {
 
     @Shadow @Mutable
-    private int fuseTime = 40;
+    private int maxSwell = 20;
     @Shadow @Mutable
     private int explosionRadius = 8;
 
+
     @ModifyConstant(
-            method = "Lnet/minecraft/entity/mob/CreeperEntity;initGoals()V",
-            constant = @Constant(floatValue = 8.0F)
-    )
-    private float changeRadius(float constant){
-        return 12f;
-    }
-    @ModifyConstant(
-            method = "Lnet/minecraft/entity/mob/CreeperEntity;createCreeperAttributes()Lnet/minecraft/entity/attribute/DefaultAttributeContainer$Builder;",
-            constant = @Constant(doubleValue = 0.25D)
+            method = "Lnet/minecraft/world/entity/monster/Creeper;createAttributes()Lnet/minecraft/world/entity/ai/attributes/AttributeSupplier$Builder;"
+            ,constant = @Constant(doubleValue = 0.25D)
     )
     private static double changeSpeed(double spd){
         return 0.4D;

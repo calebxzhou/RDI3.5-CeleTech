@@ -5,7 +5,7 @@ import calebzhou.rdimc.celestech.model.ApiResponse;
 import calebzhou.rdimc.celestech.utils.HttpUtils;
 import calebzhou.rdimc.celestech.utils.PlayerUtils;
 import calebzhou.rdimc.celestech.utils.TextUtils;
-import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.server.level.ServerPlayer;
 
 public class QuitCommand extends BaseCommand {
     public QuitCommand(String name, int permissionLevel) {
@@ -13,9 +13,9 @@ public class QuitCommand extends BaseCommand {
     }
 
     @Override
-    protected void onExecute(ServerPlayerEntity player,String arg) {
-        String ownerPid = PlayerUtils.getPlayerByName(arg).getUuidAsString();
-        ApiResponse response = HttpUtils.sendRequestV2("DELETE", "v2/island_crew/" + ownerPid+"/"+player.getUuidAsString());
+    protected void onExecute(ServerPlayer player,String arg) {
+        String ownerPid = PlayerUtils.getPlayerByName(arg).getStringUUID();
+        ApiResponse response = HttpUtils.sendRequestV2("DELETE", "v2/island_crew/" + ownerPid+"/"+player.getStringUUID());
         TextUtils.sendChatMessage(player,response);
     }
 }

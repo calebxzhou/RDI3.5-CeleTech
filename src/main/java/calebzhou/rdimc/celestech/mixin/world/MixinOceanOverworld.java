@@ -2,21 +2,20 @@ package calebzhou.rdimc.celestech.mixin.world;
 
 import calebzhou.rdimc.celestech.mixin.AccessChunkGeneratorSettings;
 import calebzhou.rdimc.celestech.module.oceanworld.OceanWorld;
-import net.minecraft.block.Blocks;
-import net.minecraft.world.biome.source.util.VanillaTerrainParametersCreator;
 import net.minecraft.world.gen.chunk.*;
-import net.minecraft.world.gen.surfacebuilder.VanillaSurfaceRules;
+import net.minecraft.world.level.levelgen.NoiseGeneratorSettings;
+import net.minecraft.world.level.levelgen.NoiseSettings;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
 
-@Mixin(ChunkGeneratorSettings.class)
+@Mixin(NoiseGeneratorSettings.class)
 public class MixinOceanOverworld {
     /**
      * @author
      */
     @Overwrite
-    private static ChunkGeneratorSettings createSurfaceSettings(boolean amplified, boolean largeBiomes) {
-        GenerationShapeConfig generationShapeConfig = OceanWorld.getShapeConfig();
+    private static NoiseGeneratorSettings createSurfaceSettings(boolean amplified, boolean largeBiomes) {
+        NoiseSettings generationShapeConfig = OceanWorld.getShapeConfig();
         return OceanWorld.getGenerationConfig();
     }
     /*private static ChunkGeneratorSettings createSurfaceSettings(boolean amplified, boolean largeBiomes) {

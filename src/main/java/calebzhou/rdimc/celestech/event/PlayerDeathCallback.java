@@ -2,24 +2,22 @@ package calebzhou.rdimc.celestech.event;
 
 import net.fabricmc.fabric.api.event.Event;
 import net.fabricmc.fabric.api.event.EventFactory;
-import net.minecraft.block.BlockState;
-import net.minecraft.entity.damage.DamageSource;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.util.ActionResult;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.entity.player.Player;
 
 public interface PlayerDeathCallback {
     Event<PlayerDeathCallback> EVENT = EventFactory.createArrayBacked(PlayerDeathCallback.class,
             listeners -> (player,source) ->{
                 for(PlayerDeathCallback listener:listeners){
-                    ActionResult result = listener.call(player,source);
-                    if(result != ActionResult.PASS) {
+                    InteractionResult result = listener.call(player,source);
+                    if(result != InteractionResult.PASS) {
                         return result;
                     }
                 }
-                return ActionResult.PASS;
+                return InteractionResult.PASS;
             }
     );
 
-    ActionResult call(PlayerEntity player, DamageSource source);
+    InteractionResult call(Player player, DamageSource source);
 }

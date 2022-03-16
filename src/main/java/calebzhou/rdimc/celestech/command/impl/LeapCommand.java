@@ -5,11 +5,7 @@ import calebzhou.rdimc.celestech.command.BaseCommand;
 import calebzhou.rdimc.celestech.constant.MessageType;
 import calebzhou.rdimc.celestech.model.PlayerLocation;
 import calebzhou.rdimc.celestech.utils.PlayerUtils;
-import net.minecraft.block.Blocks;
-import net.minecraft.client.util.math.Vector3d;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Vec3i;
+import net.minecraft.server.level.ServerPlayer;
 
 import static calebzhou.rdimc.celestech.utils.TextUtils.*;
 
@@ -19,7 +15,7 @@ public class LeapCommand extends BaseCommand implements ArgCommand {
     }
 
     @Override
-    public void onExecute(ServerPlayerEntity fromPlayer, String arg) {
+    public void onExecute(ServerPlayer fromPlayer, String arg) {
         /*BlockPos lookingAtBlock = BlockPos.fromLong(Long.parseLong(arg));
         double distance = lookingAtBlock.getSquaredDistance(new Vec3i(fromPlayer.getX(), fromPlayer.getY(), fromPlayer.getZ()));
         PlayerUtils.checkExpLevel(fromPlayer, (int) Math.cbrt(distance)/2);

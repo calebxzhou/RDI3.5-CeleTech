@@ -3,11 +3,10 @@ package calebzhou.rdimc.celestech.utils;
 import calebzhou.rdimc.celestech.RDICeleTech;
 import calebzhou.rdimc.celestech.constant.ColorConstants;
 import calebzhou.rdimc.celestech.model.thread.PlayerMotionThread;
-import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.server.command.ServerCommandSource;
-import net.minecraft.server.network.ServerPlayerEntity;
-
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.player.Player;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -16,19 +15,19 @@ import java.util.function.Predicate;
 public class ServerUtils {
     public static final List<Integer> httpHistoryDelayList = new ArrayList<>();
     public static double getMillisecondPerTick(){
-        return MathUtils.getAverageValue(RDICeleTech.getServer().lastTickLengths) * 1.0E-6D;
+        return MathUtils.getAverageValue(RDICeleTech.getServer().tickTimes) * 1.0E-6D;
     }
     public static void executeCommandOnServer(String command){
-        executeCommandOnSource(command,RDICeleTech.getServer().getCommandSource());
+        executeCommandOnSource(command,RDICeleTech.getServer().createCommandSourceStack());
     }
-    public static void executeCommandOnSource(String command, ServerCommandSource source){
+    public static void executeCommandOnSource(String command, CommandSourceStack source){
         MinecraftServer server = RDICeleTech.getServer();
-        server.getCommandManager().execute(source,command);
+        server.getCommands().performCommand(source,command);
     }
     //获取在线玩家 名称
     public static List<String> getOnlinePlayerNameList(){
-        return RDICeleTech.getServer().getPlayerManager().getPlayerList().stream()
-                .map(PlayerEntity::getEntityName).toList();
+        return RDICeleTech.getServer().getPlayerList().getPlayers().stream()
+                .map(Player::getScoreboardName).toList();
     }
     //获取挂机玩家
     public static List<Map.Entry<String,Integer>> getAfkPlayerList(){
@@ -38,7 +37,7 @@ public class ServerUtils {
                 .toList();
     }
     //挂机玩家 做什么?
-    public static void getAfkPlayerListDo(Predicate<? super Map.Entry<String,Integer>> predicate,ServerPlayerEntity fromPlayer){
+    public static void getAfkPlayerListDo(Predicate<? super Map.Entry<String,Integer>> predicate,ServerPlayer fromPlayer){
         getAfkPlayerList().stream()
                 //玩家说的话里面有没有挂机人的名称
                 .filter(predicate)
@@ -50,7 +49,7 @@ public class ServerUtils {
     }
     //存档
     public static void save(){
-        RDICeleTech.getServer().save(true,true,true);
+        RDICeleTech.getServer().saveAllChunks(true,true,true);
     }
     //记录HTTP请求延迟 ms
     public static void recordHttpReqDelay(long t1,long t2){

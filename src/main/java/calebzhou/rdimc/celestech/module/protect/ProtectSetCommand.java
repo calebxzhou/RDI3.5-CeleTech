@@ -6,8 +6,8 @@ import calebzhou.rdimc.celestech.model.AreaSelection;
 import calebzhou.rdimc.celestech.utils.HttpUtils;
 import calebzhou.rdimc.celestech.utils.PlayerUtils;
 import calebzhou.rdimc.celestech.utils.TextUtils;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.util.math.Vec3i;
+import net.minecraft.core.Vec3i;
+import net.minecraft.server.level.ServerPlayer;
 
 public class ProtectSetCommand extends BaseCommand {
     public ProtectSetCommand(String name, int permissionLevel) {
@@ -16,10 +16,11 @@ public class ProtectSetCommand extends BaseCommand {
 
 
     @Override
-    public void onExecute(ServerPlayerEntity player, String arg) {
-        Vec3i[] area = AreaSelection.getPlayerSelectedArea(player.getUuidAsString());
-        int distance = area[0].getManhattanDistance(area[1]);
+    public void onExecute(ServerPlayer player, String arg) {
+        Vec3i[] area = AreaSelection.getPlayerSelectedArea(player.getStringUUID());
+        int distance = area[0].distManhattan(area[1]);
         PlayerUtils.checkExpLevel(player,distance);
+
 
 
     }

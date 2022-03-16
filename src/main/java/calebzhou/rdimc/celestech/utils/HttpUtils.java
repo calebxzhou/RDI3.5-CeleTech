@@ -7,7 +7,6 @@ import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonPrimitive;
-import net.minecraft.client.realms.Request;
 import org.apache.commons.lang3.StringUtils;
 
 import java.io.IOException;

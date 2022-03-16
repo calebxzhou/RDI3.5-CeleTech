@@ -1,24 +1,24 @@
 package calebzhou.rdimc.celestech.mixin.mobs;
 
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.EquipmentSlot;
-import net.minecraft.entity.attribute.DefaultAttributeContainer;
-import net.minecraft.entity.attribute.EntityAttributes;
-import net.minecraft.entity.mob.HostileEntity;
-import net.minecraft.entity.mob.MobEntity;
-import net.minecraft.entity.mob.ZombieEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
-import net.minecraft.world.LocalDifficulty;
-import net.minecraft.world.World;
+import net.minecraft.world.DifficultyInstance;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
+import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.entity.monster.Monster;
+import net.minecraft.world.entity.monster.Zombie;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.level.Level;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.injection.Constant;
 import org.spongepowered.asm.mixin.injection.ModifyConstant;
 
-@Mixin(ZombieEntity.class)
-public abstract class MixinHarderZombie extends MobEntity {
-    protected MixinHarderZombie(EntityType<? extends MobEntity> entityType, World world) {
+@Mixin(Zombie.class)
+public abstract class MixinHarderZombie extends Mob {
+    protected MixinHarderZombie(EntityType<? extends Mob> entityType, Level world) {
         super(entityType, world);
     }
 
@@ -26,22 +26,22 @@ public abstract class MixinHarderZombie extends MobEntity {
      * @author
      */
     @Overwrite
-    public static DefaultAttributeContainer.Builder createZombieAttributes() {
-        return HostileEntity.createHostileAttributes()
-                .add(EntityAttributes.GENERIC_FOLLOW_RANGE, 35.0)
-                .add(EntityAttributes.GENERIC_MOVEMENT_SPEED, 0.40f)
-                .add(EntityAttributes.GENERIC_ATTACK_DAMAGE, 4.0)
-                .add(EntityAttributes.GENERIC_ARMOR, 2.0)
-                .add(EntityAttributes.ZOMBIE_SPAWN_REINFORCEMENTS)
-                .add(EntityAttributes.GENERIC_MAX_HEALTH,50);
+    public static AttributeSupplier.Builder createAttributes() {
+        return Monster.createMonsterAttributes()
+                .add(Attributes.FOLLOW_RANGE, 35.0)
+                .add(Attributes.MOVEMENT_SPEED, 0.40f)
+                .add(Attributes.ATTACK_DAMAGE, 4.0)
+                .add(Attributes.ARMOR, 2.0)
+                .add(Attributes.SPAWN_REINFORCEMENTS_CHANCE)
+                .add(Attributes.MAX_HEALTH,50);
     }
             /**
      * @author
      */
     @Overwrite
-    public void initEquipment(LocalDifficulty difficulty) {
-        super.initEquipment(difficulty);
-             this.equipStack(EquipmentSlot.MAINHAND, new ItemStack(Items.IRON_SWORD));
+    public void populateDefaultEquipmentSlots(DifficultyInstance difficulty) {
+        super.populateDefaultEquipmentSlots(difficulty);
+             this.setItemSlot(EquipmentSlot.MAINHAND, new ItemStack(Items.IRON_SWORD));
 
     }
 }

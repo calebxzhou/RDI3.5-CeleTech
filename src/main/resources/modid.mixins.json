@@ -14,7 +14,6 @@
     "mobs.GhastShootMixin",
     "mobs.MixinHarderCreeper",
     "mobs.MixinHarderEnderman",
-    "mobs.MixinHarderEnderman2",
     "mobs.MixinHarderGhast",
     "mobs.MixinHarderIronGolem",
     "mobs.MixinHarderPhantom",

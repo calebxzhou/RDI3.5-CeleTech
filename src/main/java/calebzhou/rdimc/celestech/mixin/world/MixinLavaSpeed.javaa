@@ -1,15 +1,15 @@
 package calebzhou.rdimc.celestech.mixin.world;
 
-import net.minecraft.fluid.LavaFluid;
-import net.minecraft.world.WorldView;
+import net.minecraft.world.level.LevelReader;
+import net.minecraft.world.level.material.LavaFluid;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
 
 @Mixin(LavaFluid.class)
 public abstract class MixinLavaSpeed {
     @Overwrite
-    public int getTickRate(WorldView world) {
-        return world.getDimension().isUltrawarm() ? 10 : 60;
+    public int getTickRate(LevelReader world) {
+        return world.dimensionType().ultraWarm() ? 10 : 60;
     }
 
 

@@ -1,18 +1,18 @@
 package calebzhou.rdimc.celestech.mixin.mobs;
 
-import net.minecraft.entity.attribute.DefaultAttributeContainer;
-import net.minecraft.entity.attribute.EntityAttributes;
-import net.minecraft.entity.mob.AbstractSkeletonEntity;
-import net.minecraft.entity.mob.HostileEntity;
+import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
+import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.entity.monster.AbstractSkeleton;
+import net.minecraft.world.entity.monster.Monster;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.injection.Constant;
 import org.spongepowered.asm.mixin.injection.ModifyConstant;
 
-@Mixin(AbstractSkeletonEntity.class)
+@Mixin(AbstractSkeleton.class)
 public abstract class MixinHarderSkeleton {
     @ModifyConstant(
-            method = "Lnet/minecraft/entity/mob/AbstractSkeletonEntity;updateAttackType()V",
+            method = "Lnet/minecraft/world/entity/monster/AbstractSkeleton;reassessWeaponGoal()V",
             constant = @Constant(intValue = 20)
     )
     private static int changeAtkSpeed(int spd){
@@ -22,9 +22,9 @@ public abstract class MixinHarderSkeleton {
      * @author
      */
     @Overwrite
-    public static DefaultAttributeContainer.Builder createAbstractSkeletonAttributes() {
-        return HostileEntity.createHostileAttributes()
-                .add(EntityAttributes.GENERIC_MOVEMENT_SPEED, 0.4)
-                .add(EntityAttributes.GENERIC_MAX_HEALTH,50);
+    public static AttributeSupplier.Builder createAttributes() {
+        return Monster.createMonsterAttributes()
+                .add(Attributes.MOVEMENT_SPEED, 0.4)
+                .add(Attributes.MAX_HEALTH,50);
     }
 }

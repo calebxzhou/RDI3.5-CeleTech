@@ -3,17 +3,16 @@ package calebzhou.rdimc.celestech.module.ticking;
 import calebzhou.rdimc.celestech.ServerStatus;
 import it.unimi.dsi.fastutil.objects.Object2IntArrayMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectArrayMap;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.ItemEntity;
-import net.minecraft.entity.mob.MobEntity;
-import net.minecraft.entity.passive.AnimalEntity;
-import net.minecraft.entity.passive.VillagerEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.vehicle.MinecartEntity;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.chunk.BlockEntityTickInvoker;
-
 import java.util.function.Consumer;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.animal.Animal;
+import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.entity.npc.Villager;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.vehicle.Minecart;
+import net.minecraft.world.level.block.entity.TickingBlockEntity;
 
 import static calebzhou.rdimc.celestech.RDICeleTech.LOGGER;
 import static calebzhou.rdimc.celestech.ServerStatus.BAD;
@@ -29,16 +28,16 @@ public class TickInverter {
 
 
         boolean remove = true;
-        if(ent instanceof MinecartEntity || ent instanceof PlayerEntity
-                || ent instanceof VillagerEntity || ent instanceof AnimalEntity){
+        if(ent instanceof Minecart || ent instanceof Player
+                || ent instanceof Villager || ent instanceof Animal){
             remove=false;
         }
         else if(ent instanceof ItemEntity ite){
-            if(ite.getStack().hasNbt())
+            if(ite.getItem().hasTag())
                 remove=false;
         }
-        else if(ent instanceof MobEntity mobEnt) {
-            if(mobEnt.isPersistent())
+        else if(ent instanceof Mob mobEnt) {
+            if(mobEnt.isPersistenceRequired())
                 remove=false;
         }
         if(remove)
@@ -50,8 +49,8 @@ public class TickInverter {
     private Object2ObjectArrayMap<BlockPos,String> frozenBlockEntityMap = new Object2ObjectArrayMap<>();
     private final int BLOCKENTITY_TICK_FROZEN = 50;//冻结50个tick(2.5s)
     private static int BLOCKENTITY_TICK_LIMIT = 40;//ms 方块实体40ms没tick完就直接冻结
-    public void tickBlockEntity(BlockEntityTickInvoker invoker){
-        String name = invoker.getName();
+    public void tickBlockEntity(TickingBlockEntity invoker){
+        String name = invoker.getType();
         BlockPos bpos = invoker.getPos();
         //冻结时间 ++, 如果被冻结
         if(frozenBlockEntityMap.containsKey(bpos)){

@@ -3,25 +3,25 @@ package calebzhou.rdimc.celestech.model.thread;
 import calebzhou.rdimc.celestech.constant.ColorConstants;
 import calebzhou.rdimc.celestech.model.PlayerTemperature;
 import calebzhou.rdimc.celestech.utils.*;
-import net.minecraft.entity.damage.DamageSource;
-import net.minecraft.entity.effect.StatusEffectInstance;
-import net.minecraft.entity.effect.StatusEffects;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.core.BlockPos;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.effect.MobEffects;
 
 import static calebzhou.rdimc.celestech.model.PlayerTemperature.*;
 
 public class PlayerTemperatureThread extends PlayerBaseThread{
 
-    public PlayerTemperatureThread(ServerPlayerEntity player){
+    public PlayerTemperatureThread(ServerPlayer player){
         super(player.getDisplayName().getString());
     }
 
     protected void execute() throws InterruptedException{
-        ServerWorld world = player.getWorld();
-        BlockPos camPos = player.getCameraBlockPos();
-        BlockPos footPos = player.getLandingPos();
+        ServerLevel world = player.getLevel();
+        BlockPos camPos = player.eyeBlockPosition();
+        BlockPos footPos = player.getOnPos();
         if(!PlayerTemperature.has(playerName)){
             PlayerTemperature.put(playerName,PlayerTemperature.DEFAULT_TEMP);
         }
@@ -60,33 +60,33 @@ public class PlayerTemperatureThread extends PlayerBaseThread{
             TextUtils.sendActionMessage(player,String.format(ColorConstants.GOLD+"%.2f℃",PlayerTemperature.get(playerName)));
         }
         if(temp > TEMP_DANGER && temp < TEMP_DANGER2){
-            player.damage(DamageSource.HOT_FLOOR,0.1f);
-            player.addStatusEffect(new StatusEffectInstance(StatusEffects.WEAKNESS,20,1));
-            player.addStatusEffect(new StatusEffectInstance(StatusEffects.NAUSEA,20,1));
+            player.hurt(DamageSource.HOT_FLOOR,0.1f);
+            player.addEffect(new MobEffectInstance(MobEffects.WEAKNESS,20,1));
+            player.addEffect(new MobEffectInstance(MobEffects.CONFUSION,20,1));
             TextUtils.sendActionMessage(player,String.format(ColorConstants.RED+ ColorConstants.ITALIC+"%.2f℃",PlayerTemperature.get(playerName)));
         }
         if(temp >= TEMP_DANGER2 && temp < TEMP_DANGER3){
-            player.damage(DamageSource.HOT_FLOOR,1.0f);
-            player.addStatusEffect(new StatusEffectInstance(StatusEffects.SLOWNESS,20,1));
-            player.addStatusEffect(new StatusEffectInstance(StatusEffects.NAUSEA,40,2));
+            player.hurt(DamageSource.HOT_FLOOR,1.0f);
+            player.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN,20,1));
+            player.addEffect(new MobEffectInstance(MobEffects.CONFUSION,40,2));
             TextUtils.sendActionMessage(player,String.format(ColorConstants.RED+ ColorConstants.ITALIC+"%.2f℃",PlayerTemperature.get(playerName)));
         }
         if(temp >= TEMP_DANGER3 && temp < PlayerTemperature.TEMP_DANGER4){
-            player.damage(DamageSource.HOT_FLOOR,2.0f);
-            player.addStatusEffect(new StatusEffectInstance(StatusEffects.SLOWNESS,20,2));
-            player.addStatusEffect(new StatusEffectInstance(StatusEffects.NAUSEA,60,3));
+            player.hurt(DamageSource.HOT_FLOOR,2.0f);
+            player.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN,20,2));
+            player.addEffect(new MobEffectInstance(MobEffects.CONFUSION,60,3));
             TextUtils.sendActionMessage(player,String.format(ColorConstants.RED+ ColorConstants.ITALIC+"%.2f℃",PlayerTemperature.get(playerName)));
         }
         if(temp >= PlayerTemperature.TEMP_DANGER4 && temp < PlayerTemperature.TEMP_MAX){
-            player.damage(DamageSource.HOT_FLOOR,3.0f);
-            player.addStatusEffect(new StatusEffectInstance(StatusEffects.SLOWNESS,20,3));
-            player.addStatusEffect(new StatusEffectInstance(StatusEffects.NAUSEA,60,4));
+            player.hurt(DamageSource.HOT_FLOOR,3.0f);
+            player.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN,20,3));
+            player.addEffect(new MobEffectInstance(MobEffects.CONFUSION,60,4));
             TextUtils.sendActionMessage(player,String.format(ColorConstants.RED+ ColorConstants.ITALIC+"%.2f℃",PlayerTemperature.get(playerName)));
         }
         if(temp>=PlayerTemperature.TEMP_MAX){
-            player.damage(DamageSource.HOT_FLOOR,5.0f);
-            player.addStatusEffect(new StatusEffectInstance(StatusEffects.SLOWNESS,20,4));
-            player.addStatusEffect(new StatusEffectInstance(StatusEffects.NAUSEA,60,5));
+            player.hurt(DamageSource.HOT_FLOOR,5.0f);
+            player.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN,20,4));
+            player.addEffect(new MobEffectInstance(MobEffects.CONFUSION,60,5));
             TextUtils.sendActionMessage(player,String.format(ColorConstants.RED+ ColorConstants.ITALIC+"%.2f℃",PlayerTemperature.get(playerName)));
         }
     }

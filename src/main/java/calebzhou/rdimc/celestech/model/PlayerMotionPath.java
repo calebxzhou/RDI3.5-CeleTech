@@ -1,15 +1,13 @@
 package calebzhou.rdimc.celestech.model;
 
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.util.math.Vec3d;
-
 import java.io.Serializable;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.phys.Vec3;
 
 public class PlayerMotionPath implements Serializable {
     public double x,y,z;
 
-    public PlayerMotionPath(PlayerEntity player){
+    public PlayerMotionPath(Player player){
         this.x= player.getX();
         this.y= player.getY();
         this.z= player.getZ();
@@ -19,8 +17,8 @@ public class PlayerMotionPath implements Serializable {
         this.y = y;
         this.z = z;
     }
-    public Vec3d getVector(){
-        return new Vec3d(x,y,z);
+    public Vec3 getVector(){
+        return new Vec3(x,y,z);
     }
 
     @Override

@@ -2,24 +2,23 @@ package calebzhou.rdimc.celestech.event;
 
 import net.fabricmc.fabric.api.event.Event;
 import net.fabricmc.fabric.api.event.EventFactory;
-import net.minecraft.block.BlockState;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.util.ActionResult;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.block.state.BlockState;
 
 public interface PlayerPlaceBlockCallback {
     Event<PlayerPlaceBlockCallback> EVENT = EventFactory.createArrayBacked(PlayerPlaceBlockCallback.class,
             listeners -> (player,blockPos,blockState) ->{
                 for(PlayerPlaceBlockCallback listener:listeners){
-                    ActionResult result = listener.interact(player,blockPos,blockState);
-                    if(result != ActionResult.PASS) {
+                    InteractionResult result = listener.interact(player,blockPos,blockState);
+                    if(result != InteractionResult.PASS) {
                         return result;
                     }
                 }
-                return ActionResult.PASS;
+                return InteractionResult.PASS;
             }
     );
 
-    ActionResult interact(PlayerEntity player, BlockPos blockPos, BlockState blockState);
+    InteractionResult interact(Player player, BlockPos blockPos, BlockState blockState);
 }

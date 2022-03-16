@@ -1,11 +1,11 @@
 package calebzhou.rdimc.celestech.mixin.mobs;
 
-import net.minecraft.entity.passive.IronGolemEntity;
+import net.minecraft.world.entity.animal.IronGolem;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.Constant;
 import org.spongepowered.asm.mixin.injection.ModifyConstant;
 
-@Mixin(IronGolemEntity.class)
+@Mixin(IronGolem.class)
 public abstract class MixinHarderIronGolem {
     //铁傀儡增加血量
     @ModifyConstant(

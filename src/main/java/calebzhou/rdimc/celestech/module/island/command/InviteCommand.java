@@ -8,7 +8,7 @@ import calebzhou.rdimc.celestech.utils.HttpUtils;
 import calebzhou.rdimc.celestech.utils.PlayerUtils;
 import calebzhou.rdimc.celestech.utils.ServerUtils;
 import calebzhou.rdimc.celestech.utils.TextUtils;
-import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.server.level.ServerPlayer;
 
 public class InviteCommand extends BaseCommand implements ArgCommand {
     public InviteCommand(String name, int permissionLevel) {
@@ -16,16 +16,16 @@ public class InviteCommand extends BaseCommand implements ArgCommand {
     }
 
     @Override
-    public void onExecute(ServerPlayerEntity player, String invitedPlayer) {
-        if(player.getEntityName().equalsIgnoreCase(invitedPlayer)){
+    public void onExecute(ServerPlayer player, String invitedPlayer) {
+        if(player.getScoreboardName().equalsIgnoreCase(invitedPlayer)){
             TextUtils.sendChatMessage(player,"您不可以邀请自己加入岛屿!",MessageType.ERROR);
             return;
         }
-        ApiResponse response = HttpUtils.sendRequestV2("POST", "v2/island_crew/" + player.getUuidAsString()+"/"+PlayerUtils.getPlayerByName(invitedPlayer).getUuidAsString());
+        ApiResponse response = HttpUtils.sendRequestV2("POST", "v2/island_crew/" + player.getStringUUID()+"/"+PlayerUtils.getPlayerByName(invitedPlayer).getStringUUID());
         TextUtils.sendChatMessage(player,"您邀请了"+invitedPlayer);
         TextUtils.sendChatMessage(player,response);
         if(response.isSuccess()){
-            TextUtils.sendChatMessage(PlayerUtils.getPlayerByName(invitedPlayer),player.getEntityName()+"邀请您加入了他的岛屿", MessageType.INFO);
+            TextUtils.sendChatMessage(PlayerUtils.getPlayerByName(invitedPlayer),player.getScoreboardName()+"邀请您加入了他的岛屿", MessageType.INFO);
             TextUtils.sendClickableContent(PlayerUtils.getPlayerByName(invitedPlayer),"按下[H键]可以前往他的岛屿","/home");
         }
 

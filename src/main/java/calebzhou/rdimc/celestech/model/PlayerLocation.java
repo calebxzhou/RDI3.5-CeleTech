@@ -1,8 +1,8 @@
 package calebzhou.rdimc.celestech.model;
 
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.core.BlockPos;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.entity.player.Player;
 
 public class PlayerLocation {
     private double posX;
@@ -10,19 +10,19 @@ public class PlayerLocation {
     private double posZ;
     private float yaw;
     private float pitch;
-    private ServerWorld world;
+    private ServerLevel world;
 
-    public static PlayerLocation fromPlayer(PlayerEntity player){
-        return new PlayerLocation(player.getX(), player.getY(), player.getZ(), player.getYaw(), player.getPitch(), (ServerWorld) player.getWorld());
+    public static PlayerLocation fromPlayer(Player player){
+        return new PlayerLocation(player.getX(), player.getY(), player.getZ(), player.getYRot(), player.getXRot(), (ServerLevel) player.getLevel());
     }
-    public static PlayerLocation fromBlockPos(BlockPos bpos,ServerWorld dim,float yaw,float pitch){
+    public static PlayerLocation fromBlockPos(BlockPos bpos,ServerLevel dim,float yaw,float pitch){
         return new PlayerLocation(bpos.getX(), bpos.getY(), bpos.getZ(),yaw,pitch,dim);
     }
 
     public PlayerLocation() {
     }
 
-    public PlayerLocation(double posX, double posY, double posZ, float yaw, float pitch, ServerWorld world) {
+    public PlayerLocation(double posX, double posY, double posZ, float yaw, float pitch, ServerLevel world) {
         this.posX = posX;
         this.posY = posY;
         this.posZ = posZ;
@@ -71,11 +71,11 @@ public class PlayerLocation {
         this.pitch = pitch;
     }
 
-    public ServerWorld getWorld() {
+    public ServerLevel getWorld() {
         return world;
     }
 
-    public void setWorld(ServerWorld world) {
+    public void setWorld(ServerLevel world) {
         this.world = world;
     }
 }

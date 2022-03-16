@@ -1,8 +1,8 @@
 package calebzhou.rdimc.celestech.mixin.player;
 
 import com.mojang.brigadier.CommandDispatcher;
-import net.minecraft.server.command.HelpCommand;
-import net.minecraft.server.command.ServerCommandSource;
+import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.server.commands.HelpCommand;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
 
@@ -12,7 +12,7 @@ public class MixinNoVanillaHelp {
      * @author 不显示帮助菜单
      */
     @Overwrite
-    public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
+    public static void register(CommandDispatcher<CommandSourceStack> dispatcher) {
 
     }
 }

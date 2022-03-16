@@ -5,9 +5,8 @@ import calebzhou.rdimc.celestech.event.PlayerChatCallback;
 import calebzhou.rdimc.celestech.model.record.GenericRecord;
 import calebzhou.rdimc.celestech.model.record.RecordType;
 import calebzhou.rdimc.celestech.utils.*;
-import net.minecraft.util.ActionResult;
-
 import java.util.HashSet;
+import net.minecraft.world.InteractionResult;
 
 public class PlayerChatEvent {
 
@@ -31,9 +30,9 @@ public class PlayerChatEvent {
             if (msg.length() >= 3) ServerUtils.getAfkPlayerListDo(entry -> entry.getKey().contains(msg), player);
             //censor
             if (censorship.stream().anyMatch(msg::contains)) {
-                return ActionResult.FAIL;
+                return InteractionResult.FAIL;
             }
-            return ActionResult.PASS;
+            return InteractionResult.PASS;
         }));
     }
 

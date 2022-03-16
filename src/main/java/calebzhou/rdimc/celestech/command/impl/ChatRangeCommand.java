@@ -7,10 +7,9 @@ import calebzhou.rdimc.celestech.model.ApiResponse;
 import calebzhou.rdimc.celestech.model.Island;
 import calebzhou.rdimc.celestech.utils.HttpUtils;
 import calebzhou.rdimc.celestech.utils.TextUtils;
-import net.minecraft.server.network.ServerPlayerEntity;
-
 import java.util.HashMap;
 import java.util.List;
+import net.minecraft.server.level.ServerPlayer;
 
 public class ChatRangeCommand extends BaseCommand implements ArgCommand {
     //玩家id vs 聊天对象玩家列表
@@ -20,8 +19,8 @@ public class ChatRangeCommand extends BaseCommand implements ArgCommand {
     }
 
     @Override
-    public void onExecute(ServerPlayerEntity player, String arg) {
-        String pid = player.getUuidAsString();
+    public void onExecute(ServerPlayer player, String arg) {
+        String pid = player.getStringUUID();
         char range = arg.charAt(0);
         if(range=='a'){
             //chatRangeMap.put(pid, ServerUtils.getOnlinePlayerNameList());

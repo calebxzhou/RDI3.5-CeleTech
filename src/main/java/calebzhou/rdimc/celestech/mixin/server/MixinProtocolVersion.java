@@ -2,13 +2,13 @@ package calebzhou.rdimc.celestech.mixin.server;
 
 import calebzhou.rdimc.celestech.RDICeleTech;
 import com.google.gson.JsonObject;
-import net.minecraft.MinecraftVersion;
+import net.minecraft.DetectedVersion;
 import org.spongepowered.asm.mixin.*;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-@Mixin(MinecraftVersion.class)
+@Mixin(DetectedVersion.class)
 public class MixinProtocolVersion {
     @Shadow @Final @Mutable
     private int protocolVersion;

@@ -1,29 +1,29 @@
 package calebzhou.rdimc.celestech.mixin.mobs;
 
-import net.minecraft.entity.effect.StatusEffectInstance;
-import net.minecraft.entity.effect.StatusEffects;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.projectile.LlamaSpitEntity;
-import net.minecraft.util.hit.EntityHitResult;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.effect.MobEffects;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.projectile.LlamaSpit;
+import net.minecraft.world.phys.EntityHitResult;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-@Mixin(LlamaSpitEntity.class)
+@Mixin(LlamaSpit.class)
 public class MixinLlamaDamage {
     //羊驼增加效果
     @Inject(
-            method = "onEntityHit(Lnet/minecraft/util/hit/EntityHitResult;)V",
+            method = "Lnet/minecraft/world/entity/projectile/LlamaSpit;onHitEntity(Lnet/minecraft/world/phys/EntityHitResult;)V",
             at=@At(
                     value = "INVOKE",
-                    target = "net/minecraft/entity/damage/DamageSource.mobProjectile (Lnet/minecraft/entity/Entity;Lnet/minecraft/entity/LivingEntity;)Lnet/minecraft/entity/damage/DamageSource;"
+                    target = "Lnet/minecraft/world/entity/Entity;hurt(Lnet/minecraft/world/damagesource/DamageSource;F)Z"
             )
     )
     private void plusDamage(EntityHitResult entityHitResult, CallbackInfo ci){
-        if(entityHitResult.getEntity() instanceof PlayerEntity player) {
-            player.addStatusEffect(new StatusEffectInstance(StatusEffects.NAUSEA,15*20,2));
-            player.addStatusEffect(new StatusEffectInstance(StatusEffects.POISON,15*20,2));
+        if(entityHitResult.getEntity() instanceof Player player) {
+            player.addEffect(new MobEffectInstance(MobEffects.CONFUSION,15*20,2));
+            player.addEffect(new MobEffectInstance(MobEffects.POISON,15*20,2));
         }
 
     }
