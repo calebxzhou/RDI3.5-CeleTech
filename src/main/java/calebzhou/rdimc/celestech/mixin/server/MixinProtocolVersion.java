@@ -15,10 +15,10 @@ public class MixinProtocolVersion {
     @Shadow @Final @Mutable
     private String name;
     @Inject(
-            method = "Lnet/minecraft/MinecraftVersion;<init>(Lcom/google/gson/JsonObject;)V",
+            method = "Lnet/minecraft/DetectedVersion;<init>(Lcom/google/gson/JsonObject;)V",
             at=@At("TAIL")
     )
-    private void asdasdcx(JsonObject json, CallbackInfo ci){
+    private void changeVersion(JsonObject json, CallbackInfo ci){
         protocolVersion=RDICeleTech.VERSION;
         name="RDI LiberaTorch Engine 3";
     }

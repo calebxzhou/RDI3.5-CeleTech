@@ -29,37 +29,18 @@ public abstract class MixinTickInverter {
     private static final int ENTITY_TICK_LIMIT = 35;
 
 
-    @Redirect(method = "Lnet/minecraft/world/World;tickEntity(Ljava/util/function/Consumer;Lnet/minecraft/entity/Entity;)V",
-            at = @At(value = "INVOKE",
-            target = "Ljava/util/function/Consumer;accept(Ljava/lang/Object;)V"))
-    private void tickEntity(Consumer tickConsumer, Object entity){
-        try {
-            TickInverter.INSTANCE.tickEntity(tickConsumer,(Entity) entity);
-        } catch (Throwable var6) {
-            RDICeleTech.LOGGER.error(var6.getMessage());
-        }
-    }
 
-    @Redirect(method = "Lnet/minecraft/world/World;updateNeighbor(Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/block/Block;Lnet/minecraft/util/math/BlockPos;)V",
-            at = @At(value = "INVOKE",
-                    target = "Lnet/minecraft/block/BlockState;neighborUpdate(Lnet/minecraft/world/World;Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/block/Block;Lnet/minecraft/util/math/BlockPos;Z)V"))
-    private void updateNeigh(BlockState blockState, Level world, BlockPos pos, Block sourceBlock, BlockPos neighborPos, boolean b){
-        try {
-            blockState.neighborChanged((Level)((Object) this), pos, sourceBlock, neighborPos, false);
-        } catch (Throwable e) {
-            RDICeleTech.LOGGER.error(e.getMessage());
-        }
-    }
+
+
 
     //最重要的部分，防止机器卡顿
-    @Shadow @Final @Mutable
-    protected List<TickingBlockEntity> blockEntityTickers;
+    @Shadow @Final @Mutable protected List<TickingBlockEntity> blockEntityTickers;
 
-    @Shadow public abstract boolean breakBlock(BlockPos pos, boolean drop, @Nullable Entity breakingEntity, int maxUpdateDepth);
+    @Shadow public abstract boolean destroyBlock(BlockPos blockPos, boolean bl, @Nullable Entity entity, int i);
 
     @Redirect(method = "tickBlockEntities()V",
             at = @At(value = "INVOKE",
-                    target = "Lnet/minecraft/world/chunk/BlockEntityTickInvoker;tick()V"))
+                    target = "Lnet/minecraft/world/level/block/entity/TickingBlockEntity;tick()V"))
     private void tickBlockEntity(TickingBlockEntity blockEntityTickInvoker){
         try {
             TickInverter.INSTANCE.tickBlockEntity(blockEntityTickInvoker);

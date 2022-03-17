@@ -16,7 +16,7 @@ public class MixinChestNeverBoom {
      * @author 有数据的方块不会被炸
      */
     @Overwrite
-    public boolean canDestroyBlock(Explosion explosion, BlockGetter world, BlockPos pos, BlockState state, float power) {
+    public boolean shouldBlockExplode(Explosion explosion, BlockGetter world, BlockPos pos, BlockState state, float power) {
         BlockEntity blockEntity = world.getBlockEntity(pos);
         if(blockEntity==null)
             return true;

@@ -17,14 +17,14 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(AbstractArrow.class)
 public abstract class MixinArrowDamangeUp {
     @Shadow @Mutable
-    private int punch = 1;
+    private int knockback = 1;
 
 
     @Inject(
-            method = "Lnet/minecraft/entity/projectile/PersistentProjectileEntity;onEntityHit(Lnet/minecraft/util/hit/EntityHitResult;)V",
+            method = "Lnet/minecraft/world/entity/projectile/AbstractArrow;onHitEntity(Lnet/minecraft/world/phys/EntityHitResult;)V",
             at = @At(
                     value = "INVOKE",
-                    target = "net/minecraft/entity/projectile/PersistentProjectileEntity.getPierceLevel ()B"
+                    target = "Lnet/minecraft/world/entity/projectile/AbstractArrow;getPierceLevel()B"
             )
     )
     private void inject(EntityHitResult entityHitResult, CallbackInfo ci){

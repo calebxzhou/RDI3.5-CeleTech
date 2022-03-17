@@ -1,8 +1,6 @@
 package calebzhou.rdimc.celestech.mixin.world;
 
-import calebzhou.rdimc.celestech.mixin.AccessChunkGeneratorSettings;
 import calebzhou.rdimc.celestech.module.oceanworld.OceanWorld;
-import net.minecraft.world.gen.chunk.*;
 import net.minecraft.world.level.levelgen.NoiseGeneratorSettings;
 import net.minecraft.world.level.levelgen.NoiseSettings;
 import org.spongepowered.asm.mixin.Mixin;
@@ -14,7 +12,7 @@ public class MixinOceanOverworld {
      * @author
      */
     @Overwrite
-    private static NoiseGeneratorSettings createSurfaceSettings(boolean amplified, boolean largeBiomes) {
+    private static NoiseGeneratorSettings overworld(boolean amplified, boolean largeBiomes) {
         NoiseSettings generationShapeConfig = OceanWorld.getShapeConfig();
         return OceanWorld.getGenerationConfig();
     }
