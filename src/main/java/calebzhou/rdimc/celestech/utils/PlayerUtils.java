@@ -3,7 +3,7 @@ package calebzhou.rdimc.celestech.utils;
 import calebzhou.rdimc.celestech.RDICeleTech;
 import calebzhou.rdimc.celestech.command.ExperienceException;
 import calebzhou.rdimc.celestech.constant.ColorConstants;
-import calebzhou.rdimc.celestech.constant.WorldConstants;
+import calebzhou.rdimc.celestech.constant.WorldConstant;
 import calebzhou.rdimc.celestech.model.CoordLocation;
 import calebzhou.rdimc.celestech.model.PlayerLocation;
 import java.util.EnumSet;
@@ -39,7 +39,7 @@ public class PlayerUtils {
     }
     //传送,通过CoordLocation
     public static void teleport(Player player, CoordLocation location){
-        teleportPlayer(player,WorldConstants.SPAWN_LOCA.getWorld(), location.getPosX(), location.getPosY(), location.getPosZ(), 0f,0f);
+        teleportPlayer(player, WorldConstant.SPAWN_LOCA.getWorld(), location.getPosX(), location.getPosY(), location.getPosZ(), 0f,0f);
     }
     public static void teleport(Player player, PlayerLocation location){
         teleportPlayer(player,location.getWorld(), location.getPosX(), location.getPosY(), location.getPosZ(), location.getYaw(),location.getPitch());

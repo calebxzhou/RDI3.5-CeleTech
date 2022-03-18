@@ -1,6 +1,7 @@
 package calebzhou.rdimc.celestech.module.record;
 
 import calebzhou.rdimc.celestech.api.CallbackRegisterable;
+import calebzhou.rdimc.celestech.constant.WorldConstant;
 import calebzhou.rdimc.celestech.event.PlayerBreakBlockCallback;
 import calebzhou.rdimc.celestech.event.PlayerPlaceBlockCallback;
 import calebzhou.rdimc.celestech.model.CoordLocation;
@@ -21,7 +22,9 @@ public class RecordBlockEvent implements CallbackRegisterable {
 
     private InteractionResult record(Entity entity, BlockPos blockPos, BlockState blockState, BlockRecord.Action action){
         String dimension=entity.level.dimensionType().effectsLocation().toString();
-
+        //只记录主世界
+        if(!dimension.equals(WorldConstant.DEFAULT_WORLD))
+            return InteractionResult.PASS;
         int posX=blockPos.getX();
         int posY=blockPos.getY();
         int posZ=blockPos.getZ();
@@ -45,7 +48,8 @@ public class RecordBlockEvent implements CallbackRegisterable {
             }
             return record(player,blockPos,blockState, BlockRecord.Action.BREAK);
         });
-        PlayerPlaceBlockCallback.EVENT.register(IdentifierUtils.byClass(this.getClass()),((player, blockPos, blockState) -> record(player,blockPos,blockState, BlockRecord.Action.PLACE)));
+        PlayerPlaceBlockCallback.EVENT.register(IdentifierUtils.byClass(this.getClass()),((player, blockPos, blockState) ->
+                record(player,blockPos,blockState, BlockRecord.Action.PLACE)));
 
     }
 }

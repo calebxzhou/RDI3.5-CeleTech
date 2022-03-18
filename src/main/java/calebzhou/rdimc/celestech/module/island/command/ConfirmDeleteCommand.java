@@ -2,13 +2,12 @@ package calebzhou.rdimc.celestech.module.island.command;
 
 import calebzhou.rdimc.celestech.command.BaseCommand;
 import calebzhou.rdimc.celestech.constant.MessageType;
-import calebzhou.rdimc.celestech.constant.WorldConstants;
+import calebzhou.rdimc.celestech.constant.WorldConstant;
 import calebzhou.rdimc.celestech.model.ApiResponse;
 import calebzhou.rdimc.celestech.model.CoordLocation;
 import calebzhou.rdimc.celestech.model.Island;
 import calebzhou.rdimc.celestech.utils.HttpUtils;
 import calebzhou.rdimc.celestech.utils.PlayerUtils;
-import calebzhou.rdimc.celestech.utils.WorldUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.Level;
@@ -43,8 +42,8 @@ public class ConfirmDeleteCommand extends BaseCommand {
         WorldUtils.fill(player.getWorld(), BlockBox.create(v1,v2), Blocks.AIR.getDefaultState());*/
         player.getInventory().clearContent();
         player.kill();
-        PlayerUtils.teleport(player, WorldConstants.SPAWN_LOCA);
-        player.setRespawnPosition(Level.OVERWORLD,new BlockPos(WorldConstants.SPAWN_LOCA.getPosX(), WorldConstants.SPAWN_LOCA.getPosY(), WorldConstants.SPAWN_LOCA.getPosZ()),0,true,false);
+        PlayerUtils.teleport(player, WorldConstant.SPAWN_LOCA);
+        player.setRespawnPosition(Level.OVERWORLD,new BlockPos(WorldConstant.SPAWN_LOCA.getPosX(), WorldConstant.SPAWN_LOCA.getPosY(), WorldConstant.SPAWN_LOCA.getPosZ()),0,true,false);
         sendChatMessage(player,response);
     }
 }

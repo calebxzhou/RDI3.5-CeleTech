@@ -1,8 +1,6 @@
 package calebzhou.rdimc.celestech.model.thread;
 
-import calebzhou.rdimc.celestech.RDICeleTech;
-import calebzhou.rdimc.celestech.constant.WorldConstants;
-import calebzhou.rdimc.celestech.constant.ColorConstants;
+import calebzhou.rdimc.celestech.constant.WorldConstant;
 import calebzhou.rdimc.celestech.model.PlayerMotionPath;
 import calebzhou.rdimc.celestech.utils.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -45,7 +43,7 @@ public class PlayerMotionThread extends PlayerBaseThread{
         //掉入虚空
         if(player.getY()<-68){
             PlayerUtils.addSlowFallEffect(player);
-            PlayerUtils.teleport(player, WorldConstants.SPAWN_LOCA);
+            PlayerUtils.teleport(player, WorldConstant.SPAWN_LOCA);
         }
     }
     private void handleDroppingFast(double timeElapsedSec){

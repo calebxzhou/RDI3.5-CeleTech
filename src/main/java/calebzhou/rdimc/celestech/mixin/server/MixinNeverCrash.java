@@ -43,11 +43,11 @@ public abstract class MixinNeverCrash {
     }
 
     private ServerLevel world;
-    @Inject(method = "tickServer(Ljava/util/function/BooleanSupplier;)V",
-            at = @At(value = "INVOKE", target = "Lnet/minecraft/server/MinecraftServer;tickChildren(Ljava/util/function/BooleanSupplier;)V"),
+    @Inject(method = "tickChildren(Ljava/util/function/BooleanSupplier;)V",
+            at = @At(value = "INVOKE", target = "Lnet/minecraft/server/level/ServerLevel;tick(Ljava/util/function/BooleanSupplier;)V"),
             locals = LocalCapture.CAPTURE_FAILSOFT)
-    private void tickworldInj(BooleanSupplier shouldKeepTicking, CallbackInfo ci, Iterator var2,ServerLevel serverWorld){
-        this.world=serverWorld;
+    private void tickworldInj(BooleanSupplier booleanSupplier, CallbackInfo ci, Iterator var2, ServerLevel serverLevel){
+        this.world=serverLevel;
     }
     @Redirect(
             method = "tickChildren(Ljava/util/function/BooleanSupplier;)V",

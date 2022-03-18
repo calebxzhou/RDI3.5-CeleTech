@@ -17,7 +17,6 @@ import net.minecraft.network.protocol.game.ClientboundSetSubtitleTextPacket;
 import net.minecraft.network.protocol.game.ClientboundSetTitleTextPacket;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.players.PlayerList;
-import net.minecraft.text.*;
 import net.minecraft.world.entity.player.Player;
 import java.util.*;
 import java.util.function.Function;

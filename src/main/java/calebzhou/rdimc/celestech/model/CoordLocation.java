@@ -1,7 +1,6 @@
 package calebzhou.rdimc.celestech.model;
 
-import calebzhou.rdimc.celestech.constant.WorldConstants;
-import com.google.gson.Gson;
+import calebzhou.rdimc.celestech.constant.WorldConstant;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerPlayer;
 
@@ -11,7 +10,7 @@ public class CoordLocation {
     double posX,posY,posZ;
 
     public CoordLocation(double posX, double posY, double posZ) {
-        this.dimension = WorldConstants.DEFAULT_WORLD;
+        this.dimension = WorldConstant.DEFAULT_WORLD;
         this.posX = posX;
         this.posY = posY;
         this.posZ = posZ;
