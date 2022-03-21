@@ -1,0 +1,79 @@
+package calebzhou.rdimc.celestech.mixin.player;
+
+import calebzhou.rdimc.celestech.module.NovelHud;
+import net.minecraft.core.NonNullList;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.item.ItemStack;
+import org.spongepowered.asm.mixin.Final;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Overwrite;
+import org.spongepowered.asm.mixin.Shadow;
+
+@Mixin(Inventory.class)
+public class Mixin36Inventory {
+    @Shadow
+    public int selected;
+
+    @Shadow @Final
+    public NonNullList<ItemStack> items;
+
+    /**
+     * @author
+     */
+    @Overwrite
+    public void swapPaint(double d) {
+        if (d > 0.0D) {
+            d = 1.0D;
+        }
+
+        if (d < 0.0D) {
+            d = -1.0D;
+        }
+        for(this.selected = (int)((double)this.selected - d); this.selected < 0; this.selected += NovelHud.STACKS_DISPLAY) {
+        }
+
+        while(this.selected >= NovelHud.STACKS_DISPLAY) {
+            this.selected -= NovelHud.STACKS_DISPLAY;
+        }
+
+    }
+    /**
+     * @author
+     */
+    @Overwrite
+    public static int getSelectionSize() {
+        return NovelHud.STACKS_DISPLAY;
+    }
+
+    /**
+     * @author
+     */
+    @Overwrite
+    public static boolean isHotbarSlot(int i) {
+        return i >= 0 && i < NovelHud.STACKS_DISPLAY;
+    }
+
+    /**
+     * @author
+     */
+    @Overwrite
+    public int getSuitableHotbarSlot() {
+        int i;
+        int j;
+        for(i = 0; i < NovelHud.STACKS_DISPLAY; ++i) {
+            j = (this.selected + i) % NovelHud.STACKS_DISPLAY;
+            if (items.get(j).isEmpty()) {
+                return j;
+            }
+        }
+
+        for(i = 0; i < NovelHud.STACKS_DISPLAY; ++i) {
+            j = (this.selected + i) % NovelHud.STACKS_DISPLAY;
+            if (!items.get(j).isEnchanted()) {
+                return j;
+            }
+        }
+
+        return this.selected;
+    }
+}

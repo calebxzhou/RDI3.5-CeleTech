@@ -18,6 +18,7 @@
     "mobs.MixinMoreZombiePiglin",
     "mobs.MixinWitchHarder",
     "mobs.PhantomSpawnerMixin",
+    "player.Mixin36Inventory",
     "player.MixinAllowOfflineMode",
     "player.MixinFoodInstantEat",
     "player.MixinNoVanillaHelp",

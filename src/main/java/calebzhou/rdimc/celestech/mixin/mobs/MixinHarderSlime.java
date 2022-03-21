@@ -11,7 +11,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 //增加史莱姆移动速度
 @Mixin(Slime.class)
 public abstract class MixinHarderSlime {
-    @Inject(method = "Lnet/minecraft/world/entity/monster/Slime;setSize(IZ)V",
+    @Inject(method = "setSize(IZ)V",
             at = @At(value = "TAIL"))
     private void setSize(int size, boolean heal, CallbackInfo ci){
         int i = Mth.clamp((int)size, (int)1, (int)127);
