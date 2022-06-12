@@ -23,9 +23,10 @@ public class BiomeCommand extends BaseCommand implements ArgCommand {
     //x1,y1,z1,x2,y2,z2,biome
     @Override
     public void onExecute(ServerPlayer player, String nameArg) {
+        //获取群系
         Biome biome = player.getServer().registryAccess().registryOrThrow(Registry.BIOME_REGISTRY).get(new ResourceLocation(nameArg));
         if(biome==null){
-            TextUtils.sendChatMessage(player,"生物群系"+nameArg+"不存在 ,请您输入生物群系的标识符。", MessageType.ERROR);
+            TextUtils.sendChatMessage(player,"生物群系"+nameArg+"不存在 ,请您输入生物群系的标识符。详见https://minecraft.fandom.com/wiki/Biome", MessageType.ERROR);
             return;
         }
         Vec3i[] area = AreaSelection.getPlayerSelectedArea(player.getStringUUID());

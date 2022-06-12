@@ -1,8 +1,6 @@
 package calebzhou.rdimc.celestech.utils;
 
 import calebzhou.rdimc.celestech.RDICeleTech;
-import calebzhou.rdimc.celestech.constant.ColorConstants;
-import calebzhou.rdimc.celestech.model.thread.PlayerMotionThread;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
@@ -31,21 +29,22 @@ public class ServerUtils {
     }
     //获取挂机玩家
     public static List<Map.Entry<String,Integer>> getAfkPlayerList(){
-        return PlayerMotionThread.afkPlayersMap.entrySet().stream()
+        /*return PlayerMotionThread.afkPlayersMap.entrySet().stream()
                 //在线玩家与挂机玩家map取交集
                 .filter(singleAfkEntry -> getOnlinePlayerNameList().contains(singleAfkEntry.getKey()))
-                .toList();
+                .toList()*/
+        return new ArrayList<>();
     }
     //挂机玩家 做什么?
     public static void getAfkPlayerListDo(Predicate<? super Map.Entry<String,Integer>> predicate,ServerPlayer fromPlayer){
-        getAfkPlayerList().stream()
+        /*getAfkPlayerList().stream()
                 //玩家说的话里面有没有挂机人的名称
                 .filter(predicate)
                 .forEach(entry -> {
                     String name = entry.getKey();
                     int seconds = entry.getValue();
                     TextUtils.sendChatMessage(fromPlayer, ColorConstants.GRAY+name+" 已经挂机 "+ TimeUtils.secondsToMinute(seconds,"分","秒")+" ,因此对方不一定能够及时回复您.");
-                });
+                });*/
     }
     //存档
     public static void save(){

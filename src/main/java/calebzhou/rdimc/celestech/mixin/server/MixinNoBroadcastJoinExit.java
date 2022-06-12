@@ -16,14 +16,15 @@ public abstract class MixinNoBroadcastJoinExit {
     @Redirect(method ="Lnet/minecraft/server/network/ServerGamePacketListenerImpl;onDisconnect(Lnet/minecraft/network/chat/Component;)V",
             at=@At(value = "INVOKE",target = "Lnet/minecraft/server/players/PlayerList;broadcastMessage(Lnet/minecraft/network/chat/Component;Lnet/minecraft/network/chat/ChatType;Ljava/util/UUID;)V"))
     private void noBroadcastDisconnecting(PlayerList instance, Component message, ChatType type, UUID sender){
-        //System.out.println(message.getString());
+        //什么都不做
     }
 }
 @Mixin(PlayerList.class)
 class NoJoin{
+    //进入服务器不显示"XXX进入"
     @Redirect(method = "Lnet/minecraft/server/players/PlayerList;placeNewPlayer(Lnet/minecraft/network/Connection;Lnet/minecraft/server/level/ServerPlayer;)V",
     at=@At(value = "INVOKE",target = "Lnet/minecraft/server/players/PlayerList;broadcastMessage(Lnet/minecraft/network/chat/Component;Lnet/minecraft/network/chat/ChatType;Ljava/util/UUID;)V"))
     private void nojoinsay(PlayerList instance, Component message, ChatType type, UUID sender){
-
+        //什么都不做
     }
 }

@@ -3,6 +3,10 @@
   "minVersion": "0.8",
   "package": "calebzhou.rdimc.celestech.mixin",
   "compatibilityLevel": "JAVA_17",
+  "_NOTUSED": [
+    "player.Mixin36Inventory",
+    "world.MixinOceanOverworld"
+  ],
   "mixins": [
     "AccessChunkGeneratorSettings",
     "mobs.MixinHarderCreeper",
@@ -18,7 +22,7 @@
     "mobs.MixinMoreZombiePiglin",
     "mobs.MixinWitchHarder",
     "mobs.PhantomSpawnerMixin",
-    "player.Mixin36Inventory",
+
     "player.MixinAllowOfflineMode",
     "player.MixinFoodInstantEat",
     "player.MixinNoVanillaHelp",
@@ -45,8 +49,7 @@
     "world.MixinArrowDamangeUp",
     "world.MixinChestNeverBoom",
     "world.MixinFireSpeedUp",
-    "world.MixinImproveSweetBerryDamage",
-    "world.MixinOceanOverworld"
+    "world.MixinImproveSweetBerryDamage"
   ],
   "client": [
   ],

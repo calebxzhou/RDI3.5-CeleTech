@@ -23,8 +23,7 @@ public class CommandRegister {
         commands.add(new InviteCommand("invite",0));
         commands.add(new KickCommand("kick",0));
         commands.add(new IslandCommand("island",0));
-        commands.add(new LeapCommand("leap",0));
-        commands.add(new BindCommand("bind",0));
+        commands.add(new RegisterCommand("bind",0));
         commands.add(new LocateCommand("loca",0));
         commands.add(new QuitCommand("quit",0));
         commands.add(new ChatRangeCommand("chatrange",0));

@@ -21,10 +21,6 @@ public class SlowfallCommand extends BaseCommand {
             TextUtils.sendChatMessage(player,"数字格式错误!!", MessageType.ERROR);
             return;
         }
-/*        if(!PlayerUtils.getDimensionName(player).equals(WorldConstants.DEFAULT_WORLD)){
-            TextUtils.sendChatMessage(player,"这个世界太沉了呀");
-            return ;
-        }*/
         player.addEffect(new MobEffectInstance(MobEffects.SLOW_FALLING,20*10,level-1));
     }
 

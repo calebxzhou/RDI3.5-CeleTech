@@ -7,8 +7,8 @@ import calebzhou.rdimc.celestech.utils.HttpUtils;
 import calebzhou.rdimc.celestech.utils.TextUtils;
 import net.minecraft.server.level.ServerPlayer;
 
-public class BindCommand extends BaseCommand implements ArgCommand {
-    public BindCommand(String name, int permissionLevel) {
+public class RegisterCommand extends BaseCommand implements ArgCommand {
+    public RegisterCommand(String name, int permissionLevel) {
         super(name, permissionLevel, true);
     }
 

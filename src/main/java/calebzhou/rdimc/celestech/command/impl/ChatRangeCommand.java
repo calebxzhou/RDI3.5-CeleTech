@@ -9,11 +9,14 @@ import calebzhou.rdimc.celestech.utils.HttpUtils;
 import calebzhou.rdimc.celestech.utils.TextUtils;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
+import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import net.minecraft.server.level.ServerPlayer;
 
 public class ChatRangeCommand extends BaseCommand implements ArgCommand {
     //玩家id vs 聊天对象玩家列表
-    public static final HashMap<String, List<String>> chatRangeMap = new HashMap<>();
+    public static final Map<String, List<String>> chatRangeMap = new Object2ObjectOpenHashMap<>();
     public ChatRangeCommand(String name, int permissionLevel) {
         super(name, permissionLevel,true);
     }
