@@ -42,18 +42,6 @@ public class LoadingBar extends Thread {
         bossBar.removePlayer(player);
         bossBar.setVisible(false);
         bossBar=null;
-        //40个横杠
-        /*int barAmount=40;
-        String original = "执行中["+ ColorConstants.BRIGHT_GREEN+ "----------------------------------------]";
-        for(int i=0;i<barAmount;++i){
 
-            try {
-                Thread.sleep((long) (timeElapseMs/barAmount));
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-            original = original.replaceFirst("-",">");
-            TextUtils.sendActionMessage(player,original);
-        }*/
     }
 }

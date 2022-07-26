@@ -2,7 +2,7 @@ package calebzhou.rdimc.celestech.module.teleport;
 
 import calebzhou.rdimc.celestech.command.ArgCommand;
 import calebzhou.rdimc.celestech.command.BaseCommand;
-import calebzhou.rdimc.celestech.constant.ColorConstants;
+import calebzhou.rdimc.celestech.constant.ColorConst;
 import calebzhou.rdimc.celestech.constant.MessageType;
 import calebzhou.rdimc.celestech.utils.PlayerUtils;
 import calebzhou.rdimc.celestech.utils.ThreadPool;
@@ -40,11 +40,11 @@ public class TpaCommand extends BaseCommand implements ArgCommand {
         tpaMap.put(fromPlayerId,toPlayerId);
         sendChatMessage(fromPlayer,"已经发送传送请求，15秒后传送请求将失效。",MessageType.INFO);
         fromPlayer.experienceLevel-=3;
-        sendChatMessage(toPlayero, ColorConstants.ORANGE+fromPlayer.getScoreboardName()+"想要传送到你的身边。");
-        MutableComponent tpyes= getClickableContentComp(ColorConstants.BRIGHT_GREEN+"[接受]"+ ColorConstants.RESET,"/tpreq true_false_"+fromPlayerId," ");
-        MutableComponent tpyes2= getClickableContentComp(ColorConstants.AQUA+"[以仅参观模式接受]"+ ColorConstants.RESET,"/tpreq true_true_"+fromPlayerId,"对方将没有破坏权限!");
-        MutableComponent tpwait= getClickableContentComp(ColorConstants.GOLD+"[等我一下]"+ ColorConstants.RESET,"稍等"," ");
-        MutableComponent tpdeny= getClickableContentComp(ColorConstants.RED+"[拒绝]"+ ColorConstants.RESET,"/tpreq false_false_"+fromPlayerId," ");
+        sendChatMessage(toPlayero, ColorConst.ORANGE+fromPlayer.getScoreboardName()+"想要传送到你的身边。");
+        MutableComponent tpyes= getClickableContentComp(ColorConst.BRIGHT_GREEN+"[接受]"+ ColorConst.RESET,"/tpreq true_false_"+fromPlayerId," ");
+        MutableComponent tpyes2= getClickableContentComp(ColorConst.AQUA+"[以仅参观模式接受]"+ ColorConst.RESET,"/tpreq true_true_"+fromPlayerId,"对方将没有破坏权限!");
+        MutableComponent tpwait= getClickableContentComp(ColorConst.GOLD+"[等我一下]"+ ColorConst.RESET,"稍等"," ");
+        MutableComponent tpdeny= getClickableContentComp(ColorConst.RED+"[拒绝]"+ ColorConst.RESET,"/tpreq false_false_"+fromPlayerId," ");
         sendChatMessage(toPlayero,tpyes.append(tpyes2).append(tpwait).append(tpdeny));
         ThreadPool.newThread(()->{
             try {

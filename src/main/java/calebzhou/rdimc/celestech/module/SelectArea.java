@@ -1,7 +1,7 @@
 package calebzhou.rdimc.celestech.module;
 
 import calebzhou.rdimc.celestech.api.CallbackRegisterable;
-import calebzhou.rdimc.celestech.constant.ColorConstants;
+import calebzhou.rdimc.celestech.constant.ColorConst;
 import calebzhou.rdimc.celestech.model.AreaSelection;
 import calebzhou.rdimc.celestech.utils.IdentifierUtils;
 import calebzhou.rdimc.celestech.utils.TextUtils;
@@ -47,11 +47,11 @@ public class SelectArea implements CallbackRegisterable {
         if(left_right){
             //左手
             area.setPos1(blockPos);
-            TextUtils.sendChatMessage(player, ColorConstants.AQUA+"您成功选择了点1："+blockPos.toShortString());
+            TextUtils.sendChatMessage(player, ColorConst.AQUA+"您成功选择了点1："+blockPos.toShortString());
         }else{
             //右手
             area.setPos2(blockPos);
-            TextUtils.sendChatMessage(player, ColorConstants.BRIGHT_GREEN+"您成功选择了点2："+blockPos.toShortString());
+            TextUtils.sendChatMessage(player, ColorConst.BRIGHT_GREEN+"您成功选择了点2："+blockPos.toShortString());
         }
 
         AreaSelection.map.put(pid, area);

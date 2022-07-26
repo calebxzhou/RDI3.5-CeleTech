@@ -18,14 +18,14 @@ public abstract class PlayerConnectServerMixin {
 
     @Shadow @Final protected int maxPlayers;
 
-    @Inject(at = @At("TAIL"),method = "Lnet/minecraft/server/players/PlayerList;placeNewPlayer(Lnet/minecraft/network/Connection;Lnet/minecraft/server/level/ServerPlayer;)V")
+    @Inject(at = @At("TAIL"),method = "placeNewPlayer(Lnet/minecraft/network/Connection;Lnet/minecraft/server/level/ServerPlayer;)V", cancellable = true)
     private void mixConnectEvent(Connection connection, ServerPlayer player,CallbackInfo callbackInfo){
         InteractionResult result = PlayerConnectServerCallback.EVENT.invoker().connect(connection, player);
         if(result == InteractionResult.FAIL)
             callbackInfo.cancel();
     }
 
-    @Inject(at = @At("HEAD"),method = "Lnet/minecraft/server/players/PlayerList;remove(Lnet/minecraft/server/level/ServerPlayer;)V")
+    @Inject(at = @At("HEAD"),method = "remove(Lnet/minecraft/server/level/ServerPlayer;)V", cancellable = true)
     private void mixDis(ServerPlayer player,CallbackInfo callbackInfo){
         InteractionResult result = PlayerDisconnectServerCallback.EVENT.invoker().connect(player);
         if(result == InteractionResult.FAIL)

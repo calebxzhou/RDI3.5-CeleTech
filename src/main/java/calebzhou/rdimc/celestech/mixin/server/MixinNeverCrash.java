@@ -3,6 +3,7 @@ package calebzhou.rdimc.celestech.mixin.server;
 import calebzhou.rdimc.celestech.RDICeleTech;
 import calebzhou.rdimc.celestech.module.ticking.TickInverter;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ChunkMap;
 import net.minecraft.server.level.DistanceManager;
@@ -12,11 +13,13 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.redstone.NeighborUpdater;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.gen.Accessor;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
@@ -94,14 +97,13 @@ class AntiEntityCrash{
         }
     }
 }
-@Mixin(Level.class)
-class AntiBlockUpdateCrash{
-    @Redirect(method = "neighborChanged(Lnet/minecraft/core/BlockPos;Lnet/minecraft/world/level/block/Block;Lnet/minecraft/core/BlockPos;)V",
-            at = @At(value = "INVOKE",
-                    target = "Lnet/minecraft/world/level/block/state/BlockState;neighborChanged(Lnet/minecraft/world/level/Level;Lnet/minecraft/core/BlockPos;Lnet/minecraft/world/level/block/Block;Lnet/minecraft/core/BlockPos;Z)V"))
-    private void updateNeigh(BlockState blockState, Level world, BlockPos pos, Block sourceBlock, BlockPos neighborPos, boolean b){
+@Mixin(ServerLevel.class)
+abstract class AntiBlockUpdateCrash {
+    @Redirect(method = "updateNeighborsAt(Lnet/minecraft/core/BlockPos;Lnet/minecraft/world/level/block/Block;)V",at = @At(value = "INVOKE",
+                    target = "Lnet/minecraft/world/level/redstone/NeighborUpdater;updateNeighborsAtExceptFromFacing(Lnet/minecraft/core/BlockPos;Lnet/minecraft/world/level/block/Block;Lnet/minecraft/core/Direction;)V"))
+    private void updateNeighborsAt(NeighborUpdater instance, BlockPos blockPos, Block block, Direction direction){
         try {
-            blockState.neighborChanged((Level)((Object) this), pos, sourceBlock, neighborPos, false);
+            ((Level)(Object)this).neighborUpdater.updateNeighborsAtExceptFromFacing(blockPos, block, null);
         } catch (Throwable e) {
             RDICeleTech.LOGGER.error(e.getMessage());
         }

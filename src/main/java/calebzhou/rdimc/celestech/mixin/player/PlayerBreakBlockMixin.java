@@ -20,7 +20,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 public abstract class PlayerBreakBlockMixin {
 	@Shadow protected ServerLevel level;
 	@Final @Shadow protected ServerPlayer player;
-	@Inject(at = @At("HEAD"), method = "Lnet/minecraft/server/level/ServerPlayerGameMode;destroyBlock(Lnet/minecraft/core/BlockPos;)Z")
+	@Inject(at = @At("HEAD"), method = "destroyBlock(Lnet/minecraft/core/BlockPos;)Z")
 	private void breakBlock(BlockPos blockPos, CallbackInfoReturnable<Boolean> info) {
 		BlockState blockState = level.getBlockState(blockPos);
 		InteractionResult result = PlayerBreakBlockCallback.EVENT.invoker().interact(player,blockPos,blockState);

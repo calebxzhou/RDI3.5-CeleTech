@@ -3,6 +3,7 @@ package calebzhou.rdimc.celestech.mixin.player;
 import calebzhou.rdimc.celestech.event.PlayerBreakBlockCallback;
 import calebzhou.rdimc.celestech.event.RegisterCommandsCallback;
 import com.mojang.brigadier.CommandDispatcher;
+import net.minecraft.commands.CommandBuildContext;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.world.InteractionResult;
@@ -21,11 +22,14 @@ public abstract class RegisterCommandsMixin {
     private CommandDispatcher<CommandSourceStack> dispatcher;
 
     @Inject(at = @At(
-            value = "INVOKE",target = "Lcom/mojang/brigadier/CommandDispatcher;findAmbiguities(Lcom/mojang/brigadier/AmbiguityConsumer;)V"),
-            method = "Lnet/minecraft/commands/Commands;<init>(Lnet/minecraft/commands/Commands$CommandSelection;)V")
-    private void registerz(Commands.CommandSelection environment,CallbackInfo callbackInfo) {
-        InteractionResult result = RegisterCommandsCallback.EVENT.invoker().register(dispatcher,environment);
+            value = "INVOKE",target = "Lcom/mojang/brigadier/CommandDispatcher;setConsumer(Lcom/mojang/brigadier/ResultConsumer;)V"),
+            method = "<init>(Lnet/minecraft/commands/Commands$CommandSelection;Lnet/minecraft/commands/CommandBuildContext;)V")
+    private void registerz(Commands.CommandSelection commandSelection, CommandBuildContext commandBuildContext, CallbackInfo ci) {
+
+
+
+        InteractionResult result = RegisterCommandsCallback.EVENT.invoker().register(dispatcher,commandSelection);
         if(result == InteractionResult.FAIL)
-            callbackInfo.cancel();
+            ci.cancel();
     }
 }

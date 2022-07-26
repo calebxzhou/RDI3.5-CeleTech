@@ -8,6 +8,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
+//改变服务端协议版本
 @Mixin(DetectedVersion.class)
 public class MixinProtocolVersion {
     @Shadow @Final @Mutable
@@ -20,6 +21,6 @@ public class MixinProtocolVersion {
     )
     private void changeVersion(JsonObject json, CallbackInfo ci){
         protocolVersion=RDICeleTech.VERSION;
-        name="RDI LiberaTorch Engine 3";
+        name="RDI LiberTorch Engine";
     }
 }

@@ -1,7 +1,7 @@
 package calebzhou.rdimc.celestech.utils;
 
 import calebzhou.rdimc.celestech.RDICeleTech;
-import calebzhou.rdimc.celestech.constant.ColorConstants;
+import calebzhou.rdimc.celestech.constant.ColorConst;
 import calebzhou.rdimc.celestech.constant.MessageType;
 import calebzhou.rdimc.celestech.model.ApiResponse;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
@@ -22,12 +22,12 @@ import java.util.*;
 import java.util.function.Function;
 
 public final class TextUtils {
-    public static final String ERROR_PREFIX = ColorConstants.DARK_RED+ColorConstants.BOLD+
-            "错误 >"+ColorConstants.RESET+ColorConstants.RED;
-    public static final String SUCCESS_PREFIX = ColorConstants.DARK_GREEN+ColorConstants.BOLD+
-            "成功 >"+ColorConstants.RESET+ColorConstants.BRIGHT_GREEN;
-    public static final String INFO_PREFIX = ColorConstants.DARK_AQUA+ColorConstants.BOLD+
-            "提示 >"+ColorConstants.RESET+ColorConstants.AQUA;
+    public static final String ERROR_PREFIX = ColorConst.DARK_RED+ ColorConst.BOLD+
+            "错误 >"+ ColorConst.RESET+ ColorConst.RED;
+    public static final String SUCCESS_PREFIX = ColorConst.DARK_GREEN+ ColorConst.BOLD+
+            "成功 >"+ ColorConst.RESET+ ColorConst.BRIGHT_GREEN;
+    public static final String INFO_PREFIX = ColorConst.DARK_AQUA+ ColorConst.BOLD+
+            "提示 >"+ ColorConst.RESET+ ColorConst.AQUA;
     public static void sendPlayerMessage(Player player, Component textComponent, boolean actionBar) {
         if(player==null) return;
         player.displayClientMessage(textComponent, actionBar);

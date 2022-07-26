@@ -1,0 +1,63 @@
+package calebzhou.rdimc.celestech.mixin.player;
+
+import calebzhou.rdimc.celestech.command.impl.ChatRangeCommand;
+import calebzhou.rdimc.celestech.constant.ColorConst;
+import calebzhou.rdimc.celestech.event.PlayerChatCallback;
+import calebzhou.rdimc.celestech.utils.*;
+import net.minecraft.network.chat.ChatType;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.server.network.ServerGamePacketListenerImpl;
+import net.minecraft.server.network.TextFilter;
+import net.minecraft.server.players.PlayerList;
+import net.minecraft.world.InteractionResult;
+import org.spongepowered.asm.mixin.Final;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.Redirect;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+
+import java.util.List;
+import java.util.UUID;
+import java.util.function.Function;
+
+@Mixin(ServerGamePacketListenerImpl.class)
+public abstract class PlayerChatMixin {
+    @Shadow
+    public ServerPlayer player;
+    @Shadow @Final
+    private MinecraftServer server;
+
+
+     @Inject(method= "Lnet/minecraft/server/network/ServerGamePacketListenerImpl;handleChat(Lnet/minecraft/server/network/TextFilter$FilteredText;)V",
+            at=@At(value="HEAD"), cancellable = true)
+    private void handleMessage(TextFilter.FilteredText message, CallbackInfo ci) {
+        InteractionResult result = PlayerChatCallback.EVENT.invoker().call(player, message);
+        if(result == InteractionResult.FAIL) ci.cancel();
+    }
+
+
+    @Redirect(method = "Lnet/minecraft/server/network/ServerGamePacketListenerImpl;handleChat(Lnet/minecraft/server/network/TextFilter$FilteredText;)V",
+    at=@At(value="INVOKE",target = "Lnet/minecraft/server/players/PlayerList;broadcastMessage(Lnet/minecraft/network/chat/Component;Ljava/util/function/Function;Lnet/minecraft/network/chat/ChatType;Ljava/util/UUID;)V"))
+    private void sendAll(PlayerList instance, Component serverMessage, Function<ServerPlayer, Component> playerMessageFactory, ChatType type, UUID sender){
+        String pid = player.getStringUUID();
+        List<String> toSendList = ChatRangeCommand.chatRangeMap.get(pid);
+        //岛内模式
+        if(toSendList!=null){
+            serverMessage = new TextComponent(ColorConst.AQUA+"岛内 >").append(serverMessage);
+            for(String toSend:toSendList){
+                ServerPlayer player = PlayerUtils.getPlayerByUuid(toSend);
+                TextUtils.sendChatMessage(player,serverMessage);
+            }
+            //TextUtils.sendChatMessage(player,serverMessage);
+        }else{
+            instance.broadcastMessage(serverMessage,playerMessageFactory,type,sender);
+        }
+
+    }
+
+}

@@ -6,11 +6,9 @@ import calebzhou.rdimc.celestech.event.impl.PlayerChatEvent;
 import calebzhou.rdimc.celestech.model.VirtualStructure;
 import calebzhou.rdimc.celestech.model.thread.SpawnMobTimer;
 import calebzhou.rdimc.celestech.module.*;
-import calebzhou.rdimc.celestech.module.fasttree.FastTree;
 import calebzhou.rdimc.celestech.module.record.*;
 import calebzhou.rdimc.celestech.utils.NetworkUtils;
 import com.google.common.collect.ImmutableMap;
-import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
@@ -20,40 +18,26 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.entity.npc.VillagerTrades;
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
-import java.lang.reflect.Type;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class RDICeleTech implements ModInitializer {
+    //调试模式
     public static final boolean DEBUG = true;
-    // This logger is used to write text to the console and the log file.
-    // It is considered best practice to use your mod id as the logger's name.
-    // That way, it's clear which mod wrote info, warnings, and errors.
     public static final String MODID ="rdict3";
-    public static final Logger LOGGER = LogManager.getLogger("rdict3");
-
-
+    public static final Logger LOGGER = LogManager.getLogger(MODID);
     public static final ConcurrentHashMap<String,String> tpaMap = new ConcurrentHashMap<>();
     //离线模式玩家列表
-    public static final List<String> offlineModePlayerList = new ArrayList<>();
-    //隐身玩家列表
-    public static final List<String> hidePlayerList = new ArrayList<>();
-
-
     public static final SplittableRandom RANDOM = new SplittableRandom();
     private static MinecraftServer server;
-    public static final int VERSION =0x350;
+    public static final int VERSION =0x35A;
     @Override
     public void onInitialize() {
-        // This code runs as soon as Minecraft is in a mod-load-ready state.
-        // However, some things (like resources) may still be uninitialized.
-        // Proceed with mild caution.
         ServerLifecycleEvents.SERVER_STARTED.register((server) -> {
             RDICeleTech.server = server;
             server.getWorldData().setDifficulty(Difficulty.HARD);

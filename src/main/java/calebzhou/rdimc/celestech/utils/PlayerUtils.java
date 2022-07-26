@@ -2,8 +2,8 @@ package calebzhou.rdimc.celestech.utils;
 
 import calebzhou.rdimc.celestech.RDICeleTech;
 import calebzhou.rdimc.celestech.command.ExperienceException;
-import calebzhou.rdimc.celestech.constant.ColorConstants;
-import calebzhou.rdimc.celestech.constant.WorldConstant;
+import calebzhou.rdimc.celestech.constant.ColorConst;
+import calebzhou.rdimc.celestech.constant.WorldConst;
 import calebzhou.rdimc.celestech.model.CoordLocation;
 import calebzhou.rdimc.celestech.model.PlayerLocation;
 import java.util.EnumSet;
@@ -35,11 +35,11 @@ public class PlayerUtils {
     //添加缓降效果
     public static void addSlowFallEffect(Player player){
         player.addEffect(new MobEffectInstance(MobEffects.SLOW_FALLING,40,1));
-        TextUtils.sendActionMessage(player, ColorConstants.GOLD+"感觉身体轻飘飘的...");
+        TextUtils.sendActionMessage(player, ColorConst.GOLD+"感觉身体轻飘飘的...");
     }
     //传送,通过CoordLocation
     public static void teleport(Player player, CoordLocation location){
-        teleportPlayer(player, WorldConstant.SPAWN_LOCA.getWorld(), location.getPosX(), location.getPosY(), location.getPosZ(), 0f,0f);
+        teleportPlayer(player, WorldConst.SPAWN_LOCA.getWorld(), location.getPosX(), location.getPosY(), location.getPosZ(), 0f,0f);
     }
     public static void teleport(Player player, PlayerLocation location){
         teleportPlayer(player,location.getWorld(), location.getPosX(), location.getPosY(), location.getPosZ(), location.getYaw(),location.getPitch());

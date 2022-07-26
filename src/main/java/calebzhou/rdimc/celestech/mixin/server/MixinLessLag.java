@@ -16,7 +16,7 @@ public class MixinLessLag {
     @Shadow private long nextTickTime;
 
     //设置服务器延迟等级
-    @Inject(method = "Lnet/minecraft/server/MinecraftServer;runServer()V",
+    @Inject(method = "runServer()V",
             at =@At(value = "INVOKE",target = "Lnet/minecraft/server/MinecraftServer;startMetricsRecordingTick()V"))
     private void setServerStatus(CallbackInfo ci){
         long milisBehind = Util.getMillis()-nextTickTime;

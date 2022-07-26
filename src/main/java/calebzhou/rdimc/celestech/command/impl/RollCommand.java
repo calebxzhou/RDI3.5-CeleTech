@@ -3,7 +3,7 @@ package calebzhou.rdimc.celestech.command.impl;
 import calebzhou.rdimc.celestech.RDICeleTech;
 import calebzhou.rdimc.celestech.command.ArgCommand;
 import calebzhou.rdimc.celestech.command.BaseCommand;
-import calebzhou.rdimc.celestech.constant.ColorConstants;
+import calebzhou.rdimc.celestech.constant.ColorConst;
 import calebzhou.rdimc.celestech.constant.MessageType;
 import calebzhou.rdimc.celestech.model.RollPrize;
 import calebzhou.rdimc.celestech.utils.*;
@@ -38,7 +38,7 @@ public class RollCommand extends BaseCommand implements ArgCommand {
                 for(int j=0;j<10;++j){
                     List<String> itemStrListCopy2 = itemStrListCopy;
                     if(rollTimes%2==0)
-                        itemStrListCopy2 = itemStrListCopy.stream().map(as-> ColorConstants.GOLD + as).collect(Collectors.toList());
+                        itemStrListCopy2 = itemStrListCopy.stream().map(as-> ColorConst.GOLD + as).collect(Collectors.toList());
                     Collections.shuffle(itemStrListCopy2);
                     String itemStr = Arrays.toString(itemStrListCopy2.toArray());
                     TextUtils.sendActionMessage(player, itemStr.substring(itemStr.length()/2-10,itemStr.length()/2+10));
@@ -64,14 +64,14 @@ public class RollCommand extends BaseCommand implements ArgCommand {
             }
             TextUtils.sendChatMessage(player,"恭喜您抽中了"+prize.getDescr(), MessageType.SUCCESS);
             if(prize.getProba()<0.1){
-                TextUtils.sendGlobalChatMessage(player.getServer().getPlayerList(), ColorConstants.GOLD+"恭喜"+player.getScoreboardName()+"抽中了"+ColorConstants.BRIGHT_GREEN+ColorConstants.BOLD+prize.getDescr());
+                TextUtils.sendGlobalChatMessage(player.getServer().getPlayerList(), ColorConst.GOLD+"恭喜"+player.getScoreboardName()+"抽中了"+ ColorConst.BRIGHT_GREEN+ ColorConst.BOLD+prize.getDescr());
             }
             prizeSuccessList.add(prize);
         }
         if(prizeSuccessList.isEmpty()){
             TextUtils.sendChatMessage(player,"抽奖结束，您什么都没抽到。",MessageType.INFO);
             if(rollTimes>20){
-                TextUtils.sendGlobalChatMessage(player.getServer().getPlayerList(), ColorConstants.GOLD+player.getScoreboardName()+"抽了"+rollTimes+"次奖，什么都没抽到。");
+                TextUtils.sendGlobalChatMessage(player.getServer().getPlayerList(), ColorConst.GOLD+player.getScoreboardName()+"抽了"+rollTimes+"次奖，什么都没抽到。");
 
             }
             return;
