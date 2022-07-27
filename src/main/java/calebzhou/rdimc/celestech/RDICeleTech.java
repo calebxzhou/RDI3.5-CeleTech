@@ -8,21 +8,15 @@ import calebzhou.rdimc.celestech.model.thread.SpawnMobTimer;
 import calebzhou.rdimc.celestech.module.*;
 import calebzhou.rdimc.celestech.module.record.*;
 import calebzhou.rdimc.celestech.utils.NetworkUtils;
-import com.google.common.collect.ImmutableMap;
-import com.google.gson.Gson;
-import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
-import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
+import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.Difficulty;
-import net.minecraft.world.entity.npc.VillagerTrades;
-import org.apache.commons.io.FileUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -32,6 +26,7 @@ public class RDICeleTech implements ModInitializer {
     public static final String MODID ="rdict3";
     public static final Logger LOGGER = LogManager.getLogger(MODID);
     public static final ConcurrentHashMap<String,String> tpaMap = new ConcurrentHashMap<>();
+    public static final Object2IntOpenHashMap<String> afkMap = new Object2IntOpenHashMap<>();
     //离线模式玩家列表
     public static final SplittableRandom RANDOM = new SplittableRandom();
     private static MinecraftServer server;
@@ -68,39 +63,15 @@ public class RDICeleTech implements ModInitializer {
         new RecordPlayerLogout().registerCallbacks();
         new RecordPlayerUuidName().registerCallbacks();
     }
-    public static void writeFiles() throws IOException{
-        LOGGER.info("写入文件中...");
-        String s = new Gson().toJson(VirtualStructure.STRUCTURE_MAP);
-                LOGGER.info(s);
-        FileUtils.write(VirtualStructure.STRUCTURE_FILE,s, StandardCharsets.UTF_8);
-    }
     public static void loadFiles() throws IOException{
         if(!FileConst.FOLDER.exists()){
             LOGGER.info("没有配置存储文件夹，正在创建！");
             FileConst.FOLDER.mkdir();
         }
-        /*if(!VirtualStructure.STRUCTURE_FILE.exists()){
-            LOGGER.info("没有结构存储文件，正在创建！");
-            VirtualStructure.STRUCTURE_FILE.createNewFile();
-        }
-        LOGGER.info("读入结构文件...");
-        String struJson = FileUtils.readFileToString(VirtualStructure.STRUCTURE_FILE, StandardCharsets.UTF_8);
-        LOGGER.info(struJson);
-        if(!StringUtils.isEmpty(struJson)) {
-            Type type = new TypeToken<HashMap<String,List<VirtualStructure>>>(){}.getType();
-            VirtualStructure.STRUCTURE_MAP= new Gson().fromJson(struJson, type);
-            LOGGER.info("结构文件读入成功！");
-        }else{
-            LOGGER.info("结构文件为空...");
-        }*/
     }
 
     public static MinecraftServer getServer() {
         return server;
-    }
-
-    public static Int2ObjectMap<VillagerTrades.ItemListing[]> copyToFastUtilMap(ImmutableMap<Integer, VillagerTrades.ItemListing[]> map) {
-        return new Int2ObjectOpenHashMap(map);
     }
 
 }

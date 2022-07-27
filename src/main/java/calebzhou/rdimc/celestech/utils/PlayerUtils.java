@@ -32,11 +32,7 @@ public class PlayerUtils {
         else
             player.giveExperienceLevels(-level);
     }
-    //添加缓降效果
-    public static void addSlowFallEffect(Player player){
-        player.addEffect(new MobEffectInstance(MobEffects.SLOW_FALLING,40,1));
-        TextUtils.sendActionMessage(player, ColorConst.GOLD+"感觉身体轻飘飘的...");
-    }
+
     //传送,通过CoordLocation
     public static void teleport(Player player, CoordLocation location){
         teleportPlayer(player, WorldConst.SPAWN_LOCA.getWorld(), location.getPosX(), location.getPosY(), location.getPosZ(), 0f,0f);

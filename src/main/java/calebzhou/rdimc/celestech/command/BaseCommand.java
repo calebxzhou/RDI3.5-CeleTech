@@ -63,11 +63,7 @@ public abstract class BaseCommand {
     }
 
     private void runCommand(Component arg, long t1, ServerPlayer player) {
-        IntSummaryStatistics summaryStats = execTimeMap.get(commandName).stream()
-                .mapToInt((a) -> a)
-                .summaryStatistics();
-        double average = summaryStats.getAverage();
-        LoadingBar.send(player,average);
+
         try {
             if(BaseCommand.this instanceof ArgCommand)
                 if(StringUtils.isEmpty(arg.getString()))

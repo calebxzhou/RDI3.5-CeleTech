@@ -1,4 +1,4 @@
-package calebzhou.rdimc.celestech.module.island.command;
+package calebzhou.rdimc.celestech.command.impl;
 
 import calebzhou.rdimc.celestech.command.BaseCommand;
 import calebzhou.rdimc.celestech.model.ApiResponse;

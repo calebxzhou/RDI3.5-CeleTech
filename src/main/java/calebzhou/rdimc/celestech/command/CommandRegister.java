@@ -1,12 +1,10 @@
 package calebzhou.rdimc.celestech.command;
 
 import calebzhou.rdimc.celestech.command.impl.*;
-import calebzhou.rdimc.celestech.module.protect.ProtectSetCommand;
 import calebzhou.rdimc.celestech.event.RegisterCommandsCallback;
-import calebzhou.rdimc.celestech.module.island.command.*;
-import calebzhou.rdimc.celestech.module.teleport.SpawnCommand;
-import calebzhou.rdimc.celestech.module.teleport.TpaCommand;
-import calebzhou.rdimc.celestech.module.teleport.TpreqCommand;
+import calebzhou.rdimc.celestech.command.impl.SpawnCommand;
+import calebzhou.rdimc.celestech.command.impl.TpaCommand;
+import calebzhou.rdimc.celestech.command.impl.TpreqCommand;
 import calebzhou.rdimc.celestech.utils.IdentifierUtils;
 import java.util.ArrayList;
 import net.minecraft.world.InteractionResult;
