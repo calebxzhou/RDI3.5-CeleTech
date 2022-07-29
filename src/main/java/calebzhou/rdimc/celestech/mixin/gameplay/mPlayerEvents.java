@@ -67,7 +67,7 @@ class mServerConnection {
     private void connect(Connection connection, ServerPlayer player, CallbackInfo callbackInfo){
         //发送天气预报
         ThreadPool.newThread(()-> {
-            TextUtils.sendChatMessage(player, HttpUtils.sendRequest("GET","api_v1_public/getWeather","ip="+player.getIpAddress()));
+            TextUtils.sendChatMessage(player, HttpUtils.sendRequest("GET","misc/weather","ip="+player.getIpAddress()));
             TextUtils.sendChatMessage(player, TimeUtils.getTimeChineseString()+"好,"+player.getDisplayName().getString());
         });
 

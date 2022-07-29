@@ -5,77 +5,57 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.player.Player;
 
 public class PlayerLocation {
-    private double posX;
-    private double posY;
-    private double posZ;
-    private float yaw;
-    private float pitch;
-    private ServerLevel world;
+    public double x;
+    public double y;
+    public double z;
+    public float w;
+    public float p;
+    public ServerLevel world;
 
-    public static PlayerLocation fromPlayer(Player player){
-        return new PlayerLocation(player.getX(), player.getY(), player.getZ(), player.getYRot(), player.getXRot(), (ServerLevel) player.getLevel());
-    }
-    public static PlayerLocation fromBlockPos(BlockPos bpos,ServerLevel dim,float yaw,float pitch){
-        return new PlayerLocation(bpos.getX(), bpos.getY(), bpos.getZ(),yaw,pitch,dim);
-    }
-
-    public PlayerLocation() {
-    }
-
-    public PlayerLocation(double posX, double posY, double posZ, float yaw, float pitch, ServerLevel world) {
-        this.posX = posX;
-        this.posY = posY;
-        this.posZ = posZ;
-        this.yaw = yaw;
-        this.pitch = pitch;
+    public PlayerLocation(double x, double y, double z, float w, float p, ServerLevel world) {
+        this.x = x;
+        this.y = y;
+        this.z = z;
+        this.w = w;
+        this.p = p;
         this.world = world;
     }
 
-    public double getPosX() {
-        return posX;
+    public PlayerLocation(double x, double y, double z) {
+        this.x = x;
+        this.y = y;
+        this.z = z;
+    }
+    public PlayerLocation(String x_comma_y_comma_z){
+        String[] split = x_comma_y_comma_z.split(",");
+        double x = Integer.parseInt(split[0]),y=Integer.parseInt(split[1]),z=Integer.parseInt(split[2]);
+        this.x = x;
+        this.y = y;
+        this.z = z;
     }
 
-    public void setPosX(double posX) {
-        this.posX = posX;
+    public PlayerLocation(Player player){
+        x=player.getX();
+        y=player.getY();
+        z=player.getZ();
+        w=player.getYRot();
+        p=player.getXRot();
+        world= (ServerLevel) player.getLevel();
+    }
+    public PlayerLocation(BlockPos bpos,ServerLevel dim,float yaw,float pitch){
+        x= bpos.getX();
+        y= bpos.getY();
+        z= bpos.getZ();
+        w=yaw;
+        p=pitch;
+        world=dim;
     }
 
-    public double getPosY() {
-        return posY;
+    public String getXyzComma(){
+        return String.format("%s,%s,%s",x,y,z);
+    }
+    public PlayerLocation add(double x1,double y1,double z1){
+        return new PlayerLocation(x+x1,y+y1,z+z1);
     }
 
-    public void setPosY(double posY) {
-        this.posY = posY;
-    }
-
-    public double getPosZ() {
-        return posZ;
-    }
-
-    public void setPosZ(double posZ) {
-        this.posZ = posZ;
-    }
-
-    public float getYaw() {
-        return yaw;
-    }
-
-    public void setYaw(float yaw) {
-        this.yaw = yaw;
-    }
-
-    public float getPitch() {
-        return pitch;
-    }
-
-    public void setPitch(float pitch) {
-        this.pitch = pitch;
-    }
-
-    public ServerLevel getWorld() {
-        return world;
-    }
-
-    public void setWorld(ServerLevel world) {
-        this.world = world;
-    }
 }

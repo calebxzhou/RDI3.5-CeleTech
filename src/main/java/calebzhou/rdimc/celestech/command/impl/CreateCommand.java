@@ -2,18 +2,19 @@ package calebzhou.rdimc.celestech.command.impl;
 
 import calebzhou.rdimc.celestech.command.BaseCommand;
 import calebzhou.rdimc.celestech.constant.MessageType;
-import calebzhou.rdimc.celestech.model.ApiResponse;
-import calebzhou.rdimc.celestech.model.CoordLocation;
-import calebzhou.rdimc.celestech.model.Island;
+import calebzhou.rdimc.celestech.model.PlayerLocation;
 import calebzhou.rdimc.celestech.utils.HttpUtils;
-import calebzhou.rdimc.celestech.utils.PlayerUtils;
+import net.minecraft.client.Minecraft;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.dedicated.DedicatedServer;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.level.block.Blocks;
 
+import static calebzhou.rdimc.celestech.utils.PlayerUtils.*;
 import static calebzhou.rdimc.celestech.utils.TextUtils.sendChatMessage;
-import static calebzhou.rdimc.celestech.utils.TextUtils.sendClickableContent;
 
 public class CreateCommand extends BaseCommand {
     public CreateCommand(String name, int permissionLevel) {
@@ -22,20 +23,19 @@ public class CreateCommand extends BaseCommand {
 
     @Override
     protected void onExecute(ServerPlayer player,String arg) {
-        ApiResponse<Island> response = HttpUtils.sendRequestV2("POST", "v2/island/" + player.getStringUUID());
-        sendChatMessage(player,"即将开始新的旅程，请稍等", MessageType.INFO);
-        if (response.getType().equals("success")) {
-            player.addEffect(new MobEffectInstance(MobEffects.SLOW_FALLING,20*30,1));
-            Island island = response.getData(Island.class);
-            CoordLocation iloca = CoordLocation.fromString(island.getLocation());
-
-            PlayerUtils.teleport(player, iloca.add(0.5, 12, 0.5));
-            PlayerUtils.placeBlock(player.getLevel(), iloca, Blocks.OBSIDIAN.defaultBlockState());
-            PlayerUtils.placeBlock(player.getLevel(), iloca.add(-1,0,0), Blocks.GRASS_BLOCK.defaultBlockState());
-            PlayerUtils.givePlayerInitialKit(player);
-            sendChatMessage(player,"请至公告群中查看教程。",MessageType.INFO);
+        String resp = HttpUtils.sendRequest("post", "island/" + player.getStringUUID());
+        if(resp.equals("fail")){
+            sendChatMessage(player,MessageType.ERROR,"您已经加入了一个岛屿！");
+            return;
         }
-        sendChatMessage(player, response);
+        PlayerLocation loca = new PlayerLocation(resp);
+        loca.world= player.getLevel();
+        player.addEffect(new MobEffectInstance(MobEffects.SLOW_FALLING,20*30,1));
+        teleport(player, loca.add(0.5, 12, 0.5));
+        placeBlock(player.getLevel(), loca, Blocks.OBSIDIAN.defaultBlockState());
+        placeBlock(player.getLevel(), loca.add(-1,0,0), Blocks.GRASS_BLOCK.defaultBlockState());
+        givePlayerInitialKit(player);
+        sendChatMessage(player,MessageType.SUCCESS,"1");
     }
 
 }

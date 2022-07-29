@@ -2,10 +2,9 @@ package calebzhou.rdimc.celestech.command.impl;
 
 import calebzhou.rdimc.celestech.command.BaseCommand;
 import calebzhou.rdimc.celestech.constant.WorldConst;
-import calebzhou.rdimc.celestech.utils.*;
+import calebzhou.rdimc.celestech.utils.PlayerUtils;
+import calebzhou.rdimc.celestech.utils.ServerUtils;
 import net.minecraft.server.level.ServerPlayer;
-
-import static calebzhou.rdimc.celestech.utils.TextUtils.sendChatMessage;
 
 public class SpawnCommand extends BaseCommand {
     public SpawnCommand(String name, int permissionLevel) {

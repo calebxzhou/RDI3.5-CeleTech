@@ -47,7 +47,7 @@ public abstract class MixinAllowOfflineMode{
     private void asd213(Connection instance, Packet<?> packet){
         RDICeleTech.LOGGER.info("开始验证");
         try{
-            String json1 = HttpUtils.sendRequestPublic("GET", "https://api.mojang.com/users/profiles/minecraft/"
+            String json1 = HttpUtils.sendRequestFullUrl("GET", "https://api.mojang.com/users/profiles/minecraft/"
                     + gameProfile.getName());
             RDICeleTech.LOGGER.info(json1);
             JsonObject rootObj = JsonParser.parseString(json1).getAsJsonObject();
@@ -77,7 +77,7 @@ public abstract class MixinAllowOfflineMode{
         RDICeleTech.LOGGER.info("开始正版验证!");
         Thread thread= new Thread(() -> {
             try {
-                String json1 = HttpUtils.sendRequestPublic("GET", "https://api.mojang.com/users/profiles/minecraft/" + gameProfile.getName());
+                String json1 = HttpUtils.sendRequestFullUrl("GET", "https://api.mojang.com/users/profiles/minecraft/" + gameProfile.getName());
                 JsonObject rootObj = JsonParser.parseString(json1).getAsJsonObject();
                 String id = rootObj.get("id").getAsString();
                 //成功获取了id就是正版玩家，进入正版验证

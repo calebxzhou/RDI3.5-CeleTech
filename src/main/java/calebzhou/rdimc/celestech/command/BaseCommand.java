@@ -1,23 +1,18 @@
 package calebzhou.rdimc.celestech.command;
 
 import calebzhou.rdimc.celestech.constant.MessageType;
-import calebzhou.rdimc.celestech.module.LoadingBar;
-import calebzhou.rdimc.celestech.module.island.IslandException;
 import calebzhou.rdimc.celestech.utils.TextUtils;
 import calebzhou.rdimc.celestech.utils.ThreadPool;
 import com.google.common.collect.LinkedHashMultimap;
 import com.google.common.collect.Multimap;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import org.apache.commons.lang3.StringUtils;
-
-import java.awt.*;
-import java.util.IntSummaryStatistics;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.MessageArgument;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
+import org.apache.commons.lang3.StringUtils;
 
 public abstract class BaseCommand {
     //指令执行时间map
@@ -67,23 +62,12 @@ public abstract class BaseCommand {
         try {
             if(BaseCommand.this instanceof ArgCommand)
                 if(StringUtils.isEmpty(arg.getString()))
-                    throw new IslandException("指令参数不可为空！");
+                    TextUtils.sendChatMessage(player,"指令参数不可为空！");
             onExecute(player, arg.getString());
-        }catch (IslandException|AreaException|ExperienceException e){
-            TextUtils.sendChatMessage(player,e.getMessage(), MessageType.ERROR);
-                } catch (NumberFormatException e) {
-                    TextUtils.sendChatMessage(player, "数字格式错误", MessageType.ERROR);
-                /*} catch (IndexOutOfBoundsException e) {
-                    TextUtils.sendChatMessage(player, "参数数量错误", MessageType.ERROR);
-                } catch (IllegalArgumentException e) {
-                    TextUtils.sendChatMessage(player, "参数类型错误", MessageType.ERROR);
-                } catch (NullPointerException e) {
-                    TextUtils.sendChatMessage(player, "目标不能为空！", MessageType.ERROR);*/
-        } catch (Exception e) {
+        }catch (Exception e) {
             e.printStackTrace();
-            TextUtils.sendChatMessage(player, e.getMessage(), MessageType.ERROR);
+            TextUtils.sendChatMessage(player, MessageType.ERROR, e.getMessage());
         }finally {
-
             long t2=System.currentTimeMillis();
             int deltaT = (int) (t2-t1);
             execTimeMap.put(commandName,deltaT);

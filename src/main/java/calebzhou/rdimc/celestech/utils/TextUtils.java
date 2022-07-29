@@ -3,22 +3,19 @@ package calebzhou.rdimc.celestech.utils;
 import calebzhou.rdimc.celestech.RDICeleTech;
 import calebzhou.rdimc.celestech.constant.ColorConst;
 import calebzhou.rdimc.celestech.constant.MessageType;
-import calebzhou.rdimc.celestech.model.ApiResponse;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.minecraft.commands.CommandSourceStack;
-import net.minecraft.network.chat.ClickEvent;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.ComponentUtils;
-import net.minecraft.network.chat.HoverEvent;
-import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.network.chat.*;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientboundSetSubtitleTextPacket;
 import net.minecraft.network.protocol.game.ClientboundSetTitleTextPacket;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.players.PlayerList;
 import net.minecraft.world.entity.player.Player;
-import java.util.*;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
 import java.util.function.Function;
 
 public final class TextUtils {
@@ -36,7 +33,7 @@ public final class TextUtils {
     }
 
 
-    public static void sendChatMessage(Player player, String content, MessageType messageType){
+    public static void sendChatMessage(Player player, MessageType messageType,String content ){
         switch (messageType){
             case ERROR -> sendChatMessage(player,ERROR_PREFIX+content);
             case INFO -> sendChatMessage(player,INFO_PREFIX+content);

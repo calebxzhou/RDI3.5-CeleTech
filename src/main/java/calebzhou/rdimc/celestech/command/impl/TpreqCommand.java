@@ -26,12 +26,12 @@ public class TpreqCommand extends BaseCommand implements ArgCommand {
             String fromPlayerId=split[2];
             ServerPlayer fromPlayer=  PlayerUtils.getPlayerByUuid(fromPlayerId);
             if(toPlayer ==null){
-                sendChatMessage(toPlayer,fromPlayer.getScoreboardName()+"不在线，您无法传送到对方。",MessageType.ERROR);
+                sendChatMessage(fromPlayer,MessageType.ERROR,fromPlayer.getScoreboardName()+"不在线，您无法传送到对方。");
                 return;
             }
             execute(toPlayer,accept,visitOnly,fromPlayer);
         } catch (ArrayIndexOutOfBoundsException e) {
-            sendChatMessage(toPlayer,"命令格式错误!!",MessageType.ERROR);
+            sendChatMessage(toPlayer,MessageType.ERROR,"命令格式错误!!");
         }
     }
 
@@ -42,12 +42,12 @@ public class TpreqCommand extends BaseCommand implements ArgCommand {
             return;
         }
         if(!accept){
-            sendChatMessage(fromPlayer,"对方拒绝了您的传送请求", MessageType.ERROR);
+            sendChatMessage(fromPlayer,MessageType.ERROR,"对方拒绝了您的传送请求");
             tpaMap.remove(fromPlayerId);
             return;
         }
         if(toPlayer.experienceLevel<3){
-            sendChatMessage(toPlayer,"经验不足,您需要3级经验.", MessageType.ERROR);
+            sendChatMessage(toPlayer,MessageType.ERROR,"经验不足,您需要3级经验.");
             return;
         }
         toPlayer.experienceLevel -= 3;

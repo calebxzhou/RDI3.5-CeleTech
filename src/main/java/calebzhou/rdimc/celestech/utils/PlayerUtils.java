@@ -1,12 +1,7 @@
 package calebzhou.rdimc.celestech.utils;
 
 import calebzhou.rdimc.celestech.RDICeleTech;
-import calebzhou.rdimc.celestech.command.ExperienceException;
-import calebzhou.rdimc.celestech.constant.WorldConst;
-import calebzhou.rdimc.celestech.model.CoordLocation;
 import calebzhou.rdimc.celestech.model.PlayerLocation;
-import java.util.EnumSet;
-import java.util.UUID;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.protocol.game.ClientboundPlayerPositionPacket;
 import net.minecraft.server.level.ServerLevel;
@@ -22,20 +17,19 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 
+import java.util.EnumSet;
+import java.util.UUID;
+
 public class PlayerUtils {
-    public static void checkExpLevel(Player player,int level){
+   /* public static void checkExpLevel(Player player,int level){
         if(player.experienceLevel<level)
             throw new ExperienceException("经验不足，需要"+level+"级经验~");
         else
             player.giveExperienceLevels(-level);
-    }
+    }*/
 
-    //传送,通过CoordLocation
-    public static void teleport(Player player, CoordLocation location){
-        teleportPlayer(player, WorldConst.SPAWN_LOCA.getWorld(), location.getPosX(), location.getPosY(), location.getPosZ(), 0f,0f);
-    }
     public static void teleport(Player player, PlayerLocation location){
-        teleportPlayer(player,location.getWorld(), location.getPosX(), location.getPosY(), location.getPosZ(), location.getYaw(),location.getPitch());
+        teleportPlayer(player,location.world, location.x, location.y, location.z, location.w,location.p);
     }
     //传送1到2 玩家
     public static void teleportPlayer(Player player1,Player player2){
@@ -73,8 +67,8 @@ public class PlayerUtils {
         ServerUtils.executeCommandOnServer(cmd);*/
     }
     //在世界放置方块
-    public static void placeBlock(Level world, CoordLocation location, BlockState blockState){
-       world.setBlockAndUpdate(new BlockPos(location.getPosiX(),location.getPosiY(),location.getPosiZ()), blockState);
+    public static void placeBlock(Level world, PlayerLocation location, BlockState blockState){
+       world.setBlockAndUpdate(new BlockPos(location.x,location.y,location.z), blockState);
     }
     //发送新手套装
     public static void givePlayerInitialKit(ServerPlayer player){

@@ -1,11 +1,6 @@
 package calebzhou.rdimc.celestech;
 
 import calebzhou.rdimc.celestech.constant.FileConst;
-import calebzhou.rdimc.celestech.event.impl.PlayerChatEvent;
-import calebzhou.rdimc.celestech.model.VirtualStructure;
-import calebzhou.rdimc.celestech.model.thread.SpawnMobTimer;
-import calebzhou.rdimc.celestech.module.*;
-import calebzhou.rdimc.celestech.module.record.*;
 import calebzhou.rdimc.celestech.utils.NetworkUtils;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import net.fabricmc.api.ModInitializer;
@@ -16,7 +11,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.SplittableRandom;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class RDICeleTech implements ModInitializer {
@@ -42,15 +37,7 @@ public class RDICeleTech implements ModInitializer {
             }
             //new Timer().schedule(new SpawnMobTimer(),0,60*10*1000);
         });
-        new NetworkUtils();
-        loadModules();
-    }
-    private void loadModules(){
-        new AfkDetect().registerNetworking();
-        new CheckIslandOnJoin().registerCallbacks();
-        new Leap().registerNetworking();
-        new SelectArea().registerCallbacks();
-        new Weather().registerCallbacks();
+        new NetworkReceiver();
     }
     public static void loadFiles() throws IOException{
         if(!FileConst.FOLDER.exists()){

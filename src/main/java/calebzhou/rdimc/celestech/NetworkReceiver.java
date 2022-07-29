@@ -45,8 +45,8 @@ public class NetworkReceiver {
                 sendChatMessage(player,"经验不足，需要"+levelNeed+"经验！");
                 return;
             }
-            PlayerUtils.teleport(player, PlayerLocation.fromBlockPos(bpos.offset(0,2,0),player.getLevel(), player.getYRot(), player.getXRot()));
-            sendChatMessage(player,"传送成功！", MessageType.SUCCESS);
+            PlayerUtils.teleport(player, new PlayerLocation(bpos.offset(0,2,0),player.getLevel(), player.getYRot(), player.getXRot()));
+            sendChatMessage(player, MessageType.SUCCESS,"1");
         }));
 
     }

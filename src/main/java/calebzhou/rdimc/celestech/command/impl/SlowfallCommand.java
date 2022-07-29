@@ -18,7 +18,7 @@ public class SlowfallCommand extends BaseCommand {
         try {
             level = Integer.parseInt(arg);
         } catch (NumberFormatException e) {
-            TextUtils.sendChatMessage(player,"数字格式错误!!", MessageType.ERROR);
+            e=null;
             return;
         }
         player.addEffect(new MobEffectInstance(MobEffects.SLOW_FALLING,20*10,level-1));

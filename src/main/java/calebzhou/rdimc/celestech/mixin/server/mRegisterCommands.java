@@ -1,7 +1,7 @@
 package calebzhou.rdimc.celestech.mixin.server;
 
-import calebzhou.rdimc.celestech.command.BaseCommand;
 import calebzhou.rdimc.celestech.CommandList;
+import calebzhou.rdimc.celestech.command.BaseCommand;
 import com.mojang.brigadier.CommandDispatcher;
 import net.minecraft.commands.CommandBuildContext;
 import net.minecraft.commands.CommandSourceStack;

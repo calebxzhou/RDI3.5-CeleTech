@@ -1,16 +1,14 @@
 package calebzhou.rdimc.celestech.command.impl;
 
 import calebzhou.rdimc.celestech.command.BaseCommand;
-import calebzhou.rdimc.celestech.model.ApiResponse;
-import calebzhou.rdimc.celestech.model.CoordLocation;
-import calebzhou.rdimc.celestech.model.Island;
+import calebzhou.rdimc.celestech.constant.MessageType;
+import calebzhou.rdimc.celestech.model.PlayerLocation;
 import calebzhou.rdimc.celestech.utils.HttpUtils;
-import calebzhou.rdimc.celestech.utils.PlayerUtils;
-import java.util.Objects;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 
+import static calebzhou.rdimc.celestech.utils.PlayerUtils.teleport;
 import static calebzhou.rdimc.celestech.utils.TextUtils.sendChatMessage;
 
 public class HomeCommand extends BaseCommand {
@@ -20,15 +18,15 @@ public class HomeCommand extends BaseCommand {
 
     @Override
     protected void onExecute(ServerPlayer player,String arg) {
-        ApiResponse<Island> response = HttpUtils.sendRequestV2("GET","v2/island/"+player.getStringUUID());
-            if(response.isSuccess()){
-                player.addEffect(new MobEffectInstance(MobEffects.SLOW_FALLING,20*2,0));
-                Island island = response.getData(Island.class);
-                PlayerUtils.teleport(player, Objects.requireNonNull(CoordLocation.fromString(Objects.requireNonNull(island).getLocation()).add(0.5,2,0.5)));
-            }
-            sendChatMessage(player,response);
-
-
+        String resp = HttpUtils.sendRequest("post", "island/" + player.getStringUUID());
+        if(resp.equals("fail")){
+            sendChatMessage(player, MessageType.ERROR,"您没加入任何一岛屿！");
+            return;
+        }
+        PlayerLocation loca = new PlayerLocation(resp);
+        player.addEffect(new MobEffectInstance(MobEffects.SLOW_FALLING,20*30,1));
+        teleport(player, loca.add(0.5, 2, 0.5));
+        sendChatMessage(player,MessageType.SUCCESS,"1");
     }
 
 }

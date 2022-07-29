@@ -2,8 +2,7 @@ package calebzhou.rdimc.celestech.command.impl;
 
 import calebzhou.rdimc.celestech.command.BaseCommand;
 import calebzhou.rdimc.celestech.constant.MessageType;
-import calebzhou.rdimc.celestech.model.ApiResponse;
-import calebzhou.rdimc.celestech.model.CoordLocation;
+import calebzhou.rdimc.celestech.model.PlayerLocation;
 import calebzhou.rdimc.celestech.utils.HttpUtils;
 import calebzhou.rdimc.celestech.utils.PlayerUtils;
 import net.minecraft.server.level.ServerPlayer;
@@ -17,11 +16,12 @@ public class LocateCommand extends BaseCommand {
 
     @Override
     protected void onExecute(ServerPlayer player,String arg) {
+
         if(PlayerUtils.getDimensionName(player).equals("minecraft:the_nether")){
-            sendChatMessage(player,"您只能在自己的岛屿上设置传送点.", MessageType.ERROR);
+            sendChatMessage(player,MessageType.ERROR,"您只能在自己的岛屿上设置传送点.");
             return;
         }
-        ApiResponse response = HttpUtils.sendRequestV2("PUT","v2/island/"+player.getStringUUID(),"location="+CoordLocation.fromPlayer(player).toString());
+        String response = HttpUtils.sendRequest("put","island/"+player.getStringUUID(),"xyz="+new PlayerLocation(player).getXyzComma());
 
         sendChatMessage(player,response);
     }

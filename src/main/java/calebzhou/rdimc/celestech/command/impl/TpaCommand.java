@@ -25,20 +25,20 @@ public class TpaCommand extends BaseCommand implements ArgCommand {
         ServerPlayer toPlayero = PlayerUtils.getPlayerByName(toPlayer);
         String toPlayerId = toPlayero.getStringUUID();
         if(fromPlayerId.equals(toPlayerId)){
-            sendChatMessage(fromPlayer,"禁止原地TP", MessageType.ERROR);
+            sendChatMessage(fromPlayer,MessageType.ERROR,"禁止原地TP");
             return;
         }
         if(fromPlayer.experienceLevel<3){
-            sendChatMessage(fromPlayer,"经验不足,您需要3级经验.", MessageType.ERROR);
+            sendChatMessage(fromPlayer,MessageType.ERROR,"经验不足,您需要3级经验.");
             return;
         }
 
         if(tpaMap.containsKey(fromPlayer.getStringUUID())){
-            sendChatMessage(fromPlayer,"您已经发送过传送请求了", MessageType.ERROR);
+            sendChatMessage(fromPlayer,MessageType.ERROR,"您已经发送过传送请求了");
             return ;
         }
         tpaMap.put(fromPlayerId,toPlayerId);
-        sendChatMessage(fromPlayer,"已经发送传送请求，15秒后传送请求将失效。",MessageType.INFO);
+        sendChatMessage(fromPlayer,MessageType.INFO,"已经发送传送请求，15秒后传送请求将失效。");
         fromPlayer.experienceLevel-=3;
         sendChatMessage(toPlayero, ColorConst.ORANGE+fromPlayer.getScoreboardName()+"想要传送到你的身边。");
         MutableComponent tpyes= getClickableContentComp(ColorConst.BRIGHT_GREEN+"[接受]"+ ColorConst.RESET,"/tpreq true_false_"+fromPlayerId," ");

@@ -3,7 +3,6 @@ package calebzhou.rdimc.celestech.module.ticking;
 import calebzhou.rdimc.celestech.ServerStatus;
 import it.unimi.dsi.fastutil.objects.Object2IntArrayMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectArrayMap;
-import java.util.function.Consumer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.Mob;
@@ -14,7 +13,8 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.vehicle.Minecart;
 import net.minecraft.world.level.block.entity.TickingBlockEntity;
 
-import static calebzhou.rdimc.celestech.RDICeleTech.LOGGER;
+import java.util.function.Consumer;
+
 import static calebzhou.rdimc.celestech.ServerStatus.BAD;
 
 public class TickInverter {
