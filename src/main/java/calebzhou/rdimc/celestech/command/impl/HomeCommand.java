@@ -18,7 +18,7 @@ public class HomeCommand extends BaseCommand {
 
     @Override
     protected void onExecute(ServerPlayer player,String arg) {
-        String resp = HttpUtils.sendRequest("post", "island/" + player.getStringUUID());
+        String resp = HttpUtils.sendRequest("get", "island/" + player.getStringUUID());
         if(resp.equals("fail")){
             sendChatMessage(player, MessageType.ERROR,"您没加入任何一岛屿！");
             return;

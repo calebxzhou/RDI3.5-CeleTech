@@ -17,13 +17,15 @@ public class DeleteCommand extends BaseCommand {
     }
 
     protected void onExecute(ServerPlayer player,String arg) {
-        String resp = HttpUtils.sendRequest("post", "island/" + player.getStringUUID());
+        String resp = HttpUtils.sendRequest("delete", "island/" + player.getStringUUID());
         if(resp.equals("1")){
             player.getInventory().clearContent();
             player.kill();
             PlayerUtils.teleport(player, WorldConst.SPAWN_LOCA);
             player.setRespawnPosition(Level.OVERWORLD,new BlockPos(WorldConst.SPAWN_LOCA.x, WorldConst.SPAWN_LOCA.y, WorldConst.SPAWN_LOCA.z),0,true,false);
             sendChatMessage(player, MessageType.SUCCESS,"1");
+        }else{
+            sendChatMessage(player, MessageType.ERROR,"您未拥有空岛！");
         }
         /*int offset=100;
         Vec3i v1 = new Vec3i(location.getPosiX() ,-64, location.getPosiZ());
