@@ -1,6 +1,6 @@
 package calebzhou.rdimc.celestech.module;
 
-import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.protocol.game.ClientboundBossEventPacket;
 import net.minecraft.server.level.ServerBossEvent;
 import net.minecraft.server.level.ServerPlayer;
@@ -25,7 +25,7 @@ public class LoadingBar extends Thread {
 
     @Override
     public void run() {
-        ServerBossEvent bossBar = new ServerBossEvent(new TextComponent("指令运行中"), BossEvent.BossBarColor.BLUE, BossEvent.BossBarOverlay.PROGRESS);
+        ServerBossEvent bossBar = new ServerBossEvent(Component.literal("指令运行中"), BossEvent.BossBarColor.BLUE, BossEvent.BossBarOverlay.PROGRESS);
         bossBar.setProgress(0.0f);
         int percent = 100;
         player.connection.send(ClientboundBossEventPacket.createAddPacket(bossBar));

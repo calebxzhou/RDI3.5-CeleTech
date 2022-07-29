@@ -4,7 +4,7 @@ import calebzhou.rdimc.celestech.utils.HttpUtils;
 import calebzhou.rdimc.celestech.utils.IpUtils;
 import com.mojang.authlib.GameProfile;
 import net.minecraft.network.Connection;
-import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.protocol.login.ServerLoginPacketListener;
 import net.minecraft.network.protocol.login.ServerboundHelloPacket;
 import net.minecraft.server.network.ServerLoginPacketListenerImpl;
@@ -24,7 +24,7 @@ public class Auth {
         if(!response.equals("true")){
             String reason = "请您登录QQ "+qq.charAt(0)+"********"+qq.charAt(qq.length()-1)+"，向RDI机器人发送： r#login="+ IpUtils.ip2addr(ip)+
                     "\n发送成功后，重新连接服务器。";
-            listener.disconnect(new TextComponent(reason));
+            listener.disconnect(Component.literal(reason));
         }
     }
 }

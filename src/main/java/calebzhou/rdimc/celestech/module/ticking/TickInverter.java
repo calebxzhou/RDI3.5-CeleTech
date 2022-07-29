@@ -22,7 +22,7 @@ public class TickInverter {
 
     public void tickEntity(Consumer tickConsumer, Entity ent){
         tickConsumer.accept(ent);
-        if(ServerStatus.getStatus()<BAD)
+        if(ServerStatus.flag<BAD)
             return;
 
 
@@ -66,7 +66,7 @@ public class TickInverter {
             invoker.tick();
             long t2=System.currentTimeMillis();
 
-            if(ServerStatus.getStatus()>=BAD || t2-t1>BLOCKENTITY_TICK_LIMIT){
+            if(ServerStatus.flag>=BAD || t2-t1>BLOCKENTITY_TICK_LIMIT){
                 frozenBlockEntityMap.put(bpos,name);
                 frozenBlockEntityTimeMap.put(bpos,0);
             }

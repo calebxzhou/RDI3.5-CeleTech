@@ -1,6 +1,7 @@
 package calebzhou.rdimc.celestech.utils;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Holder;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
@@ -11,20 +12,21 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.chunk.ChunkAccess;
 import net.minecraft.world.level.chunk.PalettedContainer;
+import net.minecraft.world.level.chunk.PalettedContainerRO;
 import net.minecraft.world.level.levelgen.structure.BoundingBox;
 import net.minecraft.world.level.material.Fluids;
 
 public class WorldUtils {
-    public static void changeBiome(BlockPos bpos,ServerLevel world,Biome biome){
+    /*public static void changeBiome(BlockPos bpos,ServerLevel world,Biome biome){
         ChunkAccess chunk = world.getChunk(bpos.getX()>>4,bpos.getZ()>>4);
         int sectionYindex = (bpos.getY()+64)>>4;
-        PalettedContainer<Biome> biomeArray = chunk.getSection(sectionYindex).getBiomes();
+        PalettedContainer<Holder<Biome>> biomeArray = (PalettedContainer<Holder<Biome>>) chunk.getSection(sectionYindex).getBiomes();
         int mx=bpos.getX()&3;
         int my=bpos.getY()&3;
         int mz=bpos.getZ()&3;
         biomeArray.getAndSet(mx,my,mz, (biome));
         chunk.setUnsaved(true);
-    }
+    }*/
     public static void fill(ServerLevel serverWorld, BoundingBox range, BlockState block){
         for (BlockPos blockPos : BlockPos.betweenClosed(range.minX(), range.minY(), range.minZ(), range.maxX(), range.maxY(), range.maxZ())) {
             serverWorld.setBlockAndUpdate(blockPos, block);

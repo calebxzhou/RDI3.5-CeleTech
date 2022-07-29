@@ -41,7 +41,7 @@ public abstract class BaseCommand {
     }
 
     public LiteralArgumentBuilder<CommandSourceStack> setExecution() {
-        return builder.executes(context -> execute(context.getSource(),new TextComponent(""))).then(Commands.argument("arg", MessageArgument.message())
+        return builder.executes(context -> execute(context.getSource(),Component.literal(""))).then(Commands.argument("arg", MessageArgument.message())
                 .executes(context -> execute(context.getSource(), MessageArgument.getMessage(context, "arg"))));
     }
 

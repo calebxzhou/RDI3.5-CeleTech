@@ -7,13 +7,6 @@ public class ServerStatus {
     public static final int BAD = 4;//mspt 55~70
     public static final int WORST = 5;//mspt 70+
 
-    private static int status =GOOD;
+    public static int flag =GOOD;
 
-    public static int getStatus() {
-        return status;
-    }
-
-    public static void setStatus(int status) {
-        ServerStatus.status = status;
-    }
 }

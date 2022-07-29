@@ -1,6 +1,5 @@
 package calebzhou.rdimc.celestech;
 
-import calebzhou.rdimc.celestech.command.CommandRegister;
 import calebzhou.rdimc.celestech.constant.FileConst;
 import calebzhou.rdimc.celestech.event.impl.PlayerChatEvent;
 import calebzhou.rdimc.celestech.model.VirtualStructure;
@@ -41,11 +40,8 @@ public class RDICeleTech implements ModInitializer {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            new Timer().schedule(new SpawnMobTimer(),0,60*10*1000);
+            //new Timer().schedule(new SpawnMobTimer(),0,60*10*1000);
         });
-        new CommandRegister();
-        new PlayerChatEvent();
-
         new NetworkUtils();
         loadModules();
     }
@@ -55,13 +51,6 @@ public class RDICeleTech implements ModInitializer {
         new Leap().registerNetworking();
         new SelectArea().registerCallbacks();
         new Weather().registerCallbacks();
-        new RecordBlockEvent().registerCallbacks();
-        new RecordPlayerAttackEntity().registerCallbacks();
-        new RecordPlayerChat().registerCallbacks();
-        new RecordPlayerDeath().registerCallbacks();
-        new RecordPlayerLogin().registerCallbacks();
-        new RecordPlayerLogout().registerCallbacks();
-        new RecordPlayerUuidName().registerCallbacks();
     }
     public static void loadFiles() throws IOException{
         if(!FileConst.FOLDER.exists()){

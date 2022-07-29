@@ -2,7 +2,7 @@ package calebzhou.rdimc.celestech.mixin.player;
 
 
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.monster.Creeper;
@@ -21,10 +21,10 @@ public class MixinDeathMessage {
         LivingEntity attacker = deathEntity.getKillCredit();
         String name = deathEntity.getScoreboardName();
         if(deathEntity instanceof Zombie)
-            cir.setReturnValue(new TextComponent(name+"被僵尸挠死了"));
+            cir.setReturnValue(Component.literal(name+"被僵尸挠死了"));
         else if(deathEntity instanceof Creeper)
-            cir.setReturnValue(new TextComponent(name+"被苦力怕崩飞了"));
+            cir.setReturnValue(Component.literal(name+"被苦力怕崩飞了"));
         else if(deathEntity instanceof Ghast)
-            cir.setReturnValue(new TextComponent(name+"被恶魂一炮狙送上了天"));
+            cir.setReturnValue(Component.literal(name+"被恶魂一炮狙送上了天"));
     }
 }

@@ -21,13 +21,13 @@ public class MixinLessLag {
     private void setServerStatus(CallbackInfo ci){
         long milisBehind = Util.getMillis()-nextTickTime;
         if(milisBehind>4000){
-            ServerStatus.setStatus(ServerStatus.WORST);
+            ServerStatus.flag=(ServerStatus.WORST);
         }else if(milisBehind>2200){
-            ServerStatus.setStatus(ServerStatus.BAD);
+            ServerStatus.flag=(ServerStatus.BAD);
         }else if(milisBehind>1500){
-            ServerStatus.setStatus(ServerStatus.GOOD);
+            ServerStatus.flag=(ServerStatus.GOOD);
         }else
-            ServerStatus.setStatus(ServerStatus.BEST);
+            ServerStatus.flag=(ServerStatus.BEST);
     }
 
 

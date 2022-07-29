@@ -6,7 +6,6 @@ import calebzhou.rdimc.celestech.constant.MessageType;
 import calebzhou.rdimc.celestech.model.ApiResponse;
 import calebzhou.rdimc.celestech.utils.HttpUtils;
 import calebzhou.rdimc.celestech.utils.PlayerUtils;
-import calebzhou.rdimc.celestech.utils.ServerUtils;
 import calebzhou.rdimc.celestech.utils.TextUtils;
 import net.minecraft.server.level.ServerPlayer;
 

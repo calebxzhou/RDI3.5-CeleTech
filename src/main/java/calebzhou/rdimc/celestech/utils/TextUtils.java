@@ -11,7 +11,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.ComponentUtils;
 import net.minecraft.network.chat.HoverEvent;
 import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientboundSetSubtitleTextPacket;
 import net.minecraft.network.protocol.game.ClientboundSetTitleTextPacket;
@@ -28,15 +28,14 @@ public final class TextUtils {
             "成功 >"+ ColorConst.RESET+ ColorConst.BRIGHT_GREEN;
     public static final String INFO_PREFIX = ColorConst.DARK_AQUA+ ColorConst.BOLD+
             "提示 >"+ ColorConst.RESET+ ColorConst.AQUA;
+    //给玩家发送信息，在聊天框
+
     public static void sendPlayerMessage(Player player, Component textComponent, boolean actionBar) {
         if(player==null) return;
         player.displayClientMessage(textComponent, actionBar);
     }
 
-    //给玩家发送信息，在聊天框
-    public static void sendChatMessage(Player player, ApiResponse content) {
-        sendChatMessage(player,content.getMessage(),MessageType.valueOf(content.getType().toUpperCase(Locale.ROOT)));
-    }
+
     public static void sendChatMessage(Player player, String content, MessageType messageType){
         switch (messageType){
             case ERROR -> sendChatMessage(player,ERROR_PREFIX+content);
@@ -46,11 +45,11 @@ public final class TextUtils {
 
     }
     public static void sendChatMessage(Player player, String content) {
-        sendChatMessage(player,new TextComponent(content));
+        sendChatMessage(player,Component.literal(content));
     }
 
     public static void sendChatMessage(CommandSourceStack source , String content){
-        source.sendSuccess(new TextComponent(content),false);
+        source.sendSuccess(Component.literal(content),false);
     }
 
     public static void sendChatMessage(Player player, Component textComponent) {
@@ -59,7 +58,7 @@ public final class TextUtils {
 
     //给玩家发送信息，在物品栏上方
     public static void sendActionMessage(Player player, String content) {
-        sendActionMessage(player,new TextComponent(content));
+        sendActionMessage(player,Component.literal(content));
     }
 
     public static void sendActionMessage(Player player, Component textComponent) {
@@ -68,7 +67,7 @@ public final class TextUtils {
 
     //发送全局消息
     public static void sendGlobalChatMessage(PlayerList players, String content) {
-        sendGlobalMessage(players, new TextComponent(content), false);
+        sendGlobalMessage(players, Component.literal(content), false);
     }
     public static void sendGlobalChatMessage(PlayerList  players, Component textComponent) {
         sendGlobalMessage(players, textComponent, false);
@@ -88,21 +87,21 @@ public final class TextUtils {
         sendChatMessage(player,getClickableContentComp(content,commandTodo,hoverContent));
     }
     public static MutableComponent getClickableContentComp(String content, String commandTodo, String hoverContent) {
-        MutableComponent comp=new TextComponent(content);
+        MutableComponent comp=Component.literal(content);
         return comp.withStyle(comp.getStyle()
                 .withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND,commandTodo))
-                .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT,new TextComponent(hoverContent))));
+                .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT,Component.literal(hoverContent))));
     }
     //连接两个text
     public static MutableComponent concatTexts(MutableComponent... texts) {
-        MutableComponent text=new TextComponent("");
+        MutableComponent text=Component.literal("");
         for (MutableComponent mutableText : texts) {
             text.append(mutableText);
         }
         return  text;
     }
     public static MutableComponent concatTexts(String c1, Component c2) {
-        return new TextComponent(c1).append(c2);
+        return Component.literal(c1).append(c2);
     }
 
     //发送标题
@@ -110,7 +109,7 @@ public final class TextUtils {
         ArrayList list = new ArrayList();
         list.add(target);
         try {
-            sendTitle(list,new TextComponent(title),type);
+            sendTitle(list,Component.literal(title),type);
         } catch (CommandSyntaxException e) {
             e.printStackTrace();
         }
