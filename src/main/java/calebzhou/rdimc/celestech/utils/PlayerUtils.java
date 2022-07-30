@@ -42,7 +42,7 @@ public class PlayerUtils {
     //传送到指定位置
     public static void teleportPlayer(Player player, ServerLevel world, double x, double y, double z, float yaw, float pitch){
         if(world==null)
-            world=(ServerLevel) player.getLevel();
+            world=RDICeleTech.getServer().overworld();
         BlockPos blockPos = new BlockPos(x, y, z);
         float warpYaw = Mth.wrapDegrees(yaw);
         float warpPitch = Mth.wrapDegrees(pitch);

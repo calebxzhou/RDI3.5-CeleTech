@@ -11,7 +11,7 @@ public class CommandList {
         commands.add(new DeleteCommand("confirm-delete",0));
         commands.add(new HomeCommand("home",0));
         commands.add(new InviteCommand("invite",0));
-        commands.add(new KickCommand("kick",0));
+        commands.add(new KickCommand("kickout",0));
         commands.add(new LocateCommand("loca",0));
         commands.add(new SlowfallCommand("slowfall",0));
         commands.add(new SpawnCommand("spawn",0));

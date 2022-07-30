@@ -61,10 +61,15 @@ public abstract class BaseCommand {
 
         try {
             if(BaseCommand.this instanceof ArgCommand)
-                if(StringUtils.isEmpty(arg.getString()))
+                if(StringUtils.isEmpty(arg.getString())){
                     TextUtils.sendChatMessage(player,"指令参数不可为空！");
+                    return;
+                }
             onExecute(player, arg.getString());
-        }catch (Exception e) {
+        }catch (NullPointerException e){
+            TextUtils.sendChatMessage(player, MessageType.ERROR,"找不到指令的目标！");
+        }
+        catch (Exception e) {
             e.printStackTrace();
             TextUtils.sendChatMessage(player, MessageType.ERROR, e.getMessage());
         }finally {

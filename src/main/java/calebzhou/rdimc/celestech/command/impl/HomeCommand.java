@@ -1,9 +1,11 @@
 package calebzhou.rdimc.celestech.command.impl;
 
+import calebzhou.rdimc.celestech.RDICeleTech;
 import calebzhou.rdimc.celestech.command.BaseCommand;
 import calebzhou.rdimc.celestech.constant.MessageType;
 import calebzhou.rdimc.celestech.model.PlayerLocation;
 import calebzhou.rdimc.celestech.utils.HttpUtils;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
@@ -24,6 +26,7 @@ public class HomeCommand extends BaseCommand {
             return;
         }
         PlayerLocation loca = new PlayerLocation(resp);
+        loca.world= RDICeleTech.getServer().overworld();
         player.addEffect(new MobEffectInstance(MobEffects.SLOW_FALLING,20*30,1));
         teleport(player, loca.add(0.5, 2, 0.5));
         sendChatMessage(player,MessageType.SUCCESS,"1");

@@ -23,15 +23,19 @@ public class TpaCommand extends BaseCommand implements ArgCommand {
     public void onExecute(ServerPlayer fromPlayer, String toPlayer) {
         String fromPlayerId = fromPlayer.getStringUUID();
         ServerPlayer toPlayero = PlayerUtils.getPlayerByName(toPlayer);
+        if(toPlayero==null){
+            sendChatMessage(fromPlayer,MessageType.ERROR,"对方不在线！");
+            return;
+        }
         String toPlayerId = toPlayero.getStringUUID();
         if(fromPlayerId.equals(toPlayerId)){
             sendChatMessage(fromPlayer,MessageType.ERROR,"禁止原地TP");
             return;
         }
-        if(fromPlayer.experienceLevel<3){
+        /*if(fromPlayer.experienceLevel<3){
             sendChatMessage(fromPlayer,MessageType.ERROR,"经验不足,您需要3级经验.");
             return;
-        }
+        }*/
 
         if(tpaMap.containsKey(fromPlayer.getStringUUID())){
             sendChatMessage(fromPlayer,MessageType.ERROR,"您已经发送过传送请求了");

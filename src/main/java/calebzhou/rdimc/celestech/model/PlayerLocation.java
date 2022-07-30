@@ -54,6 +54,9 @@ public class PlayerLocation {
     public String getXyzComma(){
         return String.format("%s,%s,%s",x,y,z);
     }
+    public PlayerLocation toInt(){
+        return new PlayerLocation((int)x,(int)y,(int)z,(int)w,(int)p,world);
+    }
     public PlayerLocation add(double x1,double y1,double z1){
         return new PlayerLocation(x+x1,y+y1,z+z1);
     }
