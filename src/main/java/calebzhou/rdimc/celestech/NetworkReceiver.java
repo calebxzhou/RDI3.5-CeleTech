@@ -27,8 +27,8 @@ public class NetworkReceiver {
         }));
         //跳舞树
         ServerPlayNetworking.registerGlobalReceiver(NetworkPackets.DANCE_TREE_GROW,((server, player, handler, buf, responseSender) -> {
-            String s = buf.readUtf();
-            BlockPos bpos = BlockPos.of(Long.parseLong(s));
+            long s = buf.readLong();
+            BlockPos bpos = BlockPos.of(s);
             ServerLevel world = player.getLevel();
             Block block = world.getBlockState(bpos).getBlock();
             if(block instanceof SaplingBlock saplingBlock){

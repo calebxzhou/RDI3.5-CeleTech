@@ -9,7 +9,6 @@ import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
-import net.minecraft.commands.arguments.MessageArgument;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import org.apache.commons.lang3.StringUtils;
@@ -35,28 +34,26 @@ public abstract class BaseCommand {
         return builder;
     }
 
-    public LiteralArgumentBuilder<CommandSourceStack> setExecution() {
-        return builder.executes(context -> execute(context.getSource(),Component.literal(""))).then(Commands.argument("arg", MessageArgument.message())
-                .executes(context -> execute(context.getSource(), MessageArgument.getMessage(context, "arg"))));
-    }
+    public abstract LiteralArgumentBuilder<CommandSourceStack> setExecution() ;
+    /*
 
-    protected int execute(CommandSourceStack source, Component arg) throws CommandSyntaxException {
-        long t1=System.currentTimeMillis();
-        ServerPlayer player = source.getPlayerOrException();
-        if(execTimeMap.size()>1024)
-            execTimeMap.clear();
-        if(isAsync){
-            ThreadPool.newThread(()->{
+        protected abstract int execute(CommandSourceStack source, ServerPlayer arg) throws CommandSyntaxException {
+            long t1=System.currentTimeMillis();
+            ServerPlayer player = source.getPlayerOrException();
+            if(execTimeMap.size()>1024)
+                execTimeMap.clear();
+            if(isAsync){
+                ThreadPool.newThread(()->{
+                    runCommand(arg, t1, player);
+
+                });
+            } else{
                 runCommand(arg, t1, player);
+            }
 
-            });
-        } else{
-            runCommand(arg, t1, player);
+            return 1;
         }
-
-        return 1;
-    }
-
+    */
     private void runCommand(Component arg, long t1, ServerPlayer player) {
 
         try {
@@ -78,6 +75,4 @@ public abstract class BaseCommand {
             execTimeMap.put(commandName,deltaT);
         }
     }
-
-    protected abstract void onExecute(ServerPlayer player, String arg);
 }

@@ -12,7 +12,7 @@ import java.net.http.HttpResponse;
 import java.util.Arrays;
 
 public class HttpUtils {
-    private static final String ADDR= RDICeleTech.DEBUG?"http://localhost:26888/":"http://www.davisoft.cn:26888/";
+    private static final String ADDR= RDICeleTech.DEBUG?"http://localhost:26889/":"http://www.davisoft.cn:26889/";
     public static URL getFullUrl(String shortUrl){
         try {
             return new URL(ADDR + shortUrl);
@@ -29,7 +29,7 @@ public class HttpUtils {
     }
     public static String sendRequestFullUrl(String type, String fullUrl, String... params){
         HttpClient client = HttpClient.newHttpClient();
-        HttpRequest.Builder builder = HttpRequest.newBuilder().version(HttpClient.Version.HTTP_2);
+        HttpRequest.Builder builder = HttpRequest.newBuilder()/*.version(HttpClient.Version.HTTP_2)*/;
         switch (type){
 
             case "post" ->

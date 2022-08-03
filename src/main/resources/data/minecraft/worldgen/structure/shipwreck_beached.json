@@ -1,6 +1,6 @@
 {
   "type": "minecraft:shipwreck",
-  "biomes": "minecraft:the_void",
+  "biomes": "minecraft:plains",
   "is_beached": true,
   "spawn_overrides": {},
   "step": "surface_structures"

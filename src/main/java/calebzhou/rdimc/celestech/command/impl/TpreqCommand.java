@@ -1,9 +1,10 @@
 package calebzhou.rdimc.celestech.command.impl;
 
-import calebzhou.rdimc.celestech.command.ArgCommand;
-import calebzhou.rdimc.celestech.command.BaseCommand;
+import calebzhou.rdimc.celestech.command.RdiCommand;
 import calebzhou.rdimc.celestech.constant.MessageType;
 import calebzhou.rdimc.celestech.utils.PlayerUtils;
+import com.mojang.brigadier.builder.LiteralArgumentBuilder;
+import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.GameType;
 
@@ -11,10 +12,15 @@ import static calebzhou.rdimc.celestech.RDICeleTech.tpaMap;
 import static calebzhou.rdimc.celestech.utils.TextUtils.sendChatMessage;
 import static calebzhou.rdimc.celestech.utils.TextUtils.sendClickableContent;
 
-public class TpreqCommand extends BaseCommand implements ArgCommand {
+public class TpreqCommand implements RdiCommand {
+    @Override
+    public String getName() {
+        return "tpreq";
+    }
 
-    public TpreqCommand(String command, int permissionLevel) {
-        super(command, permissionLevel,false);
+    @Override
+    public LiteralArgumentBuilder<CommandSourceStack> getExecution() {
+        return null;
     }
 
     @Override
@@ -63,4 +69,6 @@ public class TpreqCommand extends BaseCommand implements ArgCommand {
 
         tpaMap.remove(fromPlayerId);
     }
+
+
 }

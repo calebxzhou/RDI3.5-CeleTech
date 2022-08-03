@@ -1,6 +1,6 @@
 {
   "type": "minecraft:nether_fossil",
-  "biomes": "minecraft:the_void",
+  "biomes": "minecraft:plains",
   "height": {
     "type": "minecraft:uniform",
     "max_inclusive": {

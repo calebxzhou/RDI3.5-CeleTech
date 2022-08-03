@@ -2,19 +2,26 @@ package calebzhou.rdimc.celestech.command.impl;
 
 import calebzhou.rdimc.celestech.RDICeleTech;
 import calebzhou.rdimc.celestech.command.BaseCommand;
+import calebzhou.rdimc.celestech.command.RdiCommand;
 import calebzhou.rdimc.celestech.utils.MathUtils;
 import calebzhou.rdimc.celestech.utils.ServerUtils;
-import calebzhou.rdimc.celestech.utils.TimeUtils;
+import com.mojang.brigadier.builder.LiteralArgumentBuilder;
+import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.commands.Commands;
 import net.minecraft.server.level.ServerPlayer;
 
 import static calebzhou.rdimc.celestech.utils.TextUtils.sendChatMessage;
 
-public class TpsCommand extends BaseCommand {
-    public TpsCommand(String name, int permissionLevel) {
-        super(name, permissionLevel,false);
-    }
-
+public class TpsCommand implements RdiCommand {
     @Override
+    public String getName() {
+        return "tps";
+    }
+    @Override
+    public LiteralArgumentBuilder<CommandSourceStack> getExecution() {
+        return Commands.literal(getName()).executes(context -> exec(context.getSource().getPlayer()));
+    }
+   /* @Override
     protected void onExecute(ServerPlayer fromPlayer,String arg) {
         tps(fromPlayer);
         list(fromPlayer);
@@ -30,9 +37,9 @@ public class TpsCommand extends BaseCommand {
 
         });
         sendChatMessage(player,"挂机列表:"+(sb.length()==0?"无":sb.toString()));
-    }
+    }*/
 
-    private void tps(ServerPlayer player) {
+    private int exec(ServerPlayer player) {
         double meanTickTime = MathUtils.getAverageValue(RDICeleTech.getServer().tickTimes) * 1.0E-6D;
         double stdTickTime = 120.0;
         double meanTPS = Math.min(1000.0 / meanTickTime, 20);
@@ -60,5 +67,6 @@ public class TpsCommand extends BaseCommand {
                 .average()
                 .orElse(0.0);
         sendChatMessage(player,"微服务延迟 "+sb.toString()+String.format("（平均 %.2f s）",avg/1000.0));
+        return 1;
     }
 }

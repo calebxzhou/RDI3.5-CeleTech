@@ -12,6 +12,7 @@ import net.minecraft.server.network.ServerLoginPacketListenerImpl;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Mutable;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Redirect;
@@ -20,7 +21,7 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 @Mixin(ServerLoginPacketListenerImpl.class)
 public abstract class MixinAllowOfflineMode{
 
-    @Shadow
+    @Shadow @Mutable
     ServerLoginPacketListenerImpl.State state;
     @Shadow
     @Nullable GameProfile gameProfile;
@@ -41,27 +42,32 @@ public abstract class MixinAllowOfflineMode{
         this.state = ServerLoginPacketListenerImpl.State.READY_TO_ACCEPT;
     }*/
 
-    @Redirect(method = "handleHello(Lnet/minecraft/network/protocol/login/ServerboundHelloPacket;)V",
+    @Redirect(method = "handleHello",
             at=@At(target = "Lnet/minecraft/network/Connection;send(Lnet/minecraft/network/protocol/Packet;)V",
                     value = "INVOKE"))
     private void asd213(Connection instance, Packet<?> packet){
-        RDICeleTech.LOGGER.info("开始验证");
-        try{
-            String json1 = HttpUtils.sendRequestFullUrl("GET", "https://api.mojang.com/users/profiles/minecraft/"
-                    + gameProfile.getName());
-            RDICeleTech.LOGGER.info(json1);
-            JsonObject rootObj = JsonParser.parseString(json1).getAsJsonObject();
-            String id = rootObj.get("id").getAsString();
-            //成功获取了id就是正版玩家，进入正版验证
-            RDICeleTech.LOGGER.info("此人是正版 "+id);
-            connection.send(packet);
-        }catch (IllegalStateException|NullPointerException e){
-            RDICeleTech.LOGGER.info(gameProfile.getName()+"不是正版，创建fake profile");
-            gameProfile = createFakeProfile(gameProfile);
-            this.state = ServerLoginPacketListenerImpl.State.READY_TO_ACCEPT;
-        }catch (Exception e){
-            e.printStackTrace();
-        }
+        Thread thread= new Thread(() -> {
+            RDICeleTech.LOGGER.info("开始验证handleHello");
+            try{
+
+                String json1 = HttpUtils.sendRequestFullUrl("GET", "https://api.mojang.com/users/profiles/minecraft/"
+                        + gameProfile.getName());
+                RDICeleTech.LOGGER.info(json1);
+                JsonObject rootObj = JsonParser.parseString(json1).getAsJsonObject();
+                String id = rootObj.get("id").getAsString();
+                //成功获取了id就是正版玩家，进入正版验证
+                RDICeleTech.LOGGER.info("此人是正版 ,UUID="+id);
+                connection.send(packet);
+            }catch (IllegalStateException|NullPointerException e){
+                RDICeleTech.LOGGER.info(gameProfile.getName()+"不是正版，创建fake profile");
+                gameProfile = createFakeProfile(gameProfile);
+                this.state = ServerLoginPacketListenerImpl.State.READY_TO_ACCEPT;
+            }catch (Exception e){
+                e.printStackTrace();
+            }
+
+        });
+        thread.start();
 
 
 
@@ -74,7 +80,7 @@ public abstract class MixinAllowOfflineMode{
             )
     )
     private void asd(Thread instance){
-        RDICeleTech.LOGGER.info("开始正版验证!");
+        RDICeleTech.LOGGER.info("开始正版验证handleKey!");
         Thread thread= new Thread(() -> {
             try {
                 String json1 = HttpUtils.sendRequestFullUrl("GET", "https://api.mojang.com/users/profiles/minecraft/" + gameProfile.getName());

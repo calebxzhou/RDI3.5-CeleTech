@@ -1,6 +1,6 @@
 {
   "type": "minecraft:jigsaw",
-  "biomes": "minecraft:the_void",
+  "biomes": "minecraft:plains",
   "max_distance_from_center": 116,
   "size": 7,
   "spawn_overrides": {

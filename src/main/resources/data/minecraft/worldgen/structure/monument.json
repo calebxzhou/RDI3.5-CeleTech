@@ -1,6 +1,6 @@
 {
   "type": "minecraft:ocean_monument",
-  "biomes": "minecraft:the_void",
+  "biomes": "minecraft:plains",
   "spawn_overrides": {
     "axolotls": {
       "bounding_box": "full",

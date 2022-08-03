@@ -1,33 +1,42 @@
 package calebzhou.rdimc.celestech.command.impl;
 
-import calebzhou.rdimc.celestech.command.ArgCommand;
 import calebzhou.rdimc.celestech.command.BaseCommand;
+import calebzhou.rdimc.celestech.command.RdiCommand;
 import calebzhou.rdimc.celestech.constant.MessageType;
 import calebzhou.rdimc.celestech.utils.HttpUtils;
-import calebzhou.rdimc.celestech.utils.PlayerUtils;
 import calebzhou.rdimc.celestech.utils.TextUtils;
+import calebzhou.rdimc.celestech.utils.ThreadPool;
+import com.mojang.brigadier.builder.LiteralArgumentBuilder;
+import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.commands.Commands;
+import net.minecraft.commands.arguments.EntityArgument;
 import net.minecraft.server.level.ServerPlayer;
 
 import static calebzhou.rdimc.celestech.utils.TextUtils.sendChatMessage;
 
-public class KickCommand extends BaseCommand implements ArgCommand {
-    public KickCommand(String name, int permissionLevel) {
-        super(name, permissionLevel,true);
-    }
-
+public class KickCommand implements RdiCommand {
     @Override
-    public void onExecute(ServerPlayer fromPlayer, String kickPlayer) {
-        if(fromPlayer.getScoreboardName().equalsIgnoreCase(kickPlayer)){
+    public String getName() {
+        return "kickout";
+    }
+    public LiteralArgumentBuilder<CommandSourceStack> getExecution() {
+        return Commands.literal(getName()).then(Commands.argument("要踢出的玩家", EntityArgument.player())
+                .executes(context -> exec(context.getSource().getPlayer(), EntityArgument.getPlayer(context, "要踢出的玩家"))));
+    }
+    private int exec(ServerPlayer fromPlayer, ServerPlayer kickPlayer) {
+        if(fromPlayer==kickPlayer){
             TextUtils.sendChatMessage(fromPlayer, MessageType.ERROR,"您不可以踢出自己!!");
-            return;
+            return 0;
         }
-        String response = HttpUtils.sendRequest("delete", "island/crew/" + fromPlayer.getStringUUID()+"/"+PlayerUtils.getPlayerByName(kickPlayer).getStringUUID());
-        if(response.equals("1")){
-            TextUtils.sendChatMessage(PlayerUtils.getPlayerByName(kickPlayer),fromPlayer.getScoreboardName()+"删除了他的岛屿!");
-            sendChatMessage(fromPlayer,MessageType.SUCCESS,"1");
-        }
+        ThreadPool.newThread(() -> {
+            String response = HttpUtils.sendRequest("delete", "island/crew/" + fromPlayer.getStringUUID()+"/"+kickPlayer.getStringUUID());
+            if(response.equals("1")){
+                TextUtils.sendChatMessage(kickPlayer,fromPlayer.getScoreboardName()+"删除了他的岛屿!");
+                sendChatMessage(fromPlayer,MessageType.SUCCESS,"1");
+            }
 
-
+        });
+        return 1;
     }
 
 

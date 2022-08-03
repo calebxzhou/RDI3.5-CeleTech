@@ -1,6 +1,6 @@
 {
   "type": "minecraft:swamp_hut",
-  "biomes": "minecraft:the_void",
+  "biomes": "minecraft:plains",
   "spawn_overrides": {
     "creature": {
       "bounding_box": "piece",
