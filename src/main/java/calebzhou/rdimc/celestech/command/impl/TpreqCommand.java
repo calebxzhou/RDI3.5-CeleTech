@@ -3,8 +3,11 @@ package calebzhou.rdimc.celestech.command.impl;
 import calebzhou.rdimc.celestech.command.RdiCommand;
 import calebzhou.rdimc.celestech.constant.MessageType;
 import calebzhou.rdimc.celestech.utils.PlayerUtils;
+import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.commands.Commands;
+import net.minecraft.commands.arguments.EntityArgument;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.GameType;
 
@@ -20,25 +23,26 @@ public class TpreqCommand implements RdiCommand {
 
     @Override
     public LiteralArgumentBuilder<CommandSourceStack> getExecution() {
-        return null;
+        return Commands.literal(getName()).then(Commands.argument("target", StringArgumentType.string())
+                .executes(context -> exec(context.getSource().getPlayer(), StringArgumentType.getString(context, "target"))));
     }
 
-    @Override
-    public void onExecute(ServerPlayer toPlayer, String arg) {
+    private int exec(ServerPlayer toPlayer, String arg) {
         try {
             String[] split = arg.split("_");
-            boolean accept= Boolean.parseBoolean(split[0]);
-            boolean visitOnly= Boolean.parseBoolean(split[1]);
-            String fromPlayerId=split[2];
-            ServerPlayer fromPlayer=  PlayerUtils.getPlayerByUuid(fromPlayerId);
-            if(toPlayer ==null){
-                sendChatMessage(fromPlayer,MessageType.ERROR,fromPlayer.getScoreboardName()+"不在线，您无法传送到对方。");
-                return;
+            boolean accept = Boolean.parseBoolean(split[0]);
+            boolean visitOnly = Boolean.parseBoolean(split[1]);
+            String fromPlayerId = split[2];
+            ServerPlayer fromPlayer = PlayerUtils.getPlayerByUuid(fromPlayerId);
+            if (toPlayer == null) {
+                sendChatMessage(fromPlayer, MessageType.ERROR, fromPlayer.getScoreboardName() + "不在线，您无法传送到对方。");
+                return 1;
             }
-            execute(toPlayer,accept,visitOnly,fromPlayer);
+            execute(toPlayer, accept, visitOnly, fromPlayer);
         } catch (ArrayIndexOutOfBoundsException e) {
-            sendChatMessage(toPlayer,MessageType.ERROR,"命令格式错误!!");
+            sendChatMessage(toPlayer, MessageType.ERROR, "命令格式错误!!");
         }
+        return 1;
     }
 
     private void execute(ServerPlayer toPlayer, boolean accept, boolean visitOnly, ServerPlayer fromPlayer) {

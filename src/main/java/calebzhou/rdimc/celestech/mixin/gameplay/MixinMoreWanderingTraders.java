@@ -8,8 +8,6 @@ import org.spongepowered.asm.mixin.injection.Constant;
 import org.spongepowered.asm.mixin.injection.ModifyConstant;
 import org.spongepowered.asm.mixin.injection.Redirect;
 
-import java.util.Random;
-
 //更多的流浪商人
 @Mixin(WanderingTraderSpawner.class)
 public abstract class MixinMoreWanderingTraders {

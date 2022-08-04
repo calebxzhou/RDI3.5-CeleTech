@@ -18,11 +18,11 @@ public class MixinSaveBandwidth {
         return null;
     }*/
     //减慢同步时间，原来是20tick一次，改成2000tick一次
-    @ModifyConstant(method = "tickChildren(Ljava/util/function/BooleanSupplier;)V",
+    /*@ModifyConstant(method = "tickChildren(Ljava/util/function/BooleanSupplier;)V",
     constant = @Constant(intValue = 20))
     private int noSyncWorldTime(int constant){
         return 2000;
-    }
+    }*/
     //不更新玩家延迟
     @Redirect(method = "tickChildren(Ljava/util/function/BooleanSupplier;)V",
             at=@At(value = "INVOKE",target = "Lnet/minecraft/server/players/PlayerList;tick()V"))

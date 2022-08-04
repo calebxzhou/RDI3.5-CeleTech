@@ -19,7 +19,7 @@ public class DeleteCommand implements RdiCommand {
 
     @Override
     public String getName() {
-        return "delete";
+        return "island-delete";
     }
 
     @Override

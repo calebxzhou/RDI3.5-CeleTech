@@ -1,6 +1,5 @@
 package calebzhou.rdimc.celestech.command.impl;
 
-import calebzhou.rdimc.celestech.command.BaseCommand;
 import calebzhou.rdimc.celestech.command.RdiCommand;
 import calebzhou.rdimc.celestech.constant.ColorConst;
 import calebzhou.rdimc.celestech.constant.MessageType;

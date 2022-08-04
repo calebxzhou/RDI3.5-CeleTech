@@ -7,41 +7,49 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.mojang.authlib.GameProfile;
 import net.minecraft.network.Connection;
+import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.Packet;
+import net.minecraft.network.protocol.login.ServerboundHelloPacket;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerLoginPacketListenerImpl;
+import org.apache.commons.lang3.Validate;
 import org.jetbrains.annotations.Nullable;
-import org.spongepowered.asm.mixin.Final;
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Mutable;
-import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.*;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Redirect;
 
+import java.util.UUID;
+
+@Mixin(MinecraftServer.class)
+class mAllowOffline1{
+    @Overwrite
+    public boolean usesAuthentication() {
+        return false;
+    }
+}
 //@Mixin(ServerConfigHandler.class)
 @Mixin(ServerLoginPacketListenerImpl.class)
-public abstract class MixinAllowOfflineMode{
+public abstract class mNewLoginProtocol {
+
 
     @Shadow @Mutable
     ServerLoginPacketListenerImpl.State state;
-    @Shadow
-    @Nullable GameProfile gameProfile;
+    @Shadow @Mutable GameProfile gameProfile;
     @Shadow @Final public Connection connection;
 
-    /*@Inject(method = "Lnet/minecraft/server/network/ServerLoginPacketListenerImpl;handleHello(Lnet/minecraft/network/protocol/login/ServerboundHelloPacket;)V",
-    at = @At("TAIL"))
-    private void checkAllowLogin(ServerboundHelloPacket serverboundHelloPacket, CallbackInfo ci){
-        Auth.handleHello((ServerLoginPacketListenerImpl)(Object)this,serverboundHelloPacket);
-    }*/
-
-
-   /* @Overwrite   3.5再用！
+    //格式：姓名@uuid
+    @Overwrite
     public void handleHello(ServerboundHelloPacket serverboundHelloPacket) {
-        Validate.validState(this.state == ServerLoginPacketListenerImpl.State.HELLO, "Unexpected hello packet", new Object[0]);
-        Auth.handleHello((ServerLoginPacketListenerImpl)(Object)this,serverboundHelloPacket);
-        this.gameProfile = new GameProfile(Auth.getNewUuid(gameProfile.getName()),gameProfile.getName());
-        this.state = ServerLoginPacketListenerImpl.State.READY_TO_ACCEPT;
-    }*/
 
+        String nameWithId = serverboundHelloPacket.name();
+        String name = nameWithId.split("@")[0];
+        String uuid = nameWithId.split("@")[1];
+        gameProfile = new GameProfile(UUID.fromString(uuid), name);
+        state = ServerLoginPacketListenerImpl.State.READY_TO_ACCEPT;
+    }
+
+
+/*
     @Redirect(method = "handleHello",
             at=@At(target = "Lnet/minecraft/network/Connection;send(Lnet/minecraft/network/protocol/Packet;)V",
                     value = "INVOKE"))
@@ -99,7 +107,7 @@ public abstract class MixinAllowOfflineMode{
             }
         });
         thread.start();
-    }
+    }*/
     @Shadow
     protected abstract GameProfile createFakeProfile(GameProfile profile);
 

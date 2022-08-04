@@ -12,16 +12,7 @@ import net.minecraft.world.level.levelgen.structure.BoundingBox;
 import net.minecraft.world.level.material.Fluids;
 
 public class WorldUtils {
-    /*public static void changeBiome(BlockPos bpos,ServerLevel world,Biome biome){
-        ChunkAccess chunk = world.getChunk(bpos.getX()>>4,bpos.getZ()>>4);
-        int sectionYindex = (bpos.getY()+64)>>4;
-        PalettedContainer<Holder<Biome>> biomeArray = (PalettedContainer<Holder<Biome>>) chunk.getSection(sectionYindex).getBiomes();
-        int mx=bpos.getX()&3;
-        int my=bpos.getY()&3;
-        int mz=bpos.getZ()&3;
-        biomeArray.getAndSet(mx,my,mz, (biome));
-        chunk.setUnsaved(true);
-    }*/
+
     public static void fill(ServerLevel serverWorld, BoundingBox range, BlockState block){
         for (BlockPos blockPos : BlockPos.betweenClosed(range.minX(), range.minY(), range.minZ(), range.maxX(), range.maxY(), range.maxZ())) {
             serverWorld.setBlockAndUpdate(blockPos, block);

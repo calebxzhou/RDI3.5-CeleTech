@@ -1,7 +1,6 @@
 package calebzhou.rdimc.celestech;
 
 import calebzhou.rdimc.celestech.constant.FileConst;
-import calebzhou.rdimc.celestech.utils.NetworkUtils;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
