@@ -67,7 +67,7 @@ class mServerConnection {
     @Inject(at = @At("TAIL"),method = "placeNewPlayer")
     private void connect(Connection connection, ServerPlayer player, CallbackInfo callbackInfo){
         ThreadPool.newThread(()-> {
-            File pwdFile = new File(FileConst.PASSWORD_FOLDER,player.getStringUUID()+".txt");
+            File pwdFile = PlayerUtils.getPasswordFile(player);
             if(!pwdFile.exists()){
                 TextUtils.sendChatMessage(player, MessageType.INFO,"您的账号数据尚未加密，可能会有丢失风险，建议使用/encrypt指令加密您的游戏数据");
                 ClientDialogUtils.sendPopup(player,"warning","RDI账号安全","建议使用/encrypt指令加密您的游戏数据");

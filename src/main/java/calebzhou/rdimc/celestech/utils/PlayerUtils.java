@@ -1,6 +1,7 @@
 package calebzhou.rdimc.celestech.utils;
 
 import calebzhou.rdimc.celestech.RDICeleTech;
+import calebzhou.rdimc.celestech.constant.FileConst;
 import calebzhou.rdimc.celestech.model.PlayerLocation;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.protocol.game.ClientboundPlayerPositionPacket;
@@ -17,6 +18,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 
+import java.io.File;
 import java.util.EnumSet;
 import java.util.UUID;
 
@@ -27,7 +29,13 @@ public class PlayerUtils {
         else
             player.giveExperienceLevels(-level);
     }*/
-
+    public static File getPasswordFile(ServerPlayer player)
+    {
+        return getPasswordFile(player.getStringUUID());
+    }
+    public static File getPasswordFile(String playerUuid){
+        return  new File(FileConst.PASSWORD_FOLDER,playerUuid+".txt");
+    }
     public static void teleport(Player player, PlayerLocation location){
         teleportPlayer(player,location.world, location.x, location.y, location.z, location.w,location.p);
     }

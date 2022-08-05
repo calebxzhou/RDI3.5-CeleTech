@@ -13,7 +13,7 @@ import org.spongepowered.asm.mixin.injection.ModifyConstant;
 @Mixin(ServerboundHelloPacket.class)
 public class mLoginProtocol {
     @Shadow @Final private String name;
-    private static final int nameLen=64;//给uuid和@符号腾出来空间
+    private static final int nameLen=128;//给uuid和@符号腾出来空间
 
     @ModifyConstant(method = "<init>(Lnet/minecraft/network/FriendlyByteBuf;)V",constant =
     @Constant(intValue = 16))

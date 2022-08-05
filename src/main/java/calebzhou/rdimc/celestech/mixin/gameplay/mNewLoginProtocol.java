@@ -3,6 +3,7 @@ package calebzhou.rdimc.celestech.mixin.gameplay;
 
 import calebzhou.rdimc.celestech.RDICeleTech;
 import calebzhou.rdimc.celestech.utils.HttpUtils;
+import calebzhou.rdimc.celestech.utils.PlayerUtils;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.mojang.authlib.GameProfile;
@@ -12,12 +13,16 @@ import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.login.ServerboundHelloPacket;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerLoginPacketListenerImpl;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.Validate;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.*;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Redirect;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.UUID;
 
 @Mixin(MinecraftServer.class)
@@ -32,6 +37,8 @@ class mAllowOffline1{
 public abstract class mNewLoginProtocol {
 
 
+    @Shadow public abstract void disconnect(Component component);
+
     @Shadow @Mutable
     ServerLoginPacketListenerImpl.State state;
     @Shadow @Mutable GameProfile gameProfile;
@@ -41,9 +48,35 @@ public abstract class mNewLoginProtocol {
     @Overwrite
     public void handleHello(ServerboundHelloPacket serverboundHelloPacket) {
 
-        String nameWithId = serverboundHelloPacket.name();
-        String name = nameWithId.split("@")[0];
-        String uuid = nameWithId.split("@")[1];
+        String nameIdPasswd = serverboundHelloPacket.name();
+        if(!nameIdPasswd.contains("@")){
+            disconnect(Component.literal("登录协议错误1，请更新客户端！"));
+            return;
+        }
+        String[] split = nameIdPasswd.split("@");
+        if(split.length<2){
+            disconnect(Component.literal("登录协议错误2，请更新客户端！"));
+            return;
+        }
+        String name = split[0];
+        String uuid = split[1];
+        File pwdFile = PlayerUtils.getPasswordFile(uuid);
+        //如果存在密码文件，则验证密码
+        if(pwdFile.exists()){
+            String pwd = split[2];
+            String pwdInFile = null;
+            try {
+                pwdInFile = FileUtils.readFileToString(pwdFile, StandardCharsets.UTF_8);
+            } catch (IOException e) {
+                disconnect(Component.literal("无法读取密码文件："+e.getMessage()+"，请联系服主"));
+                return;
+            }
+            if(!pwd.equals(pwdInFile)){
+                disconnect(Component.literal("错误的密钥，无法解密游戏数据！"));
+                return;
+            }
+        }
+
         gameProfile = new GameProfile(UUID.fromString(uuid), name);
         state = ServerLoginPacketListenerImpl.State.READY_TO_ACCEPT;
     }
