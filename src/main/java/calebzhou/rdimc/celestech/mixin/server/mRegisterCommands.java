@@ -29,6 +29,7 @@ public abstract class mRegisterCommands {
         commands.add(new TpreqCommand());
         commands.add(new TpsCommand());
         commands.add(new StruCommand());
+        commands.add(new EncryptCommand());
         //commands.add(new BioCommand());
     }
     @Shadow

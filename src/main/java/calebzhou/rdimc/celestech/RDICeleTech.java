@@ -39,9 +39,13 @@ public class RDICeleTech implements ModInitializer {
         new NetworkReceiver();
     }
     public static void loadFiles() throws IOException{
-        if(!FileConst.FOLDER.exists()){
+        if(!FileConst.MAIN_FOLDER.exists()){
             LOGGER.info("没有配置存储文件夹，正在创建！");
-            FileConst.FOLDER.mkdir();
+            FileConst.MAIN_FOLDER.mkdir();
+        }
+        if(!FileConst.PASSWORD_FOLDER.exists()){
+            LOGGER.info("没有密码存储文件夹，正在创建！");
+            FileConst.PASSWORD_FOLDER.mkdir();
         }
     }
 

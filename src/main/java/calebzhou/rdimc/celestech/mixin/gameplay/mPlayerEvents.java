@@ -1,9 +1,8 @@
 package calebzhou.rdimc.celestech.mixin.gameplay;
 
-import calebzhou.rdimc.celestech.utils.HttpUtils;
-import calebzhou.rdimc.celestech.utils.TextUtils;
-import calebzhou.rdimc.celestech.utils.ThreadPool;
-import calebzhou.rdimc.celestech.utils.TimeUtils;
+import calebzhou.rdimc.celestech.constant.FileConst;
+import calebzhou.rdimc.celestech.constant.MessageType;
+import calebzhou.rdimc.celestech.utils.*;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.Connection;
 import net.minecraft.network.protocol.game.ServerboundChatPacket;
@@ -27,6 +26,8 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
+
+import java.io.File;
 
 //TODO 玩家事件
 @Mixin(ServerPlayer.class)
@@ -62,9 +63,17 @@ class mServerConnection {
 
     @Shadow @Final protected int maxPlayers;
 
-    //连接服务器
+    //连接服务器 连接完成
     @Inject(at = @At("TAIL"),method = "placeNewPlayer")
     private void connect(Connection connection, ServerPlayer player, CallbackInfo callbackInfo){
+        ThreadPool.newThread(()-> {
+            File pwdFile = new File(FileConst.PASSWORD_FOLDER,player.getStringUUID()+".txt");
+            if(!pwdFile.exists()){
+                TextUtils.sendChatMessage(player, MessageType.INFO,"您的账号数据尚未加密，可能会有丢失风险，建议使用/encrypt指令加密您的游戏数据");
+                ClientDialogUtils.sendPopup(player,"warning","RDI账号安全","建议使用/encrypt指令加密您的游戏数据");
+                return;
+            }
+        });
         //发送天气预报
         ThreadPool.newThread(()-> {
             TextUtils.sendChatMessage(player, HttpUtils.sendRequest("GET","misc/weather","ip="+player.getIpAddress()));
