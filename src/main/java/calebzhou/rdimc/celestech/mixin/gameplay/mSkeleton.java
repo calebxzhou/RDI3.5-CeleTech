@@ -10,7 +10,7 @@ import org.spongepowered.asm.mixin.injection.Constant;
 import org.spongepowered.asm.mixin.injection.ModifyConstant;
 
 @Mixin(AbstractSkeleton.class)
-public abstract class MixinSkeleton {
+public abstract class mSkeleton {
     @ModifyConstant(
             method = "reassessWeaponGoal()V",
             constant = @Constant(intValue = 20)

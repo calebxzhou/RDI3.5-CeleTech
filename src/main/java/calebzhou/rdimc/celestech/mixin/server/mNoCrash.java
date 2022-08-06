@@ -21,60 +21,8 @@ import java.util.Iterator;
 import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
 
-@Mixin(MinecraftServer.class)
-public abstract class mNoCrash {
-    @Shadow public abstract void tickServer(BooleanSupplier booleanSupplier);
 
-    //用try-catch包起来服务器运行主体，no crash
-    @Redirect(method = "runServer()V",
-            at = @At(value = "INVOKE", target = "Lnet/minecraft/server/MinecraftServer;tickServer(Ljava/util/function/BooleanSupplier;)V"))
-    private void ticks(MinecraftServer instance, BooleanSupplier shouldKeepTicking){
-        try{
-            tickServer(shouldKeepTicking);
-        }catch (Throwable e){
-            e=null;
-        }
-    }
 
-    private ServerLevel world;
-    @Inject(method = "tickChildren",
-            at = @At(value = "INVOKE", target = "Lnet/minecraft/server/level/ServerLevel;tick(Ljava/util/function/BooleanSupplier;)V"),
-            locals = LocalCapture.CAPTURE_FAILSOFT)
-    private void tickworldInj(BooleanSupplier booleanSupplier, CallbackInfo ci, Iterator var2, ServerLevel serverLevel){
-        world=serverLevel;
-    }
-    @Redirect(
-            method = "tickChildren",
-            at = @At(value = "INVOKE", target = "Lnet/minecraft/server/level/ServerLevel;tick(Ljava/util/function/BooleanSupplier;)V"))
-    private void tickworld(ServerLevel instance, BooleanSupplier shouldKeepTicking){
-        try{
-            world.tick(shouldKeepTicking);
-        }catch (Throwable e){
-            e=null;
-        }
-    }
-}
-@Mixin(ServerChunkCache.class)
-class mNoChunkCrash {
-    @Shadow
-    @Final
-    private DistanceManager distanceManager;
-    @Shadow @Final
-    public ChunkMap chunkMap;
-
-    @Redirect(method = "runDistanceManagerUpdates()Z",
-            at=@At(value = "INVOKE",target = "Lnet/minecraft/server/level/DistanceManager;runAllUpdates(Lnet/minecraft/server/level/ChunkMap;)Z"))
-    private boolean nocrashTick(DistanceManager instance, ChunkMap chunkStorage){
-        try{
-            boolean tick =  this.distanceManager.runAllUpdates(this.chunkMap);
-            return tick;
-        }catch (Throwable t){
-            t = null;
-        }
-        return false;
-    }
-
-}
 @Mixin(Level.class)
 class mNoEntityCrash{
     @Redirect(method = "guardEntityTick(Ljava/util/function/Consumer;Lnet/minecraft/world/entity/Entity;)V",
