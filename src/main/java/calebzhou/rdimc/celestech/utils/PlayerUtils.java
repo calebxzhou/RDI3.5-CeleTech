@@ -34,7 +34,7 @@ public class PlayerUtils {
         return getPasswordFile(player.getStringUUID());
     }
     public static File getPasswordFile(String playerUuid){
-        return  new File(FileConst.PASSWORD_FOLDER,playerUuid+".txt");
+        return  new File(FileConst.getPasswordFolder(),playerUuid+".txt");
     }
     public static void teleport(Player player, PlayerLocation location){
         teleportPlayer(player,location.world, location.x, location.y, location.z, location.w,location.p);

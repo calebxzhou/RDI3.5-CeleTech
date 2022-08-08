@@ -26,26 +26,27 @@ public class RDICeleTech implements ModInitializer {
     public static final int VERSION =0x35A;
     @Override
     public void onInitialize() {
+        try {
+            loadFiles();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         ServerLifecycleEvents.SERVER_STARTED.register((server) -> {
             RDICeleTech.server = server;
             server.getWorldData().setDifficulty(Difficulty.HARD);
-            try {
-                loadFiles();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+
             //new Timer().schedule(new SpawnMobTimer(),0,60*10*1000);
         });
         new NetworkReceiver();
     }
     public static void loadFiles() throws IOException{
-        if(!FileConst.MAIN_FOLDER.exists()){
+        if(!FileConst.getMainFolder().exists()){
             LOGGER.info("没有配置存储文件夹，正在创建！");
-            FileConst.MAIN_FOLDER.mkdir();
+            FileConst.getMainFolder().mkdir();
         }
-        if(!FileConst.PASSWORD_FOLDER.exists()){
+        if(!FileConst.getPasswordFolder().exists()){
             LOGGER.info("没有密码存储文件夹，正在创建！");
-            FileConst.PASSWORD_FOLDER.mkdir();
+            FileConst.getPasswordFolder().mkdir();
         }
     }
 

@@ -23,7 +23,7 @@ public class MixinGhast {
     //50血
     @Overwrite
     public static AttributeSupplier.Builder createAttributes() {
-        return Mob.createMobAttributes().add(Attributes.MAX_HEALTH, 50.0).add(Attributes.FOLLOW_RANGE, 100.0);
+        return Mob.createMobAttributes().add(Attributes.MAX_HEALTH, 100.0).add(Attributes.FOLLOW_RANGE, 100.0);
     }
     //生成概率x4
     @Overwrite

@@ -23,6 +23,6 @@ public class MixinWitch {
     @ModifyConstant(method = "Lnet/minecraft/world/entity/monster/Witch;registerGoals()V",
             constant = @Constant(intValue = 60))
     private int intervalMinus(int constant){
-        return 30;
+        return 5;
     }
 }

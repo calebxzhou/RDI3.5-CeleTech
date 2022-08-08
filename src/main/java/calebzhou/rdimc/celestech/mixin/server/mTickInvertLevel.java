@@ -10,6 +10,7 @@ import net.minecraft.server.level.DistanceManager;
 import net.minecraft.server.level.ServerChunkCache;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.RandomSource;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.TickingBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
@@ -161,18 +162,22 @@ class mTickInvertServer {
             world.tick(shouldKeepTicking);
         }catch (Throwable e){
             RDICeleTech.LOGGER.error("tick world错误"+e.getCause()+e.getMessage());
-
+            e.printStackTrace();
         }
     }
 }
 @Mixin(ServerLevel.class)
+abstract
 class mTickInvertServerLevel{
+    @Shadow protected abstract void tickPassenger(Entity entity, Entity entity2);
+
     @Redirect(method = "tickBlock",at = @At(value = "INVOKE",target = "Lnet/minecraft/world/level/block/state/BlockState;tick(Lnet/minecraft/server/level/ServerLevel;Lnet/minecraft/core/BlockPos;Lnet/minecraft/util/RandomSource;)V"))
     private void tickBlock(BlockState blockState, ServerLevel serverLevel, BlockPos blockPos, RandomSource randomSource){
         try {
             blockState.tick((ServerLevel) (Object)this, blockPos, ((Level)(Object)this).random);
         } catch (Exception e) {
             RDICeleTech.LOGGER.error("在"+blockPos.toShortString()+"tick block错误"+e.getCause()+e.getMessage());
+            e.printStackTrace();
         }
 
     }
@@ -182,6 +187,27 @@ class mTickInvertServerLevel{
             fluidState.tick((ServerLevel) (Object)this, blockPos );
         } catch (Exception e) {
             RDICeleTech.LOGGER.error("在"+blockPos.toShortString()+"tick fluid错误"+e.getCause()+e.getMessage());
+            e.printStackTrace();
+        }
+
+    }
+    @Redirect(method = "tickNonPassenger",at = @At(value = "INVOKE",target = "Lnet/minecraft/world/entity/Entity;tick()V"))
+    private void tickEntity(Entity entity){
+        try {
+            entity.tick();
+        } catch (Exception e) {
+            RDICeleTech.LOGGER.error("在"+entity.blockPosition().toShortString()+"tick entity错误"+e.getCause()+e.getMessage());
+            e.printStackTrace();
+        }
+
+    }
+    @Redirect(method = "tickNonPassenger",at = @At(value = "INVOKE",target = "Lnet/minecraft/server/level/ServerLevel;tickPassenger(Lnet/minecraft/world/entity/Entity;Lnet/minecraft/world/entity/Entity;)V"))
+    private void tickPassengerR(ServerLevel serverLevel, Entity entity, Entity entity2){
+        try {
+            tickPassenger(entity, entity2);
+        } catch (Exception e) {
+            RDICeleTech.LOGGER.error("在"+entity.blockPosition().toShortString()+"tick entity Passenger错误"+e.getCause()+e.getMessage());
+            e.printStackTrace();
         }
 
     }

@@ -50,7 +50,7 @@ public class EncryptCommand implements RdiCommand {
         }
         ThreadPool.newThread(()->{
             try {
-            File pwdFile = new File(FileConst.PASSWORD_FOLDER,player.getStringUUID()+".txt");
+            File pwdFile = new File(FileConst.getPasswordFolder(),player.getStringUUID()+".txt");
             if(!pwdFile.exists()) {
                 TextUtils.sendChatMessage(player, MessageType.INFO,"正在加密账号数据....");
                 pwdFile.createNewFile();
