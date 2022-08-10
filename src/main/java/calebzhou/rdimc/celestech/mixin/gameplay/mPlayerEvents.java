@@ -1,5 +1,6 @@
 package calebzhou.rdimc.celestech.mixin.gameplay;
 
+import calebzhou.rdimc.celestech.RDICeleTech;
 import calebzhou.rdimc.celestech.constant.FileConst;
 import calebzhou.rdimc.celestech.constant.MessageType;
 import calebzhou.rdimc.celestech.utils.*;
@@ -86,6 +87,7 @@ class mServerConnection {
     //断开服务器
     @Inject(at = @At("HEAD"),method = "remove")
     private void disconnect(ServerPlayer player,CallbackInfo callbackInfo){
+        RDICeleTech.getServer().saveEverything(true, true, true);
     }
 }
 //玩家死亡

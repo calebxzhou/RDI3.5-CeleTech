@@ -27,12 +27,16 @@ public class NetworkReceiver {
         }));
         //跳舞树
         ServerPlayNetworking.registerGlobalReceiver(NetworkPackets.DANCE_TREE_GROW,((server, player, handler, buf, responseSender) -> {
-            long s = buf.readLong();
-            BlockPos bpos = BlockPos.of(s);
-            ServerLevel world = player.getLevel();
-            Block block = world.getBlockState(bpos).getBlock();
-            if(block instanceof SaplingBlock saplingBlock){
-                saplingBlock.performBonemeal(world,player.getRandom(),bpos,world.getBlockState(bpos));
+            try {
+                long s = buf.readLong();
+                BlockPos bpos = BlockPos.of(s);
+                ServerLevel world = player.getLevel();
+                Block block = world.getBlockState(bpos).getBlock();
+                if(block instanceof SaplingBlock saplingBlock){
+                    saplingBlock.performBonemeal(world,player.getRandom(),bpos,world.getBlockState(bpos));
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
             }
         }));
         //隔空跳跃

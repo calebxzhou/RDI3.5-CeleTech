@@ -12,6 +12,11 @@ import java.util.Map;
 import java.util.function.Predicate;
 
 public class ServerUtils {
+    public static void broadcastChatMessage(String msg){
+        for (ServerPlayer player : RDICeleTech.getServer().getPlayerList().getPlayers()) {
+            TextUtils.sendChatMessage(player,msg);
+        }
+    }
     public static final List<Integer> httpHistoryDelayList = new ArrayList<>();
     public static double getMillisecondPerTick(){
         return MathUtils.getAverageValue(RDICeleTech.getServer().tickTimes) * 1.0E-6D;

@@ -1,15 +1,18 @@
 package calebzhou.rdimc.celestech.module.ticking;
 
 import calebzhou.rdimc.celestech.ServerStatus;
+import calebzhou.rdimc.celestech.utils.ServerUtils;
 import it.unimi.dsi.fastutil.objects.Object2IntArrayMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectArrayMap;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.animal.Animal;
+import net.minecraft.world.entity.decoration.ArmorStand;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.npc.Villager;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.vehicle.Boat;
 import net.minecraft.world.entity.vehicle.Minecart;
 import net.minecraft.world.level.block.entity.TickingBlockEntity;
 
@@ -20,12 +23,23 @@ import static calebzhou.rdimc.celestech.ServerStatus.BAD;
 public class TickInverter {
     public static final TickInverter INSTANCE= new TickInverter();
 
+    public static void handleEntityException(Exception ex,Entity entity,String msg){
+        ServerUtils.broadcastChatMessage("在"+entity.toString()+"tick entity错误！"+ex+"原因："+msg+ex.getCause()+"。已经强制删除！");
+        ex.printStackTrace();
+        if(!(ex instanceof NullPointerException) ){
+            entity.discard();
+            entity=null;
+        }
+    }
     public void tickEntity(Consumer tickConsumer, Entity ent){
-        tickConsumer.accept(ent);
+        try {
+            tickConsumer.accept(ent);
+        }  catch(Exception e) {
+            TickInverter.handleEntityException(e,ent,"4");
+        }
+
         if(ServerStatus.flag<BAD)
             return;
-
-
 
         boolean remove = true;
         if(ent instanceof Minecart || ent instanceof Player
@@ -40,6 +54,14 @@ public class TickInverter {
             if(mobEnt.isPersistenceRequired())
                 remove=false;
         }
+        else if(ent instanceof ArmorStand){
+            remove=false;
+        }
+        else if(ent instanceof Boat){
+            remove=false;
+        }
+
+
         if(remove)
             ent.remove(Entity.RemovalReason.DISCARDED);
 
