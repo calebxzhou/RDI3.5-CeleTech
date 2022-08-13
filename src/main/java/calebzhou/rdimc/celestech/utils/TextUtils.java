@@ -46,12 +46,16 @@ public final class TextUtils {
     }
 
     public static void sendChatMessage(CommandSourceStack source , String content){
-        source.sendSuccess(Component.literal(content),false);
+        sendChatMessage(source,Component.literal(content));
     }
 
     public static void sendChatMessage(Player player, Component textComponent) {
         sendPlayerMessage(player, textComponent, false);
     }
+    public static void sendChatMessage(CommandSourceStack player, Component textComponent) {
+        player.sendSuccess( textComponent,false);
+    }
+
 
     //给玩家发送信息，在物品栏上方
     public static void sendActionMessage(Player player, String content) {

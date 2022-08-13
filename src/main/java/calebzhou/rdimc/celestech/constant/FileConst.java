@@ -11,6 +11,9 @@ public class FileConst {
     public static File getPasswordFolder(){
         return new File(getMainFolder(), "password");
     }
+    public static File getHwSpecFolder(){
+        return new File(getMainFolder(), "hwspec");
+    }
 
 
 }

@@ -15,10 +15,11 @@ import net.minecraft.world.level.block.entity.ChestBlockEntity;
 import net.minecraft.world.level.levelgen.structure.BoundingBox;
 
 import java.util.ArrayList;
+import java.util.stream.IntStream;
 
 //死亡物品随机掉落
 public class DeathRandomDrop {
-    private void handleDeath(ServerPlayer player){
+    public static void handleDeath(ServerPlayer player){
         int dropSlotAmount;
         if(PlayerUtils.getDimensionName(player).equals("minecraft:the_end")){
             dropSlotAmount=35;
@@ -27,23 +28,27 @@ public class DeathRandomDrop {
         }else{
             dropSlotAmount=7;
         }
-        boolean isSetChestSuccessful;
+        //boolean isSetChestSuccessful;
         Level world=player.getLevel();
-        BlockPos chestPos = player.blockPosition();
+        /*BlockPos chestPos = player.blockPosition();
         if(new BoundingBox(-100,-64,-100,100,320,100).isInside(new Vec3i(chestPos.getX(), chestPos.getY(), chestPos.getZ())))
             isSetChestSuccessful = false;
         else
-            isSetChestSuccessful = world.setBlockAndUpdate(chestPos, Blocks.CHEST.defaultBlockState());
+            isSetChestSuccessful = world.setBlockAndUpdate(chestPos, Blocks.CHEST.defaultBlockState());*/
         ArrayList<ItemStack> dropItemList = new ArrayList<>();
-        for(int i=0;i<dropSlotAmount;i++){
-            int ran= RDICeleTech.RANDOM.nextInt(1,35);
-            ItemStack stack2Drop = player.getInventory().getItem(ran);
-            if(stack2Drop.isEmpty() || stack2Drop.getItem() == Items.AIR)
-                continue;
-            dropItemList.add(stack2Drop);
-            player.getInventory().removeItem(stack2Drop);
-        }
-        BlockEntity chest = world.getBlockEntity(chestPos);
+        IntStream
+                .range(0, dropSlotAmount)
+                .map(i -> RDICeleTech.RANDOM.nextInt(1, 35))
+                .mapToObj(ran -> player.getInventory().getItem(ran))
+                .filter(stack2Drop -> !stack2Drop.isEmpty() && stack2Drop.getItem() != Items.AIR)
+                .forEach(stack2Drop -> {
+                    //没有标签的东西才会掉落
+                    if(!stack2Drop.hasTag()){
+                        dropItemList.add(stack2Drop);
+                        player.getInventory().removeItem(stack2Drop);
+                    }
+        });
+       /* BlockEntity chest = world.getBlockEntity(chestPos);
 
         if(chest instanceof ChestBlockEntity chs && chest!=null){
             isSetChestSuccessful = true;
@@ -54,10 +59,10 @@ public class DeathRandomDrop {
             isSetChestSuccessful = false;
         }
 
-        if(!isSetChestSuccessful){
+        if(!isSetChestSuccessful){*/
             dropItemList.forEach(stack2Drop -> world.addFreshEntity(new ItemEntity(world,player.getX()+0.5f,
                     player.getY()+1.1f,player.getZ()+0.5f,
                     stack2Drop)));
-        }
+       // }
     }
 }

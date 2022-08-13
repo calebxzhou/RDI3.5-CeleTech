@@ -10,12 +10,15 @@ import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Shadow;
 
 @Mixin(IronGolem.class)
-public abstract class MixinIronGolem {
+public abstract class mIronGolem {
 
     //铁傀儡增加血量
     @Overwrite
     public static AttributeSupplier.Builder createAttributes() {
-        return Mob.createMobAttributes().add(Attributes.MAX_HEALTH, 200.0).add(Attributes.MOVEMENT_SPEED, 0.4).add(Attributes.KNOCKBACK_RESISTANCE, 2.0).add(Attributes.ATTACK_DAMAGE, 15.0);
+        return Mob.createMobAttributes().add(Attributes.MAX_HEALTH, 200.0)
+                .add(Attributes.MOVEMENT_SPEED, 0.6)
+                .add(Attributes.KNOCKBACK_RESISTANCE, 2.0)
+                .add(Attributes.ATTACK_DAMAGE, 15.0);
     }
     //什么都攻击
     @Overwrite
@@ -23,7 +26,5 @@ public abstract class MixinIronGolem {
         return true;
     }
 
-    @Shadow
-    public abstract boolean isPlayerCreated();
 
 }

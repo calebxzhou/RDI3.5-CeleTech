@@ -16,7 +16,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 //提高弓箭的杀伤力
 @Mixin(AbstractArrow.class)
 public abstract class
-MixinArrowDamangeUp {
+mArrowDamangeUp {
     @Shadow @Mutable
     private int knockback = 1;
 

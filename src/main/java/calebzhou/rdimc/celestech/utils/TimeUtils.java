@@ -26,11 +26,7 @@ public class TimeUtils {
             charTime = "晚上";
         return charTime;
     }
-    public static String secondsToMinute(int seconds,String split1,String split2){
-        int min = seconds / 60;
-        int sec = seconds - (min*60);
-        return String.format("%s%s%s%s", min,split1, sec,split2);
-    }
+
     public static String getFormattedDateTime(LocalDateTime dateTime){
         DateTimeFormatter myFormatObj = DateTimeFormatter.ofPattern("yyyy年MM月dd日 E HH:mm:ss");
         String formattedDateTime = dateTime.format(myFormatObj).replace("Mon", "周一")

@@ -1,10 +1,12 @@
-package calebzhou.rdimc.celestech.module.ticking;
+package calebzhou.rdimc.celestech.module;
 
+import calebzhou.rdimc.celestech.RDICeleTech;
 import calebzhou.rdimc.celestech.ServerStatus;
 import calebzhou.rdimc.celestech.utils.ServerUtils;
 import it.unimi.dsi.fastutil.objects.Object2IntArrayMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectArrayMap;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Registry;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.animal.Animal;
@@ -42,8 +44,12 @@ public class TickInverter {
             return;
 
         boolean remove = true;
-        if(ent instanceof Minecart || ent instanceof Player
-                || ent instanceof Villager || ent instanceof Animal){
+        if(ent instanceof Minecart
+                || ent instanceof Player
+                || ent instanceof Villager
+                || ent instanceof Animal
+        || ent instanceof ArmorStand
+        || ent instanceof Boat){
             remove=false;
         }
         else if(ent instanceof ItemEntity ite){
@@ -53,17 +59,14 @@ public class TickInverter {
         else if(ent instanceof Mob mobEnt) {
             if(mobEnt.isPersistenceRequired())
                 remove=false;
-        }
-        else if(ent instanceof ArmorStand){
+        }else if(Registry.ENTITY_TYPE.getKey(ent.getType()).getNamespace().equals("botania"))
             remove=false;
-        }
-        else if(ent instanceof Boat){
-            remove=false;
-        }
 
 
-        if(remove)
+        if(remove){
+            RDICeleTech.LOGGER.info("即将清除：{}",ent.toString());
             ent.remove(Entity.RemovalReason.DISCARDED);
+        }
 
     }
 
