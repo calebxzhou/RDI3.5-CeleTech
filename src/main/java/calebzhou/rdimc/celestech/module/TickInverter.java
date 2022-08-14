@@ -10,13 +10,17 @@ import net.minecraft.core.Registry;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.animal.Animal;
+import net.minecraft.world.entity.animal.IronGolem;
+import net.minecraft.world.entity.animal.SnowGolem;
 import net.minecraft.world.entity.decoration.ArmorStand;
+import net.minecraft.world.entity.decoration.ItemFrame;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.npc.Villager;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.vehicle.Boat;
 import net.minecraft.world.entity.vehicle.Minecart;
 import net.minecraft.world.level.block.entity.TickingBlockEntity;
+import org.apache.http.client.methods.HttpPost;
 
 import java.util.function.Consumer;
 
@@ -33,39 +37,41 @@ public class TickInverter {
             entity=null;
         }
     }
-    public void tickEntity(Consumer tickConsumer, Entity ent){
+    public void tickEntity(Consumer tickConsumer, Entity entity){
         try {
-            tickConsumer.accept(ent);
+            tickConsumer.accept(entity);
         }  catch(Exception e) {
-            TickInverter.handleEntityException(e,ent,"4");
+            TickInverter.handleEntityException(e,entity,"4");
         }
 
         if(ServerStatus.flag<BAD)
             return;
 
         boolean remove = true;
-        if(ent instanceof Minecart
-                || ent instanceof Player
-                || ent instanceof Villager
-                || ent instanceof Animal
-        || ent instanceof ArmorStand
-        || ent instanceof Boat){
+        if(entity instanceof Minecart
+                || entity instanceof Player
+                || entity instanceof Villager
+                || entity instanceof Animal
+        || entity instanceof ArmorStand
+        || entity instanceof Boat
+                || entity instanceof ItemFrame
+        || entity instanceof IronGolem
+        || entity instanceof SnowGolem){
             remove=false;
         }
-        else if(ent instanceof ItemEntity ite){
+        else if(entity instanceof ItemEntity ite){
             if(ite.getItem().hasTag())
                 remove=false;
         }
-        else if(ent instanceof Mob mobEnt) {
+        else if(entity instanceof Mob mobEnt) {
             if(mobEnt.isPersistenceRequired())
                 remove=false;
-        }else if(Registry.ENTITY_TYPE.getKey(ent.getType()).getNamespace().equals("botania"))
+        }else if(Registry.ENTITY_TYPE.getKey(entity.getType()).getNamespace().equals("botania"))
             remove=false;
 
-
         if(remove){
-            RDICeleTech.LOGGER.info("即将清除：{}",ent.toString());
-            ent.remove(Entity.RemovalReason.DISCARDED);
+            RDICeleTech.LOGGER.info("即将清除：{}",entity.toString());
+            entity.remove(Entity.RemovalReason.DISCARDED);
         }
 
     }

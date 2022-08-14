@@ -3,6 +3,7 @@ package calebzhou.rdimc.celestech.command.impl;
 import calebzhou.rdimc.celestech.command.RdiCommand;
 import calebzhou.rdimc.celestech.constant.WorldConst;
 import calebzhou.rdimc.celestech.utils.PlayerUtils;
+import calebzhou.rdimc.celestech.utils.ServerUtils;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
@@ -19,7 +20,7 @@ public class SpawnCommand implements RdiCommand {
                 .executes(context -> {
                     ServerPlayer player = context.getSource().getPlayer();
                     PlayerUtils.teleport(player, WorldConst.SPAWN_LOCA);
-                    player.gameMode.changeGameModeForPlayer(GameType.SURVIVAL);
+                    ServerUtils.executeCommandOnServer("gamemode survival "+player.getScoreboardName());
                     return 1;
                 });
     }

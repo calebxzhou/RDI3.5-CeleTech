@@ -17,7 +17,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class RDICeleTech implements ModInitializer {
     //调试模式
-    public static final boolean DEBUG = true;
+    public static final boolean DEBUG = false;
     public static final String MODID ="rdict3";
     public static final Logger LOGGER = LogManager.getLogger(MODID);
     public static final ConcurrentHashMap<String,String> tpaMap = new ConcurrentHashMap<>();
