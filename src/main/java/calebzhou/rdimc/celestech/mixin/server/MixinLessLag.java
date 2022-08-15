@@ -21,7 +21,7 @@ public class MixinLessLag {
         long milisBehind = Util.getMillis()-nextTickTime;
         if(milisBehind>4000){
             ServerStatus.flag=(ServerStatus.WORST);
-        }else if(milisBehind>2200){
+        }else if(milisBehind>2000){
             ServerStatus.flag=(ServerStatus.BAD);
         }else if(milisBehind>1500){
             ServerStatus.flag=(ServerStatus.GOOD);

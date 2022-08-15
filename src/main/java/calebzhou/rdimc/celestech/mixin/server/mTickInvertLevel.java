@@ -48,7 +48,7 @@ public abstract class mTickInvertLevel {
                     target = "Lnet/minecraft/world/level/block/entity/TickingBlockEntity;tick()V"))
     private void tickBlockEntity(TickingBlockEntity blockEntityTickInvoker){
         try {
-            TickInverter.INSTANCE.tickBlockEntity(blockEntityTickInvoker);
+            TickInverter.BlockEntity.INSTANCE.tickBlockEntity(blockEntityTickInvoker);
         } catch (Exception e) {
             e.printStackTrace();
             BlockPos pos = blockEntityTickInvoker.getPos();
@@ -60,9 +60,9 @@ public abstract class mTickInvertLevel {
                     target = "Ljava/util/function/Consumer;accept(Ljava/lang/Object;)V"))
     private void tickEntity(Consumer tickConsumer, Object entity){
         try {
-            TickInverter.INSTANCE.tickEntity(tickConsumer,(Entity) entity);
+            TickInverter.EntityInv.INSTANCE.tickEntity(tickConsumer,(Entity) entity);
         } catch (Exception e) {
-            TickInverter.handleEntityException(e, (Entity) entity,"5");
+            TickInverter.EntityInv.handleEntityException(e, (Entity) entity,"5");
         }
     }
 
@@ -248,7 +248,7 @@ class mTickInvertServerLevel{
             ((Level)(Object)this).guardEntityTick(tickNonPassenger, entity);
         }
         catch (Exception e) {
-           TickInverter.handleEntityException(e,entity,"3");
+           TickInverter.EntityInv.handleEntityException(e,entity,"3");
         }
     }
     @Redirect(method = "tickNonPassenger",at = @At(value = "INVOKE",target = "Lnet/minecraft/world/entity/Entity;tick()V"))
@@ -256,7 +256,7 @@ class mTickInvertServerLevel{
         try {
             entity.tick();
         } catch (Exception e) {
-            TickInverter.handleEntityException(e,entity,"1");
+            TickInverter.EntityInv.handleEntityException(e,entity,"1");
         }
 
     }
@@ -265,7 +265,7 @@ class mTickInvertServerLevel{
         try {
             tickPassenger(entity, entity2);
         } catch (Exception e) {
-            TickInverter.handleEntityException(e,entity,"2");
+            TickInverter.EntityInv.handleEntityException(e,entity,"2");
             entity2.discard();
         }
 
