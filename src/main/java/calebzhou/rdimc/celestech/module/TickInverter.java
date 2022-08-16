@@ -4,10 +4,7 @@ import calebzhou.rdimc.celestech.RDICeleTech;
 import calebzhou.rdimc.celestech.ServerStatus;
 import calebzhou.rdimc.celestech.utils.ServerUtils;
 import calebzhou.rdimc.celestech.utils.ThreadPool;
-import it.unimi.dsi.fastutil.objects.Object2IntArrayMap;
-import it.unimi.dsi.fastutil.objects.Object2ObjectArrayMap;
-import it.unimi.dsi.fastutil.objects.ObjectArrayList;
-import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
+import it.unimi.dsi.fastutil.objects.*;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Registry;
 import net.minecraft.world.entity.Entity;
@@ -28,6 +25,7 @@ import org.apache.http.client.methods.HttpPost;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentLinkedDeque;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.LinkedTransferQueue;
 import java.util.function.Consumer;
 
@@ -40,14 +38,16 @@ public class TickInverter {
         static class EntityBeingTick{
             public Consumer tickConsumer;
             public Entity entity;
+            public String uuid;
 
             public EntityBeingTick(Consumer tickConsumer, Entity entity) {
                 this.tickConsumer = tickConsumer;
                 this.entity = entity;
+                this.uuid=entity.getStringUUID();
             }
         }
         public static final EntityInv INSTANCE= new EntityInv();
-        private final Queue<EntityBeingTick> delayTickList = new LinkedTransferQueue<>();
+        private final Object2ObjectLinkedOpenHashMap<String,EntityBeingTick> delayTickList = new Object2ObjectLinkedOpenHashMap<>();
         private static final int ENTITY_TICK_LIMIT = 40;//ms 实体40ms没tick完就直接冻结
         public static void handleEntityException(Exception ex,Entity entity,String msg){
             ServerUtils.broadcastChatMessage("在"+entity.toString()+"tick entity错误！"+ex+"原因："+msg+ex.getCause()+"。已经强制删除！");
@@ -57,34 +57,36 @@ public class TickInverter {
                 entity=null;
             }
         }
-        public void tickEntity(Consumer tickConsumer, Entity entity){
+        public void releaseDelayTickList(){
 
-            long t1=System.currentTimeMillis();
+            if(delayTickList.size()==0)
+                return;
+            String uid = delayTickList.firstKey();
+            if(ServerStatus.flag<BAD){
+                    // RDICeleTech.LOGGER.info("entity {} 从延迟tick队列中取出",pollE.entity.toString());
+                EntityBeingTick entityBeingTick = delayTickList.get(uid);
+                entityBeingTick.tickConsumer.accept(entityBeingTick.entity);
+                delayTickList.removeFirst();
+            }
+        }
+        public void tickEntity(Consumer tickConsumer, Entity entity){
+            EntityBeingTick invoker = new EntityBeingTick(tickConsumer,entity);
+            if(delayTickList.containsKey(entity.getStringUUID())){
+                return;
+            }
             try {
                 tickConsumer.accept(entity);
             } catch (Exception e) {
                 handleEntityException(e,entity,"7");
             }
-            long t2=System.currentTimeMillis();
-            long dt = t2 - t1;
 
-            EntityBeingTick pollE = delayTickList.poll();
 
-            if (pollE!=null) {
-                if(ServerStatus.flag<BAD){
-                   // RDICeleTech.LOGGER.info("entity {} 从延迟tick队列中取出",pollE.entity.toString());
-                    pollE.tickConsumer.accept(pollE.entity);
-                }
-            }
 
-            EntityBeingTick invoker = new EntityBeingTick(tickConsumer,entity);
-            if(delayTickList.contains(invoker)){
-                return;
-            }
+
             //tick计时
             //如果服务器延迟高于BAD
-            if(ServerStatus.flag>=BAD || dt >ENTITY_TICK_LIMIT){
-                delayTickList.add(invoker);
+            if(ServerStatus.flag>=BAD ){
+                delayTickList.put(entity.getStringUUID(),invoker);
             }
 
 
@@ -133,37 +135,36 @@ if(ServerStatus.flag<BAD){
  */
 public static class BlockEntity  {
     public static final BlockEntity INSTANCE= new BlockEntity();
-    private final Queue<TickingBlockEntity> delayTickList = new ConcurrentLinkedDeque<>();
+    private final Object2ObjectLinkedOpenHashMap<BlockPos,TickingBlockEntity> delayTickList = new Object2ObjectLinkedOpenHashMap<>();
     private static final int BLOCKENTITY_TICK_LIMIT = 40;//ms 方块实体40ms没tick完就直接冻结
     public void tickBlockEntity(TickingBlockEntity invoker){
         try {
-            String name = invoker.getType();
             BlockPos bpos = invoker.getPos();
             //如果已经有了
-            if(delayTickList.contains(invoker)){
+            if(delayTickList.containsKey(bpos)){
                 return;
             }
-            //tick计时
-            long t1=System.currentTimeMillis();
             invoker.tick();
-            long t2=System.currentTimeMillis();
-            TickingBlockEntity pollBE = delayTickList.poll();
-            long dt = t2 - t1;
-            if (pollBE!=null) {
-                if(ServerStatus.flag<BAD){
-                    //RDICeleTech.LOGGER.info("blockEntity {} 从延迟tick队列中取出",pollBE.getPos()+"("+pollBE.getType()+")");
-                    pollBE.tick();
-                }
-            }
+
             //如果服务器延迟高于BAD
-            if(ServerStatus.flag>=BAD || dt >BLOCKENTITY_TICK_LIMIT){
-                delayTickList.add(invoker);
+            if(ServerStatus.flag>=BAD){
+                delayTickList.put(bpos,invoker);
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
+    public void releaseDelayTickList(){
+        if(delayTickList.size()==0)
+            return;
+        BlockPos blockPos = delayTickList.firstKey();
+            if(ServerStatus.flag<BAD){
+                //RDICeleTech.LOGGER.info("blockEntity {} 从延迟tick队列中取出",pollBE.getPos()+"("+pollBE.getType()+")");
+                delayTickList.get(blockPos).tick();
+                delayTickList.removeFirst();
 
+            }
+    }
 
 }
 

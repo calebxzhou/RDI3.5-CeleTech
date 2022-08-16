@@ -1,16 +1,22 @@
 package calebzhou.rdimc.celestech.command.impl;
 
+import calebzhou.rdimc.celestech.RDICeleTech;
 import calebzhou.rdimc.celestech.command.RdiCommand;
 import calebzhou.rdimc.celestech.constant.MessageType;
 import calebzhou.rdimc.celestech.model.PlayerLocation;
 import calebzhou.rdimc.celestech.utils.HttpUtils;
+import calebzhou.rdimc.celestech.utils.RandomUtils;
 import calebzhou.rdimc.celestech.utils.ThreadPool;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
+import net.minecraft.core.Registry;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 
 import static calebzhou.rdimc.celestech.utils.PlayerUtils.*;
@@ -29,6 +35,8 @@ public class CreateCommand implements RdiCommand {
     }
 
     private int exec(ServerPlayer player) {
+
+        ResourceKey<Level> newDimension = ResourceKey.create(Registry.DIMENSION_REGISTRY, new ResourceLocation(RDICeleTech.MODID, RandomUtils.getRandomIslandId()));
         ThreadPool.newThread(()->{
             String resp = HttpUtils.sendRequest("post", "island/" + player.getStringUUID());
             if(resp.equals("fail")){
@@ -38,7 +46,7 @@ public class CreateCommand implements RdiCommand {
             PlayerLocation loca = new PlayerLocation(resp);
             loca.world= player.getLevel();
             player.addEffect(new MobEffectInstance(MobEffects.SLOW_FALLING,20*30,1));
-            teleport(player, loca.add(0.5, 12, 0.5));
+            teleport(player, loca.add(0.5, 12,  0.5));
             placeBlock(player.getLevel(), loca, Blocks.OBSIDIAN.defaultBlockState());
             placeBlock(player.getLevel(), loca.add(-1,0,0), Blocks.GRASS_BLOCK.defaultBlockState());
             givePlayerInitialKit(player);

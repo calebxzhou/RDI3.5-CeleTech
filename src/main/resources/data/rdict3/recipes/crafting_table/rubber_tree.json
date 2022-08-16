@@ -10,10 +10,10 @@
       "item": "minecraft:clay_ball"
     },
     "A": {
-      "item": "minecraft:oak_sampling"
+      "item": "minecraft:oak_sapling"
     },
     "U": {
-      "item": "minecraft:redstore"
+      "item": "minecraft:redstone"
     }
   },
   "result": {

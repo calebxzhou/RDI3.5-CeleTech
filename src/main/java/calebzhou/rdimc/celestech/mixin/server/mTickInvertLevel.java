@@ -20,6 +20,7 @@ import net.minecraft.world.ticks.LevelChunkTicks;
 import net.minecraft.world.ticks.LevelTicks;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -77,12 +78,19 @@ class mTickInvertServer {
 
     @Shadow public abstract ServerFunctionManager getFunctions();
 
+    //消耗掉延迟tick列表
+    @Inject(method = "runServer",at=@At(value = "INVOKE",target = "Lnet/minecraft/server/MinecraftServer;tickServer(Ljava/util/function/BooleanSupplier;)V"))
+
+    private void releaseDelayTicks(CallbackInfo ci){
+        TickInverter.EntityInv.INSTANCE.releaseDelayTickList();
+        TickInverter.BlockEntity.INSTANCE.releaseDelayTickList();
+    }
     //用try-catch包起来服务器运行主体，防止崩溃
     @Redirect(method = "runServer",
             at = @At(value = "INVOKE", target = "Lnet/minecraft/server/MinecraftServer;tickServer(Ljava/util/function/BooleanSupplier;)V"))
     private void tickServerNoCrash(MinecraftServer instance, BooleanSupplier shouldKeepTicking){
         try{
-            tickServer(shouldKeepTicking);
+            tickServer(()->true);
         }catch (Throwable e){
             e.printStackTrace();
             ServerUtils.broadcastChatMessage("tick server错误"+ e +e.getCause());

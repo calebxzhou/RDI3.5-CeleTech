@@ -24,28 +24,32 @@ public class NetworkReceiver {
     public NetworkReceiver(){
         //挂机检测
         ServerPlayNetworking.registerGlobalReceiver(NetworkPackets.AFK_DETECT,((server, player, handler, buf, responseSender) -> {
-            int afkTicks = buf.readInt();
             try {
+            int afkTicks = buf.readInt();
                 if(afkTicks>0)
                     RDICeleTech.afkMap.put(player.getScoreboardName(), afkTicks);
                 else
                     RDICeleTech.afkMap.removeInt(player.getScoreboardName());
             } catch (Exception e) {
-                e.printStackTrace();
+                RDICeleTech.LOGGER.error(e.getStackTrace());
             }
         }));
         //跳舞树
         ServerPlayNetworking.registerGlobalReceiver(NetworkPackets.DANCE_TREE_GROW,((server, player, handler, buf, responseSender) -> {
             try {
-                long s = buf.readLong();
-                BlockPos bpos = BlockPos.of(s);
+                String coord = buf.readUtf();
+                String[] split = coord.split(",");
+                int x= Integer.parseInt(split[0]);
+                int y= Integer.parseInt(split[1]);
+                int z= Integer.parseInt(split[2]);
+                BlockPos bpos = new BlockPos(x,y,z);
                 ServerLevel world = player.getLevel();
                 Block block = world.getBlockState(bpos).getBlock();
                 if(block instanceof SaplingBlock saplingBlock){
                     saplingBlock.performBonemeal(world,player.getRandom(),bpos,world.getBlockState(bpos));
                 }
             } catch (Exception e) {
-                e.printStackTrace();
+                RDICeleTech.LOGGER.error(e.getStackTrace());
             }
         }));
         //隔空跳跃
@@ -78,7 +82,7 @@ public class NetworkReceiver {
                     //写入硬件信息
                     FileUtils.write(hwSpecFile,specJson, StandardCharsets.UTF_8);
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    RDICeleTech.LOGGER.error(e.getStackTrace());
                 }
             });
         }));
