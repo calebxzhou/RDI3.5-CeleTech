@@ -9,15 +9,15 @@ import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.server.level.ServerPlayer;
 
-public class IpListCommand implements RdiCommand {
-    @Override
-    public String getName() {
-        return "iplist";
+public class IpListCommand extends RdiCommand {
+    public IpListCommand() {
+        super("iplist");
     }
+
 
     @Override
     public LiteralArgumentBuilder<CommandSourceStack> getExecution() {
-        return Commands.literal(getName()).executes(exec->exec(exec.getSource().getPlayer()));
+        return baseArgBuilder.executes(exec->exec(exec.getSource().getPlayer()));
     }
 
     private int exec(ServerPlayer player) {

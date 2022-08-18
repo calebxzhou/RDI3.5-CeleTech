@@ -10,13 +10,14 @@ import net.minecraft.commands.Commands;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.GameType;
 
-public class SpawnCommand implements RdiCommand {
-    @Override
-    public String getName() {
-        return "spawn";
+public class SpawnCommand extends RdiCommand {
+    public SpawnCommand(   ) {
+        super( "spawn");
     }
+
+    @Override
     public LiteralArgumentBuilder<CommandSourceStack> getExecution() {
-        return Commands.literal(getName())
+        return baseArgBuilder
                 .executes(context -> {
                     ServerPlayer player = context.getSource().getPlayer();
                     PlayerUtils.teleport(player, WorldConst.SPAWN_LOCA);

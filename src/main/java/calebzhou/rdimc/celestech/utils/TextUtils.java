@@ -32,7 +32,12 @@ public final class TextUtils {
         player.displayClientMessage(textComponent, actionBar);
     }
 
-
+    public static void sendChatMultilineMessage(Player player,String content){
+        String[] split = content.split("\n");
+        for(String line:split){
+            sendChatMessage(player,line);
+        }
+    }
     public static void sendChatMessage(Player player, MessageType messageType,String content ){
         switch (messageType){
             case ERROR -> sendChatMessage(player,ERROR_PREFIX+content);

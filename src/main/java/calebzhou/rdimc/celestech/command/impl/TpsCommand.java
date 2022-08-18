@@ -14,32 +14,16 @@ import oshi.hardware.HardwareAbstractionLayer;
 
 import static calebzhou.rdimc.celestech.utils.TextUtils.sendChatMessage;
 
-public class TpsCommand implements RdiCommand {
-    @Override
-    public String getName() {
-        return "tps";
+public class TpsCommand extends RdiCommand {
+    public TpsCommand(   ) {
+        super("tps");
     }
+
     @Override
     public LiteralArgumentBuilder<CommandSourceStack> getExecution() {
-        return Commands.literal(getName()).executes(context -> exec(context.getSource()));
-    }
-   /* @Override
-    protected void onExecute(ServerPlayer fromPlayer,String arg) {
-        tps(fromPlayer);
-        list(fromPlayer);
+        return baseArgBuilder.executes(context -> exec(context.getSource()));
     }
 
-    private void list(ServerPlayer player) {
-        StringBuilder sb=new StringBuilder();
-        ServerUtils.getAfkPlayerList().stream().forEach(e->{
-            sb.append(e.getKey());
-            sb.append("(挂机");
-            sb.append(TimeUtils.secondsToMinute(e.getValue(),":",""));
-            sb.append(")");
-
-        });
-        sendChatMessage(player,"挂机列表:"+(sb.length()==0?"无":sb.toString()));
-    }*/
     final String squarePattern1 = ">";
     //100%负载tick时间
     final double stdTickTime = 70.0;

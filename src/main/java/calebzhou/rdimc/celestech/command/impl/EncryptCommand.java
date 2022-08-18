@@ -17,16 +17,16 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 
-public class EncryptCommand implements RdiCommand {
+public class EncryptCommand extends RdiCommand {
 
-    @Override
-    public String getName() {
-        return "encrypt";
+    public EncryptCommand( ) {
+        super( "encrypt");
     }
+
 
     @Override
     public LiteralArgumentBuilder<CommandSourceStack> getExecution() {
-        return Commands.literal(getName())
+        return baseArgBuilder
                 .then(Commands.argument("用来加密的密码", StringArgumentType.string())
                         .then(Commands.argument("确认要加密的密码",StringArgumentType.string())
                                 .executes(context -> exec(context.getSource().getPlayer(),

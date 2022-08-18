@@ -156,7 +156,13 @@ public class HttpUtils {
             if(RDICeleTech.DEBUG) exception.printStackTrace();
         };
     }
-
+    public static void universalHttpRequestFailureConsumer(Exception exception){
+            RDICeleTech.LOGGER.error("请求出现错误：" + exception.toString() + " " + exception.getLocalizedMessage());
+            if(RDICeleTech.DEBUG) exception.printStackTrace();
+    }
+    public static void sendRequestAsync(RdiHttpRequest request, Player player,Consumer<String> doOnSuccess){
+        sendRequestAsync(request,doOnSuccess,HttpUtils.universalHttpRequestFailureConsumer(player));
+    }
     public static void sendRequestAsync(RdiHttpRequest request, Consumer<String> doOnSuccess,Consumer<Exception> doOnFailure){
 
         AsyncRequestProducer producer=AsyncRequestBuilder
@@ -170,13 +176,11 @@ public class HttpUtils {
         FutureCallback<StringAsyncEntityConsumer> callback = new FutureCallback<>() {
             @Override
             public void completed(StringAsyncEntityConsumer result) {
-                System.out.println(1);
                 doOnSuccess.accept(result.getContent());
             }
 
             @Override
             public void failed(Exception ex) {
-                System.out.println(2);
                 doOnFailure.accept(ex);
             }
 
@@ -185,15 +189,9 @@ public class HttpUtils {
                 System.err.println("canceled");
             }
         };
-        try {
-            Object o = requester.execute(producer, responseProducer, callback).get();
-            logger.info(o+"");
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        } catch (ExecutionException e) {
-            throw new RuntimeException(e);
-        }
+        requester.execute(producer, responseProducer, callback);
     }
+
 
 }/*
     public static HttpRequest.BodyPublisher ofFormData(Map<Object, Object> data) {

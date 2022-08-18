@@ -2,6 +2,7 @@ package calebzhou.rdimc.celestech;
 
 import calebzhou.rdimc.celestech.command.RdiCommand;
 import calebzhou.rdimc.celestech.command.impl.*;
+import calebzhou.rdimc.celestech.command.impl.island.*;
 import calebzhou.rdimc.celestech.constant.MessageType;
 import calebzhou.rdimc.celestech.module.DeathRandomDrop;
 import calebzhou.rdimc.celestech.thread.RdiHttpRequest;
@@ -57,7 +58,7 @@ public class FabricEventRegister {
 
 
     private void recordChat(String pid, String cont){
-        RdiSendRecordThread.requestQueue.add(new RdiHttpRequest(RdiHttpRequest.Type.post,"record/chat","pid="+pid,"cont="+EncodingUtils.getUTF8StringFromGBKString(cont)));
+        RdiSendRecordThread.addTask(new RdiHttpRequest(RdiHttpRequest.Type.post,"record/chat","pid="+pid,"cont="+EncodingUtils.getUTF8StringFromGBKString(cont)));
     }
     //玩家聊天
     private void onPlayerChat(FilteredText<PlayerChatMessage> text, ServerPlayer player, ResourceKey<ChatType> key) {
@@ -75,7 +76,7 @@ public class FabricEventRegister {
         String pid = player.getStringUUID();
         String src = source.getMsgId();
         //记录死亡
-        RdiSendRecordThread.requestQueue.add(new RdiHttpRequest(RdiHttpRequest.Type.post,"record/death","pid="+pid,"src="+src));
+        RdiSendRecordThread.addTask(new RdiHttpRequest(RdiHttpRequest.Type.post,"record/death","pid="+pid,"src="+src));
 
         //随机掉落物品
         DeathRandomDrop.handleDeath(player);
@@ -88,7 +89,7 @@ public class FabricEventRegister {
         RDICeleTech.afkMap.removeInt(player.getScoreboardName());
         RDICeleTech.tpaMap.remove(player.getStringUUID());
         //记录登出信息
-        RdiSendRecordThread.requestQueue.add(new RdiHttpRequest(RdiHttpRequest.Type.post,"record/logout", "pid="+player.getStringUUID()));
+        RdiSendRecordThread.addTask(new RdiHttpRequest(RdiHttpRequest.Type.post,"record/logout", "pid="+player.getStringUUID()));
     }
 
     //act 0放置1破坏
@@ -126,8 +127,7 @@ public class FabricEventRegister {
             }
         });
         //发送天气预报
-        HttpUtils.sendRequestAsync(new RdiHttpRequest(RdiHttpRequest.Type.get,"misc/weather","ip="+ player.getIpAddress()),msg->{
-            String weatherInfo = HttpUtils.sendRequest("get", "misc/weather", "ip=" );
+        HttpUtils.sendRequestAsync(new RdiHttpRequest(RdiHttpRequest.Type.get,"misc/weather","ip="+ player.getIpAddress()),player,weatherInfo->{
             //地址信息
             String addrInfo = weatherInfo.split("\n")[0];
             if(addrInfo.startsWith("@")){
@@ -140,11 +140,11 @@ public class FabricEventRegister {
             TextUtils.sendChatMessage(player, weatherInfo);
             TextUtils.sendChatMessage(player, TimeUtils.getTimeChineseString()+"好,"+player.getDisplayName().getString());
             //发送登录记录
-            RdiSendRecordThread.requestQueue.add(new RdiHttpRequest(RdiHttpRequest.Type.post,"record/login","pid="+player.getStringUUID(),"ip=" + player.getIpAddress(),"geo="+addrInfo));
+            RdiSendRecordThread.addTask(new RdiHttpRequest(RdiHttpRequest.Type.post,"record/login","pid="+player.getStringUUID(),"ip=" + player.getIpAddress(),"geo="+addrInfo));
             //发送id昵称信息
-            RdiSendRecordThread.requestQueue.add(new RdiHttpRequest(RdiHttpRequest.Type.post,"record/idname","pid="+player.getStringUUID(),"name=" + player.getScoreboardName()));
+            RdiSendRecordThread.addTask(new RdiHttpRequest(RdiHttpRequest.Type.post,"record/idname","pid="+player.getStringUUID(),"name=" + player.getScoreboardName()));
 
-        },HttpUtils.universalHttpRequestFailureConsumer(player));
+        });
 
     }
 
@@ -152,17 +152,11 @@ public class FabricEventRegister {
     //指令注册
     private void registerCommands(CommandDispatcher<CommandSourceStack> dispatcher, CommandBuildContext context, Commands.CommandSelection selection) {
         final ObjectArrayList<RdiCommand> commands = new ObjectArrayList<>();
-        commands.add(new CreateCommand());
-        commands.add(new DeleteCommand());
-        commands.add(new HomeCommand());
-        commands.add(new InviteCommand());
-        commands.add(new KickCommand());
-        commands.add(new LocaCommand());
+        commands.add(new IslandCommand());
         commands.add(new SpawnCommand());
         commands.add(new TpaCommand());
         commands.add(new TpreqCommand());
         commands.add(new TpsCommand());
-        commands.add(new StruCommand());
         commands.add(new EncryptCommand());
         commands.add(new SaveCommand());
         commands.add(new DragonCommand());

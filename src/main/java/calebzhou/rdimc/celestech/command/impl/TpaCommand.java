@@ -15,15 +15,14 @@ import static calebzhou.rdimc.celestech.RDICeleTech.tpaMap;
 import static calebzhou.rdimc.celestech.utils.TextUtils.getClickableContentComp;
 import static calebzhou.rdimc.celestech.utils.TextUtils.sendChatMessage;
 
-public class TpaCommand implements RdiCommand {
-    @Override
-    public String getName() {
-        return "tpa";
+public class TpaCommand extends RdiCommand {
+    public TpaCommand() {
+        super("tpa");
     }
 
     @Override
     public LiteralArgumentBuilder<CommandSourceStack> getExecution() {
-        return Commands.literal(getName()).then(Commands.argument("玩家", EntityArgument.player())
+        return baseArgBuilder.then(Commands.argument("玩家", EntityArgument.player())
                 .executes(context -> exec(context.getSource().getPlayer(), EntityArgument.getPlayer(context, "玩家"))));
     }
 

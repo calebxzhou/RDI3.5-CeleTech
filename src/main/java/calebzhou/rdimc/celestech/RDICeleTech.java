@@ -2,6 +2,7 @@ package calebzhou.rdimc.celestech;
 
 import calebzhou.rdimc.celestech.constant.FileConst;
 import calebzhou.rdimc.celestech.module.TickInverter;
+import calebzhou.rdimc.celestech.thread.RdiIslandRequestThread;
 import calebzhou.rdimc.celestech.thread.RdiSendRecordThread;
 import calebzhou.rdimc.celestech.utils.ThreadPool;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
@@ -45,6 +46,7 @@ public class RDICeleTech implements ModInitializer {
         new NetworkReceiver();
         new FabricEventRegister();
         RdiSendRecordThread.INSTANCE.start();
+        RdiIslandRequestThread.INSTANCE.start();
     }
     public static void loadFiles() throws IOException{
         if(!FileConst.getMainFolder().exists()){

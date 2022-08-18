@@ -20,10 +20,14 @@ import net.minecraft.world.level.chunk.PalettedContainer;
 import net.minecraft.world.level.chunk.PalettedContainerRO;
 import net.minecraft.world.level.levelgen.structure.BoundingBox;
 
-public class BioCommand implements RdiCommand {
-  /*  private static final SuggestionProvider<CommandSourceStack> SUGGEST_TEMPLATES = (commandContext, suggestionsBuilder) ->
-            SharedSuggestionProvider.suggestResource(commandContext.getSource().getLevel().getBiomeManager().listTemplates(), suggestionsBuilder);
-*/
+public class BioCommand extends RdiCommand {
+    public BioCommand(String commandName) {
+        super(commandName);
+    }
+
+    /*  private static final SuggestionProvider<CommandSourceStack> SUGGEST_TEMPLATES = (commandContext, suggestionsBuilder) ->
+                SharedSuggestionProvider.suggestResource(commandContext.getSource().getLevel().getBiomeManager().listTemplates(), suggestionsBuilder);
+    */
     @Override
     public String getName() {
         return "bio";
@@ -31,7 +35,7 @@ public class BioCommand implements RdiCommand {
 
     @Override
     public LiteralArgumentBuilder<CommandSourceStack> getExecution() {
-        return Commands.literal(getName())
+        return baseArgBuilder
                 .then(Commands.argument("生物群系的命名空间", StringArgumentType.string())
                         .then(Commands.argument("x1", IntegerArgumentType.integer())
                                 .then(Commands.argument("y1", IntegerArgumentType.integer())

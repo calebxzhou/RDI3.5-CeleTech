@@ -15,15 +15,15 @@ import static calebzhou.rdimc.celestech.RDICeleTech.tpaMap;
 import static calebzhou.rdimc.celestech.utils.TextUtils.sendChatMessage;
 import static calebzhou.rdimc.celestech.utils.TextUtils.sendClickableContent;
 
-public class TpreqCommand implements RdiCommand {
-    @Override
-    public String getName() {
-        return "tpreq";
+public class TpreqCommand extends RdiCommand {
+    public TpreqCommand(   ) {
+        super("tpreq");
     }
+
 
     @Override
     public LiteralArgumentBuilder<CommandSourceStack> getExecution() {
-        return Commands.literal(getName()).then(Commands.argument("target", StringArgumentType.string())
+        return baseArgBuilder.then(Commands.argument("target", StringArgumentType.string())
                 .executes(context -> exec(context.getSource().getPlayer(), StringArgumentType.getString(context, "target"))));
     }
 

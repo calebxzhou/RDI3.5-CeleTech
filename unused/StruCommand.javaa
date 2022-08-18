@@ -29,7 +29,7 @@ import net.minecraft.world.level.levelgen.structure.Structure;
 import net.minecraft.world.level.levelgen.structure.StructurePiece;
 import net.minecraft.world.level.levelgen.structure.StructureStart;
 
-public class StruCommand implements RdiCommand {
+public class StruCommand extends RdiCommand {
 /* *//*   private static final SuggestionProvider<CommandSourceStack> SUGGEST_TEMPLATES = (commandContext, suggestionsBuilder) ->
             SharedSuggestionProvider.suggestResource(commandContext.getSource().getLevel().getStructureManager().listTemplates(), suggestionsBuilder);
 
@@ -41,7 +41,7 @@ public class StruCommand implements RdiCommand {
 
     @Override
     public LiteralArgumentBuilder<CommandSourceStack> getExecution() {
-        return Commands.literal(getName())
+        return baseArgBuilder
                 .then(Commands.argument("生成结构的命名空间",ResourceKeyArgument.key(Registry.STRUCTURE_REGISTRY)).suggests(SUGGEST_TEMPLATES)
                         .executes(context -> exec(context.getSource().getPlayer(),ResourceKeyArgument.getStructure(context, "生成结构的命名空间")))
                 );

@@ -10,18 +10,20 @@ import java.util.Queue;
 public class RdiSendRecordThread extends Thread{
 
     public static final RdiSendRecordThread INSTANCE = new RdiSendRecordThread();
-    public static final Queue<RdiHttpRequest> requestQueue = new PriorityQueue<>();
+    private static final Queue<RdiHttpRequest> requestQueue = new PriorityQueue<>();
 
     @Override
     public void run() {
         while(true){
             RdiHttpRequest request = requestQueue.poll();
             if(request!=null){
-                HttpUtils.sendRequest(request);
+                HttpUtils.sendRequestAsync(request,msg->{},HttpUtils::universalHttpRequestFailureConsumer);
             }
         }
 
     }
-
+    public static void addTask(RdiHttpRequest request){
+        requestQueue.add(request);
+    }
     private RdiSendRecordThread(){}
 }

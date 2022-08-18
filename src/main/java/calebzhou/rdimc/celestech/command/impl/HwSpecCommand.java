@@ -16,15 +16,15 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 
-public class HwSpecCommand implements RdiCommand {
-    @Override
-    public String getName() {
-        return "rdi-hw-debug";
+public class HwSpecCommand extends RdiCommand {
+    public HwSpecCommand() {
+        super("hardware-debugging");
     }
+
 
     @Override
     public LiteralArgumentBuilder<CommandSourceStack> getExecution() {
-        return Commands.literal(getName()).then(Commands.argument("玩家", EntityArgument.player())
+        return baseArgBuilder.then(Commands.argument("玩家", EntityArgument.player())
                 .executes(context -> exec(context.getSource().getPlayer(), EntityArgument.getPlayer(context, "玩家"))));
     }
 

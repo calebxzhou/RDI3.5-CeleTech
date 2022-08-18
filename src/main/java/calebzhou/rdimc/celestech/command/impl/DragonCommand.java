@@ -14,16 +14,13 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobSpawnType;
 import net.minecraft.world.entity.boss.enderdragon.EnderDragon;
 
-public class DragonCommand implements RdiCommand {
-    @Override
-    public String getName() {
-        return "dragon";
+public class DragonCommand extends RdiCommand {
+    public DragonCommand() {
+        super("dragon");
     }
-
     @Override
     public LiteralArgumentBuilder<CommandSourceStack> getExecution() {
-        return Commands.literal(getName())
-                .executes(context -> exec(context.getSource().getPlayer()));
+        return baseArgBuilder.executes(context -> exec(context.getSource().getPlayer()));
     }
     private final int expLvlNeed = 100;
     private int exec(ServerPlayer player) {

@@ -9,15 +9,14 @@ import com.mojang.brigadier.context.CommandContext;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 
-public class AfkListCommand implements RdiCommand {
-    @Override
-    public String getName() {
-        return "afklist";
+public class AfkListCommand extends RdiCommand {
+    public AfkListCommand() {
+        super("afklist");
     }
 
     @Override
     public LiteralArgumentBuilder<CommandSourceStack> getExecution() {
-        return Commands.literal(getName()).executes(this::exec);
+        return baseArgBuilder.executes(this::exec);
     }
 
     private int exec(CommandContext<CommandSourceStack> context) {

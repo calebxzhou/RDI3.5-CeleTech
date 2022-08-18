@@ -19,7 +19,7 @@ import net.minecraft.world.level.block.Blocks;
 
 import java.util.List;
 
-public class StruCommand implements RdiCommand {
+public class StruCommand extends RdiCommand {
     static class RdiStructure{
         public RdiStructure(String id, int xpNeed, String spawner) {
             this.id = id;
@@ -50,7 +50,7 @@ public class StruCommand implements RdiCommand {
 
     @Override
     public LiteralArgumentBuilder<CommandSourceStack> getExecution() {
-        return Commands.literal(getName())
+        return baseArgBuilder
                 .then(Commands.argument("生成结构的命名空间", StringArgumentType.string()).suggests(SUGGEST_TEMPLATES)
                         .executes(context -> exec(context.getSource().getPlayer(),StringArgumentType.getString(context, "生成结构的命名空间")))
                 );

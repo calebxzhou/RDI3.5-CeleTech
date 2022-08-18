@@ -7,15 +7,14 @@ import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.network.chat.Component;
 
-public class SaveCommand implements RdiCommand {
-    @Override
-    public String getName() {
-        return "SAVE";
+public class SaveCommand extends RdiCommand {
+    public SaveCommand() {
+        super("SAVE");
     }
 
     @Override
     public LiteralArgumentBuilder<CommandSourceStack> getExecution() {
-        return Commands.literal(getName()).executes(c->{
+        return baseArgBuilder.executes(c->{
             RDICeleTech.getServer().saveEverything(true, true, true);
             c.getSource().sendSuccess(Component.literal("成功"),true);
             return 1;

@@ -9,7 +9,7 @@ import net.minecraft.commands.Commands;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.GameType;
 
-public class VoteRestartCommand implements RdiCommand {
+public class VoteRestartCommand extends RdiCommand {
     @Override
     public String getName() {
         return "vote-restart";
@@ -17,7 +17,7 @@ public class VoteRestartCommand implements RdiCommand {
 
     @Override
     public LiteralArgumentBuilder<CommandSourceStack> getExecution() {
-        return Commands.literal(getName())
+        return baseArgBuilder
                 .executes(context -> exec(context.getSource().getPlayer()));
     }
 
