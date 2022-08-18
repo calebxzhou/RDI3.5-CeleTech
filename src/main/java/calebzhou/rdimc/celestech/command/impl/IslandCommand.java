@@ -18,12 +18,19 @@ import net.minecraft.commands.Commands;
 import net.minecraft.commands.SharedSuggestionProvider;
 import net.minecraft.commands.arguments.EntityArgument;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Registry;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.Difficulty;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
+import net.minecraft.world.level.GameRules;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.dimension.BuiltinDimensionTypes;
+import net.minecraft.world.level.dimension.DimensionType;
 
+import static calebzhou.rdimc.celestech.RDICeleTech.ISLAND_DIMENSION_PREFIX;
 import static calebzhou.rdimc.celestech.utils.PlayerUtils.*;
 import static calebzhou.rdimc.celestech.utils.TextUtils.sendChatMessage;
 
@@ -128,7 +135,7 @@ public class IslandCommand extends RdiCommand {
     }
     private void goIsland(ServerPlayer player) {
         RdiIslandRequestThread.addTask(new RdiHttpPlayerRequest(
-                RdiHttpRequest.Type.post,
+                RdiHttpRequest.Type.get,
                 player,
                 resp->{
                     if(resp.equals("fail")){
@@ -169,9 +176,11 @@ public class IslandCommand extends RdiCommand {
         return 1;
     }
     private void createIsland(ServerPlayer player){
+
         int x = RandomUtils.generateRandomInt(-99999, 99999);
         int y = 128;
         int z = RandomUtils.generateRandomInt(-99999, 99999);
+
         RdiIslandRequestThread.addTask(new RdiHttpPlayerRequest(
                 RdiHttpRequest.Type.post,
                 player,
@@ -180,15 +189,26 @@ public class IslandCommand extends RdiCommand {
                         sendChatMessage(player, MessageType.ERROR,"您已经加入了一个岛屿！");
                         return;
                     }
-                    PlayerLocation loca = new PlayerLocation(x,y,z);
+                    /*
+                    3.7
+                    Fantasy fantasy = Fantasy.get(RDICeleTech.getServer());
+                    RuntimeWorldConfig worldConfig = new RuntimeWorldConfig()
+                            .setDimensionType(BuiltinDimensionTypes.OVERWORLD)
+                            .setDifficulty(Difficulty.HARD)
+                            .setGenerator(RDICeleTech.getServer().overworld().getChunkSource().getGenerator())
+                            .setSeed(System.currentTimeMillis());
+
+                    ResourceLocation islandDimension = new ResourceLocation(RDICeleTech.MODID, ISLAND_DIMENSION_PREFIX + islandId);
+                    RuntimeWorldHandle worldHandle = fantasy.getOrOpenPersistentWorld(islandDimension, worldConfig);*/
+                   PlayerLocation loca = new PlayerLocation(x,y,z);
                     loca.world= player.getLevel();
                     player.addEffect(new MobEffectInstance(MobEffects.SLOW_FALLING,20*30,1));
                     teleport(player, loca.add(0.5, 12,  0.5));
                     placeBlock(player.getLevel(), loca, Blocks.OBSIDIAN.defaultBlockState());
                     givePlayerInitialKit(player);
                 },
-                "island/"+ player.getStringUUID(),
-                "x="+x,"y="+y,"z="+z
+                "island/"+ player.getStringUUID()
+                ,"x="+x,"y="+y,"z="+z
                 )
         );
 /* OptionalLong fixedTime=null;

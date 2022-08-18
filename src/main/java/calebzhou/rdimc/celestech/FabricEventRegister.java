@@ -2,7 +2,6 @@ package calebzhou.rdimc.celestech;
 
 import calebzhou.rdimc.celestech.command.RdiCommand;
 import calebzhou.rdimc.celestech.command.impl.*;
-import calebzhou.rdimc.celestech.command.impl.island.*;
 import calebzhou.rdimc.celestech.constant.MessageType;
 import calebzhou.rdimc.celestech.module.DeathRandomDrop;
 import calebzhou.rdimc.celestech.thread.RdiHttpRequest;
@@ -56,7 +55,6 @@ public class FabricEventRegister {
     }
 
 
-
     private void recordChat(String pid, String cont){
         RdiSendRecordThread.addTask(new RdiHttpRequest(RdiHttpRequest.Type.post,"record/chat","pid="+pid,"cont="+EncodingUtils.getUTF8StringFromGBKString(cont)));
     }
@@ -94,14 +92,12 @@ public class FabricEventRegister {
 
     //act 0放置1破坏
     private void recordBlock(String pid,String bid,int act,String world,int x,int y,int z){
-        HttpUtils.sendRequest("post", "record/block", "pid="+pid,"bid="+bid,"act="+act,"world="+world,"x="+x,"y="+y,"z="+z);
+        RdiSendRecordThread.addTask(new RdiHttpRequest(RdiHttpRequest.Type.post, "record/block", "pid="+pid,"bid="+bid,"act="+act,"world="+world,"x="+x,"y="+y,"z="+z));
     }
     //成功破坏方块
     private void onBreakBlock(Level level, Player player, BlockPos blockPos, BlockState state, BlockEntity block) {
         //发送破坏数据
-        ThreadPool.newThread(()->{
-            recordBlock(player.getStringUUID(), Registry.BLOCK.getKey(state.getBlock()).toString(),1,level.dimension().location().toString(), blockPos.getX(), blockPos.getY(), blockPos.getZ());
-        });
+        recordBlock(player.getStringUUID(), Registry.BLOCK.getKey(state.getBlock()).toString(),1,level.dimension().location().toString(), blockPos.getX(), blockPos.getY(), blockPos.getZ());
     }
 
     //放置方块
@@ -109,9 +105,7 @@ public class FabricEventRegister {
         BlockPos blockPos = result.getBlockPos();
         Block block = level.getBlockState(blockPos).getBlock();
         //发送放置数据
-        ThreadPool.newThread(()->{
-            recordBlock(player.getStringUUID(), Registry.BLOCK.getKey(block).toString(),0,level.dimension().location().toString(), blockPos.getX(), blockPos.getY(), blockPos.getZ());
-        });
+        recordBlock(player.getStringUUID(), Registry.BLOCK.getKey(block).toString(),0,level.dimension().location().toString(), blockPos.getX(), blockPos.getY(), blockPos.getZ());
         return InteractionResult.PASS;
     }
     //玩家连接服务器 连接成功
@@ -127,7 +121,7 @@ public class FabricEventRegister {
             }
         });
         //发送天气预报
-        HttpUtils.sendRequestAsync(new RdiHttpRequest(RdiHttpRequest.Type.get,"misc/weather","ip="+ player.getIpAddress()),player,weatherInfo->{
+        HttpUtils.sendRequestAsync(new RdiHttpRequest(RdiHttpRequest.Type.get,"misc/weather?ip="+ player.getIpAddress()),player,weatherInfo->{
             //地址信息
             String addrInfo = weatherInfo.split("\n")[0];
             if(addrInfo.startsWith("@")){
