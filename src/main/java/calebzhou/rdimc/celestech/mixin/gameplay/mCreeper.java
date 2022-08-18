@@ -5,15 +5,12 @@ import net.minecraft.world.entity.monster.Creeper;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Mutable;
 import org.spongepowered.asm.mixin.Shadow;
-import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Constant;
-import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.ModifyConstant;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 //苦力怕更容易爆炸
 @Mixin(Creeper.class)
-public abstract class MixinCreeper {
+public abstract class mCreeper {
 
     @Shadow @Mutable
     private int maxSwell = 20;

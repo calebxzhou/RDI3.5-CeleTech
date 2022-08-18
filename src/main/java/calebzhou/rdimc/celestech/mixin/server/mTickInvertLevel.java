@@ -1,7 +1,9 @@
 package calebzhou.rdimc.celestech.mixin.server;
 
+import calebzhou.rdimc.celestech.ServerStatus;
 import calebzhou.rdimc.celestech.module.TickInverter;
 import calebzhou.rdimc.celestech.utils.ServerUtils;
+import net.minecraft.Util;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.ServerFunctionManager;
@@ -77,6 +79,22 @@ class mTickInvertServer {
     @Shadow public abstract void tickChildren(BooleanSupplier booleanSupplier);
 
     @Shadow public abstract ServerFunctionManager getFunctions();
+    @Shadow private long nextTickTime;
+
+    //设置服务器延迟等级
+    @Inject(method = "runServer()V",
+            at =@At(value = "INVOKE",target = "Lnet/minecraft/server/MinecraftServer;startMetricsRecordingTick()V"))
+    private void setServerStatus(CallbackInfo ci){
+        long milisBehind = Util.getMillis()-nextTickTime;
+        if(milisBehind>4000){
+            ServerStatus.flag=(ServerStatus.WORST);
+        }else if(milisBehind>2100){
+            ServerStatus.flag=(ServerStatus.BAD);
+        }else if(milisBehind>1500){
+            ServerStatus.flag=(ServerStatus.GOOD);
+        }else
+            ServerStatus.flag=(ServerStatus.BEST);
+    }
 
     //消耗掉延迟tick列表
     @Inject(method = "runServer",at=@At(value = "INVOKE",target = "Lnet/minecraft/server/MinecraftServer;tickServer(Ljava/util/function/BooleanSupplier;)V"))

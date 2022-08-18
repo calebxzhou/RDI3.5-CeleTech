@@ -7,7 +7,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
 
 @Mixin(FireBlock.class)
-public class MixinFireSpeedUp {
+public class mFireSpeedUp {
         //火加速
         @Overwrite
         private static int getFireTickDelay(RandomSource randomSource){

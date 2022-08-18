@@ -2,6 +2,7 @@ package calebzhou.rdimc.celestech;
 
 import calebzhou.rdimc.celestech.constant.FileConst;
 import calebzhou.rdimc.celestech.module.TickInverter;
+import calebzhou.rdimc.celestech.thread.RdiSendRecordThread;
 import calebzhou.rdimc.celestech.utils.ThreadPool;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectArrayMap;
@@ -19,8 +20,9 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class RDICeleTech implements ModInitializer {
     //调试模式
-    public static final boolean DEBUG = false;
+    public static final boolean DEBUG = true;
     public static final String MODID ="rdict3";
+    public static final String ISLAND_DIMENSION_PREFIX ="island_";
     public static final Logger LOGGER = LogManager.getLogger(MODID);
     public static final ConcurrentHashMap<String,String> tpaMap = new ConcurrentHashMap<>();
     public static final Object2ObjectOpenHashMap<String,String> ipGeoMap = new Object2ObjectOpenHashMap();
@@ -42,6 +44,7 @@ public class RDICeleTech implements ModInitializer {
         });
         new NetworkReceiver();
         new FabricEventRegister();
+        RdiSendRecordThread.INSTANCE.start();
     }
     public static void loadFiles() throws IOException{
         if(!FileConst.getMainFolder().exists()){

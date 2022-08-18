@@ -10,7 +10,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Redirect;
 
 @Mixin(ServerGamePacketListenerImpl.class)
-public abstract class MixinNoBroadcastJoinExit {
+public abstract class mNoBroadcastJoinExit {
     //退出服务器不显示"XXX退出"
     @Redirect(method = "onDisconnect(Lnet/minecraft/network/chat/Component;)V",
             at=@At(value = "INVOKE",target = "Lnet/minecraft/server/players/PlayerList;broadcastSystemMessage(Lnet/minecraft/network/chat/Component;Lnet/minecraft/resources/ResourceKey;)V"))

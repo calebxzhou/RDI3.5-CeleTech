@@ -12,7 +12,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
 
 @Mixin(ExplosionDamageCalculator.class)
-public class MixinChestNeverBoom {
+public class mContainerNeverBoom {
     //有nbt数据的方块不会被炸
     @Overwrite
     public boolean shouldBlockExplode(Explosion explosion, BlockGetter world, BlockPos pos, BlockState state, float power) {

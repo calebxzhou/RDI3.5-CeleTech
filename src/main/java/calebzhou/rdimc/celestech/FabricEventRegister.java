@@ -4,12 +4,13 @@ import calebzhou.rdimc.celestech.command.RdiCommand;
 import calebzhou.rdimc.celestech.command.impl.*;
 import calebzhou.rdimc.celestech.constant.MessageType;
 import calebzhou.rdimc.celestech.module.DeathRandomDrop;
+import calebzhou.rdimc.celestech.thread.RdiHttpRequest;
+import calebzhou.rdimc.celestech.thread.RdiSendRecordThread;
 import calebzhou.rdimc.celestech.utils.*;
 import com.mojang.brigadier.CommandDispatcher;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.entity.event.v1.ServerPlayerEvents;
-import net.fabricmc.fabric.api.event.player.AttackBlockCallback;
 import net.fabricmc.fabric.api.event.player.PlayerBlockBreakEvents;
 import net.fabricmc.fabric.api.event.player.UseBlockCallback;
 import net.fabricmc.fabric.api.message.v1.ServerMessageEvents;
@@ -19,7 +20,6 @@ import net.minecraft.commands.CommandBuildContext;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
 import net.minecraft.core.Registry;
 import net.minecraft.network.chat.ChatType;
 import net.minecraft.network.chat.PlayerChatMessage;
@@ -31,7 +31,6 @@ import net.minecraft.server.network.ServerGamePacketListenerImpl;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.damagesource.DamageSource;
-import net.minecraft.world.entity.EntityEvent;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
@@ -57,20 +56,18 @@ public class FabricEventRegister {
 
 
 
-    private void recordChatCommand(String pid,String cont){
-        ThreadPool.newThread(()->{
-            HttpUtils.sendRequest("post","record/chat","pid="+pid,"cont="+EncodingUtils.getUTF8StringFromGBKString(cont));
-        });
+    private void recordChat(String pid, String cont){
+        RdiSendRecordThread.requestQueue.add(new RdiHttpRequest(RdiHttpRequest.Type.post,"record/chat","pid="+pid,"cont="+EncodingUtils.getUTF8StringFromGBKString(cont)));
     }
     //玩家聊天
     private void onPlayerChat(FilteredText<PlayerChatMessage> text, ServerPlayer player, ResourceKey<ChatType> key) {
-        recordChatCommand(player.getStringUUID(), text.raw().serverContent().getString());
+        recordChat(player.getStringUUID(), text.raw().serverContent().getString());
     }
     //玩家使用指令
     private void onPlayerCommand(FilteredText<PlayerChatMessage> text, CommandSourceStack stack, ResourceKey<ChatType> key) {
         ServerPlayer player = stack.getPlayer();
         if(player != null)
-            recordChatCommand(player.getStringUUID(), text.raw().serverContent().getString());
+            recordChat(player.getStringUUID(), text.raw().serverContent().getString());
     }
 
     //玩家死亡
@@ -78,9 +75,8 @@ public class FabricEventRegister {
         String pid = player.getStringUUID();
         String src = source.getMsgId();
         //记录死亡
-        ThreadPool.newThread(()->{
-            HttpUtils.sendRequest("post","record/death","pid="+pid,"src="+src);
-        });
+        RdiSendRecordThread.requestQueue.add(new RdiHttpRequest(RdiHttpRequest.Type.post,"record/death","pid="+pid,"src="+src));
+
         //随机掉落物品
         DeathRandomDrop.handleDeath(player);
         return true;
@@ -91,10 +87,8 @@ public class FabricEventRegister {
         ServerPlayer player = listener.getPlayer();
         RDICeleTech.afkMap.removeInt(player.getScoreboardName());
         RDICeleTech.tpaMap.remove(player.getStringUUID());
-        //发送登出信息
-        ThreadPool.newThread(()->{
-            HttpUtils.sendRequest("post", "record/logout", "pid="+player.getStringUUID());
-        });
+        //记录登出信息
+        RdiSendRecordThread.requestQueue.add(new RdiHttpRequest(RdiHttpRequest.Type.post,"record/logout", "pid="+player.getStringUUID()));
     }
 
     //act 0放置1破坏
@@ -132,9 +126,8 @@ public class FabricEventRegister {
             }
         });
         //发送天气预报
-        ThreadPool.newThread(()-> {
-            //天气信息
-            String weatherInfo = HttpUtils.sendRequest("get", "misc/weather", "ip=" + player.getIpAddress());
+        HttpUtils.sendRequestAsync(new RdiHttpRequest(RdiHttpRequest.Type.get,"misc/weather","ip="+ player.getIpAddress()),msg->{
+            String weatherInfo = HttpUtils.sendRequest("get", "misc/weather", "ip=" );
             //地址信息
             String addrInfo = weatherInfo.split("\n")[0];
             if(addrInfo.startsWith("@")){
@@ -147,14 +140,12 @@ public class FabricEventRegister {
             TextUtils.sendChatMessage(player, weatherInfo);
             TextUtils.sendChatMessage(player, TimeUtils.getTimeChineseString()+"好,"+player.getDisplayName().getString());
             //发送登录记录
-            HttpUtils.sendRequest("post", "record/login", "pid="+player.getStringUUID(),"ip=" + player.getIpAddress(),"geo="+addrInfo);
+            RdiSendRecordThread.requestQueue.add(new RdiHttpRequest(RdiHttpRequest.Type.post,"record/login","pid="+player.getStringUUID(),"ip=" + player.getIpAddress(),"geo="+addrInfo));
+            //发送id昵称信息
+            RdiSendRecordThread.requestQueue.add(new RdiHttpRequest(RdiHttpRequest.Type.post,"record/idname","pid="+player.getStringUUID(),"name=" + player.getScoreboardName()));
 
-        });
+        },HttpUtils.universalHttpRequestFailureConsumer(player));
 
-        //发送id昵称信息
-        ThreadPool.newThread(()->{
-            HttpUtils.sendRequest("post", "record/idname", "pid="+player.getStringUUID(),"name=" + player.getScoreboardName());
-        });
     }
 
 

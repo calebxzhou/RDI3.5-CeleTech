@@ -82,7 +82,9 @@ public class PlayerUtils {
     }
     //发送新手套装
     public static void givePlayerInitialKit(ServerPlayer player){
-        player.getInventory().add(new ItemStack(Items.OAK_SAPLING,1));
+        String name = player.getScoreboardName();
+        ServerUtils.executeCommandOnServer(String.format("give %s minecraft:oak_sapling 1",name));
+        ServerUtils.executeCommandOnServer(String.format("give %s minecraft:dirt 1",name));
     }
     public static BlockPos getPlayerLookingAtBlock(Player player, boolean isFluid){
         BlockHitResult rays=(BlockHitResult) player.pick(64.0D,0.0f,isFluid);

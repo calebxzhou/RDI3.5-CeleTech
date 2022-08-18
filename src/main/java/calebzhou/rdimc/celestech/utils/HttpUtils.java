@@ -1,49 +1,111 @@
 package calebzhou.rdimc.celestech.utils;
 
 import calebzhou.rdimc.celestech.RDICeleTech;
+import calebzhou.rdimc.celestech.constant.MessageType;
+import calebzhou.rdimc.celestech.thread.RdiHttpRequest;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
-import org.apache.http.Consts;
-import org.apache.http.HttpEntityEnclosingRequest;
-import org.apache.http.NameValuePair;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
-import org.apache.http.client.methods.*;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClientBuilder;
-import org.apache.http.message.BasicNameValuePair;
-import org.apache.http.util.EntityUtils;
+import net.minecraft.world.entity.player.Player;
+import org.apache.hc.client5.http.classic.methods.*;
+import org.apache.hc.client5.http.config.RequestConfig;
+import org.apache.hc.client5.http.cookie.StandardCookieSpec;
+import org.apache.hc.client5.http.entity.UrlEncodedFormEntity;
+import org.apache.hc.client5.http.impl.async.CloseableHttpAsyncClient;
+import org.apache.hc.client5.http.impl.async.HttpAsyncClients;
+import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
+import org.apache.hc.client5.http.impl.classic.CloseableHttpResponse;
+import org.apache.hc.client5.http.impl.classic.HttpClients;
+import org.apache.hc.client5.http.ssl.ClientTlsStrategyBuilder;
+import org.apache.hc.client5.http.ssl.NoopHostnameVerifier;
+import org.apache.hc.core5.concurrent.FutureCallback;
+import org.apache.hc.core5.http.NameValuePair;
+import org.apache.hc.core5.http.ParseException;
+import org.apache.hc.core5.http.io.entity.EntityUtils;
+import org.apache.hc.core5.http.message.BasicNameValuePair;
+import org.apache.hc.core5.http.nio.AsyncRequestProducer;
+import org.apache.hc.core5.http.nio.entity.StringAsyncEntityConsumer;
+import org.apache.hc.core5.http.nio.support.AsyncRequestBuilder;
+import org.apache.hc.core5.http.nio.support.BasicResponseConsumer;
+import org.apache.hc.core5.http.ssl.TLS;
+import org.apache.hc.core5.reactor.IOReactorConfig;
+import org.apache.hc.core5.ssl.SSLContexts;
+import org.apache.hc.core5.util.Timeout;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.net.URI;
-import java.net.URL;
-import java.net.URLEncoder;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
-import java.time.Duration;
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.List;
+import java.util.concurrent.ExecutionException;
+import java.util.function.Consumer;
 
 public class HttpUtils {
-    private static final HttpClient httpClient = HttpClient.newBuilder()
-            .version(HttpClient.Version.HTTP_1_1)
-            .connectTimeout(Duration.ofSeconds(10))
+    private static final Logger logger = LoggerFactory.getLogger(HttpUtils.class);
+    public static void main(String[] args) {
+
+        sendRequestAsync(new RdiHttpRequest(RdiHttpRequest.Type.get,"island/e7f80658-17ff-4cd0-afab-a26da0e0224a"), System.out::println, Throwable::printStackTrace);
+    }
+    static final CloseableHttpAsyncClient requester = HttpAsyncClients
+            .customHttp2()
+            .setTlsStrategy(ClientTlsStrategyBuilder.create()
+                    .setHostnameVerifier(NoopHostnameVerifier.INSTANCE)
+                    .setSslContext(SSLContexts.createSystemDefault())
+                    .setTlsVersions(TLS.V_1_3, TLS.V_1_2)
+                    .build())
+            .setIOReactorConfig(IOReactorConfig.custom()
+                    .setSoTimeout(Timeout.ofSeconds(5))
+                    .build())
+            .setDefaultRequestConfig(RequestConfig.custom()
+                    .setConnectTimeout(Timeout.ofSeconds(5))
+                    .setResponseTimeout(Timeout.ofSeconds(5))
+                    .setCookieSpec(StandardCookieSpec.STRICT)
+                    .build())
             .build();
-    private static final String ADDR= RDICeleTech.DEBUG?"http://localhost:26889/":"http://www.davisoft.cn:26889/";
+
+
+    static{
+        requester.start();
+    }
+    private static final String ADDR=  (RDICeleTech.DEBUG?"127.0.0.1":"www.davisoft.cn");
+
+
     public static String sendRequest(String type, String shortUrl, String... params){
         return sendRequestFullUrl(type,ADDR+shortUrl,params);
 
     }
-    public static Map<String, String> setBodyParamsForRequest(String... params){
-        Map<String, String> data = new HashMap<>();
+    public static HttpUriRequest setBodyParamsForRequest(HttpUriRequestBase request, String... params){
+        List<NameValuePair> paramList = new ObjectArrayList<>();
         for (String param : params) {
             String[] split = param.split("=");
-            data.put(split[0],split[1]);
+            paramList.add(new BasicNameValuePair(split[0],split[1]));
         }
-        return data;
+        request.setEntity(new UrlEncodedFormEntity(paramList, StandardCharsets.UTF_8));
+        return request;
     }
     public static String sendRequestFullUrl(String type, String fullUrl, String... params){
+        try(CloseableHttpClient client = HttpClients.custom().build()){
+            HttpUriRequest request;
+            switch (type){
+                case "post" -> request=setBodyParamsForRequest( new HttpPost(URI.create(fullUrl)),params);
+                case "put" ->
+                        request=setBodyParamsForRequest(new HttpPut(URI.create(fullUrl)),params);
+                case "delete" ->
+                        request=new HttpDelete(URI.create(fullUrl+"?"+concatParamString(params)));
+                default->
+                        request=new HttpGet(URI.create(fullUrl+"?"+concatParamString(params)));
+            }
+
+            CloseableHttpResponse response = client.execute(request);
+            return EntityUtils.toString(response.getEntity());
+        } catch (IOException | ParseException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+    public static String sendRequest(RdiHttpRequest request){
+        return sendRequest(request.type.toString(),request.url,request.params);
+    }
+    /*public static String sendRequestFullUrl(String type, String fullUrl, String... params){
         HttpRequest.Builder builder = HttpRequest.newBuilder().headers("Content-Type", "application/x-www-form-urlencoded");
 
 
@@ -76,7 +138,7 @@ public class HttpUtils {
         }
         return send.body();
     }
-
+*/
     private static String concatParamString(String ... params){
         StringBuilder sb = new StringBuilder();
         for (int i = 0, paramsLength = params.length; i < paramsLength; i++) {
@@ -88,7 +150,52 @@ public class HttpUtils {
         }
         return sb.toString();
     }
+    public static Consumer<Exception> universalHttpRequestFailureConsumer(Player player){
+        return exception -> {
+            TextUtils.sendChatMessage(player, MessageType.ERROR, "请求出现错误：" + exception.toString() + " " + exception.getLocalizedMessage());
+            if(RDICeleTech.DEBUG) exception.printStackTrace();
+        };
+    }
 
+    public static void sendRequestAsync(RdiHttpRequest request, Consumer<String> doOnSuccess,Consumer<Exception> doOnFailure){
+
+        AsyncRequestProducer producer=AsyncRequestBuilder
+                .create(request.type.getHttpType())
+                .setUri("https://"+ADDR+":26889/"+request.url)
+                .addParameters(request.getParamPairs())
+                .setHeader("Content-Type", "application/x-www-form-urlencoded")
+                .build();
+        BasicResponseConsumer  responseProducer =
+                new BasicResponseConsumer (new StringAsyncEntityConsumer());
+        FutureCallback<StringAsyncEntityConsumer> callback = new FutureCallback<>() {
+            @Override
+            public void completed(StringAsyncEntityConsumer result) {
+                System.out.println(1);
+                doOnSuccess.accept(result.getContent());
+            }
+
+            @Override
+            public void failed(Exception ex) {
+                System.out.println(2);
+                doOnFailure.accept(ex);
+            }
+
+            @Override
+            public void cancelled() {
+                System.err.println("canceled");
+            }
+        };
+        try {
+            Object o = requester.execute(producer, responseProducer, callback).get();
+            logger.info(o+"");
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        } catch (ExecutionException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+}/*
     public static HttpRequest.BodyPublisher ofFormData(Map<Object, Object> data) {
         var builder = new StringBuilder();
         for (Map.Entry<Object, Object> entry : data.entrySet()) {
@@ -101,4 +208,4 @@ public class HttpUtils {
         }
         return HttpRequest.BodyPublishers.ofString(builder.toString());
     }
-}
+*/

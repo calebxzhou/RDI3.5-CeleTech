@@ -13,7 +13,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
 
 @Mixin(GlowSquid.class)
-public class MixinLessGlowSquid {
+public class mGlowSquid {
 
     /**
      * 发光鱿鱼减少生成

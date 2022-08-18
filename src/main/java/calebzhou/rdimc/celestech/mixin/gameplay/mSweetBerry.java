@@ -6,7 +6,7 @@ import org.spongepowered.asm.mixin.injection.Constant;
 import org.spongepowered.asm.mixin.injection.ModifyConstant;
 
 @Mixin(SweetBerryBushBlock.class)
-public class MixinImproveSweetBerryDamage {
+public class mSweetBerry {
     @ModifyConstant(method = "entityInside(Lnet/minecraft/world/level/block/state/BlockState;Lnet/minecraft/world/level/Level;Lnet/minecraft/core/BlockPos;Lnet/minecraft/world/entity/Entity;)V",
     constant = @Constant(floatValue = 1.0f))
     private static float modifyDamage(float f){

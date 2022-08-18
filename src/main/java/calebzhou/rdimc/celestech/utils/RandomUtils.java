@@ -4,6 +4,9 @@ import java.util.SplittableRandom;
 
 public class RandomUtils {
     public static final SplittableRandom random = new SplittableRandom();
+    public static int generateRandomInt(int min, int max) {
+        return random.nextInt((max - min) + 1) + min;
+    }
     public static char generateRandomChar(){
         String chars = "qwertyuiopasdfghjklzxcvbnm1234567890";
         return chars.charAt(random.nextInt(chars.length()));
