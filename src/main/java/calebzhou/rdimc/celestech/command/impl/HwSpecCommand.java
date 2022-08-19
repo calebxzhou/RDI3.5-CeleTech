@@ -34,13 +34,14 @@ public class HwSpecCommand extends RdiCommand {
         }
         if(player.experienceLevel<10)
             return 1;
+        player.experienceLevel-=10;
         ThreadPool.newThread(()->{
             try {
                 File hwSpecFile = new File(FileConst.getHwSpecFolder(),targetPlayer.getStringUUID()+".txt");
                 if(!hwSpecFile.exists()) {
                     return;
                 }
-                player.experienceLevel-=10;
+
                 String json = FileUtils.readFileToString(hwSpecFile, StandardCharsets.UTF_8);
                 TextUtils.sendChatMessage(player,json);
             } catch (IOException e) {

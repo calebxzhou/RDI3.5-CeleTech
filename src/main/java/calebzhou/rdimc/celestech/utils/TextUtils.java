@@ -38,6 +38,12 @@ public final class TextUtils {
             sendChatMessage(player,line);
         }
     }
+    public static void sendChatMultilineMessage(CommandSourceStack sourceStack,String content){
+        String[] split = content.split("\n");
+        for(String line:split){
+            sendChatMessage(sourceStack,line);
+        }
+    }
     public static void sendChatMessage(Player player, MessageType messageType,String content ){
         switch (messageType){
             case ERROR -> sendChatMessage(player,ERROR_PREFIX+content);

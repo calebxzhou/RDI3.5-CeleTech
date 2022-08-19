@@ -50,6 +50,9 @@ public class TickInverter {
                 entity=null;
             }
         }
+        public int getDelayTickListSize(){
+            return delayTickList.size();
+        }
         public void releaseDelayTickList(){
 
             if(delayTickList.size()==0)
@@ -72,19 +75,11 @@ public class TickInverter {
             } catch (Exception e) {
                 handleEntityException(e,entity,"7");
             }
-
-
-
-
             //tick计时
             //如果服务器延迟高于BAD
             if(ServerStatus.flag>=BAD ){
                 delayTickList.put(entity.getStringUUID(),invoker);
             }
-
-
-
-
             if(ServerStatus.flag>=BAD){
                 boolean remove = true;
                 if(entity instanceof AbstractMinecart
@@ -146,6 +141,9 @@ public static class BlockEntity  {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+    public int getDelayTickListSize(){
+        return delayTickList.size();
     }
     public void releaseDelayTickList(){
         if(delayTickList.size()==0)

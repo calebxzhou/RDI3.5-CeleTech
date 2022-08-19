@@ -31,6 +31,8 @@ dependencies {
 	//新版的 http client，载入到mod包里
 	// https://mvnrepository.com/artifact/com.squareup.okhttp3/okhttp
 	includeImplementation( 'com.squareup.okhttp3:okhttp:4.10.0' )
+	includeImplementation( 'com.squareup.okio:okio:3.0.0' )
+	includeImplementation( 'com.squareup.okio:okio-jvm:3.0.0' )
 	//动态创建维度
 	//modImplementation 'xyz.nucleoid:fantasy:0.4.6+1.19.2'
 	/*includeImplementation 'org.apache.httpcomponents.client5:httpclient5:5.1.3'

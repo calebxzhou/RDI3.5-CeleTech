@@ -1,6 +1,7 @@
 package calebzhou.rdimc.celestech.thread;
 
 import calebzhou.rdimc.celestech.utils.HttpUtils;
+import calebzhou.rdimc.celestech.utils.ThreadPool;
 
 import java.util.PriorityQueue;
 import java.util.Queue;
@@ -15,11 +16,12 @@ public class RdiIslandRequestThread extends Thread{
         while(true){
             RdiHttpPlayerRequest request = requestQueue.poll();
             if(request!=null){
-                HttpUtils.sendRequestAsync(
+                ThreadPool.newThread(()->HttpUtils.sendRequestAsync(
                         request,
                         request.doOnSuccess,
                         HttpUtils.universalHttpRequestFailureConsumer(request.player)
-                );
+                ));
+
             }
         }
 

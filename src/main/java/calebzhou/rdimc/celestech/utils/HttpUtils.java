@@ -30,7 +30,8 @@ public class HttpUtils {
 
     public static Consumer<Exception> universalHttpRequestFailureConsumer(Player player){
         return exception -> {
-            TextUtils.sendChatMessage(player, MessageType.ERROR, "请求出现错误：" + exception.toString() + " " + exception.getLocalizedMessage());
+
+            TextUtils.sendChatMessage(player, MessageType.ERROR, "请求出现错误：请立刻联系服主！" + exception.toString());
             if(RDICeleTech.DEBUG) exception.printStackTrace();
         };
     }

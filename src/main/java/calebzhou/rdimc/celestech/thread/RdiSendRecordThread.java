@@ -16,9 +16,13 @@ public class RdiSendRecordThread extends Thread{
     @Override
     public void run() {
         while(true){
-            RdiHttpRequest request = requestQueue.poll();
-            if(request!=null){
-                HttpUtils.sendRequestAsync(request,msg->{},HttpUtils::universalHttpRequestFailureConsumer);
+            try {
+                RdiHttpRequest request = requestQueue.poll();
+                if(request!=null){
+                    HttpUtils.sendRequestAsync(request,msg->{},HttpUtils::universalHttpRequestFailureConsumer);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
             }
         }
 

@@ -9,7 +9,10 @@ import calebzhou.rdimc.celestech.utils.ThreadPool;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Vec3i;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.entity.AgeableMob;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.SaplingBlock;
 import org.apache.commons.io.FileUtils;
@@ -17,6 +20,7 @@ import org.apache.commons.io.FileUtils;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.UUID;
 
 import static calebzhou.rdimc.celestech.utils.TextUtils.sendChatMessage;
 
@@ -68,6 +72,26 @@ public class NetworkReceiver {
         //保存地图
         ServerPlayNetworking.registerGlobalReceiver(NetworkPackets.SAVE_WORLD,((server, player, handler, buf, responseSender) -> {
             RDICeleTech.getServer().saveEverything(true, true, true);
+        }));
+        //快速繁殖
+        ServerPlayNetworking.registerGlobalReceiver(NetworkPackets.ANIMAL_SEX,((server, player, handler, buf, responseSender) -> {
+            String eid = buf.readUtf();
+            Entity entity = player.getLevel().getEntity(UUID.fromString(eid));
+            if(entity==null)
+                return;
+            if(entity instanceof AgeableMob amob){
+                if(player.experienceLevel<10){
+                    TextUtils.sendChatMessage(player,MessageType.ERROR,"精验不足，需要10");
+                    return;
+                }
+                player.experienceLevel-=10;
+                amob.setAge(0);
+                TextUtils.sendChatMessage(player,MessageType.SUCCESS,"生长成功");
+            }
+
+
+
+
         }));
         //硬件信息
         ServerPlayNetworking.registerGlobalReceiver(NetworkPackets.HW_SPEC,((server, player, handler, buf, responseSender) -> {

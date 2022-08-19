@@ -2,9 +2,11 @@ package calebzhou.rdimc.celestech.command.impl;
 
 import calebzhou.rdimc.celestech.RDICeleTech;
 import calebzhou.rdimc.celestech.command.RdiCommand;
+import calebzhou.rdimc.celestech.constant.MessageType;
 import calebzhou.rdimc.celestech.utils.TextUtils;
 import calebzhou.rdimc.celestech.utils.ThreadPool;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
+import com.mojang.brigadier.context.CommandContext;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.server.level.ServerPlayer;
@@ -17,27 +19,40 @@ public class IpListCommand extends RdiCommand {
 
     @Override
     public LiteralArgumentBuilder<CommandSourceStack> getExecution() {
-        return baseArgBuilder.executes(exec->exec(exec.getSource().getPlayer()));
+        return baseArgBuilder.executes(this::exec);
     }
 
-    private int exec(ServerPlayer player) {
-        if(player.experienceLevel<3)
-            return 1;
+    private int exec(CommandContext<CommandSourceStack> context) {
+        CommandSourceStack source = context.getSource();
+        ServerPlayer player = source.getPlayer();
+        if(player!=null){
+            if(player.experienceLevel<3){
+                TextUtils.sendChatMessage(player, MessageType.ERROR,"要有3级经验才能查询IP属地列表！");
+                return 1;
+            }else{
+                player.experienceLevel-=3;
+            }
+        }
         ThreadPool.newThread(()->{
-            player.experienceLevel-=3;
+            TextUtils.sendChatMessage(player,"====ip属地列表====");
+            StringBuilder ipinfo = new StringBuilder();
             RDICeleTech.ipGeoMap.forEach((pname,geo)->{
                 String msg;
                 String[] split = geo.split(",");
                 if(split.length==0)
-                    msg="undefined";
+                    msg="没有IP记录信息";
                 else if(split.length==1)
                     msg=split[0];
                 else
                     msg=split[1];
-                TextUtils.sendChatMessage(player,pname+" "+msg);
+                ipinfo.append(pname).append(msg).append("    ");
+
             });
+            TextUtils.sendChatMessage(player,ipinfo.toString());
         });
+
 
         return 1;
     }
+
 }

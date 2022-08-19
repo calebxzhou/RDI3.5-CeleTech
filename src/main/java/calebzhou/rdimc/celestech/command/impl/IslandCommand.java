@@ -19,6 +19,7 @@ import net.minecraft.commands.SharedSuggestionProvider;
 import net.minecraft.commands.arguments.EntityArgument;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Registry;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.Difficulty;
@@ -39,11 +40,10 @@ public class IslandCommand extends RdiCommand {
         super("is");
     }
     static final String islandHelp = """
-            =====RDI空岛菜单=====
+            =====RDI空岛管理菜单=====
             指令参数
             create 创建岛屿
             reset 重置岛屿
-            home 返回岛屿
             kick 移除成员
             invite 邀请成员
             loca 更改传送点
@@ -56,7 +56,7 @@ public class IslandCommand extends RdiCommand {
                         Commands.argument("指令参数", StringArgumentType.string())
                                 .suggests(
                                         (context, builder) ->
-                                        SharedSuggestionProvider.suggest(new String[]{"create","reset","home","kick","invite","loca"},builder)
+                                        SharedSuggestionProvider.suggest(new String[]{"create","reset","kick","invite","loca"},builder)
                                 )
                         .executes(
                                 context -> handleSubCommand(context.getSource().getPlayer(),StringArgumentType.getString(context,"指令参数"))
@@ -84,7 +84,6 @@ public class IslandCommand extends RdiCommand {
         switch (param){
             case "create" -> createIsland(player);
             case "reset" -> resetIsland(player);
-            case "home" -> goIsland(player);
             case "loca" -> locateIsland(player);
             default -> sendIslandHelp(player);
         }
@@ -120,7 +119,7 @@ public class IslandCommand extends RdiCommand {
 
     private void invitePlayer(ServerPlayer player, ServerPlayer invitedPlayer) {
         RdiIslandRequestThread.addTask(new RdiHttpPlayerRequest(
-                RdiHttpRequest.Type.get,
+                RdiHttpRequest.Type.post,
                 player,
                 response->{
                     TextUtils.sendChatMessage(player,"您邀请了"+invitedPlayer);
@@ -131,24 +130,6 @@ public class IslandCommand extends RdiCommand {
                     }
                 },
                 "island/crew/" + player.getStringUUID()+"/"+invitedPlayer.getStringUUID()
-        ));
-    }
-    private void goIsland(ServerPlayer player) {
-        RdiIslandRequestThread.addTask(new RdiHttpPlayerRequest(
-                RdiHttpRequest.Type.get,
-                player,
-                resp->{
-                    if(resp.equals("fail")){
-                        sendChatMessage(player, MessageType.ERROR,"您没加入任何一岛屿！");
-                        return;
-                    }
-                    PlayerLocation loca = new PlayerLocation(resp);
-                    loca.world= RDICeleTech.getServer().overworld();
-                    player.addEffect(new MobEffectInstance(MobEffects.SLOW_FALLING,20*30,1));
-                    teleport(player, loca.add(0.5, 2, 0.5));
-                    sendChatMessage(player,MessageType.SUCCESS,"1");
-                },
-                "island/" + player.getStringUUID()
         ));
     }
 
@@ -201,10 +182,12 @@ public class IslandCommand extends RdiCommand {
                     ResourceLocation islandDimension = new ResourceLocation(RDICeleTech.MODID, ISLAND_DIMENSION_PREFIX + islandId);
                     RuntimeWorldHandle worldHandle = fantasy.getOrOpenPersistentWorld(islandDimension, worldConfig);*/
                    PlayerLocation loca = new PlayerLocation(x,y,z);
+                    ResourceKey<Level> resourceKey = player.getLevel().dimension();
                     loca.world= player.getLevel();
                     player.addEffect(new MobEffectInstance(MobEffects.SLOW_FALLING,20*30,1));
+                    player.setRespawnPosition(resourceKey,new BlockPos(loca.x,loca.y,loca.z).above(2),0,true,false);
                     teleport(player, loca.add(0.5, 12,  0.5));
-                    placeBlock(player.getLevel(), loca, Blocks.OBSIDIAN.defaultBlockState());
+                    placeBlock(player.getLevel(), loca, Blocks.BEDROCK.defaultBlockState());
                     givePlayerInitialKit(player);
                 },
                 "island/"+ player.getStringUUID()

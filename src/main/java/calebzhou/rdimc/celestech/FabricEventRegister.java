@@ -157,6 +157,9 @@ public class FabricEventRegister {
         commands.add(new HwSpecCommand());
         commands.add(new AfkListCommand());
         commands.add(new IpListCommand());
+        commands.add(new HomeCommand());
+        commands.add(new TickInverterCommand());
+        commands.add(new HelpCommand());
 
         for (RdiCommand cmd : commands) {
             if (cmd.getExecution() != null) {
