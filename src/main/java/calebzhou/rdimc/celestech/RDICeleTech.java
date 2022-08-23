@@ -1,12 +1,10 @@
 package calebzhou.rdimc.celestech;
 
 import calebzhou.rdimc.celestech.constant.FileConst;
-import calebzhou.rdimc.celestech.module.TickInverter;
+import calebzhou.rdimc.celestech.module.tickinv.TickInverter;
 import calebzhou.rdimc.celestech.thread.RdiIslandRequestThread;
 import calebzhou.rdimc.celestech.thread.RdiSendRecordThread;
-import calebzhou.rdimc.celestech.utils.ThreadPool;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
-import it.unimi.dsi.fastutil.objects.Object2ObjectArrayMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
@@ -47,6 +45,7 @@ public class RDICeleTech implements ModInitializer {
         new FabricEventRegister();
         RdiSendRecordThread.INSTANCE.start();
         RdiIslandRequestThread.INSTANCE.start();
+        TickInverter.INSTANCE.init();
     }
     public static void loadFiles() throws IOException{
         if(!FileConst.getMainFolder().exists()){

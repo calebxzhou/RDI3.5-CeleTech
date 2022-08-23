@@ -1,7 +1,7 @@
 package calebzhou.rdimc.celestech.command.impl;
 
 import calebzhou.rdimc.celestech.command.RdiCommand;
-import calebzhou.rdimc.celestech.module.TickInverter;
+import calebzhou.rdimc.celestech.module.tickinv.TickInverter;
 import calebzhou.rdimc.celestech.utils.TextUtils;
 import calebzhou.rdimc.celestech.utils.ThreadPool;
 import com.mojang.brigadier.arguments.StringArgumentType;

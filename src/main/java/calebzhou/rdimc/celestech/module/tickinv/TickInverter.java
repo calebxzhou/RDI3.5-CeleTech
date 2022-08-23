@@ -1,4 +1,4 @@
-package calebzhou.rdimc.celestech.module;
+package calebzhou.rdimc.celestech.module.tickinv;
 
 import calebzhou.rdimc.celestech.RDICeleTech;
 import calebzhou.rdimc.celestech.ServerStatus;
@@ -6,6 +6,8 @@ import calebzhou.rdimc.celestech.utils.ServerUtils;
 import it.unimi.dsi.fastutil.objects.Object2ObjectLinkedOpenHashMap;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Registry;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.animal.Animal;
@@ -20,25 +22,70 @@ import net.minecraft.world.entity.vehicle.AbstractMinecart;
 import net.minecraft.world.entity.vehicle.Boat;
 import net.minecraft.world.level.block.entity.TickingBlockEntity;
 
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.ForkJoinPool;
+import java.util.concurrent.ForkJoinWorkerThread;
+import java.util.concurrent.Phaser;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
 
 import static calebzhou.rdimc.celestech.ServerStatus.BAD;
 
 public class TickInverter {
     public static final TickInverter INSTANCE= new TickInverter();
+    //线程池执行器
+    private ExecutorService executor ;
+    //线程序号
+    private AtomicInteger ThreadID = null;
+    //线程池同步用同步屏障
+    private Phaser phaser;
+    private MinecraftServer mcs;
+    // Tick执行中指示器
+    private AtomicBoolean isTicking = new AtomicBoolean();
+    public void init(){
+        ThreadID = new AtomicInteger();
+        ForkJoinPool.ForkJoinWorkerThreadFactory poolThreadFactory = p -> {
+            ForkJoinWorkerThread poolThread = ForkJoinPool.defaultForkJoinWorkerThreadFactory.newThread(p);
+            poolThread.setName("TickInv-" + ThreadID.getAndIncrement());
+            poolThread.setContextClassLoader(RDICeleTech.class.getClassLoader());
+            return poolThread;
+        };
+        executor = new ForkJoinPool(Runtime.getRuntime().availableProcessors(), poolThreadFactory, (t, e) -> {
+            e.printStackTrace();
+        }, true);
+    }
+    public void beforeGettingAllLevels(int size, MinecraftServer server){
+        isTicking.set(true);
+        phaser = new Phaser(size + 1);
+        mcs = server;
+    }
+    AtomicInteger currentWorlds = new AtomicInteger();
+    public void callTick(ServerLevel serverworld, BooleanSupplier hasTimeLeft, MinecraftServer server) {
+        if (mcs != server) {
+            System.err.println("tick好几次？");
+            serverworld.tick(hasTimeLeft);
+            return;
+        } else {
+            executor.execute(() -> {
+                try {
+                    currentWorlds.incrementAndGet();
+                    serverworld.tick(hasTimeLeft);
+                } catch (Throwable e){
+                    e.printStackTrace();
+                    ServerUtils.broadcastChatMessage("tick world错误"+e+e.getCause());
 
-    public static class EntityInv{
-        static class EntityBeingTick{
-            public Consumer tickConsumer;
-            public Entity entity;
-            public String uuid;
-
-            public EntityBeingTick(Consumer tickConsumer, Entity entity) {
-                this.tickConsumer = tickConsumer;
-                this.entity = entity;
-                this.uuid=entity.getStringUUID();
-            }
+                } finally {
+                    phaser.arriveAndDeregister();
+                    currentWorlds.decrementAndGet();
+                }
+                //TODO bug不少 需要继续改造 e.g.Accessing LegacyRandomSource from multiple threads
+            });
         }
+    }
+    public static class EntityInv implements ITickDelayable{
+
         public static final EntityInv INSTANCE= new EntityInv();
         private final Object2ObjectLinkedOpenHashMap<String,EntityBeingTick> delayTickList = new Object2ObjectLinkedOpenHashMap<>();
         private static final int ENTITY_TICK_LIMIT = 40;//ms 实体40ms没tick完就直接冻结
@@ -121,7 +168,7 @@ if(ServerStatus.flag<BAD){
                 delayTickList.remove(invoker);
             }
  */
-public static class BlockEntity  {
+public static class BlockEntity implements ITickDelayable{
     public static final BlockEntity INSTANCE= new BlockEntity();
     private final Object2ObjectLinkedOpenHashMap<BlockPos,TickingBlockEntity> delayTickList = new Object2ObjectLinkedOpenHashMap<>();
     private static final int BLOCKENTITY_TICK_LIMIT = 40;//ms 方块实体40ms没tick完就直接冻结

@@ -12,6 +12,7 @@
     "gameplay.mBreakBlock",
     "gameplay.mContainerNeverBoom",
     "gameplay.mCreeper",
+    "gameplay.mDimensionNotLoaded",
     "gameplay.mEnableCommandBlock",
     "gameplay.mEnderDragon",
     "gameplay.mEnderman",
@@ -50,7 +51,7 @@
     "server.mTickInvertLevelTicks",
     "server.mTickInvertServer",
     "server.mTickInvertServerLevel",
-    "server.NoJoin",
+    "server.NoJoin"
   ],
   "client": [
   ],

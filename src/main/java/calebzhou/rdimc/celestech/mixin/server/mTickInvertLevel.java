@@ -1,10 +1,11 @@
 package calebzhou.rdimc.celestech.mixin.server;
 
 import calebzhou.rdimc.celestech.ServerStatus;
-import calebzhou.rdimc.celestech.module.TickInverter;
+import calebzhou.rdimc.celestech.module.tickinv.TickInverter;
 import calebzhou.rdimc.celestech.utils.ServerUtils;
 import net.minecraft.Util;
 import net.minecraft.core.BlockPos;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.ServerFunctionManager;
 import net.minecraft.server.level.ChunkMap;
@@ -22,15 +23,13 @@ import net.minecraft.world.ticks.LevelChunkTicks;
 import net.minecraft.world.ticks.LevelTicks;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 
-import java.util.Iterator;
+import java.util.Map;
 import java.util.Queue;
 import java.util.function.BiConsumer;
 import java.util.function.BooleanSupplier;
@@ -74,6 +73,9 @@ public abstract class mTickInvertLevel {
 @Mixin(MinecraftServer.class)
 abstract
 class mTickInvertServer {
+    @Shadow
+    @Final
+    private Map<ResourceKey<Level>, ServerLevel> levels;
     @Shadow public abstract void tickServer(BooleanSupplier booleanSupplier);
 
     @Shadow public abstract void tickChildren(BooleanSupplier booleanSupplier);
@@ -135,25 +137,18 @@ class mTickInvertServer {
         }
     }
 
-
-    private ServerLevel world;
+//TODO  关键一步：世界间异步tick
+    //tick之前
     @Inject(method = "tickChildren",
-            at = @At(value = "INVOKE", target = "Lnet/minecraft/server/level/ServerLevel;tick(Ljava/util/function/BooleanSupplier;)V"),
-            locals = LocalCapture.CAPTURE_FAILSOFT)
-    private void tickWorldInjector(BooleanSupplier booleanSupplier, CallbackInfo ci, Iterator var2, ServerLevel serverLevel){
-        world=serverLevel;
+    at=@At(value = "INVOKE",target = "Lnet/minecraft/server/MinecraftServer;getAllLevels()Ljava/lang/Iterable;"))
+    private void beforeTick(BooleanSupplier booleanSupplier, CallbackInfo ci){
+        TickInverter.INSTANCE.beforeGettingAllLevels(levels.size(),(MinecraftServer) (Object)this);
     }
     @Redirect(
             method = "tickChildren",
             at = @At(value = "INVOKE", target = "Lnet/minecraft/server/level/ServerLevel;tick(Ljava/util/function/BooleanSupplier;)V"))
-    private void tickWorldNoCrash(ServerLevel instance, BooleanSupplier shouldKeepTicking){
-        try{
-            world.tick(shouldKeepTicking);
-        }catch (Throwable e){
-            e.printStackTrace();
-            ServerUtils.broadcastChatMessage("tick world错误"+e+e.getCause());
-
-        }
+    private void tickWorldNoCrash(ServerLevel world, BooleanSupplier shouldKeepTicking){
+        TickInverter.INSTANCE.callTick(world,shouldKeepTicking,(MinecraftServer) (Object)this);
     }
 }
 @Mixin(LevelTicks.class)
