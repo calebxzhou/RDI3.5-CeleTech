@@ -12,7 +12,7 @@ import net.minecraft.world.level.levelgen.structure.BoundingBox;
 import net.minecraft.world.level.material.Fluids;
 
 public class WorldUtils {
-
+    public static final BlockPos INIT_POS = new BlockPos(0,127,0);
     public static void fill(ServerLevel serverWorld, BoundingBox range, BlockState block){
         for (BlockPos blockPos : BlockPos.betweenClosed(range.minX(), range.minY(), range.minZ(), range.maxX(), range.maxY(), range.maxZ())) {
             serverWorld.setBlockAndUpdate(blockPos, block);
@@ -40,7 +40,15 @@ public class WorldUtils {
         return false;
 
     }
-
+    public static void placeBlock(Level world,BlockPos bpos,BlockState blockState){
+        world.setBlockAndUpdate(bpos,blockState);
+    }
+    public static void placeInitialBlocks(Level world){
+        BlockPos basePos = new BlockPos(0,127,0);
+        placeBlock(world,basePos,Blocks.BEDROCK.defaultBlockState());
+        placeBlock(world,basePos.offset(1,0,0),Blocks.DIRT.defaultBlockState());
+        placeBlock(world,basePos.offset(1,1,0),Blocks.OAK_SAPLING.defaultBlockState());
+    }
     public static boolean canPositionSeeSun(Level world, BlockPos pos){
         int dayTime = getDayTime(world);
         //阳光角度,面向北方从3点钟->12->9->6->3

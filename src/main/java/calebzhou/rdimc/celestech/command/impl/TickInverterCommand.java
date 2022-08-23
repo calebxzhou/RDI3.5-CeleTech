@@ -60,7 +60,8 @@ public class TickInverterCommand extends RdiCommand {
 
     private void execBlockEntites(CommandSourceStack source) {
         ThreadPool.newThread(()->{
-            TextUtils.sendChatMessage(source, "当前全服共有%d个容器进入了延迟tick列表".formatted(TickInverter.BlockEntity.INSTANCE.getDelayTickListSize()));
+            TickInverter.BlockEntity instance = TickInverter.BlockEntity.INSTANCE;
+            TextUtils.sendChatMessage(source, "当前全服共有%d个容器进入了延迟tick列表".formatted(instance.getDelayTickListSize()));
             ServerPlayer player = source.getPlayer();
             if(player==null)
                 return;
@@ -72,11 +73,13 @@ public class TickInverterCommand extends RdiCommand {
 
     private void execEntities(CommandSourceStack source) {
         ThreadPool.newThread(()->{
-            TextUtils.sendChatMessage(source, "当前全服共有%d个实体进入了延迟tick列表".formatted(TickInverter.EntityInv.INSTANCE.getDelayTickListSize()));
+            TickInverter.EntityInv instance = TickInverter.EntityInv.INSTANCE;
+            TextUtils.sendChatMessage(source, "当前全服共有%d个实体进入了延迟tick列表".formatted(instance.getDelayTickListSize()));
             ServerPlayer player = source.getPlayer();
             if(player==null)
                 return;
             //TODO 查看附近的被延迟的tick
+
         });
     }
 }

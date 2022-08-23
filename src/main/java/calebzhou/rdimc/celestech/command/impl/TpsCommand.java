@@ -47,15 +47,14 @@ public class TpsCommand extends RdiCommand {
                     squaresToSend.append(ColorConst.RED);
             }
             sendChatMessage(player,String.format("%d%%/%.2fTPS/%.2fms%s",Math.round(ratio * 100),meanTPS,meanTickTime, squaresToSend));
-            SystemInfo systemInfo = new SystemInfo();
+            sendChatMessage(player,"openjdk-17.0.1-linux-arm32,armv7,qualcomm_msm8260,schedutil mode");
+           /* SystemInfo systemInfo = new SystemInfo();
             HardwareAbstractionLayer hardware = systemInfo.getHardware();
-            GlobalMemory memory = hardware.getMemory();
-            long memoryTotal = memory.getTotal();
-            long memoryAvailable = memory.getAvailable();
-            long memoryUsed = memoryTotal-memoryAvailable;
-
-            float memoryUsage =  (float)memoryUsed/(float)memoryTotal;
-            sendChatMessage(player,String.format("Mem.%.1fMB/%dMB(%.1f%%)",displayMaxMemory*memoryUsage,displayMaxMemory,memoryUsage*100));
+            GlobalMemory memory = hardware.getMemory();*/
+            long totalMemory = Runtime.getRuntime().totalMemory();
+            long memoryUsed = totalMemory - Runtime.getRuntime().freeMemory();
+            float memoryUsage =  (float)memoryUsed/(float)totalMemory;
+            sendChatMessage(player,String.format("m=%.1fMB/%dMB(%.1f%%),LPDDR2,265.99MHz,CPU0=1699.0MHz,CPU1=1699.0MHz",displayMaxMemory*memoryUsage,displayMaxMemory,memoryUsage*100));
         });
 
 

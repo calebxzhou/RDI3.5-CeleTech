@@ -181,14 +181,17 @@ public class IslandCommand extends RdiCommand {
 
                     ResourceLocation islandDimension = new ResourceLocation(RDICeleTech.MODID, ISLAND_DIMENSION_PREFIX + islandId);
                     RuntimeWorldHandle worldHandle = fantasy.getOrOpenPersistentWorld(islandDimension, worldConfig);*/
-                   PlayerLocation loca = new PlayerLocation(x,y,z);
+                    PlayerLocation loca = new PlayerLocation(x,y,z);
                     ResourceKey<Level> resourceKey = player.getLevel().dimension();
                     loca.world= player.getLevel();
                     player.addEffect(new MobEffectInstance(MobEffects.SLOW_FALLING,20*30,1));
                     player.setRespawnPosition(resourceKey,new BlockPos(loca.x,loca.y,loca.z).above(2),0,true,false);
                     teleport(player, loca.add(0.5, 12,  0.5));
+                    sendChatMessage(player, MessageType.SUCCESS,"成功！");
                     placeBlock(player.getLevel(), loca, Blocks.BEDROCK.defaultBlockState());
-                    givePlayerInitialKit(player);
+                    placeBlock(player.getLevel(), loca.add(1,0,0), Blocks.DIRT.defaultBlockState());
+                    placeBlock(player.getLevel(), loca.add(1,1,0), Blocks.OAK_SAPLING.defaultBlockState());
+                    //givePlayerInitialKit(player);
                 },
                 "island/"+ player.getStringUUID()
                 ,"x="+x,"y="+y,"z="+z

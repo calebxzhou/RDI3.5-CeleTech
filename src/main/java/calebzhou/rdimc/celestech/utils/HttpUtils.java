@@ -66,7 +66,7 @@ public class HttpUtils {
                     }
                     doOnSuccess.accept(body.string());
 
-                } catch (IOException e) {
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
 

@@ -23,7 +23,7 @@ public class RDICeleTech implements ModInitializer {
     //调试模式
     public static final boolean DEBUG = false;
     public static final String MODID ="rdict3";
-    public static final String ISLAND_DIMENSION_PREFIX ="island_";
+    public static final String ISLAND_DIMENSION_PREFIX ="i_";
     public static final Logger LOGGER = LogManager.getLogger(MODID);
     public static final ConcurrentHashMap<String,String> tpaMap = new ConcurrentHashMap<>();
     public static final Object2ObjectOpenHashMap<String,String> ipGeoMap = new Object2ObjectOpenHashMap();

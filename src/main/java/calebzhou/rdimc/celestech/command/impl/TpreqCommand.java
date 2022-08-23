@@ -7,7 +7,6 @@ import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
-import net.minecraft.commands.arguments.EntityArgument;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.GameType;
 
@@ -64,7 +63,7 @@ public class TpreqCommand extends RdiCommand {
 
         sendChatMessage(toPlayer,"正在传送..");
         sendChatMessage(fromPlayer,"正在传送..");
-        PlayerUtils.teleportPlayer(fromPlayer,toPlayer);
+        PlayerUtils.teleport(fromPlayer,toPlayer);
         if(visitOnly){
             fromPlayer.gameMode.changeGameModeForPlayer(GameType.SPECTATOR);
             sendChatMessage(fromPlayer,"对方使用了'仅参观'模式接受了你的传送请求");
