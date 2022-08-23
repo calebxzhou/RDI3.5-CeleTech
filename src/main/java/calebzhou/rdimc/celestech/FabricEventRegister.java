@@ -147,6 +147,7 @@ public class FabricEventRegister {
     private void registerCommands(CommandDispatcher<CommandSourceStack> dispatcher, CommandBuildContext context, Commands.CommandSelection selection) {
         final ObjectArrayList<RdiCommand> commands = new ObjectArrayList<>();
         commands.add(new IslandCommand());
+        commands.add(new Island2Command());
         commands.add(new SpawnCommand());
         commands.add(new TpaCommand());
         commands.add(new TpreqCommand());
@@ -158,6 +159,7 @@ public class FabricEventRegister {
         commands.add(new AfkListCommand());
         commands.add(new IpListCommand());
         commands.add(new HomeCommand());
+        commands.add(new Home2Command());
         commands.add(new TickInverterCommand());
         commands.add(new HelpCommand());
 

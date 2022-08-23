@@ -45,9 +45,11 @@ public class WorldUtils {
     }
     public static void placeInitialBlocks(Level world){
         BlockPos basePos = new BlockPos(0,127,0);
-        placeBlock(world,basePos,Blocks.BEDROCK.defaultBlockState());
-        placeBlock(world,basePos.offset(1,0,0),Blocks.DIRT.defaultBlockState());
-        placeBlock(world,basePos.offset(1,1,0),Blocks.OAK_SAPLING.defaultBlockState());
+        placeBlock(world,basePos.offset(0,0,0),Blocks.DIRT.defaultBlockState());
+        placeBlock(world,basePos.offset(0,1,0),Blocks.OAK_SAPLING.defaultBlockState());
+        placeBlock(world,basePos.offset(0,0,-1),Blocks.OBSIDIAN.defaultBlockState());
+        placeBlock(world,basePos.offset(-1,0,0),Blocks.OBSIDIAN.defaultBlockState());
+        placeBlock(world,basePos.offset(-1,0,-1),Blocks.OBSIDIAN.defaultBlockState());
     }
     public static boolean canPositionSeeSun(Level world, BlockPos pos){
         int dayTime = getDayTime(world);

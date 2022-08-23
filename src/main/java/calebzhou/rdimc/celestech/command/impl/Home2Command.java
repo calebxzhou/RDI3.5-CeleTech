@@ -8,6 +8,7 @@ import calebzhou.rdimc.celestech.thread.RdiHttpPlayerRequest;
 import calebzhou.rdimc.celestech.thread.RdiHttpRequest;
 import calebzhou.rdimc.celestech.thread.RdiIslandRequestThread;
 import calebzhou.rdimc.celestech.utils.PlayerUtils;
+import calebzhou.rdimc.celestech.utils.ServerUtils;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.resources.ResourceLocation;
@@ -29,7 +30,9 @@ public class Home2Command extends RdiCommand {
     @Override
     public LiteralArgumentBuilder<CommandSourceStack> getExecution() {
         return baseArgBuilder.executes(context -> {
+
             ServerPlayer player = context.getSource().getPlayer();
+            sendChatMessage(player,MessageType.INFO,"开始返回您的岛屿，请稍等...");
             RdiIslandRequestThread.addTask(new RdiHttpPlayerRequest(
                     RdiHttpRequest.Type.get,
                     player,
@@ -46,11 +49,13 @@ public class Home2Command extends RdiCommand {
                         double w= Double.parseDouble(split[4]);
                         double p= Double.parseDouble(split[5]);
                         ResourceLocation dim = Island2Command.getIslandDimensionLoca(iid);
-                        RuntimeWorldHandle worldHandle = Fantasy.get(RDICeleTech.getServer()).getOrOpenPersistentWorld(dim, Island2Command.getIslandWorldConfig());
-                        ServerLevel world = worldHandle.asWorld();
-                        PlayerUtils.addSlowFallEffect(player);
-                        PlayerUtils.teleport(player,world,x,y,z,w,p);
-                        sendChatMessage(player,MessageType.SUCCESS,"1");
+                        ServerUtils.executeOnServerThread(()->{
+                            RuntimeWorldHandle worldHandle = Fantasy.get(RDICeleTech.getServer()).getOrOpenPersistentWorld(dim, Island2Command.getIslandWorldConfig());
+                            ServerLevel world = worldHandle.asWorld();
+                            PlayerUtils.addSlowFallEffect(player);
+                            PlayerUtils.teleport(player,world,x,y+3,z,w,p);
+                            sendChatMessage(player,MessageType.SUCCESS,"成功！");
+                        });
                     },
                     "island2/" + player.getStringUUID()
             ));

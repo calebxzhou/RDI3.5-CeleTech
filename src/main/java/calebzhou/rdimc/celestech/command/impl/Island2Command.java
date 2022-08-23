@@ -8,6 +8,7 @@ import calebzhou.rdimc.celestech.thread.RdiHttpPlayerRequest;
 import calebzhou.rdimc.celestech.thread.RdiHttpRequest;
 import calebzhou.rdimc.celestech.thread.RdiIslandRequestThread;
 import calebzhou.rdimc.celestech.utils.PlayerUtils;
+import calebzhou.rdimc.celestech.utils.ServerUtils;
 import calebzhou.rdimc.celestech.utils.TextUtils;
 import calebzhou.rdimc.celestech.utils.WorldUtils;
 import com.mojang.brigadier.arguments.StringArgumentType;
@@ -18,6 +19,7 @@ import net.minecraft.commands.SharedSuggestionProvider;
 import net.minecraft.commands.arguments.EntityArgument;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.Difficulty;
@@ -109,20 +111,23 @@ public class Island2Command extends RdiCommand {
                             sendChatMessage(player, MessageType.INFO,"开始创建岛屿，不要触碰鼠标或者键盘！");
                             int iid =Integer.parseInt(msg);
                             sendChatMessage(player, MessageType.INFO,"您的岛屿ID："+iid);
-                            Fantasy fantasy = Fantasy.get(RDICeleTech.getServer());
+                            MinecraftServer server = RDICeleTech.getServer();
+                            ServerUtils.executeOnServerThread(()->{
+                                Fantasy fantasy = Fantasy.get(server);
+                                sendChatMessage(player, MessageType.INFO,"正在创建存档。。");
+                                ResourceLocation islandDimension = getIslandDimensionLoca(iid);
+                                RuntimeWorldHandle worldHandle = fantasy.getOrOpenPersistentWorld(islandDimension, getIslandWorldConfig());
+                                sendChatMessage(player, MessageType.INFO,"正在载入地形。。");
+                                ServerLevel level = worldHandle.asWorld();
+                                WorldUtils.placeInitialBlocks(level);
+                                sendChatMessage(player, MessageType.INFO,"放置方块中。。");
+                                PlayerUtils.addSlowFallEffect(player);
+                                PlayerUtils.setSpawnPoint(player,level.dimension(),WorldUtils.INIT_POS.above(7));
+                                sendChatMessage(player, MessageType.INFO,"准备传送。。。");
+                                PlayerUtils.teleport(player,level,WorldUtils.INIT_POS.above(7));
+                                sendChatMessage(player, MessageType.SUCCESS,"成功！");
+                            });
 
-                            sendChatMessage(player, MessageType.INFO,"正在创建存档。。");
-                            ResourceLocation islandDimension = getIslandDimensionLoca(iid);
-                            RuntimeWorldHandle worldHandle = fantasy.getOrOpenPersistentWorld(islandDimension, getIslandWorldConfig());
-                            sendChatMessage(player, MessageType.INFO,"正在载入地形。。");
-                            ServerLevel level = worldHandle.asWorld();
-                            WorldUtils.placeInitialBlocks(level);
-                            sendChatMessage(player, MessageType.INFO,"放置方块中。。");
-                            PlayerUtils.addSlowFallEffect(player);
-                            PlayerUtils.setSpawnPoint(player,level.dimension(),WorldUtils.INIT_POS.above(2));
-                            sendChatMessage(player, MessageType.INFO,"准备传送。。。");
-                            PlayerUtils.teleport(player,level,WorldUtils.INIT_POS.above(15));
-                            sendChatMessage(player, MessageType.SUCCESS,"成功！");
                         },
                         "island2/"+ player.getStringUUID()
 
@@ -191,13 +196,15 @@ public class Island2Command extends RdiCommand {
                         RdiIslandRequestThread.addTask(new RdiHttpPlayerRequest(RdiHttpRequest.Type.delete,player,resp2->{
                             if (resp2.equals("1")) {
                                 ResourceLocation dim = Island2Command.getIslandDimensionLoca(iid);
-                                RuntimeWorldHandle worldHandle = Fantasy.get(RDICeleTech.getServer()).getOrOpenPersistentWorld(dim, Island2Command.getIslandWorldConfig());
-                                player.getInventory().clearContent();
-                                player.kill();
-                                PlayerUtils.teleport(player, WorldConst.SPAWN_LOCA);
-                                worldHandle.delete();
-                                PlayerUtils.setSpawnPoint(player,Level.OVERWORLD, new BlockPos(WorldConst.SPAWN_LOCA.x, WorldConst.SPAWN_LOCA.y, WorldConst.SPAWN_LOCA.z));
-                                sendChatMessage(player, MessageType.SUCCESS, "1");
+                                ServerUtils.executeOnServerThread(()-> {
+                                    RuntimeWorldHandle worldHandle = Fantasy.get(RDICeleTech.getServer()).getOrOpenPersistentWorld(dim, Island2Command.getIslandWorldConfig());
+                                    player.getInventory().clearContent();
+                                    player.kill();
+                                    PlayerUtils.teleport(player, WorldConst.SPAWN_LOCA);
+                                    worldHandle.delete();
+                                    PlayerUtils.setSpawnPoint(player, Level.OVERWORLD, new BlockPos(WorldConst.SPAWN_LOCA.x, WorldConst.SPAWN_LOCA.y, WorldConst.SPAWN_LOCA.z));
+                                    sendChatMessage(player, MessageType.SUCCESS, "1");
+                                });
                             } else {
                                 sendChatMessage(player, MessageType.ERROR, "您未拥有空岛！");
                             }

@@ -24,6 +24,9 @@ public class ServerUtils {
     public static void executeCommandOnServer(String command){
         executeCommandOnSource(command,RDICeleTech.getServer().createCommandSourceStack());
     }
+    public static void executeOnServerThread(Runnable cmd){
+        RDICeleTech.getServer().execute(cmd);
+    }
     public static void executeCommandOnSource(String command, CommandSourceStack source){
         MinecraftServer server = RDICeleTech.getServer();
         server.getCommands().performCommand(source,command);

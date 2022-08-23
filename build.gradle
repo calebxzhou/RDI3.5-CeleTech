@@ -34,7 +34,7 @@ dependencies {
 	includeImplementation( 'com.squareup.okio:okio:3.0.0' )
 	includeImplementation( 'com.squareup.okio:okio-jvm:3.0.0' )
 	//动态创建维度
-	modImplementation 'xyz.nucleoid:fantasy:0.4.5+1.19'
+	modImplementation "xyz.nucleoid:fantasy:0.4.5+1.19"
 	/*includeImplementation 'org.apache.httpcomponents.client5:httpclient5:5.1.3'
 	includeImplementation 'org.apache.httpcomponents.core5:httpcore5:5.1.3'
 	includeImplementation 'org.apache.httpcomponents.core5:httpcore5-h2:5.1.3'*/
