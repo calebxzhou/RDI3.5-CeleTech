@@ -1,7 +1,6 @@
 package calebzhou.rdimc.celestech.thread;
 
 import okhttp3.FormBody;
-import org.jetbrains.annotations.NotNull;
 
 //封装HTTP请求
 public class RdiHttpRequest {

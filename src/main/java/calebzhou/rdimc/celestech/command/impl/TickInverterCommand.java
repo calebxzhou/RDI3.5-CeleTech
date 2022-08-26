@@ -1,7 +1,8 @@
 package calebzhou.rdimc.celestech.command.impl;
 
 import calebzhou.rdimc.celestech.command.RdiCommand;
-import calebzhou.rdimc.celestech.module.tickinv.TickInverter;
+import calebzhou.rdimc.celestech.module.tickinv.BlockEntityTickInverter;
+import calebzhou.rdimc.celestech.module.tickinv.EntityTickInverter;
 import calebzhou.rdimc.celestech.utils.TextUtils;
 import calebzhou.rdimc.celestech.utils.ThreadPool;
 import com.mojang.brigadier.arguments.StringArgumentType;
@@ -60,7 +61,7 @@ public class TickInverterCommand extends RdiCommand {
 
     private void execBlockEntites(CommandSourceStack source) {
         ThreadPool.newThread(()->{
-            TickInverter.BlockEntity instance = TickInverter.BlockEntity.INSTANCE;
+            BlockEntityTickInverter instance = BlockEntityTickInverter.INSTANCE;
             TextUtils.sendChatMessage(source, "当前全服共有%d个容器进入了延迟tick列表".formatted(instance.getDelayTickListSize()));
             ServerPlayer player = source.getPlayer();
             if(player==null)
@@ -73,7 +74,7 @@ public class TickInverterCommand extends RdiCommand {
 
     private void execEntities(CommandSourceStack source) {
         ThreadPool.newThread(()->{
-            TickInverter.EntityInv instance = TickInverter.EntityInv.INSTANCE;
+            EntityTickInverter instance = EntityTickInverter.INSTANCE;
             TextUtils.sendChatMessage(source, "当前全服共有%d个实体进入了延迟tick列表".formatted(instance.getDelayTickListSize()));
             ServerPlayer player = source.getPlayer();
             if(player==null)

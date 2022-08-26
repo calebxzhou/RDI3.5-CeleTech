@@ -1,6 +1,7 @@
 package calebzhou.rdimc.celestech.command.impl;
 
 import calebzhou.rdimc.celestech.RDICeleTech;
+import calebzhou.rdimc.celestech.RdiSharedConstants;
 import calebzhou.rdimc.celestech.command.RdiCommand;
 import calebzhou.rdimc.celestech.constant.MessageType;
 import calebzhou.rdimc.celestech.constant.WorldConst;
@@ -56,7 +57,7 @@ public class Island2Command extends RdiCommand {
         return getIslandDimensionLoca(iid + "");
     }
     public static ResourceLocation getIslandDimensionLoca(String iid){
-        return new ResourceLocation(RDICeleTech.MODID, RDICeleTech.ISLAND_DIMENSION_PREFIX + iid);
+        return new ResourceLocation(RdiSharedConstants.MOD_ID, RdiSharedConstants.ISLAND_DIMENSION_PREFIX + iid);
     }
     @Override
     public LiteralArgumentBuilder<CommandSourceStack> getExecution() {

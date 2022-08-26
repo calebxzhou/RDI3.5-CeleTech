@@ -1,6 +1,6 @@
 package calebzhou.rdimc.celestech.mixin.server;
 
-import calebzhou.rdimc.celestech.RDICeleTech;
+import calebzhou.rdimc.celestech.RdiSharedConstants;
 import com.google.gson.JsonObject;
 import net.minecraft.DetectedVersion;
 import org.spongepowered.asm.mixin.Final;
@@ -23,7 +23,7 @@ public class MixinProtocolVersion {
             at=@At("TAIL")
     )
     private void changeVersion(JsonObject json, CallbackInfo ci){
-        protocolVersion=RDICeleTech.VERSION;
+        protocolVersion= RdiSharedConstants.VERSION;
         name="RDI LiberTorch Engine";
     }
 }

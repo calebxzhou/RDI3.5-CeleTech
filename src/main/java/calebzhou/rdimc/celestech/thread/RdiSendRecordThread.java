@@ -2,35 +2,21 @@ package calebzhou.rdimc.celestech.thread;
 
 
 import calebzhou.rdimc.celestech.utils.HttpUtils;
+import calebzhou.rdimc.celestech.utils.ThreadPool;
+import com.google.common.util.concurrent.ThreadFactoryBuilder;
 
-import java.util.PriorityQueue;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadFactory;
 
 //记录线程，发送HTTP请求，专为record类的请求，不处理返回的结果
-public class RdiSendRecordThread extends Thread{
-
-    public static final RdiSendRecordThread INSTANCE = new RdiSendRecordThread();
-    private static final Queue<RdiHttpRequest> requestQueue = new ConcurrentLinkedQueue<>();
-
-    @Override
-    public void run() {
-        while(true){
-            try {
-                RdiHttpRequest request = requestQueue.poll();
-                if(request!=null){
-                    HttpUtils.sendRequestAsync(request,msg->{},HttpUtils::universalHttpRequestFailureConsumer);
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-
-    }
+public class RdiSendRecordThread {
+    private final static ThreadFactory namedThreadFactory =
+            new ThreadFactoryBuilder().setNameFormat("RdiRecordRequest-%d").build();
+    private final static ExecutorService exe = Executors.newCachedThreadPool(namedThreadFactory) ;
     public static void addTask(RdiHttpRequest request){
-        requestQueue.add(request);
-    }
-    private RdiSendRecordThread(){
-        super ("RDI-Record-Thread");
+        exe.execute(()->HttpUtils.sendRequestAsync(request,msg->{},HttpUtils::universalHttpRequestFailureConsumer));
     }
 }

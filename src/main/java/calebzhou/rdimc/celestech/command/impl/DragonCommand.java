@@ -4,15 +4,12 @@ import calebzhou.rdimc.celestech.command.RdiCommand;
 import calebzhou.rdimc.celestech.constant.MessageType;
 import calebzhou.rdimc.celestech.utils.TextUtils;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
-import net.fabricmc.fabric.api.dimension.v1.FabricDimensions;
 import net.minecraft.commands.CommandSourceStack;
-import net.minecraft.commands.Commands;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobSpawnType;
-import net.minecraft.world.entity.boss.enderdragon.EnderDragon;
 
 public class DragonCommand extends RdiCommand {
     public DragonCommand() {

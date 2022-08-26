@@ -1,7 +1,9 @@
 package calebzhou.rdimc.celestech.mixin.server;
 
 import calebzhou.rdimc.celestech.ServerStatus;
-import calebzhou.rdimc.celestech.module.tickinv.TickInverter;
+import calebzhou.rdimc.celestech.module.tickinv.BlockEntityTickInverter;
+import calebzhou.rdimc.celestech.module.tickinv.EntityTickInverter;
+import calebzhou.rdimc.celestech.module.tickinv.WorldTickThreadManager;
 import calebzhou.rdimc.celestech.utils.ServerUtils;
 import net.minecraft.Util;
 import net.minecraft.core.BlockPos;
@@ -37,38 +39,18 @@ import java.util.function.Consumer;
 
 @Mixin(Level.class)
 public abstract class mTickInvertLevel {
-
-    /*private static final int ENTITY_TICK_LIMIT = 35;
-
-    //最重要的部分，防止机器卡顿
-    @Shadow @Final @Mutable protected List<TickingBlockEntity> blockEntityTickers;
-
-    @Shadow public abstract boolean destroyBlock(BlockPos blockPos, boolean bl, @Nullable Entity entity, int i);*/
-
     @Redirect(method = "tickBlockEntities()V",
             at = @At(value = "INVOKE",
                     target = "Lnet/minecraft/world/level/block/entity/TickingBlockEntity;tick()V"))
-    private void tickBlockEntity(TickingBlockEntity blockEntityTickInvoker){
-        try {
-            TickInverter.BlockEntity.INSTANCE.tickBlockEntity(blockEntityTickInvoker);
-        } catch (Exception e) {
-            e.printStackTrace();
-            BlockPos pos = blockEntityTickInvoker.getPos();
-            ServerUtils.broadcastChatMessage(String.format("RDI TickInverter捕获到异常：坐标%s的block entity出现问题：%s",pos,e.getCause()+e.getMessage()));
-        }
+    private void tickBlockEntity(TickingBlockEntity invoker){
+        BlockEntityTickInverter.INSTANCE.tick(invoker);
     }
     @Redirect(method = "guardEntityTick(Ljava/util/function/Consumer;Lnet/minecraft/world/entity/Entity;)V",
             at = @At(value = "INVOKE",
                     target = "Ljava/util/function/Consumer;accept(Ljava/lang/Object;)V"))
     private void tickEntity(Consumer tickConsumer, Object entity){
-        try {
-            TickInverter.EntityInv.INSTANCE.tickEntity(tickConsumer,(Entity) entity);
-        } catch (Exception e) {
-            TickInverter.EntityInv.handleEntityException(e, (Entity) entity,"5");
-        }
+        EntityTickInverter.INSTANCE.tick(tickConsumer,(Entity) entity);
     }
-
-
 }
 @Mixin(MinecraftServer.class)
 abstract
@@ -102,15 +84,15 @@ class mTickInvertServer {
     @Inject(method = "runServer",at=@At(value = "INVOKE",target = "Lnet/minecraft/server/MinecraftServer;tickServer(Ljava/util/function/BooleanSupplier;)V"))
 
     private void releaseDelayTicks(CallbackInfo ci){
-        TickInverter.EntityInv.INSTANCE.releaseDelayTickList();
-        TickInverter.BlockEntity.INSTANCE.releaseDelayTickList();
+        BlockEntityTickInverter.INSTANCE.releaseDelayTickList();
+        EntityTickInverter.INSTANCE.releaseDelayTickList();
     }
     //用try-catch包起来服务器运行主体，防止崩溃
     @Redirect(method = "runServer",
             at = @At(value = "INVOKE", target = "Lnet/minecraft/server/MinecraftServer;tickServer(Ljava/util/function/BooleanSupplier;)V"))
     private void tickServerNoCrash(MinecraftServer instance, BooleanSupplier shouldKeepTicking){
         try{
-            tickServer(()->true);
+            tickServer(shouldKeepTicking);
         }catch (Throwable e){
             e.printStackTrace();
             ServerUtils.broadcastChatMessage("tick server错误"+ e +e.getCause());
@@ -139,17 +121,18 @@ class mTickInvertServer {
 
 //TODO  关键一步：世界间异步tick
     //tick之前
-    @Inject(method = "tickChildren",
+   /* @Inject(method = "tickChildren",
     at=@At(value = "INVOKE",target = "Lnet/minecraft/server/MinecraftServer;getAllLevels()Ljava/lang/Iterable;"))
     private void beforeTick(BooleanSupplier booleanSupplier, CallbackInfo ci){
-        TickInverter.INSTANCE.beforeGettingAllLevels(levels.size(),(MinecraftServer) (Object)this);
-    }
+        WorldTickThreadManager.INSTANCE.onServerTickingChildrenWorlds(levels);
+    }*/
     @Redirect(
             method = "tickChildren",
             at = @At(value = "INVOKE", target = "Lnet/minecraft/server/level/ServerLevel;tick(Ljava/util/function/BooleanSupplier;)V"))
     private void tickWorldNoCrash(ServerLevel world, BooleanSupplier shouldKeepTicking){
-        TickInverter.INSTANCE.callTick(world,shouldKeepTicking,(MinecraftServer) (Object)this);
+        WorldTickThreadManager.INSTANCE.onServerCallWorldTick(world,shouldKeepTicking);
     }
+
 }
 @Mixin(LevelTicks.class)
 abstract
@@ -269,7 +252,7 @@ class mTickInvertServerLevel{
             ((Level)(Object)this).guardEntityTick(tickNonPassenger, entity);
         }
         catch (Exception e) {
-           TickInverter.EntityInv.handleEntityException(e,entity,"3");
+           EntityTickInverter.handleEntityException(e,entity,"3");
         }
     }
     @Redirect(method = "tickNonPassenger",at = @At(value = "INVOKE",target = "Lnet/minecraft/world/entity/Entity;tick()V"))
@@ -277,7 +260,7 @@ class mTickInvertServerLevel{
         try {
             entity.tick();
         } catch (Exception e) {
-            TickInverter.EntityInv.handleEntityException(e,entity,"1");
+            EntityTickInverter.handleEntityException(e,entity,"1");
         }
 
     }
@@ -286,7 +269,7 @@ class mTickInvertServerLevel{
         try {
             tickPassenger(entity, entity2);
         } catch (Exception e) {
-            TickInverter.EntityInv.handleEntityException(e,entity,"2");
+            EntityTickInverter.handleEntityException(e,entity,"2");
             entity2.discard();
         }
 

@@ -1,13 +1,12 @@
 package calebzhou.rdimc.celestech.command.impl;
 
-import calebzhou.rdimc.celestech.RDICeleTech;
+import calebzhou.rdimc.celestech.RdiMemoryStorage;
 import calebzhou.rdimc.celestech.command.RdiCommand;
 import calebzhou.rdimc.celestech.utils.TextUtils;
 import calebzhou.rdimc.celestech.utils.ThreadPool;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import net.minecraft.commands.CommandSourceStack;
-import net.minecraft.commands.Commands;
 
 public class AfkListCommand extends RdiCommand {
     public AfkListCommand() {
@@ -24,7 +23,7 @@ public class AfkListCommand extends RdiCommand {
             CommandSourceStack source = context.getSource();
 
             TextUtils.sendChatMessage(source,"挂机列表:");
-            RDICeleTech.afkMap.forEach((pname,afkTicks)->{
+            RdiMemoryStorage.afkMap.forEach((pname, afkTicks)->{
                 StringBuilder sb = new StringBuilder();
                 float totalSecs = afkTicks / 20f;
                 int hours = Math.round(totalSecs / 3600);

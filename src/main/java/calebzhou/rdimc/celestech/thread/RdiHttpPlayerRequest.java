@@ -1,10 +1,7 @@
 package calebzhou.rdimc.celestech.thread;
 
-import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import net.minecraft.world.entity.player.Player;
-import org.jetbrains.annotations.NotNull;
 
-import java.util.List;
 import java.util.function.Consumer;
 
 //封装HTTP请求

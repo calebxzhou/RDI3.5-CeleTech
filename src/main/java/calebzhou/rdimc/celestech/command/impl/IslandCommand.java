@@ -1,6 +1,5 @@
 package calebzhou.rdimc.celestech.command.impl;
 
-import calebzhou.rdimc.celestech.RDICeleTech;
 import calebzhou.rdimc.celestech.command.RdiCommand;
 import calebzhou.rdimc.celestech.constant.MessageType;
 import calebzhou.rdimc.celestech.constant.WorldConst;
@@ -18,21 +17,15 @@ import net.minecraft.commands.Commands;
 import net.minecraft.commands.SharedSuggestionProvider;
 import net.minecraft.commands.arguments.EntityArgument;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.Difficulty;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
-import net.minecraft.world.level.GameRules;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.dimension.BuiltinDimensionTypes;
-import net.minecraft.world.level.dimension.DimensionType;
 
-import static calebzhou.rdimc.celestech.RDICeleTech.ISLAND_DIMENSION_PREFIX;
-import static calebzhou.rdimc.celestech.utils.PlayerUtils.*;
+import static calebzhou.rdimc.celestech.utils.PlayerUtils.placeBlock;
+import static calebzhou.rdimc.celestech.utils.PlayerUtils.teleport;
 import static calebzhou.rdimc.celestech.utils.TextUtils.sendChatMessage;
 
 public class IslandCommand extends RdiCommand {

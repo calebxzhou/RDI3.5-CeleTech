@@ -3,7 +3,6 @@ package calebzhou.rdimc.celestech.command.impl;
 import calebzhou.rdimc.celestech.RDICeleTech;
 import calebzhou.rdimc.celestech.command.RdiCommand;
 import calebzhou.rdimc.celestech.constant.MessageType;
-import calebzhou.rdimc.celestech.model.PlayerLocation;
 import calebzhou.rdimc.celestech.thread.RdiHttpPlayerRequest;
 import calebzhou.rdimc.celestech.thread.RdiHttpRequest;
 import calebzhou.rdimc.celestech.thread.RdiIslandRequestThread;
@@ -14,17 +13,14 @@ import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.effect.MobEffectInstance;
-import net.minecraft.world.effect.MobEffects;
 import xyz.nucleoid.fantasy.Fantasy;
 import xyz.nucleoid.fantasy.RuntimeWorldHandle;
 
-import static calebzhou.rdimc.celestech.utils.PlayerUtils.teleport;
 import static calebzhou.rdimc.celestech.utils.TextUtils.sendChatMessage;
 
 public class Home2Command extends RdiCommand {
     public Home2Command() {
-        super("home2");
+        super("home");
     }
 
     @Override

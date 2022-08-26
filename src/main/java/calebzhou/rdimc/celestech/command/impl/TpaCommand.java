@@ -1,9 +1,9 @@
 package calebzhou.rdimc.celestech.command.impl;
 
+import calebzhou.rdimc.celestech.RdiMemoryStorage;
 import calebzhou.rdimc.celestech.command.RdiCommand;
 import calebzhou.rdimc.celestech.constant.ColorConst;
 import calebzhou.rdimc.celestech.constant.MessageType;
-import calebzhou.rdimc.celestech.utils.ThreadPool;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
@@ -11,7 +11,9 @@ import net.minecraft.commands.arguments.EntityArgument;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.server.level.ServerPlayer;
 
-import static calebzhou.rdimc.celestech.RDICeleTech.tpaMap;
+import java.util.Timer;
+import java.util.TimerTask;
+
 import static calebzhou.rdimc.celestech.utils.TextUtils.getClickableContentComp;
 import static calebzhou.rdimc.celestech.utils.TextUtils.sendChatMessage;
 
@@ -41,13 +43,12 @@ public class TpaCommand extends RdiCommand {
             sendChatMessage(fromPlayer,MessageType.ERROR,"经验不足,您需要3级经验.");
             return 1;
         }
-
-        if(tpaMap.containsKey(fromPlayer.getStringUUID())){
+        if(RdiMemoryStorage.tpaMap.containsKey(fromPlayer.getStringUUID())){
             sendChatMessage(fromPlayer,MessageType.ERROR,"您已经发送过传送请求了");
             return 1;
         }
-        tpaMap.put(fromPlayerId,toPlayerId);
-        sendChatMessage(fromPlayer,MessageType.INFO,"已经发送传送请求，15秒后传送请求将失效。");
+        RdiMemoryStorage.tpaMap.put(fromPlayerId,toPlayerId);
+        sendChatMessage(fromPlayer,MessageType.SUCCESS,"已经向%s发送了传送请求，15秒后传送请求将失效。".formatted(fromPlayer.getScoreboardName()));
         fromPlayer.experienceLevel-=3;
         sendChatMessage(toPlayer, ColorConst.ORANGE+fromPlayer.getScoreboardName()+"想要传送到你的身边。");
         MutableComponent tpyes= getClickableContentComp(ColorConst.BRIGHT_GREEN+"[接受]"+ ColorConst.RESET,"/tpreq true_false_"+fromPlayerId," ");
@@ -55,14 +56,17 @@ public class TpaCommand extends RdiCommand {
         MutableComponent tpwait= getClickableContentComp(ColorConst.GOLD+"[等我一下]"+ ColorConst.RESET,"稍等"," ");
         MutableComponent tpdeny= getClickableContentComp(ColorConst.RED+"[拒绝]"+ ColorConst.RESET,"/tpreq false_false_"+fromPlayerId," ");
         sendChatMessage(toPlayer,tpyes.append(tpyes2).append(tpwait).append(tpdeny));
-        ThreadPool.newThread(()->{
-            try {
-                Thread.sleep(15*1000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-            tpaMap.remove(fromPlayerId);
-        });
+        Timer timer = new Timer();
+        timer.schedule(
+                new TimerTask() {
+                    @Override
+                    public void run() {
+                        RdiMemoryStorage.tpaMap.remove(fromPlayerId);
+                        this.cancel();
+                    }
+                },
+                15*1000
+        );
         return 1;
     }
 

@@ -1,7 +1,5 @@
 package calebzhou.rdimc.celestech.constant;
 
-import calebzhou.rdimc.celestech.RDICeleTech;
-
 import java.io.File;
 
 public class FileConst {

@@ -1,24 +1,15 @@
 package calebzhou.rdimc.celestech.mixin.gameplay;
 
 
-import calebzhou.rdimc.celestech.RDICeleTech;
-import calebzhou.rdimc.celestech.utils.HttpUtils;
 import calebzhou.rdimc.celestech.utils.PlayerUtils;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
 import com.mojang.authlib.GameProfile;
 import net.minecraft.network.Connection;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.login.ServerboundHelloPacket;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerLoginPacketListenerImpl;
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang3.Validate;
-import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.*;
-import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Redirect;
 
 import java.io.File;
 import java.io.IOException;

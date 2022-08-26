@@ -18,6 +18,9 @@ public class WorldUtils {
             serverWorld.setBlockAndUpdate(blockPos, block);
         }
     }
+    public static String getDimensionName( Level level){
+        return level.dimension().location().toString();
+    }
     public static int getDayTime(Level world) {
         return (int)(world.getDayTime() % 24000L);
     }

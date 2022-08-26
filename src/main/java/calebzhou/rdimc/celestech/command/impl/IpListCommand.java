@@ -1,6 +1,6 @@
 package calebzhou.rdimc.celestech.command.impl;
 
-import calebzhou.rdimc.celestech.RDICeleTech;
+import calebzhou.rdimc.celestech.RdiMemoryStorage;
 import calebzhou.rdimc.celestech.command.RdiCommand;
 import calebzhou.rdimc.celestech.constant.MessageType;
 import calebzhou.rdimc.celestech.utils.TextUtils;
@@ -8,7 +8,6 @@ import calebzhou.rdimc.celestech.utils.ThreadPool;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import net.minecraft.commands.CommandSourceStack;
-import net.minecraft.commands.Commands;
 import net.minecraft.server.level.ServerPlayer;
 
 public class IpListCommand extends RdiCommand {
@@ -36,7 +35,7 @@ public class IpListCommand extends RdiCommand {
         ThreadPool.newThread(()->{
             TextUtils.sendChatMessage(player,"====ip属地列表====");
             StringBuilder ipinfo = new StringBuilder();
-            RDICeleTech.ipGeoMap.forEach((pname,geo)->{
+            RdiMemoryStorage.ipGeoMap.forEach((pname, geo)->{
                 String msg;
                 String[] split = geo.split(",");
                 if(split.length==0)

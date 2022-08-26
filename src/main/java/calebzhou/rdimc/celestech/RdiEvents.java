@@ -3,6 +3,7 @@ package calebzhou.rdimc.celestech;
 import calebzhou.rdimc.celestech.command.RdiCommand;
 import calebzhou.rdimc.celestech.command.impl.*;
 import calebzhou.rdimc.celestech.constant.MessageType;
+import calebzhou.rdimc.celestech.constant.WorldConst;
 import calebzhou.rdimc.celestech.module.DeathRandomDrop;
 import calebzhou.rdimc.celestech.thread.RdiHttpRequest;
 import calebzhou.rdimc.celestech.thread.RdiSendRecordThread;
@@ -40,10 +41,10 @@ import net.minecraft.world.phys.BlockHitResult;
 
 import java.io.File;
 
-public class FabricEventRegister {
-
-
-    public FabricEventRegister(){
+public class RdiEvents {
+    public static final RdiEvents INSTANCE = new RdiEvents();
+    private RdiEvents(){}
+    public void register(){
         CommandRegistrationCallback.EVENT.register(this::registerCommands);
         ServerPlayConnectionEvents.JOIN.register(this::onPlayerJoin);
         ServerPlayConnectionEvents.DISCONNECT.register(this::onPlayerDisconnect);
@@ -53,7 +54,6 @@ public class FabricEventRegister {
         ServerMessageEvents.COMMAND_MESSAGE.register(this::onPlayerCommand);
         ServerPlayerEvents.ALLOW_DEATH.register(this::onPlayerDeath);
     }
-
 
     private void recordChat(String pid, String cont){
         RdiSendRecordThread.addTask(new RdiHttpRequest(RdiHttpRequest.Type.post,"record/chat","pid="+pid,"cont="+EncodingUtils.getUTF8StringFromGBKString(cont)));
@@ -84,8 +84,8 @@ public class FabricEventRegister {
     //玩家断开服务器
     private void onPlayerDisconnect(ServerGamePacketListenerImpl listener, MinecraftServer server) {
         ServerPlayer player = listener.getPlayer();
-        RDICeleTech.afkMap.removeInt(player.getScoreboardName());
-        RDICeleTech.tpaMap.remove(player.getStringUUID());
+        RdiMemoryStorage.afkMap.removeInt(player.getScoreboardName());
+        RdiMemoryStorage.tpaMap.remove(player.getStringUUID());
         //记录登出信息
         RdiSendRecordThread.addTask(new RdiHttpRequest(RdiHttpRequest.Type.post,"record/logout", "pid="+player.getStringUUID()));
     }
@@ -120,6 +120,17 @@ public class FabricEventRegister {
                 return;
             }
         });
+        ThreadPool.newThread(()->{
+            if(RdiMemoryStorage.dimensionNotLoadPlayersMap.containsKey(player)){
+                TextUtils.sendChatMessage(player, MessageType.ERROR,"存档“%s”尚未载入。如果这个是您岛屿的存档，请使用指令/home2或者按下H键载入存档。现在将您传送到主岛.....".formatted(RdiMemoryStorage.dimensionNotLoadPlayersMap.get(player)));
+                ServerUtils.executeOnServerThread(()->{
+                    PlayerUtils.teleport(player, WorldConst.SPAWN_LOCA);
+                });
+                RdiMemoryStorage.dimensionNotLoadPlayersMap.remove(player);
+            }
+
+        });
+
         //发送天气预报
         HttpUtils.sendRequestAsync(new RdiHttpRequest(RdiHttpRequest.Type.get,"misc/weather?ip="+ player.getIpAddress()),player,weatherInfo->{
             //地址信息
@@ -127,7 +138,7 @@ public class FabricEventRegister {
             if(addrInfo.startsWith("@")){
                 addrInfo=addrInfo.replace("@","");
                 //写入地址信息
-                RDICeleTech.ipGeoMap.put(player.getScoreboardName(),addrInfo);
+                RdiMemoryStorage.ipGeoMap.put(player.getScoreboardName(),addrInfo);
             }
             //玩家不显示第一行地址信息
             weatherInfo = weatherInfo.replace(addrInfo,"");

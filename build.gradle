@@ -27,7 +27,6 @@ dependencies {
 	}
 	modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
 	// https://mvnrepository.com/artifact/com.squareup.okhttp3/okhttp
-	testImplementation group: 'org.apache.logging.log4j', name: 'log4j-slf4j-impl', version: '2.17.1'
 	//新版的 http client，载入到mod包里
 	// https://mvnrepository.com/artifact/com.squareup.okhttp3/okhttp
 	includeImplementation( 'com.squareup.okhttp3:okhttp:4.10.0' )

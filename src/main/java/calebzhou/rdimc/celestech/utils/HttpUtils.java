@@ -1,43 +1,37 @@
 package calebzhou.rdimc.celestech.utils;
 
 import calebzhou.rdimc.celestech.RDICeleTech;
+import calebzhou.rdimc.celestech.RdiSharedConstants;
 import calebzhou.rdimc.celestech.constant.MessageType;
 import calebzhou.rdimc.celestech.thread.RdiHttpRequest;
-import com.google.common.util.concurrent.FutureCallback;
-import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import net.minecraft.world.entity.player.Player;
 import okhttp3.*;
 import org.jetbrains.annotations.NotNull;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import javax.net.ssl.*;
 import java.io.IOException;
-import java.net.URI;
-import java.nio.charset.StandardCharsets;
 import java.security.cert.CertificateException;
-import java.util.List;
 import java.util.function.Consumer;
 
 public class HttpUtils {
     /*public static void main(String[] args) {
         sendRequestAsync(new RdiHttpRequest(RdiHttpRequest.Type.get,"island/e7f80658-17ff-4cd0-afab-a26da0e0224a"), System.out::println, Throwable::printStackTrace);
     }*/
-    private static final OkHttpClient client = RDICeleTech.DEBUG?getUnsafeOkHttpClient():new OkHttpClient();
+    private static final OkHttpClient client = RdiSharedConstants.DEBUG?getUnsafeOkHttpClient():new OkHttpClient();
 
-    private static final String ADDR=  (RDICeleTech.DEBUG?"127.0.0.1":"www.davisoft.cn");
+    private static final String ADDR=  (RdiSharedConstants.DEBUG?"127.0.0.1":"www.davisoft.cn");
 
 
     public static Consumer<Exception> universalHttpRequestFailureConsumer(Player player){
         return exception -> {
 
             TextUtils.sendChatMessage(player, MessageType.ERROR, "请求出现错误：请立刻联系服主！" + exception.toString());
-            if(RDICeleTech.DEBUG) exception.printStackTrace();
+            if(RdiSharedConstants.DEBUG) exception.printStackTrace();
         };
     }
     public static void universalHttpRequestFailureConsumer(Exception exception){
             RDICeleTech.LOGGER.error("请求出现错误：" + exception.toString() + " " + exception.getLocalizedMessage());
-            if(RDICeleTech.DEBUG) exception.printStackTrace();
+            if(RdiSharedConstants.DEBUG) exception.printStackTrace();
     }
     public static void sendRequestAsync(RdiHttpRequest request, Player player,Consumer<String> doOnSuccess){
         sendRequestAsync(request,doOnSuccess,HttpUtils.universalHttpRequestFailureConsumer(player));
