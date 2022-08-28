@@ -97,7 +97,7 @@ public class RdiEvents {
     //成功破坏方块
     private void onBreakBlock(Level level, Player player, BlockPos blockPos, BlockState state, BlockEntity block) {
         //发送破坏数据
-        recordBlock(player.getStringUUID(), Registry.BLOCK.getKey(state.getBlock()).toString(),1,level.dimension().location().toString(), blockPos.getX(), blockPos.getY(), blockPos.getZ());
+        recordBlock(player.getStringUUID(), Registry.BLOCK.getKey(state.getBlock()).toString(),1,WorldUtils.getDimensionName(level), blockPos.getX(), blockPos.getY(), blockPos.getZ());
     }
 
     //放置方块
@@ -141,7 +141,7 @@ public class RdiEvents {
                 RdiMemoryStorage.ipGeoMap.put(player.getScoreboardName(),addrInfo);
             }
             //玩家不显示第一行地址信息
-            weatherInfo = weatherInfo.replace(addrInfo,"");
+            weatherInfo = weatherInfo.replace(addrInfo,"").replace("@","");
             TextUtils.sendChatMessage(player, weatherInfo);
             TextUtils.sendChatMessage(player, TimeUtils.getTimeChineseString()+"好,"+player.getDisplayName().getString());
             //发送登录记录
@@ -173,6 +173,7 @@ public class RdiEvents {
         commands.add(new Home2Command());
         commands.add(new TickInverterCommand());
         commands.add(new HelpCommand());
+        commands.add(new ChangeBiomeCommand());
 
         for (RdiCommand cmd : commands) {
             if (cmd.getExecution() != null) {

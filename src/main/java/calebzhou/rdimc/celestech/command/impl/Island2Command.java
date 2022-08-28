@@ -8,10 +8,7 @@ import calebzhou.rdimc.celestech.constant.WorldConst;
 import calebzhou.rdimc.celestech.thread.RdiHttpPlayerRequest;
 import calebzhou.rdimc.celestech.thread.RdiHttpRequest;
 import calebzhou.rdimc.celestech.thread.RdiIslandRequestThread;
-import calebzhou.rdimc.celestech.utils.PlayerUtils;
-import calebzhou.rdimc.celestech.utils.ServerUtils;
-import calebzhou.rdimc.celestech.utils.TextUtils;
-import calebzhou.rdimc.celestech.utils.WorldUtils;
+import calebzhou.rdimc.celestech.utils.*;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import net.minecraft.commands.CommandSourceStack;
@@ -37,13 +34,11 @@ public class Island2Command extends RdiCommand {
         super("is2");
     }
     static final String islandHelp = """
-            =====RDI空岛管理菜单=====
+            =====RDI空岛v2管理菜单=====
             指令参数
-            create 创建岛屿
-            reset 重置岛屿
-            kick 移除成员
-            invite 邀请成员
-            loca 更改传送点
+            create 创建岛屿 reset 重置岛屿 kick 移除成员 invite 邀请成员 loca 更改传送点
+            transfer 改变岛主 quit 退出加入的岛屿
+            
             ====================
             """;
     public static RuntimeWorldConfig getIslandWorldConfig(){
@@ -59,6 +54,7 @@ public class Island2Command extends RdiCommand {
     public static ResourceLocation getIslandDimensionLoca(String iid){
         return new ResourceLocation(RdiSharedConstants.MOD_ID, RdiSharedConstants.ISLAND_DIMENSION_PREFIX + iid);
     }
+
     @Override
     public LiteralArgumentBuilder<CommandSourceStack> getExecution() {
         return baseArgBuilder.executes(context -> sendIslandHelp(context.getSource().getPlayer()))
@@ -66,7 +62,8 @@ public class Island2Command extends RdiCommand {
                         Commands.argument("指令参数", StringArgumentType.string())
                                 .suggests(
                                         (context, builder) ->
-                                                SharedSuggestionProvider.suggest(new String[]{"create","reset","kick","invite","loca"},builder)
+                                                SharedSuggestionProvider.suggest(new String[]{
+                                                        "create","reset","kick","invite","loca","transfer","quit"},builder)
                                 )
                                 .executes(
                                         context -> handleSubCommand(context.getSource().getPlayer(),StringArgumentType.getString(context,"指令参数"))
@@ -82,6 +79,7 @@ public class Island2Command extends RdiCommand {
         switch (param){
             case "invite" -> invitePlayer(fromPlayer,toPlayer);
             case "kick" -> kickPlayer(fromPlayer,toPlayer);
+            case "transfer" -> transferToPlayer(fromPlayer,toPlayer);
             default -> sendIslandHelp(fromPlayer);
         }
         return 1;
@@ -94,19 +92,57 @@ public class Island2Command extends RdiCommand {
             case "create" -> createIsland(player);
             case "reset" -> resetIsland(player);
             case "loca" -> locateIsland(player);
+            case "quit" -> quitIsland(player);
             default -> sendIslandHelp(player);
         }
         return 1;
     }
+
+    private void quitIsland(ServerPlayer player) {
+        RdiIslandRequestThread.addTask(new RdiHttpPlayerRequest(
+                RdiHttpRequest.Type.delete,
+                player,
+                msg->{
+                    if(msg.startsWith("-")){
+                        sendChatMessage(player, MessageType.ERROR,msg);
+                        return;
+                    }
+                    ServerUtils.executeOnServerThread(()-> {
+                        PlayerUtils.resetProfile(player);
+                        sendChatMessage(player, MessageType.SUCCESS, msg);
+                    });
+                },
+                "island2/crew/"+player.getStringUUID()
+        ));
+    }
+    private void transferToPlayer(ServerPlayer fromPlayer, ServerPlayer toPlayer) {
+        if(fromPlayer==toPlayer){
+            TextUtils.sendChatMessage(fromPlayer,MessageType.ERROR,"目标玩家不能是自己！");
+            return;
+        }
+        RdiIslandRequestThread.addTask(new RdiHttpPlayerRequest(
+                RdiHttpRequest.Type.put,
+                fromPlayer,
+                msg->{
+                    if(msg.startsWith("-")){
+                        sendChatMessage(fromPlayer, MessageType.ERROR,msg);
+                        return;
+                    }
+                    TextUtils.sendChatMessage(fromPlayer,MessageType.SUCCESS,msg);
+                    TextUtils.sendChatMessage(toPlayer,MessageType.SUCCESS, fromPlayer.getScoreboardName()+"把岛屿转让给了你！");
+                },
+                "island2/transfer/"+fromPlayer.getStringUUID()+"/"+toPlayer.getStringUUID()
+        ));
+    }
+
     private void createIsland(ServerPlayer player){
         sendChatMessage(player, MessageType.INFO,"准备创建岛屿，不要触碰鼠标或者键盘！");
         RdiIslandRequestThread.addTask(new RdiHttpPlayerRequest(
                         RdiHttpRequest.Type.post,
                         player,
                         msg->{
-
-                            if ("0".equals(msg)) {
-                                sendChatMessage(player, MessageType.ERROR,"！");
+                            if(msg.startsWith("-")){
+                                sendChatMessage(player, MessageType.ERROR,msg);
                                 return;
                             }
                             sendChatMessage(player, MessageType.INFO,"开始创建岛屿，不要触碰鼠标或者键盘！");
@@ -141,12 +177,19 @@ public class Island2Command extends RdiCommand {
         double z = player.getZ();
         double w = player.getXRot();
         double p = player.getYRot();
+        String dim = WorldUtils.getDimensionName(player.level);
         RdiIslandRequestThread.addTask(new RdiHttpPlayerRequest(
                 RdiHttpRequest.Type.put,
                 player,
-                resp-> sendChatMessage(player,resp),
-                "island2/"+player.getStringUUID(),
-                "x="+x,"y="+y,"z="+z,"w="+w,"p="+p
+                resp-> {
+                    if(resp.startsWith("-")){
+                        sendChatMessage(player,MessageType.ERROR,resp);
+                        return;
+                    }
+                    sendChatMessage(player,MessageType.SUCCESS,resp+"成功将您的空岛传送点改成了%f,%f,%f".formatted(x,y,z));
+                },
+                "island2/loca/"+player.getStringUUID(),
+                "x="+x,"y="+y,"z="+z,"w="+w,"p="+p,"dim="+dim
         ));
 
     }
@@ -161,19 +204,25 @@ public class Island2Command extends RdiCommand {
                 response->{
                     if(response.equals("1")) {
                         TextUtils.sendChatMessage(kickPlayer, fromPlayer.getScoreboardName() + "删除了他的岛屿!");
+                        PlayerUtils.resetProfile(kickPlayer);
                         sendChatMessage(fromPlayer, MessageType.SUCCESS, "1");
                     }else
                         sendChatMessage(fromPlayer,MessageType.ERROR,response);
                 },
-                "island2/crew/" + fromPlayer.getStringUUID()+"/"+kickPlayer.getStringUUID()
+                "island2/crew/" +  kickPlayer.getStringUUID()
         ));
     }
 
     private void invitePlayer(ServerPlayer player, ServerPlayer invitedPlayer) {
+        if(player==invitedPlayer){
+            TextUtils.sendChatMessage(player,MessageType.ERROR,"目标玩家不能是自己！");
+            return;
+        }
         RdiIslandRequestThread.addTask(new RdiHttpPlayerRequest(
                 RdiHttpRequest.Type.post,
                 player,
                 response->{
+
                     TextUtils.sendChatMessage(player,"您邀请了"+invitedPlayer);
                     if(response.equals("1")){
                         TextUtils.sendChatMessage(invitedPlayer,MessageType.INFO,player.getScoreboardName()+"邀请您加入了他的岛屿");
@@ -188,40 +237,20 @@ public class Island2Command extends RdiCommand {
 
     private void resetIsland(ServerPlayer player) {
         RdiIslandRequestThread.addTask(new RdiHttpPlayerRequest(
-                RdiHttpRequest.Type.get,
+                RdiHttpRequest.Type.delete,
                 player,
                 resp->{
-                    if(!resp.equals("0")){
-                        String[] split = resp.split(",");
-                        String iid = split[0];
-                        RdiIslandRequestThread.addTask(new RdiHttpPlayerRequest(RdiHttpRequest.Type.delete,player,resp2->{
-                            if (resp2.equals("1")) {
-                                ResourceLocation dim = Island2Command.getIslandDimensionLoca(iid);
-                                ServerUtils.executeOnServerThread(()-> {
-                                    RuntimeWorldHandle worldHandle = Fantasy.get(RDICeleTech.getServer()).getOrOpenPersistentWorld(dim, Island2Command.getIslandWorldConfig());
-                                    player.getInventory().clearContent();
-                                    player.kill();
-                                    PlayerUtils.teleport(player, WorldConst.SPAWN_LOCA);
-                                    worldHandle.delete();
-                                    PlayerUtils.setSpawnPoint(player, Level.OVERWORLD, new BlockPos(WorldConst.SPAWN_LOCA.x, WorldConst.SPAWN_LOCA.y, WorldConst.SPAWN_LOCA.z));
-                                    sendChatMessage(player, MessageType.SUCCESS, "1");
-                                });
-                            } else {
-                                sendChatMessage(player, MessageType.ERROR, "您未拥有空岛！");
-                            }
-                        },"island2/"+player.getStringUUID()));
-                    }else{
+                    if(resp.startsWith("-")){
                         sendChatMessage(player,MessageType.ERROR,resp);
+                        return;
                     }
-                    /*if (resp.equals("1")) {
-                        player.getInventory().clearContent();
-                        player.kill();
-                        PlayerUtils.teleport(player, WorldConst.SPAWN_LOCA);
-                        player.setRespawnPosition(Level.OVERWORLD, new BlockPos(WorldConst.SPAWN_LOCA.x, WorldConst.SPAWN_LOCA.y, WorldConst.SPAWN_LOCA.z), 0, true, false);
-                        sendChatMessage(player, MessageType.SUCCESS, "1");
-                    } else {
-                        sendChatMessage(player, MessageType.ERROR, "您未拥有空岛！");
-                    }*/
+                    ResourceLocation dim = Island2Command.getIslandDimensionLoca(resp);
+                    ServerUtils.executeOnServerThread(()-> {
+                        RuntimeWorldHandle worldHandle = Fantasy.get(RDICeleTech.getServer()).getOrOpenPersistentWorld(dim, Island2Command.getIslandWorldConfig());
+                        PlayerUtils.resetProfile(player);
+                        worldHandle.delete();
+                        sendChatMessage(player, MessageType.SUCCESS, resp);
+                    });
                 },
                 "island2/" + player.getStringUUID()
         ));

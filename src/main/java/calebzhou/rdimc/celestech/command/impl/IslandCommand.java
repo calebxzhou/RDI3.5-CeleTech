@@ -75,7 +75,7 @@ public class IslandCommand extends RdiCommand {
 
     private int handleSubCommand(ServerPlayer player, String param) {
         switch (param){
-            case "create" -> createIsland(player);
+            //case "create" -> createIsland(player);
             case "reset" -> resetIsland(player);
             case "loca" -> locateIsland(player);
             default -> sendIslandHelp(player);

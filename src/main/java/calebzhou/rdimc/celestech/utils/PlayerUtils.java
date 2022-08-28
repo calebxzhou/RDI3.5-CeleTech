@@ -2,6 +2,7 @@ package calebzhou.rdimc.celestech.utils;
 
 import calebzhou.rdimc.celestech.RDICeleTech;
 import calebzhou.rdimc.celestech.constant.FileConst;
+import calebzhou.rdimc.celestech.constant.WorldConst;
 import calebzhou.rdimc.celestech.model.PlayerLocation;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.protocol.game.ClientboundPlayerPositionPacket;
@@ -65,9 +66,9 @@ public class PlayerUtils {
                 player.stopSleepInBed(true, true);
             }
             if (world == player.level) {
-                ((ServerPlayer)player).connection.teleport(x, y, z, warpYaw, warpPitch, EnumSet.noneOf(ClientboundPlayerPositionPacket.RelativeArgument.class));
+                ((ServerPlayer)player).connection.teleport(x, y, z,  warpPitch,warpYaw, EnumSet.noneOf(ClientboundPlayerPositionPacket.RelativeArgument.class));
             } else {
-                ((ServerPlayer)player).teleportTo(world, x, y, z, warpYaw, warpPitch);
+                ((ServerPlayer)player).teleportTo(world, x, y, z,  warpPitch,warpYaw);
             }
         player.setYHeadRot(warpYaw);
         /*String cmd="execute as %player in %world rotated %yaw %pitch run tp %x %y %z"
@@ -107,5 +108,12 @@ public class PlayerUtils {
     }
     public static void setSpawnPoint(ServerPlayer player, ResourceKey<Level> dim,BlockPos pos){
         player.setRespawnPosition(dim,pos,0,true,true);
+    }
+    public static void resetProfile(ServerPlayer player){
+        player.experienceLevel=0;
+        player.getInventory().clearContent();
+        player.kill();
+        PlayerUtils.teleport(player, WorldConst.SPAWN_LOCA);
+        PlayerUtils.setSpawnPoint(player, Level.OVERWORLD, new BlockPos(WorldConst.SPAWN_LOCA.x, WorldConst.SPAWN_LOCA.y, WorldConst.SPAWN_LOCA.z));
     }
 }

@@ -12,11 +12,9 @@ import java.util.concurrent.ThreadFactory;
 
 //专门为空岛请求准备的线程
 public class RdiIslandRequestThread {
-    private final static ThreadFactory namedThreadFactory =
-            new ThreadFactoryBuilder().setNameFormat("RdiIslandRequest-%d").build();
-    private final static ExecutorService exe = Executors.newCachedThreadPool(namedThreadFactory) ;
+    //private final static ExecutorService exe = Executors.newFixedThreadPool(5) ;
     public static void addTask(RdiHttpPlayerRequest request){
-        exe.execute(()->HttpUtils.sendRequestAsync(
+        ThreadPool.newThread(()->HttpUtils.sendRequestAsync(
                 request,
                 request.doOnSuccess,
                 HttpUtils.universalHttpRequestFailureConsumer(request.player)

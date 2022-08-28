@@ -34,6 +34,8 @@
     "gameplay.MixinZombie",
     "gameplay.mLoginProtocol",
     "gameplay.mNewLoginProtocol",
+    "gameplay.mNoStackOverflowReadAdvancements",
+    "gameplay.mNoWarnSkippingEntity",
     "gameplay.mPlaceBlock",
     "gameplay.mPlayerEvents",
     "gameplay.mSkeleton",

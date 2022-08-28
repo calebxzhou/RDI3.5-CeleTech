@@ -1,0 +1,11 @@
+{
+  "brand": "System manufacturer:System Product Name",
+  "os": "Microsoft Windows 10 build 19044(amd64,10.0)",
+  "board": "ASUSTeK COMPUTER INC.:unknown",
+  "mem": "8.00GB-DDR4-2400;8.00GB-DDR4-2400;(∑16.00GB)",
+  "disk": "Samsung SSD 850 EVO M.2 120GB ()(111.79GB);ST1000DX001-1NS162 ()(931.51GB);(∑1043.30GB)",
+  "cpu": "Intel(R) Core(TM) i5-7500 CPU @ 3.40GHz(4C/4T)@3.41/3.40GHz",
+  "gpu": "Intel(R) HD Graphics 630 (1.00GB);",
+  "mods": "Adorn(adorn);Applied Energistics 2(ae2);Animatica(animatica);AntiGhost(antighost);Architectury(architectury);Bad Packets(badpackets);BCLib(bclib);Better End(betterend);Better Third Person(betterthirdperson);BitsAndChisels(bitsandchisels);Botania(botania);Cloth Config v6(cloth-config);CC: Restitched(computercraft);Cull Leaves(cullleaves);DashLoader(dashloader);DCCH(dcch);Dynamic FPS(dynamicfps);Enhanced Block Entities(enhancedblockentities);EntityCulling-Fabric(entityculling);Fabric API(fabric);Fabric Loader(fabricloader);Farmer\u0027s Delight(farmersdelight);Farsight Mod(farsight);FerriteCore(ferritecore);Indium(indium);Iris(iris);Java HotSpot(TM) 64-Bit Server VM(java);Krypton(krypton);LazyDFU(lazydfu);Lithium(lithium);Logic Gates(logicgates);Macaw\u0027s Bridges(mcwbridges);memory Leak Fix(memoryleakfix);Minecraft(minecraft);Mixin Conflict Helper(mixin-conflict-helper);Modern Industrialization(modern_industrialization);Mod Menu(modmenu);Mouse Tweaks(mousetweaks);Not Enough Crashes(notenoughcrashes);Ok Zoomer (Migrated to Quilt)(ok_zoomer-pmw);Patchouli(patchouli);Fabric API+(rdict3);Reese\u0027s Sodium Options(reeses-sodium-options);Roughly Enough Items(roughlyenoughitems);Roughly Enough Professions(roughlyenoughprofessions);Roughly Enough Resources(roughlyenoughresources);Sky utilities Mod(skyutils);Sodium(sodium);Sodium Extra(sodium-extra);Starlight(starlight);Tech Reborn(techreborn);ToolTip Fix(tooltipfix);Trinkets(trinkets);wthit(wthit);(∑54)",
+  "ver": "3.62/220818"
+}

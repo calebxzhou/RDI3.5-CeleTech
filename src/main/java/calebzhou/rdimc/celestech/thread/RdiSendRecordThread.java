@@ -13,10 +13,10 @@ import java.util.concurrent.ThreadFactory;
 
 //记录线程，发送HTTP请求，专为record类的请求，不处理返回的结果
 public class RdiSendRecordThread {
-    private final static ThreadFactory namedThreadFactory =
+    /*private final static ThreadFactory namedThreadFactory =
             new ThreadFactoryBuilder().setNameFormat("RdiRecordRequest-%d").build();
-    private final static ExecutorService exe = Executors.newCachedThreadPool(namedThreadFactory) ;
+    private final static ExecutorService exe = Executors.newFixedThreadPool(3,namedThreadFactory) ;*/
     public static void addTask(RdiHttpRequest request){
-        exe.execute(()->HttpUtils.sendRequestAsync(request,msg->{},HttpUtils::universalHttpRequestFailureConsumer));
+        ThreadPool.newThread(()->HttpUtils.sendRequestAsync(request,msg->{},HttpUtils::universalHttpRequestFailureConsumer));
     }
 }
