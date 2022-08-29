@@ -2,8 +2,6 @@ package calebzhou.rdimc.celestech;
 
 import calebzhou.rdimc.celestech.constant.FileConst;
 import calebzhou.rdimc.celestech.module.tickinv.TickInverter;
-import calebzhou.rdimc.celestech.thread.RdiIslandRequestThread;
-import calebzhou.rdimc.celestech.thread.RdiSendRecordThread;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.minecraft.server.MinecraftServer;

@@ -11,26 +11,42 @@ import org.jetbrains.annotations.NotNull;
 import javax.net.ssl.*;
 import java.io.IOException;
 import java.security.cert.CertificateException;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
 public class HttpUtils {
     /*public static void main(String[] args) {
         sendRequestAsync(new RdiHttpRequest(RdiHttpRequest.Type.get,"island/e7f80658-17ff-4cd0-afab-a26da0e0224a"), System.out::println, Throwable::printStackTrace);
     }*/
-    private static final OkHttpClient client = RdiSharedConstants.DEBUG?getUnsafeOkHttpClient():new OkHttpClient();
+    private static final int CONNECTION_TIME_OUT = 10;
+    private static OkHttpClient client;
+
+    static {
+        try {
+            client = RdiSharedConstants.DEBUG ?
+                    getUnsafeOkHttpClient() :
+                    new OkHttpClient.Builder()
+                            .connectTimeout(CONNECTION_TIME_OUT, TimeUnit.SECONDS)
+                            .readTimeout(CONNECTION_TIME_OUT, TimeUnit.SECONDS)
+                            .writeTimeout(CONNECTION_TIME_OUT, TimeUnit.SECONDS)
+                            .connectionPool(new ConnectionPool(32, 60, TimeUnit.SECONDS))
+                            .build();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 
     private static final String ADDR=  (RdiSharedConstants.DEBUG?"127.0.0.1":"www.davisoft.cn");
 
 
     public static Consumer<Exception> universalHttpRequestFailureConsumer(Player player){
         return exception -> {
-
             TextUtils.sendChatMessage(player, MessageType.ERROR, "请求出现错误：请立刻联系服主！" + exception.toString());
             if(RdiSharedConstants.DEBUG) exception.printStackTrace();
         };
     }
     public static void universalHttpRequestFailureConsumer(Exception exception){
-            RDICeleTech.LOGGER.error("请求出现错误：" + exception.toString() + " " + exception.getLocalizedMessage());
+            RDICeleTech.LOGGER.info("请求出现错误：" + exception.toString() + " " + exception.getLocalizedMessage());
             if(RdiSharedConstants.DEBUG) exception.printStackTrace();
     }
     public static void sendRequestAsync(RdiHttpRequest request, Player player,Consumer<String> doOnSuccess){
@@ -45,7 +61,19 @@ public class HttpUtils {
             case delete -> okreq.delete(request.getParamBody());
             default -> okreq.get();
         }
-        client.newCall(okreq.build()).enqueue(new Callback() {
+        Response response = null;
+        try {
+            response = client.newCall(okreq.build()).execute();
+            if(!response.isSuccessful()){
+                doOnFailure.accept(new IOException("RDI_RESPONSE_FAIL"));
+                return;
+            }
+            ResponseBody body = response.body();
+            doOnSuccess.accept(body.string());
+        } catch (Exception e) {
+            doOnFailure.accept(e);
+        }
+        /*response.enqueue(new Callback() {
             @Override
             public void onFailure(@NotNull Call call, @NotNull IOException e) {
                 doOnFailure.accept(e);
@@ -65,7 +93,7 @@ public class HttpUtils {
                 }
 
             }
-        });
+        });*/
     }
 
     private static OkHttpClient getUnsafeOkHttpClient() {

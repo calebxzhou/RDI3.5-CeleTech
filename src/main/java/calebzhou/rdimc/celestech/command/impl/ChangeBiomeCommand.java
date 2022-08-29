@@ -1,8 +1,10 @@
 package calebzhou.rdimc.celestech.command.impl;
 
+import calebzhou.rdimc.celestech.RdiSharedConstants;
 import calebzhou.rdimc.celestech.command.RdiCommand;
 import calebzhou.rdimc.celestech.constant.MessageType;
 import calebzhou.rdimc.celestech.utils.TextUtils;
+import calebzhou.rdimc.celestech.utils.WorldUtils;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.exceptions.DynamicCommandExceptionType;
 import net.minecraft.commands.CommandSourceStack;
@@ -49,6 +51,10 @@ public class ChangeBiomeCommand extends RdiCommand {
     // https://github.com/EngineHub/WorldEdit/blob/b4ae41a4b65876650d2538aa91847e0d49ca79cf/worldedit-fabric/src/main/java/com/sk89q/worldedit/fabric/FabricWorld.java
     final static int xpNeed = 80;
     private int changeBiome(ServerPlayer player, ResourceOrTagLocationArgument.Result<Biome> biomeType){
+        if(!WorldUtils.getDimensionName(player.level).startsWith(RdiSharedConstants.MOD_ID)){
+            TextUtils.sendChatMessage(player,MessageType.ERROR,"只有在二岛上才能改变生物群系！");
+            return 1;
+        }
         if(player.experienceLevel<xpNeed){
             TextUtils.sendChatMessage(player,MessageType.ERROR,"您经验不足"+xpNeed);
             return 1;
@@ -86,7 +92,7 @@ public class ChangeBiomeCommand extends RdiCommand {
         );
         chunk.setUnsaved(true);
         player.experienceLevel-=xpNeed;
-        TextUtils.sendChatMessage(player,MessageType.SUCCESS,"将您附近一个16x16x16的区域设定成了生物群系：%s ！重新载入区块后，更改将会生效。".formatted(biomeResourceKey.location()));
+        TextUtils.sendChatMessage(player,MessageType.SUCCESS,"将您附近一个区域设定成了生物群系：%s ！重新载入区块后，更改将会生效。".formatted(biomeResourceKey.location()));
         return 1;
     }
 }

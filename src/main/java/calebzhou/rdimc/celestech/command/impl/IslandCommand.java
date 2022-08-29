@@ -6,7 +6,7 @@ import calebzhou.rdimc.celestech.constant.WorldConst;
 import calebzhou.rdimc.celestech.model.PlayerLocation;
 import calebzhou.rdimc.celestech.thread.RdiHttpPlayerRequest;
 import calebzhou.rdimc.celestech.thread.RdiHttpRequest;
-import calebzhou.rdimc.celestech.thread.RdiIslandRequestThread;
+import calebzhou.rdimc.celestech.thread.RdiRequestThread;
 import calebzhou.rdimc.celestech.utils.PlayerUtils;
 import calebzhou.rdimc.celestech.utils.RandomUtils;
 import calebzhou.rdimc.celestech.utils.TextUtils;
@@ -35,7 +35,6 @@ public class IslandCommand extends RdiCommand {
     static final String islandHelp = """
             =====RDI空岛管理菜单=====
             指令参数
-            create 创建岛屿
             reset 重置岛屿
             kick 移除成员
             invite 邀请成员
@@ -49,7 +48,7 @@ public class IslandCommand extends RdiCommand {
                         Commands.argument("指令参数", StringArgumentType.string())
                                 .suggests(
                                         (context, builder) ->
-                                        SharedSuggestionProvider.suggest(new String[]{"create","reset","kick","invite","loca"},builder)
+                                        SharedSuggestionProvider.suggest(new String[]{"reset","kick","invite","loca"},builder)
                                 )
                         .executes(
                                 context -> handleSubCommand(context.getSource().getPlayer(),StringArgumentType.getString(context,"指令参数"))
@@ -84,7 +83,7 @@ public class IslandCommand extends RdiCommand {
     }
 
     private void locateIsland(ServerPlayer player) {
-        RdiIslandRequestThread.addTask(new RdiHttpPlayerRequest(
+        RdiRequestThread.addTask(new RdiHttpPlayerRequest(
                 RdiHttpRequest.Type.put,
                 player,
                 resp-> sendChatMessage(player,resp),
@@ -97,7 +96,7 @@ public class IslandCommand extends RdiCommand {
             TextUtils.sendChatMessage(fromPlayer, MessageType.ERROR,"您不可以踢出自己!!");
             return;
         }
-        RdiIslandRequestThread.addTask(new RdiHttpPlayerRequest(
+        RdiRequestThread.addTask(new RdiHttpPlayerRequest(
                 RdiHttpRequest.Type.delete,
                 fromPlayer,
                 response->{
@@ -111,7 +110,7 @@ public class IslandCommand extends RdiCommand {
     }
 
     private void invitePlayer(ServerPlayer player, ServerPlayer invitedPlayer) {
-        RdiIslandRequestThread.addTask(new RdiHttpPlayerRequest(
+        RdiRequestThread.addTask(new RdiHttpPlayerRequest(
                 RdiHttpRequest.Type.post,
                 player,
                 response->{
@@ -127,7 +126,7 @@ public class IslandCommand extends RdiCommand {
     }
 
     private void resetIsland(ServerPlayer player) {
-        RdiIslandRequestThread.addTask(new RdiHttpPlayerRequest(
+        RdiRequestThread.addTask(new RdiHttpPlayerRequest(
                 RdiHttpRequest.Type.delete,
                 player,
                 resp->{
@@ -155,7 +154,7 @@ public class IslandCommand extends RdiCommand {
         int y = 128;
         int z = RandomUtils.generateRandomInt(-99999, 99999);
 
-        RdiIslandRequestThread.addTask(new RdiHttpPlayerRequest(
+        RdiRequestThread.addTask(new RdiHttpPlayerRequest(
                 RdiHttpRequest.Type.post,
                 player,
                 msg->{

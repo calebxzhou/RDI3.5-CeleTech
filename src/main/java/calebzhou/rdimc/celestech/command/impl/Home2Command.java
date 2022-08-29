@@ -6,7 +6,8 @@ import calebzhou.rdimc.celestech.constant.MessageType;
 import calebzhou.rdimc.celestech.model.Island2;
 import calebzhou.rdimc.celestech.thread.RdiHttpPlayerRequest;
 import calebzhou.rdimc.celestech.thread.RdiHttpRequest;
-import calebzhou.rdimc.celestech.thread.RdiIslandRequestThread;
+import calebzhou.rdimc.celestech.thread.RdiRequestThread;
+import calebzhou.rdimc.celestech.utils.IslandUtils;
 import calebzhou.rdimc.celestech.utils.PlayerUtils;
 import calebzhou.rdimc.celestech.utils.RdiSerializer;
 import calebzhou.rdimc.celestech.utils.ServerUtils;
@@ -30,7 +31,7 @@ public class Home2Command extends RdiCommand {
         return baseArgBuilder.executes(context -> {
             ServerPlayer player = context.getSource().getPlayer();
             sendChatMessage(player,MessageType.INFO,"开始返回您的岛屿，请稍等...");
-            RdiIslandRequestThread.addTask(new RdiHttpPlayerRequest(
+            RdiRequestThread.addTask(new RdiHttpPlayerRequest(
                     RdiHttpRequest.Type.get,
                     player,
                     resp->{
@@ -39,9 +40,9 @@ public class Home2Command extends RdiCommand {
                             return;
                         }
                         Island2 island2 = RdiSerializer.GSON.fromJson(resp, Island2.class);
-                        ResourceLocation dim = Island2Command.getIslandDimensionLoca(island2.iid);
+                        ResourceLocation dim = IslandUtils.getIslandDimensionLoca(island2.iid);
                         ServerUtils.executeOnServerThread(()->{
-                            RuntimeWorldHandle worldHandle = Fantasy.get(RDICeleTech.getServer()).getOrOpenPersistentWorld(dim, Island2Command.getIslandWorldConfig());
+                            RuntimeWorldHandle worldHandle = Fantasy.get(RDICeleTech.getServer()).getOrOpenPersistentWorld(dim, IslandUtils.getIslandWorldConfig());
                             ServerLevel world = worldHandle.asWorld();
                             PlayerUtils.addSlowFallEffect(player);
                             PlayerUtils.teleport(

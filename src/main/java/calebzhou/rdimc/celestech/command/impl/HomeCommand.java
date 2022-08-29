@@ -6,7 +6,7 @@ import calebzhou.rdimc.celestech.constant.MessageType;
 import calebzhou.rdimc.celestech.model.PlayerLocation;
 import calebzhou.rdimc.celestech.thread.RdiHttpPlayerRequest;
 import calebzhou.rdimc.celestech.thread.RdiHttpRequest;
-import calebzhou.rdimc.celestech.thread.RdiIslandRequestThread;
+import calebzhou.rdimc.celestech.thread.RdiRequestThread;
 import calebzhou.rdimc.celestech.utils.ServerUtils;
 import calebzhou.rdimc.celestech.utils.TextUtils;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
@@ -28,7 +28,7 @@ public class HomeCommand extends RdiCommand {
         return baseArgBuilder.executes(context -> {
             ServerPlayer player = context.getSource().getPlayer();
             TextUtils.sendChatMessage(player,MessageType.INFO,"建议使用/is2 create & /home2指令，将岛屿迁移至独立的存档（“二岛”），以支持未来推出的刷怪控制、防爆、耐火、岛屿积分计算、权限控制等高级特性。");
-            RdiIslandRequestThread.addTask(new RdiHttpPlayerRequest(
+            RdiRequestThread.addTask(new RdiHttpPlayerRequest(
                     RdiHttpRequest.Type.get,
                     player,
                     resp->{
@@ -36,11 +36,14 @@ public class HomeCommand extends RdiCommand {
                             sendChatMessage(player, MessageType.ERROR,"您没加入任何一岛屿！");
                             return;
                         }
-                        PlayerLocation loca = new PlayerLocation(resp);
-                        loca.world= RDICeleTech.getServer().overworld();
+                        sendChatMessage(player,MessageType.SUCCESS,resp);
+                        String[] split = resp.split(",");
+                        int x= Integer.parseInt(split[0]);
+                        int y= Integer.parseInt(split[1]);
+                        int z= Integer.parseInt(split[2]);
                         ServerUtils.executeOnServerThread(()->{
                             player.addEffect(new MobEffectInstance(MobEffects.SLOW_FALLING,20*30,1));
-                            teleport(player, loca.add(0.5, 2, 0.5));
+                            teleport(player, player.getServer().overworld(),x+0.5,y+2,z+0.5,0,0);
                         });
                         sendChatMessage(player,MessageType.SUCCESS,"1");
                     },

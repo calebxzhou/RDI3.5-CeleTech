@@ -4,10 +4,9 @@ import calebzhou.rdimc.celestech.RDICeleTech;
 import calebzhou.rdimc.celestech.RdiSharedConstants;
 import calebzhou.rdimc.celestech.command.RdiCommand;
 import calebzhou.rdimc.celestech.constant.MessageType;
-import calebzhou.rdimc.celestech.constant.WorldConst;
 import calebzhou.rdimc.celestech.thread.RdiHttpPlayerRequest;
 import calebzhou.rdimc.celestech.thread.RdiHttpRequest;
-import calebzhou.rdimc.celestech.thread.RdiIslandRequestThread;
+import calebzhou.rdimc.celestech.thread.RdiRequestThread;
 import calebzhou.rdimc.celestech.utils.*;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
@@ -15,18 +14,17 @@ import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.SharedSuggestionProvider;
 import net.minecraft.commands.arguments.EntityArgument;
-import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.Difficulty;
-import net.minecraft.world.level.Level;
 import net.minecraft.world.level.dimension.BuiltinDimensionTypes;
 import xyz.nucleoid.fantasy.Fantasy;
 import xyz.nucleoid.fantasy.RuntimeWorldConfig;
 import xyz.nucleoid.fantasy.RuntimeWorldHandle;
 
+import static calebzhou.rdimc.celestech.utils.IslandUtils.getIslandDimensionLoca;
 import static calebzhou.rdimc.celestech.utils.TextUtils.sendChatMessage;
 
 public class Island2Command extends RdiCommand {
@@ -38,22 +36,9 @@ public class Island2Command extends RdiCommand {
             指令参数
             create 创建岛屿 reset 重置岛屿 kick 移除成员 invite 邀请成员 loca 更改传送点
             transfer 改变岛主 quit 退出加入的岛屿
-            
             ====================
             """;
-    public static RuntimeWorldConfig getIslandWorldConfig(){
-        return new RuntimeWorldConfig()
-                .setDimensionType(BuiltinDimensionTypes.OVERWORLD)
-                .setDifficulty(Difficulty.HARD)
-                .setGenerator(RDICeleTech.getServer().overworld().getChunkSource().getGenerator())
-                .setSeed(System.currentTimeMillis());
-    }
-    public static ResourceLocation getIslandDimensionLoca(int iid){
-        return getIslandDimensionLoca(iid + "");
-    }
-    public static ResourceLocation getIslandDimensionLoca(String iid){
-        return new ResourceLocation(RdiSharedConstants.MOD_ID, RdiSharedConstants.ISLAND_DIMENSION_PREFIX + iid);
-    }
+
 
     @Override
     public LiteralArgumentBuilder<CommandSourceStack> getExecution() {
@@ -79,7 +64,7 @@ public class Island2Command extends RdiCommand {
         switch (param){
             case "invite" -> invitePlayer(fromPlayer,toPlayer);
             case "kick" -> kickPlayer(fromPlayer,toPlayer);
-            case "transfer" -> transferToPlayer(fromPlayer,toPlayer);
+            case "transfer" -> confirmedTransferToPlayer(fromPlayer,toPlayer);
             default -> sendIslandHelp(fromPlayer);
         }
         return 1;
@@ -90,16 +75,16 @@ public class Island2Command extends RdiCommand {
     private int handleSubCommand(ServerPlayer player, String param) {
         switch (param){
             case "create" -> createIsland(player);
-            case "reset" -> resetIsland(player);
+            case "reset" -> confirmedResetIsland(player);
             case "loca" -> locateIsland(player);
-            case "quit" -> quitIsland(player);
+            case "quit" -> confirmedQuitIsland(player);
             default -> sendIslandHelp(player);
         }
         return 1;
     }
 
-    private void quitIsland(ServerPlayer player) {
-        RdiIslandRequestThread.addTask(new RdiHttpPlayerRequest(
+    private void confirmedQuitIsland(ServerPlayer player) {
+        RdiRequestThread.addTask(new RdiHttpPlayerRequest(
                 RdiHttpRequest.Type.delete,
                 player,
                 msg->{
@@ -115,12 +100,12 @@ public class Island2Command extends RdiCommand {
                 "island2/crew/"+player.getStringUUID()
         ));
     }
-    private void transferToPlayer(ServerPlayer fromPlayer, ServerPlayer toPlayer) {
+    private void confirmedTransferToPlayer(ServerPlayer fromPlayer, ServerPlayer toPlayer) {
         if(fromPlayer==toPlayer){
             TextUtils.sendChatMessage(fromPlayer,MessageType.ERROR,"目标玩家不能是自己！");
             return;
         }
-        RdiIslandRequestThread.addTask(new RdiHttpPlayerRequest(
+        RdiRequestThread.addTask(new RdiHttpPlayerRequest(
                 RdiHttpRequest.Type.put,
                 fromPlayer,
                 msg->{
@@ -137,7 +122,7 @@ public class Island2Command extends RdiCommand {
 
     private void createIsland(ServerPlayer player){
         sendChatMessage(player, MessageType.INFO,"准备创建岛屿，不要触碰鼠标或者键盘！");
-        RdiIslandRequestThread.addTask(new RdiHttpPlayerRequest(
+        RdiRequestThread.addTask(new RdiHttpPlayerRequest(
                         RdiHttpRequest.Type.post,
                         player,
                         msg->{
@@ -153,7 +138,7 @@ public class Island2Command extends RdiCommand {
                                 Fantasy fantasy = Fantasy.get(server);
                                 sendChatMessage(player, MessageType.INFO,"正在创建存档。。");
                                 ResourceLocation islandDimension = getIslandDimensionLoca(iid);
-                                RuntimeWorldHandle worldHandle = fantasy.getOrOpenPersistentWorld(islandDimension, getIslandWorldConfig());
+                                RuntimeWorldHandle worldHandle = fantasy.getOrOpenPersistentWorld(islandDimension, IslandUtils.getIslandWorldConfig());
                                 sendChatMessage(player, MessageType.INFO,"正在载入地形。。");
                                 ServerLevel level = worldHandle.asWorld();
                                 WorldUtils.placeInitialBlocks(level);
@@ -178,7 +163,7 @@ public class Island2Command extends RdiCommand {
         double w = player.getXRot();
         double p = player.getYRot();
         String dim = WorldUtils.getDimensionName(player.level);
-        RdiIslandRequestThread.addTask(new RdiHttpPlayerRequest(
+        RdiRequestThread.addTask(new RdiHttpPlayerRequest(
                 RdiHttpRequest.Type.put,
                 player,
                 resp-> {
@@ -198,7 +183,7 @@ public class Island2Command extends RdiCommand {
             TextUtils.sendChatMessage(fromPlayer, MessageType.ERROR,"您不可以踢出自己!!");
             return;
         }
-        RdiIslandRequestThread.addTask(new RdiHttpPlayerRequest(
+        RdiRequestThread.addTask(new RdiHttpPlayerRequest(
                 RdiHttpRequest.Type.delete,
                 fromPlayer,
                 response->{
@@ -218,7 +203,7 @@ public class Island2Command extends RdiCommand {
             TextUtils.sendChatMessage(player,MessageType.ERROR,"目标玩家不能是自己！");
             return;
         }
-        RdiIslandRequestThread.addTask(new RdiHttpPlayerRequest(
+        RdiRequestThread.addTask(new RdiHttpPlayerRequest(
                 RdiHttpRequest.Type.post,
                 player,
                 response->{
@@ -235,8 +220,8 @@ public class Island2Command extends RdiCommand {
         ));
     }
 
-    private void resetIsland(ServerPlayer player) {
-        RdiIslandRequestThread.addTask(new RdiHttpPlayerRequest(
+    private void confirmedResetIsland(ServerPlayer player) {
+        RdiRequestThread.addTask(new RdiHttpPlayerRequest(
                 RdiHttpRequest.Type.delete,
                 player,
                 resp->{
@@ -244,9 +229,9 @@ public class Island2Command extends RdiCommand {
                         sendChatMessage(player,MessageType.ERROR,resp);
                         return;
                     }
-                    ResourceLocation dim = Island2Command.getIslandDimensionLoca(resp);
+                    ResourceLocation dim = IslandUtils.getIslandDimensionLoca(resp);
                     ServerUtils.executeOnServerThread(()-> {
-                        RuntimeWorldHandle worldHandle = Fantasy.get(RDICeleTech.getServer()).getOrOpenPersistentWorld(dim, Island2Command.getIslandWorldConfig());
+                        RuntimeWorldHandle worldHandle = Fantasy.get(RDICeleTech.getServer()).getOrOpenPersistentWorld(dim, IslandUtils.getIslandWorldConfig());
                         PlayerUtils.resetProfile(player);
                         worldHandle.delete();
                         sendChatMessage(player, MessageType.SUCCESS, resp);

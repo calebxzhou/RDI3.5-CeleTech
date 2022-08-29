@@ -54,12 +54,6 @@ public class WorldUtils {
         placeBlock(world,basePos.offset(-1,0,0),Blocks.OBSIDIAN.defaultBlockState());
         placeBlock(world,basePos.offset(-1,0,-1),Blocks.OBSIDIAN.defaultBlockState());
     }
-    public static boolean canPositionSeeSun(Level world, BlockPos pos){
-        int dayTime = getDayTime(world);
-        //阳光角度,面向北方从3点钟->12->9->6->3
-        double sunDegree =  (dayTime / 24000f) * 360;
-        return getSkyLight(world,pos)==15;
-    }
     public static int getSkyLight(Level world,BlockPos bpos){
         return world.getLightEngine().getLayerListener(LightLayer.SKY).getLightValue(bpos);
     }

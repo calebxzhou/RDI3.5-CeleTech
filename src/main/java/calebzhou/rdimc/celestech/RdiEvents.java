@@ -64,7 +64,9 @@ public class RdiEvents {
     }
     //玩家使用指令
     private void onPlayerCommand(FilteredText<PlayerChatMessage> text, CommandSourceStack stack, ResourceKey<ChatType> key) {
+
         ServerPlayer player = stack.getPlayer();
+        RdiMemoryStorage.afkMap.removeInt(player.getScoreboardName());
         if(player != null)
             recordChat(player.getStringUUID(), text.raw().serverContent().getString());
     }
