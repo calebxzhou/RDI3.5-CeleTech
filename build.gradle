@@ -34,9 +34,11 @@ dependencies {
 	includeImplementation( 'com.squareup.okio:okio-jvm:3.0.0' )
 	//动态创建维度
 	modImplementation "xyz.nucleoid:fantasy:0.4.5+1.19"
-	/*includeImplementation 'org.apache.httpcomponents.client5:httpclient5:5.1.3'
-	includeImplementation 'org.apache.httpcomponents.core5:httpcore5:5.1.3'
-	includeImplementation 'org.apache.httpcomponents.core5:httpcore5-h2:5.1.3'*/
+	modImplementation("maven.modrinth:spark:1.9.26-fabric")
+	modImplementation("maven.modrinth:lazydfu:0.1.3")
+	modImplementation("maven.modrinth:lithium:mc1.19-0.8.1")
+	//ferrite core 节省内存
+	modImplementation("curse.maven:project-459857:3824694")
 	//帕秋莉手册
 	modApi "vazkii.patchouli:Patchouli:${project.patchouli_version}"
 	// Fabric API. This is technically optional, but you probably want it anyway.
@@ -72,6 +74,19 @@ repositories {
 	maven { url = "https://dvs1.progwml6.com/files/maven/" }
 	maven { url = "https://modmaven.dev" }
 	maven { url = 'https://maven.nucleoid.xyz/' }
+	maven {
+		name = "Modrinth"
+		url = "https://api.modrinth.com/maven"
+		content {
+			includeGroup "maven.modrinth"
+		}
+	}
+	maven {
+		url "https://cursemaven.com"
+		content {
+			includeGroup "curse.maven"
+		}
+	}
 }
 
 
