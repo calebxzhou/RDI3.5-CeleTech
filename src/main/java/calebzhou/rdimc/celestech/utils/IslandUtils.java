@@ -4,6 +4,7 @@ import calebzhou.rdimc.celestech.RDICeleTech;
 import calebzhou.rdimc.celestech.RdiSharedConstants;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.Difficulty;
+import net.minecraft.world.level.GameRules;
 import net.minecraft.world.level.dimension.BuiltinDimensionTypes;
 import xyz.nucleoid.fantasy.RuntimeWorldConfig;
 
@@ -12,6 +13,7 @@ public class IslandUtils {
         return new RuntimeWorldConfig()
                 .setDimensionType(BuiltinDimensionTypes.OVERWORLD)
                 .setDifficulty(Difficulty.HARD)
+                .setGameRule(GameRules.RULE_KEEPINVENTORY,true)
                 .setGenerator(RDICeleTech.getServer().overworld().getChunkSource().getGenerator())
                 .setSeed(System.currentTimeMillis());
     }

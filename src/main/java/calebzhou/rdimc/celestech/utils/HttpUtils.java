@@ -73,29 +73,29 @@ public class HttpUtils {
         } catch (Exception e) {
             doOnFailure.accept(e);
         }
-        /*response.enqueue(new Callback() {
-            @Override
-            public void onFailure(@NotNull Call call, @NotNull IOException e) {
-                doOnFailure.accept(e);
-            }
 
-            @Override
-            public void onResponse(@NotNull Call call, @NotNull Response response) {
-                try (ResponseBody body = response.body()){
-                    if (!response.isSuccessful()) {
-                        System.err.println(response);
-                        return;
-                    }
-                    doOnSuccess.accept(body.string());
-
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-
-            }
-        });*/
     }
+    /*response.enqueue(new Callback() {
+          @Override
+          public void onFailure(@NotNull Call call, @NotNull IOException e) {
+              doOnFailure.accept(e);
+          }
 
+          @Override
+          public void onResponse(@NotNull Call call, @NotNull Response response) {
+              try (ResponseBody body = response.body()){
+                  if (!response.isSuccessful()) {
+                      System.err.println(response);
+                      return;
+                  }
+                  doOnSuccess.accept(body.string());
+
+              } catch (Exception e) {
+                  e.printStackTrace();
+              }
+
+          }
+      });*/
     private static OkHttpClient getUnsafeOkHttpClient() {
         try {
             // Create a trust manager that does not validate certificate chains
@@ -137,96 +137,4 @@ public class HttpUtils {
             throw new RuntimeException(e);
         }
     }
-}/*
-    public static HttpRequest.BodyPublisher ofFormData(Map<Object, Object> data) {
-        var builder = new StringBuilder();
-        for (Map.Entry<Object, Object> entry : data.entrySet()) {
-            if (builder.length() > 0) {
-                builder.append("&");
-            }
-            builder.append(URLEncoder.encode(entry.getKey().toString(), StandardCharsets.UTF_8));
-            builder.append("=");
-            builder.append(URLEncoder.encode(entry.getValue().toString(), StandardCharsets.UTF_8));
-        }
-        return HttpRequest.BodyPublishers.ofString(builder.toString());
-    }
-*/
-
-    /*public static String sendRequest(String type, String shortUrl, String... params){
-        return sendRequestFullUrl(type,ADDR+shortUrl,params);
-
-    }*/
-   /*public static HttpUriRequest setBodyParamsForRequest(HttpUriRequestBase request, String... params){
-        List<NameValuePair> paramList = new ObjectArrayList<>();
-        for (String param : params) {
-            String[] split = param.split("=");
-            paramList.add(new BasicNameValuePair(split[0],split[1]));
-        }
-        request.setEntity(new UrlEncodedFormEntity(paramList, StandardCharsets.UTF_8));
-        return null;
-    }*/
-   /*public static String sendRequestFullUrl(String type, String fullUrl, String... params){
-        try(CloseableHttpClient client = HttpClients.custom().build()){
-            HttpUriRequest request;
-            switch (type){
-                case "post" -> request=setBodyParamsForRequest( new HttpPost(URI.create(fullUrl)),params);
-                case "put" ->
-                        request=setBodyParamsForRequest(new HttpPut(URI.create(fullUrl)),params);
-                case "delete" ->
-                        request=new HttpDelete(URI.create(fullUrl+"?"+concatParamString(params)));
-                default->
-                        request=new HttpGet(URI.create(fullUrl+"?"+concatParamString(params)));
-            }
-
-            CloseableHttpResponse response = client.execute(request);
-            return EntityUtils.toString(response.getEntity());
-        } catch (IOException | ParseException e) {
-            e.printStackTrace();
-        }
-        return null;
-    }*/
-    /*public static String sendRequestFullUrl(String type, String fullUrl, String... params){
-        HttpRequest.Builder builder = HttpRequest.newBuilder().headers("Content-Type", "application/x-www-form-urlencoded");
-
-
-
-        final Map<String, String> data = setBodyParamsForRequest(params);
-        String form = data.entrySet()
-                .stream()
-                .map(e -> e.getKey() + "=" + URLEncoder.encode(e.getValue(), StandardCharsets.UTF_8))
-                .collect(Collectors.joining("&"));
-        switch (type){
-                case "post" -> {
-                    builder.uri(URI.create(fullUrl)).POST(HttpRequest.BodyPublishers.ofString(form));
-                }
-                case "put" ->{
-                    builder.uri(URI.create(fullUrl)).PUT(HttpRequest.BodyPublishers.ofString(form));
-                }
-                case "delete" ->{
-                    builder.uri(URI.create(fullUrl+"?"+concatParamString(params))).DELETE();
-                }
-                default->
-                        builder.uri(URI.create(fullUrl+"?"+concatParamString(params))).GET();
-            }
-        HttpResponse<String> send = null;
-        try {
-            send = httpClient.send(builder.build(), HttpResponse.BodyHandlers.ofString());
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        return send.body();
-    }
-*/
-   /* private static String concatParamString(String ... params){
-        StringBuilder sb = new StringBuilder();
-        for (int i = 0, paramsLength = params.length; i < paramsLength; i++) {
-            String param = params[i];
-            sb.append(param);
-            //最后一个参数末尾不加&
-            if(i<paramsLength-1)
-                sb.append("&");
-        }
-        return sb.toString();
-    }*/
+}

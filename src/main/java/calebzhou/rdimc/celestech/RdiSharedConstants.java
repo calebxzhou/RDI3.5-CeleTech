@@ -8,6 +8,7 @@ public class RdiSharedConstants {
     public static final String MOD_ID ="rdict3";
     //空岛存档维度id前缀
     public static final String ISLAND_DIMENSION_PREFIX ="i_";
+    public static final String ISLAND_DIMENSION_FULL_PREFIX =RdiSharedConstants.MOD_ID+":"+RdiSharedConstants.ISLAND_DIMENSION_PREFIX;
     //版本号
     public static final int VERSION =0x35A;
     public static final String[] COLD_STORIES_AUTHOR = new String[]{

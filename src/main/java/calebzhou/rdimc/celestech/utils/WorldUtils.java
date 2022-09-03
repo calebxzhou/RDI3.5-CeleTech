@@ -1,5 +1,6 @@
 package calebzhou.rdimc.celestech.utils;
 
+import calebzhou.rdimc.celestech.RDICeleTech;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.player.Player;
@@ -17,6 +18,9 @@ public class WorldUtils {
         for (BlockPos blockPos : BlockPos.betweenClosed(range.minX(), range.minY(), range.minZ(), range.maxX(), range.maxY(), range.maxZ())) {
             serverWorld.setBlockAndUpdate(blockPos, block);
         }
+    }
+    public static ServerLevel getNether(){
+        return RDICeleTech.getServer().getLevel(ServerLevel.NETHER);
     }
     public static String getDimensionName( Level level){
         return level.dimension().location().toString();

@@ -5,7 +5,9 @@ import calebzhou.rdimc.celestech.command.impl.*;
 import calebzhou.rdimc.celestech.constant.MessageType;
 import calebzhou.rdimc.celestech.constant.WorldConst;
 import calebzhou.rdimc.celestech.module.DeathRandomDrop;
+import calebzhou.rdimc.celestech.thread.RdiHttpPlayerRequest;
 import calebzhou.rdimc.celestech.thread.RdiHttpRequest;
+import calebzhou.rdimc.celestech.thread.RdiRequestThread;
 import calebzhou.rdimc.celestech.thread.RdiSendRecordThread;
 import calebzhou.rdimc.celestech.utils.*;
 import com.mojang.brigadier.CommandDispatcher;
@@ -32,6 +34,8 @@ import net.minecraft.server.network.ServerGamePacketListenerImpl;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
@@ -40,6 +44,9 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 
 import java.io.File;
+
+import static calebzhou.rdimc.celestech.utils.PlayerUtils.teleport;
+import static calebzhou.rdimc.celestech.utils.TextUtils.sendChatMessage;
 
 public class RdiEvents {
     public static final RdiEvents INSTANCE = new RdiEvents();
@@ -94,6 +101,18 @@ public class RdiEvents {
 
     //act 0放置1破坏
     private void recordBlock(String pid,String bid,int act,String world,int x,int y,int z){
+        //主世界主城以外的地方不记录
+        if("minecraft:overworld".equals(world)){
+            boolean rangeInSpawn = (x > -256 && x < 256) && (z > -256 && z < 256);
+            if(!rangeInSpawn){
+                return;
+            }
+        }
+        //末地 地狱不记录
+        if("minecraft:the_end".equals(world))
+            return;
+        if("minecraft:the_nether".equals(world))
+            return;
         RdiSendRecordThread.addTask(new RdiHttpRequest(RdiHttpRequest.Type.post, "record/block", "pid="+pid,"bid="+bid,"act="+act,"world="+world,"x="+x,"y="+y,"z="+z));
     }
     //成功破坏方块
@@ -132,27 +151,43 @@ public class RdiEvents {
             }
 
         });
-
         //发送天气预报
-        HttpUtils.sendRequestAsync(new RdiHttpRequest(RdiHttpRequest.Type.get,"misc/weather?ip="+ player.getIpAddress()),player,weatherInfo->{
-            //地址信息
-            String addrInfo = weatherInfo.split("\n")[0];
-            if(addrInfo.startsWith("@")){
-                addrInfo=addrInfo.replace("@","");
-                //写入地址信息
-                RdiMemoryStorage.ipGeoMap.put(player.getScoreboardName(),addrInfo);
-            }
-            //玩家不显示第一行地址信息
-            weatherInfo = weatherInfo.replace(addrInfo,"").replace("@","");
-            TextUtils.sendChatMessage(player, weatherInfo);
-            TextUtils.sendChatMessage(player, TimeUtils.getTimeChineseString()+"好,"+player.getDisplayName().getString());
-            //发送登录记录
-            RdiSendRecordThread.addTask(new RdiHttpRequest(RdiHttpRequest.Type.post,"record/login","pid="+player.getStringUUID(),"ip=" + player.getIpAddress(),"geo="+addrInfo));
-            //发送id昵称信息
-            RdiSendRecordThread.addTask(new RdiHttpRequest(RdiHttpRequest.Type.post,"record/idname","pid="+player.getStringUUID(),"name=" + player.getScoreboardName()));
+        ThreadPool.newThread(()->{
+        RdiRequestThread.addTask(new RdiHttpPlayerRequest(
+                RdiHttpRequest.Type.get,
+                player,
+                weatherInfo->{
+                    //地址信息
+                    String addrInfo = weatherInfo.split("\n")[0];
+                    if(addrInfo.startsWith("@")){
+                        addrInfo=addrInfo.replace("@","");
+                        //写入地址信息
+                        RdiMemoryStorage.ipGeoMap.put(player.getScoreboardName(),addrInfo);
+                    }
+                    //玩家不显示第一行地址信息
+                    weatherInfo = weatherInfo.replace(addrInfo,"").replace("@","");
+                    TextUtils.sendChatMessage(player, weatherInfo);
+                    TextUtils.sendChatMessage(player, TimeUtils.getTimeChineseString()+"好,"+player.getDisplayName().getString());
+                    //发送登录记录
+                    RdiSendRecordThread.addTask(new RdiHttpRequest(RdiHttpRequest.Type.post,"record/login","pid="+player.getStringUUID(),"ip=" + player.getIpAddress(),"geo="+addrInfo));
+                    //发送id昵称信息
+                    RdiSendRecordThread.addTask(new RdiHttpRequest(RdiHttpRequest.Type.post,"record/idname","pid="+player.getStringUUID(),"name=" + player.getScoreboardName()));
 
-        });
-
+                },
+                "misc/weather?ip="+ player.getIpAddress())
+        );});
+        //查询是否有岛屿，如果没有就提示创建
+        ThreadPool.newThread(()->{
+        RdiRequestThread.addTask(new RdiHttpPlayerRequest(
+                RdiHttpRequest.Type.get,
+                player,
+                resp->{
+                    if(resp.equals("fail")){
+                        sendChatMessage(player, MessageType.INFO,"您没有加入任何岛屿，输入/is2 create指令立刻创建一个吧！");
+                    }
+                },
+                "island/" + player.getStringUUID()
+        ));});
     }
 
 
