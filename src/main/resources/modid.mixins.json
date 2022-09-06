@@ -10,6 +10,7 @@
     "gameplay.mBlaze",
     "gameplay.mBowAttackGoal",
     "gameplay.mBreakBlock",
+    "gameplay.mCauldronFastWaterCollection",
     "gameplay.mContainerNeverBoom",
     "gameplay.mCreeper",
     "gameplay.mDimensionNotLoaded",

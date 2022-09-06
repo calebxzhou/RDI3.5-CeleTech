@@ -152,7 +152,7 @@ public class RdiEvents {
 
         });
         //发送天气预报
-        ThreadPool.newThread(()->{
+        /*ThreadPool.newThread(()->{
         RdiRequestThread.addTask(new RdiHttpPlayerRequest(
                 RdiHttpRequest.Type.get,
                 player,
@@ -175,9 +175,9 @@ public class RdiEvents {
 
                 },
                 "misc/weather?ip="+ player.getIpAddress())
-        );});
+        );});*/
         //查询是否有岛屿，如果没有就提示创建
-        ThreadPool.newThread(()->{
+        /*ThreadPool.newThread(()->{
         RdiRequestThread.addTask(new RdiHttpPlayerRequest(
                 RdiHttpRequest.Type.get,
                 player,
@@ -187,7 +187,7 @@ public class RdiEvents {
                     }
                 },
                 "island/" + player.getStringUUID()
-        ));});
+        ));});*/
     }
 
 
@@ -211,6 +211,7 @@ public class RdiEvents {
         commands.add(new TickInverterCommand());
         commands.add(new HelpCommand());
         commands.add(new ChangeBiomeCommand());
+        commands.add(new GoNetherCommand());
 
         for (RdiCommand cmd : commands) {
             if (cmd.getExecution() != null) {

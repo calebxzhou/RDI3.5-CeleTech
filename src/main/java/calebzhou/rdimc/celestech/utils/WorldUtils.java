@@ -1,7 +1,9 @@
 package calebzhou.rdimc.celestech.utils;
 
 import calebzhou.rdimc.celestech.RDICeleTech;
+import calebzhou.rdimc.celestech.RdiSharedConstants;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Vec3i;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
@@ -21,6 +23,41 @@ public class WorldUtils {
     }
     public static ServerLevel getNether(){
         return RDICeleTech.getServer().getLevel(ServerLevel.NETHER);
+    }
+
+    public static Vec3i getIsland2ToNetherPos(int islandId){
+        int netherRatioX=40;
+        int netherRatioZ=40;
+        //0=一象限 3=四象限
+        int quadrant = islandId % 4;
+        switch (quadrant){
+            case 1-> {
+                netherRatioX *= -1;
+            }
+            case 2-> {
+                netherRatioX *= -1;
+                netherRatioZ *= -1;
+            }
+            case 3-> {
+                netherRatioZ *= -1;
+            }
+        }
+
+        int netherTargetX = islandId * netherRatioX;
+        int netherTargetZ = islandId * netherRatioZ;
+        final int netherTargetY = 96;
+
+        return new BlockPos(netherTargetX,netherTargetY,netherTargetZ);
+    }
+    public static int getIsland2IdInt(Level level){
+        return Integer.parseInt(getIsland2Id(level));
+    }
+    public static String getIsland2Id(Level level){
+        return getDimensionName(level).replace(RdiSharedConstants.ISLAND_DIMENSION_FULL_PREFIX, "");
+    }
+    public static boolean isInIsland2(Level level){
+        return WorldUtils.getDimensionName(level)
+                .startsWith(RdiSharedConstants.ISLAND_DIMENSION_FULL_PREFIX);
     }
     public static String getDimensionName( Level level){
         return level.dimension().location().toString();
@@ -47,7 +84,7 @@ public class WorldUtils {
         return false;
 
     }
-    public static void placeBlock(Level world,BlockPos bpos,BlockState blockState){
+    public static void placeBlock(Level world, BlockPos bpos, BlockState blockState){
         world.setBlockAndUpdate(bpos,blockState);
     }
     public static void placeInitialBlocks(Level world){

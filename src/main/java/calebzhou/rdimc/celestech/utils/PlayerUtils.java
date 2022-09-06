@@ -52,6 +52,10 @@ public class PlayerUtils {
     public static String  getDimensionName(Entity player){
         return player.getLevel().dimensionType().effectsLocation().toString();
     }
+    public static int getExperiencePoints(Player player){
+        return Mth.floor(player.experienceProgress * (float)player.getXpNeededForNextLevel())
+                ;
+    }
     //传送到指定位置
     public static void teleport(Player player, ServerLevel world, double x, double y, double z, double yaw, double pitch){
         if(world==null)

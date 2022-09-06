@@ -1,6 +1,5 @@
 package calebzhou.rdimc.celestech.command.impl;
 
-import calebzhou.rdimc.celestech.RDICeleTech;
 import calebzhou.rdimc.celestech.RdiSharedConstants;
 import calebzhou.rdimc.celestech.command.RdiCommand;
 import calebzhou.rdimc.celestech.constant.MessageType;
@@ -11,7 +10,7 @@ import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.core.BlockPos;
-import net.minecraft.server.level.ServerLevel;
+import net.minecraft.core.Vec3i;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.block.Blocks;
 
@@ -36,35 +35,11 @@ public class GoNetherCommand extends RdiCommand {
             TextUtils.sendChatMessage(player,MessageType.ERROR,"必须有3级经验才能前往地狱！");
             return 1;
         }
-        int islandId;
-        try {
-            islandId = Integer.parseInt(dimensionName.replace(RdiSharedConstants.ISLAND_DIMENSION_FULL_PREFIX,""));
-        } catch (NumberFormatException e) {
-            TextUtils.sendChatMessage(player,MessageType.ERROR,"维度数字格式错误！");
-            return 1;
-        }
-        int netherRatioX=40;
-        int netherRatioZ=40;
-        //0=一象限 3=四象限
-        int quadrant = islandId % 4;
-        switch (quadrant){
-            case 1-> {
-                netherRatioX *= -1;
-            }
-            case 2-> {
-                netherRatioX *= -1;
-                netherRatioZ *= -1;
-            }
-            case 3-> {
-                netherRatioZ *= -1;
-            }
-        }
-
-        int netherTargetX = islandId * netherRatioX;
-        int netherTargetZ = islandId * netherRatioZ;
-        final int netherTargetY = 96;
-        WorldUtils.placeBlock(WorldUtils.getNether(),new BlockPos(netherTargetX,netherTargetY,netherTargetZ), Blocks.OBSIDIAN.defaultBlockState());
-        PlayerUtils.teleport(player,WorldUtils.getNether() ,netherTargetX,netherTargetY,netherTargetZ,0,0);
+        Vec3i targetPos = WorldUtils.getIsland2ToNetherPos(WorldUtils.getIsland2IdInt(player.getLevel()));
+        WorldUtils.placeBlock(WorldUtils.getNether(),new BlockPos(targetPos), Blocks.OBSIDIAN.defaultBlockState());
+        PlayerUtils.teleport(player,WorldUtils.getNether() ,targetPos.getX(),targetPos.getY()+3,targetPos.getZ(),0,0);
+        TextUtils.sendChatMessage(player,MessageType.SUCCESS,"1");
+        player.experienceLevel-=3;
         return 1;
     }
 }
