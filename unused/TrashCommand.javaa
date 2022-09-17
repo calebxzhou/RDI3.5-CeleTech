@@ -1,0 +1,18 @@
+package calebzhou.rdi.celestech.command.impl;
+
+import calebzhou.rdi.celestech.command.BaseCommand;
+import MessageType;
+import TextUtils;
+import net.minecraft.server.level.ServerPlayer;
+
+public class TrashCommand extends BaseCommand {
+    public TrashCommand(String name, int permissionLevel) {
+        super(name, permissionLevel,false);
+    }
+
+    @Override
+    protected void onExecute(ServerPlayer player,String arg) {
+        player.getMainHandItem().setCount(0);
+        PlayerUtils.sendChatMessage(player,"成功将手上的物品扔进了垃圾桶！", PlayerUtils.RESPONSE_SUCCESS);
+    }
+}

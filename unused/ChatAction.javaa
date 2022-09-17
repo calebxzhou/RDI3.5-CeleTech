@@ -1,0 +1,23 @@
+package calebzhou.rdi.celestech.constant;
+
+import java.util.Map;
+
+public enum ChatAction implements OrdinalEnum{
+    say(0),
+    receive(1),
+    ;
+
+    private int id;
+    ChatAction(int i) {
+        id=i;
+    }
+    public int getId(){
+        return id;
+    }
+
+    private static Map<Integer, ChatAction> enumap = OrdinalEnum.getValues(ChatAction.class);
+    public static ChatAction fromId(int id){
+        return enumap.get(id);
+    }
+
+}

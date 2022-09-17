@@ -1,0 +1,48 @@
+package calebzhou.rdi.celestech.command.impl;
+
+import calebzhou.rdi.celestech.command.ArgCommand;
+import calebzhou.rdi.celestech.command.BaseCommand;
+import MessageType;
+import calebzhou.rdi.celestech.model.ApiResponse;
+import calebzhou.rdi.celestech.model.Island;
+import HttpUtils;
+import TextUtils;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
+import net.minecraft.server.level.ServerPlayer;
+
+public class ChatRangeCommand extends BaseCommand implements ArgCommand {
+    //玩家id vs 聊天对象玩家列表
+    public static final Map<String, List<String>> chatRangeMap = new Object2ObjectOpenHashMap<>();
+    public ChatRangeCommand(String name, int permissionLevel) {
+        super(name, permissionLevel,true);
+    }
+
+    @Override
+    public void onExecute(ServerPlayer player, String arg) {
+        String pid = player.getStringUUID();
+        char range = arg.charAt(0);
+        if(range=='a'){
+            //chatRangeMap.put(pid, ServerUtils.getOnlinePlayerNameList());
+            chatRangeMap.remove(pid);
+            PlayerUtils.sendChatMessage(player,"成功设定为[全服]聊天。您的聊天内容全服均可见。", PlayerUtils.RESPONSE_SUCCESS);
+        }else if(range=='i'){
+            ApiResponse response = HttpUtils.sendRequest("GET","v2/island/"+pid,"idType=pid");
+            Island island = (Island) response.getData(Island.class);
+            if(island==null){
+                PlayerUtils.sendChatMessage(player,"您没有岛屿！",PlayerUtils.RESPONSE_ERROR);
+                return;
+            }
+            List<String> members = island.getMembers();
+            if(members==null || members.isEmpty()){
+                PlayerUtils.sendChatMessage(player,"您的岛屿没有成员，因此不能使用此指令。",PlayerUtils.RESPONSE_ERROR);
+                return;
+            }
+            chatRangeMap.put(pid,members);
+            PlayerUtils.sendChatMessage(player,"成功设定为[岛内]聊天。您的聊天内容仅同岛好友可见。", PlayerUtils.RESPONSE_SUCCESS);
+        }
+    }
+}

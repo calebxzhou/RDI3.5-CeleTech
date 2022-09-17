@@ -1,0 +1,112 @@
+package calebzhou.rdi.celestech.command.impl;
+
+import RdiCommand;
+import MessageType;
+import TextUtils;
+import com.mojang.brigadier.builder.LiteralArgumentBuilder;
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import com.mojang.brigadier.suggestion.SuggestionProvider;
+import it.unimi.dsi.fastutil.objects.Object2IntArrayMap;
+import it.unimi.dsi.fastutil.objects.Reference2IntArrayMap;
+import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.commands.Commands;
+import net.minecraft.commands.SharedSuggestionProvider;
+import net.minecraft.commands.arguments.ResourceKeyArgument;
+import net.minecraft.commands.arguments.coordinates.BlockPosArgument;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Holder;
+import net.minecraft.core.Registry;
+import net.minecraft.core.SectionPos;
+import net.minecraft.data.worldgen.Structures;
+import net.minecraft.network.chat.Component;
+import net.minecraft.server.commands.PlaceCommand;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.level.ChunkPos;
+import net.minecraft.world.level.chunk.ChunkGenerator;
+import net.minecraft.world.level.levelgen.structure.BoundingBox;
+import net.minecraft.world.level.levelgen.structure.Structure;
+import net.minecraft.world.level.levelgen.structure.StructurePiece;
+import net.minecraft.world.level.levelgen.structure.StructureStart;
+
+public class StruCommand extends RdiCommand {
+/* *//*   private static final SuggestionProvider<CommandSourceStack> SUGGEST_TEMPLATES = (commandContext, suggestionsBuilder) ->
+            SharedSuggestionProvider.suggestResource(commandContext.getSource().getLevel().getStructureManager().listTemplates(), suggestionsBuilder);
+
+*/
+    @Override
+    public String getName() {
+        return "stru";
+    }
+
+    @Override
+    public LiteralArgumentBuilder<CommandSourceStack> getExecution() {
+        return baseArgBuilder
+                .then(Commands.argument("生成结构的命名空间",ResourceKeyArgument.key(Registry.STRUCTURE_REGISTRY)).suggests(SUGGEST_TEMPLATES)
+                        .executes(context -> exec(context.getSource().getPlayer(),ResourceKeyArgument.getStructure(context, "生成结构的命名空间")))
+                );
+
+
+   }
+   private static final Object2IntArrayMap<Holder<Structure>> struNeedExpLvlMap = new Object2IntArrayMap<>();
+    static{
+       struNeedExpLvlMap.put(Structures.SWAMP_HUT,100);
+       struNeedExpLvlMap.put(Structures.FORTRESS,500);
+    }
+   public int exec(ServerPlayer player, Holder<Structure> structureHolder){
+       Structure structure = structureHolder.value();
+       if(structureHolder!=Structures.FORTRESS || structureHolder!=Structures.SWAMP_HUT){
+           PlayerUtils.sendChatMessage(player,PlayerUtils.RESPONSE_ERROR,"您输入的生成结构暂未支持");
+           return 1;
+       }
+       int expNeed = struNeedExpLvlMap.getInt(structure);
+       if(player.experienceLevel< expNeed){
+           PlayerUtils.sendChatMessage(player,PlayerUtils.RESPONSE_ERROR,"经验不足，生成这个结构需要"+expNeed+"级经验！");
+           return 1;
+       }
+       BlockPos blockPos = new BlockPos(player.blockPosition());
+       ServerLevel serverLevel = player.getLevel();
+
+       ChunkGenerator chunkGenerator = serverLevel.getChunkSource().getGenerator();
+       StructureStart structureStart = structure.generate(
+               player.getLevel().registryAccess(),
+               chunkGenerator,
+               chunkGenerator.getBiomeSource(),
+               serverLevel.getChunkSource().randomState(),
+               serverLevel.getStructureManager(),
+               serverLevel.getSeed(),
+               new ChunkPos(blockPos),
+               0,
+               serverLevel,
+               holder -> true);
+       if (!structureStart.isValid()) {
+           PlayerUtils.sendChatMessage(player, PlayerUtils.RESPONSE_ERROR,"无法在这里放置生成结构");
+           return 0;
+       }
+       BoundingBox boundingBox = structureStart.getBoundingBox();
+       ChunkPos chunkPos2 = new ChunkPos(SectionPos.blockToSectionCoord(boundingBox.minX()), SectionPos.blockToSectionCoord(boundingBox.minZ()));
+       ChunkPos chunkPos22 = new ChunkPos(SectionPos.blockToSectionCoord(boundingBox.maxX()), SectionPos.blockToSectionCoord(boundingBox.maxZ()));
+       if(checkLoaded(serverLevel, chunkPos2, chunkPos22)){
+           PlayerUtils.sendChatMessage(player, PlayerUtils.RESPONSE_ERROR,"目标区块未加载！");
+           return 0;
+       }
+       ChunkPos.rangeClosed(chunkPos2, chunkPos22).forEach(chunkPos ->
+               structureStart.placeInChunk(
+                       serverLevel,
+                       serverLevel.structureManager(),
+                       chunkGenerator, serverLevel.getRandom(),
+                       new BoundingBox(chunkPos.getMinBlockX(), serverLevel.getMinBuildHeight(), chunkPos.getMinBlockZ(), chunkPos.getMaxBlockX(), serverLevel.getMaxBuildHeight(), chunkPos.getMaxBlockZ()),
+                       chunkPos)
+       );
+       String string = structureHolder.unwrapKey().map(resourceKey -> resourceKey.location().toString()).orElse("[unregistered]");
+       PlayerUtils.sendChatMessage(player,PlayerUtils.RESPONSE_SUCCESS,string);
+       player.experienceLevel-= expNeed;
+       return 1;
+   }
+    private boolean checkLoaded(ServerLevel serverLevel, ChunkPos chunkPos2, ChunkPos chunkPos22) {
+        return ChunkPos.rangeClosed(chunkPos2, chunkPos22)
+                .filter(chunkPos -> !serverLevel.isLoaded(chunkPos.getWorldPosition()))
+                .findAny()
+                .isEmpty();
+    }
+}

@@ -1,0 +1,5 @@
+package calebzhou.rdi.celestech.module.cloudrepo;
+
+public enum CloudRepoAction {
+    save,read,delete;
+}
