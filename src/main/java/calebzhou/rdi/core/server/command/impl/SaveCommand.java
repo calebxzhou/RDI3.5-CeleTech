@@ -7,8 +7,11 @@ import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.network.chat.Component;
 
 public class SaveCommand extends RdiCommand {
-    public SaveCommand() {
-        super("SAVE");
+    static {
+		RdiCommand.register(new SaveCommand());
+	}
+	private SaveCommand() {
+        super("SAVE","存档。");
     }
 
     @Override

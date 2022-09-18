@@ -5,7 +5,7 @@ import net.minecraft.core.BlockPos;
 //常量
 public class RdiSharedConstants {
 
-
+	public static final String PROTOCOL_NAME ="RDI Core 3.7";
     //调试模式
     public static final boolean DEBUG = true;
     //modid
@@ -14,11 +14,11 @@ public class RdiSharedConstants {
     public static final String ISLAND_DIMENSION_PREFIX ="i_";
     public static final String ISLAND_DIMENSION_FULL_PREFIX =RdiSharedConstants.MOD_ID+":"+RdiSharedConstants.ISLAND_DIMENSION_PREFIX;
     //版本号
-    public static final int VERSION =0x35A;
+    public static final int PROTOCOL_VERSION =0x37;
 	//主城
 	public static final BlockPos SPAWN_LOCATION =new BlockPos(0,138,0);
 	//初始点
-	public static final BlockPos INIT_LOCATION =new BlockPos(0,-60,0);
+	//public static final BlockPos INIT_LOCATION =new BlockPos(0,-60,0);
     public static final String[] COLD_STORIES_AUTHOR = new String[]{
             "pop75189",
             "ryannZ"

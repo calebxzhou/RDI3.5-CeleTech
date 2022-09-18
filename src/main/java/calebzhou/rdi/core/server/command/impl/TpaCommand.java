@@ -3,6 +3,8 @@ package calebzhou.rdi.core.server.command.impl;
 import calebzhou.rdi.core.server.RdiMemoryStorage;
 import calebzhou.rdi.core.server.command.RdiCommand;
 import calebzhou.rdi.core.server.constant.ColorConst;
+import calebzhou.rdi.core.server.utils.PlayerUtils;
+import calebzhou.rdi.core.server.utils.ThreadPool;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
@@ -13,12 +15,15 @@ import net.minecraft.server.level.ServerPlayer;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import static calebzhou.rdi.core.server.utils.TextUtils.getClickableContentComp;
-import static calebzhou.rdi.core.server.utils.TextUtils.sendChatMessage;
+import static calebzhou.rdi.core.server.utils.PlayerUtils.*;
+import static calebzhou.rdi.core.server.utils.PlayerUtils.sendChatMessage;
 
 public class TpaCommand extends RdiCommand {
-    public TpaCommand() {
-        super("tpa");
+	static {
+		RdiCommand.register(new TpaCommand());
+	}
+    private TpaCommand() {
+        super("tpa","传送到一个玩家身边");
     }
 
     @Override
@@ -30,42 +35,28 @@ public class TpaCommand extends RdiCommand {
     private int exec(ServerPlayer fromPlayer, ServerPlayer toPlayer) {
         String fromPlayerId = fromPlayer.getStringUUID();
         if(toPlayer==null){
-            sendChatMessage(fromPlayer, PlayerUtils.RESPONSE_ERROR,"对方不在线！");
+            sendChatMessage(fromPlayer, RESPONSE_ERROR,"对方不在线！");
             return 1;
         }
         String toPlayerId = toPlayer.getStringUUID();
         if(fromPlayerId.equals(toPlayerId)){
-            sendChatMessage(fromPlayer,PlayerUtils.RESPONSE_ERROR,"禁止原地TP");
+            sendChatMessage(fromPlayer, RESPONSE_ERROR,"禁止原地TP");
             return 1;
         }
         if(fromPlayer.experienceLevel<3){
-            sendChatMessage(fromPlayer,PlayerUtils.RESPONSE_ERROR,"经验不足,您需要3级经验.");
+            sendChatMessage(fromPlayer, RESPONSE_ERROR,"经验不足,您需要3级经验.");
             return 1;
         }
         if(RdiMemoryStorage.tpaMap.containsKey(fromPlayer.getStringUUID())){
-            sendChatMessage(fromPlayer,PlayerUtils.RESPONSE_ERROR,"您已经发送过传送请求了");
+            sendChatMessage(fromPlayer, RESPONSE_ERROR,"您已经发送过传送请求了");
             return 1;
         }
-        RdiMemoryStorage.tpaMap.put(fromPlayerId,toPlayerId);
-        sendChatMessage(fromPlayer,PlayerUtils.RESPONSE_SUCCESS,"已经向%s发送了传送请求，15秒后传送请求将失效。".formatted(fromPlayer.getScoreboardName()));
+        RdiMemoryStorage.tpaMap.put(toPlayerId,fromPlayerId);
+        sendChatMessage(fromPlayer, RESPONSE_SUCCESS,"已经向%s发送了传送请求，15秒后传送请求将失效。".formatted(toPlayer.getScoreboardName()));
         fromPlayer.experienceLevel-=3;
         sendChatMessage(toPlayer, ColorConst.ORANGE+fromPlayer.getScoreboardName()+"想要传送到你的身边。");
-        MutableComponent tpyes= getClickableContentComp(ColorConst.BRIGHT_GREEN+"[接受]"+ ColorConst.RESET,"/tpreq true_false_"+fromPlayerId," ");
-        MutableComponent tpyes2= getClickableContentComp(ColorConst.AQUA+"[以仅参观模式接受]"+ ColorConst.RESET,"/tpreq true_true_"+fromPlayerId,"对方将没有破坏权限!");
-        MutableComponent tpwait= getClickableContentComp(ColorConst.GOLD+"[等我一下]"+ ColorConst.RESET,"稍等"," ");
-        MutableComponent tpdeny= getClickableContentComp(ColorConst.RED+"[拒绝]"+ ColorConst.RESET,"/tpreq false_false_"+fromPlayerId," ");
-        sendChatMessage(toPlayer,tpyes.append(tpyes2).append(tpwait).append(tpdeny));
-        Timer timer = new Timer();
-        timer.schedule(
-                new TimerTask() {
-                    @Override
-                    public void run() {
-                        RdiMemoryStorage.tpaMap.remove(fromPlayerId);
-                        this.cancel();
-                    }
-                },
-                15*1000
-        );
+        sendChatMessage(toPlayer, ColorConst.ORANGE+fromPlayer.getScoreboardName()+"要接受，输入/tpyes");
+		ThreadPool.doAfter(15,()->RdiMemoryStorage.tpaMap.remove(toPlayerId));
         return 1;
     }
 

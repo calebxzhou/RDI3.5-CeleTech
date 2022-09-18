@@ -13,17 +13,24 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 //改变服务端协议版本
 @Mixin(DetectedVersion.class)
-public class MixinProtocolVersion {
-    @Shadow @Final @Mutable
-    private int protocolVersion;
-    @Shadow @Final @Mutable
-    private String name;
-    @Inject(
-            method = "Lnet/minecraft/DetectedVersion;<init>(Lcom/google/gson/JsonObject;)V",
+public class mDetectedVersion {
+
+	@Mutable
+	@Shadow
+	@Final
+	private int protocolVersion;
+
+	@Mutable
+	@Shadow
+	@Final
+	private String name;
+
+	@Inject(
+            method = "<init>(Lcom/google/gson/JsonObject;)V",
             at=@At("TAIL")
     )
     private void changeVersion(JsonObject json, CallbackInfo ci){
-        protocolVersion= RdiSharedConstants.VERSION;
-        name="RDI LiberTorch Engine";
+		protocolVersion=(RdiSharedConstants.PROTOCOL_VERSION);
+		name=(RdiSharedConstants.PROTOCOL_NAME);
     }
 }

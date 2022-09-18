@@ -19,6 +19,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.phys.Vec3;
 import xyz.nucleoid.fantasy.Fantasy;
 import xyz.nucleoid.fantasy.RuntimeWorldHandle;
 
@@ -28,8 +29,11 @@ import static calebzhou.rdi.core.server.utils.IslandUtils.getIslandDimensionLoca
 import static calebzhou.rdi.core.server.utils.PlayerUtils.*;
 
 public class IslandCommand extends RdiCommand {
-    public IslandCommand() {
-        super("is");
+	static {
+		RdiCommand.register(new IslandCommand());
+	}
+    private IslandCommand() {
+        super("is","岛屿菜单。");
     }
     static final String islandHelp = """
             =====RDI空岛v2管理菜单=====
@@ -94,7 +98,7 @@ public class IslandCommand extends RdiCommand {
 		ThreadPool.newThread(()->{
 			ResultData resultData = RdiHttpClient.sendRequest("delete", "/v37/island2/" + player.getStringUUID());
 			if(resultData.isSuccess()){
-				ResourceLocation dim = IslandUtils.getIslandDimensionLoca(resultData.data());
+				ResourceLocation dim = IslandUtils.getIslandDimensionLoca(String.valueOf(resultData.getData()));
 				ServerUtils.executeOnServerThread(()-> {
 					RuntimeWorldHandle worldHandle = Fantasy.get(RdiCoreServer.getServer()).getOrOpenPersistentWorld(dim, IslandUtils.getIslandWorldConfig());
 					PlayerUtils.resetProfile(player);
@@ -156,7 +160,7 @@ public class IslandCommand extends RdiCommand {
 				return;
 			}
 			sendChatMessage(player, PlayerUtils.RESPONSE_INFO,"开始创建岛屿，不要触碰鼠标或者键盘！");
-			int iid =Integer.parseInt(resultData.data());
+			int iid =Integer.parseInt(String.valueOf(resultData.getData()));
 			sendChatMessage(player, PlayerUtils.RESPONSE_INFO,"您的岛屿ID："+iid);
 			MinecraftServer server = RdiCoreServer.getServer();
 			ServerUtils.executeOnServerThread(()->{
@@ -165,11 +169,11 @@ public class IslandCommand extends RdiCommand {
 				ResourceLocation islandDimension = getIslandDimensionLoca(iid);
 				RuntimeWorldHandle worldHandle = fantasy.getOrOpenPersistentWorld(islandDimension, IslandUtils.getIslandWorldConfig());
 				ServerLevel level = worldHandle.asWorld();
-				WorldUtils.placeInitialBlocks(level);
+				IslandUtils.placeInitialBlocks(level);
 				PlayerUtils.addEffect(player, MobEffects.SLOW_FALLING,10,2);
 				PlayerUtils.setSpawnPoint(player,level.dimension(),WorldUtils.INIT_POS.above(7));
 				sendChatMessage(player, PlayerUtils.RESPONSE_INFO,"准备传送。。。");
-				PlayerUtils.teleport(player,level,WorldUtils.INIT_POS.above(7));
+				PlayerUtils.teleport(player,level, Vec3.atCenterOf(WorldUtils.INIT_POS).add(0.5,7,0.5));
 				sendChatMessage(player, PlayerUtils.RESPONSE_SUCCESS,"成功！");
 			});
 		});

@@ -22,9 +22,9 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.UUID;
 
-public class NetworkReceiver {
-    public static final NetworkReceiver INSTANCE = new NetworkReceiver();
-    private NetworkReceiver(){ }
+public class RdiNetworkReceiver {
+    public static final RdiNetworkReceiver INSTANCE = new RdiNetworkReceiver();
+    private RdiNetworkReceiver(){ }
     public void register(){
         ServerPlayNetworking.registerGlobalReceiver(NetworkPackets.AFK_DETECT,this::afkDetect);
         ServerPlayNetworking.registerGlobalReceiver(NetworkPackets.DANCE_TREE_GROW,this::danceTreeGrow);

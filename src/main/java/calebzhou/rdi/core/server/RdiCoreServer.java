@@ -29,7 +29,7 @@ public class RdiCoreServer implements ModInitializer {
             RdiCoreServer.server = server;
             server.getWorldData().setDifficulty(Difficulty.HARD);
         });
-        NetworkReceiver.INSTANCE.register();
+        RdiNetworkReceiver.INSTANCE.register();
         RdiEvents.INSTANCE.register();
         //TickInverter.INSTANCE.init();
     }

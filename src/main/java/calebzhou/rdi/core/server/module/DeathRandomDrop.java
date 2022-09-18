@@ -15,9 +15,9 @@ import java.util.stream.IntStream;
 public class DeathRandomDrop {
     public static void handleDeath(ServerPlayer player){
         int dropSlotAmount;
-        if(PlayerUtils.getDimensionName(player).equals("minecraft:the_end")){
+        if(PlayerUtils.isInTheEnd(player)){
             dropSlotAmount=35;
-        }else if(PlayerUtils.getDimensionName(player).equals("minecraft:the_nether")){
+        }else if(PlayerUtils.isInNether(player)){
             dropSlotAmount=25;
         }else{
             dropSlotAmount=7;

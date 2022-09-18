@@ -7,7 +7,7 @@ import net.minecraft.server.level.ServerPlayer;
 import java.util.function.Consumer;
 
 public class RdiMemoryStorage {
-    //tpa请求 发送者pid vs 接受者pid
+    //tpa请求 接受者pid 发送者pid
     public static final Object2ObjectOpenHashMap<String,String> tpaMap = new Object2ObjectOpenHashMap<>();
     //玩家名vs省份
     public static final Object2ObjectOpenHashMap<String,String> ipGeoMap = new Object2ObjectOpenHashMap<>();

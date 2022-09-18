@@ -1,15 +1,13 @@
 package calebzhou.rdi.core.server;
 
 import calebzhou.rdi.core.server.command.RdiCommand;
-import calebzhou.rdi.core.server.command.impl.*;
+import calebzhou.rdi.core.server.model.RdiGeoLocation;
+import calebzhou.rdi.core.server.model.RdiWeather;
+import calebzhou.rdi.core.server.model.ResultData;
 import calebzhou.rdi.core.server.module.DeathRandomDrop;
-import calebzhou.rdi.core.server.thread.RdiHttpPlayerRequest;
-import calebzhou.rdi.core.server.thread.RdiHttpRequest;
-import calebzhou.rdi.core.server.thread.RdiRequestThread;
-import calebzhou.rdi.core.server.thread.RdiSendRecordThread;
 import calebzhou.rdi.core.server.utils.*;
 import com.mojang.brigadier.CommandDispatcher;
-import it.unimi.dsi.fastutil.objects.ObjectArrayList;
+import it.unimi.dsi.fastutil.Pair;
 import net.fabricmc.fabric.api.entity.event.v1.ServerPlayerEvents;
 import net.fabricmc.fabric.api.event.player.PlayerBlockBreakEvents;
 import net.fabricmc.fabric.api.event.player.UseBlockCallback;
@@ -40,8 +38,6 @@ import org.quiltmc.qsl.networking.api.PacketSender;
 import org.quiltmc.qsl.networking.api.ServerPlayConnectionEvents;
 import xyz.nucleoid.fantasy.Fantasy;
 
-import java.io.File;
-
 import static calebzhou.rdi.core.server.utils.PlayerUtils.*;
 
 
@@ -71,7 +67,7 @@ public class RdiEvents {
 	}
 
 	private void recordChat(String pid, String cont){
-        RdiSendRecordThread.addTask(new RdiHttpRequest(RdiHttpRequest.Type.post,"mcs/record/chat","pid="+pid,"cont="+ EncodingUtils.getUTF8StringFromGBKString(cont)));
+        ThreadPool.newThread(()->RdiHttpClient.sendRequest("post","/mcs/record/chat", Pair.of("pid",pid),Pair.of("cont", EncodingUtils.getUTF8StringFromGBKString(cont))));
     }
     //玩家聊天
     private void onPlayerChat(PlayerChatMessage text, ServerPlayer player, ChatType.Bound bound) {
@@ -83,8 +79,7 @@ public class RdiEvents {
         String pid = player.getStringUUID();
         String src = source.getMsgId();
         //记录死亡
-        RdiSendRecordThread.addTask(new RdiHttpRequest(RdiHttpRequest.Type.post,"mcs/record/death","pid="+pid,"src="+src));
-
+       	RdiHttpClient.sendRequestAsyncResponseless("post","/mcs/record/death",Pair.of("pid",pid),Pair.of("src",src));
         //随机掉落物品
         DeathRandomDrop.handleDeath(player);
         return true;
@@ -97,7 +92,7 @@ public class RdiEvents {
         RdiMemoryStorage.afkMap.removeInt(player.getScoreboardName());
         RdiMemoryStorage.tpaMap.remove(player.getStringUUID());
         //记录登出信息
-        RdiSendRecordThread.addTask(new RdiHttpRequest(RdiHttpRequest.Type.post,"mcs/record/logout", "pid="+player.getStringUUID()));
+        RdiHttpClient.sendRequestAsyncResponseless("post","/mcs/record/logout", Pair.of("pid",player.getStringUUID()));
 		//如果在二岛
 		ServerLevel islandLevel = player.getLevel();
 		if(WorldUtils.isInIsland2(islandLevel)){
@@ -108,7 +103,6 @@ public class RdiEvents {
 			}
 		}
     }
-
     //act 0放置1破坏
     private void recordBlock(String pid,String bid,int act,Level world,int x,int y,int z){
         //主世界主城以外的地方不记录
@@ -121,7 +115,15 @@ public class RdiEvents {
         //末地 地狱不记录
         if(world == RdiCoreServer.getServer().getLevel(Level.NETHER) || world == RdiCoreServer.getServer().getLevel(Level.END))
             return;
-        RdiSendRecordThread.addTask(new RdiHttpRequest(RdiHttpRequest.Type.post, "mcs/record/block", "pid="+pid,"bid="+bid,"act="+act,"world="+world,"x="+x,"y="+y,"z="+z));
+        RdiHttpClient.sendRequestAsyncResponseless("post", "/mcs/record/block",
+				Pair.of("pid",pid),
+				Pair.of("bid",bid),
+				Pair.of("act",act),
+				Pair.of("world",world),
+				Pair.of("x",x),
+				Pair.of("y",y),
+				Pair.of("z",z)
+		);
     }
     //成功破坏方块
     private void onBreakBlock(Level level, Player player, BlockPos blockPos, BlockState state, BlockEntity block) {
@@ -129,7 +131,7 @@ public class RdiEvents {
         recordBlock(player.getStringUUID(), Registry.BLOCK.getKey(state.getBlock()).toString(),1, level, blockPos.getX(), blockPos.getY(), blockPos.getZ());
     }
 
-    //放置方块
+    //右键点击方块
     private InteractionResult onRightClickBlock(Player player, Level level, InteractionHand hand, BlockHitResult result) {
         BlockPos blockPos = result.getBlockPos();
         Block block = level.getBlockState(blockPos).getBlock();
@@ -151,15 +153,38 @@ public class RdiEvents {
     private void onPlayerJoin(ServerGamePacketListenerImpl listener, PacketSender sender, MinecraftServer server) {
         ServerPlayer player = listener.getPlayer();
         //提示账号是否有密码
-        ThreadPool.newThread(()-> {
+        /*ThreadPool.newThread(()-> {
             File pwdFile = getPasswordFile(player);
             if(!pwdFile.exists()){
                 sendChatMessage(player, RESPONSE_INFO,"您的账号数据尚未加密，可能会有丢失风险，建议使用/encrypt指令加密您的游戏数据");
                 sendClientPopup(player,"warning","RDI账号安全","建议使用/encrypt指令加密您的游戏数据");
                 return;
             }
-        });
-        //发送天气预报
+        });*/
+		ThreadPool.newThread(()->{
+			ResultData request = RdiHttpClient.sendRequest("get", "/v37/public/ip2loca",Pair.of("ip",player.getIpAddress()));
+			if(request.isSuccess()){
+				RdiGeoLocation geoLocation = RdiSerializer.GSON.fromJson(String.valueOf(request.getData()), RdiGeoLocation.class);
+				request = RdiHttpClient.sendRequest("get", "/v37/public/weather", Pair.of("longitude", geoLocation.longitude), Pair.of("latitude", geoLocation.latitude));
+				if (request.isSuccess()) {
+					//TODO 泛型request
+					RdiWeather rdiWeather = RdiSerializer.GSON.fromJson(String.valueOf(request.getData()), RdiWeather.class);
+					PlayerUtils.sayHello(player);
+					PlayerUtils.saveGeoLocation(player,geoLocation);
+					PlayerUtils.sendWeatherInfo(player,geoLocation,rdiWeather);
+					RdiHttpClient.sendRequestAsyncResponseless("post","/mcs/record/login",
+							Pair.of("pid",player.getStringUUID()),
+							Pair.of("ip", player.getIpAddress()),
+							Pair.of("geo",geoLocation));
+					RdiHttpClient.sendRequestAsyncResponseless("post","/mcs/record/idname",
+							Pair.of("pid",player.getStringUUID()),
+							Pair.of("name" , player.getScoreboardName())
+					);
+
+				}
+			}
+		});
+/*        //发送天气预报
         RdiRequestThread.addTask(new RdiHttpPlayerRequest(
                 RdiHttpRequest.Type.get,
                 player,
@@ -175,17 +200,17 @@ public class RdiEvents {
                     //玩家不显示第一行地址信息
                     weatherInfo = weatherInfo.replace(addrInfo,"").replace("@","");
                     sendChatMessage(player, weatherInfo);
-                    sendChatMessage(player, TimeUtils.getTimeChineseString()+"好,"+player.getDisplayName().getString());
+
                     //发送登录记录
-                    RdiSendRecordThread.addTask(new RdiHttpRequest(RdiHttpRequest.Type.post,"mcs/record/login","pid="+player.getStringUUID(),"ip=" + player.getIpAddress(),"geo="+addrInfo));
+                    ThreadPool.newThread(()->);
                     //发送id昵称信息
-                    RdiSendRecordThread.addTask(new RdiHttpRequest(RdiHttpRequest.Type.post,"mcs/record/idname","pid="+player.getStringUUID(),"name=" + player.getScoreboardName()));
+                    ThreadPool.newThread(()->);
 
                 },
                 "misc/weather?ip="+ player.getIpAddress())
-        );
+        );*/
         //查询是否有岛屿，如果没有就提示创建
-        ThreadPool.newThread(()->{
+        /*ThreadPool.newThread(()->{
         RdiRequestThread.addTask(new RdiHttpPlayerRequest(
                 RdiHttpRequest.Type.get,
                 player,
@@ -195,34 +220,16 @@ public class RdiEvents {
                     }
                 },
                 "island/" + player.getStringUUID()
-        ));});
+        ));});*/
     }
 
 
     //指令注册
     private void registerCommands(CommandDispatcher<CommandSourceStack> dispatcher, CommandBuildContext context, Commands.CommandSelection selection) {
-        final ObjectArrayList<RdiCommand> commands = new ObjectArrayList<>();
-        commands.add(new IslandCommand());
-        commands.add(new SpawnCommand());
-        commands.add(new TpaCommand());
-        commands.add(new TpreqCommand());
-        commands.add(new TpsCommand());
-        commands.add(new EncryptCommand());
-        commands.add(new SaveCommand());
-        commands.add(new DragonCommand());
-        commands.add(new HwSpecCommand());
-        commands.add(new RdiConfirmCommand());
-        commands.add(new Home1Command());
-        commands.add(new HomeCommand());
-        commands.add(new TickInverterCommand());
-        commands.add(new HelpCommand());
-        commands.add(new ChangeBiomeCommand());
-        commands.add(new GoNetherCommand());
-
-        for (RdiCommand cmd : commands) {
-            if (cmd.getExecution() != null) {
-                dispatcher.register(cmd.getExecution());
-            }
-        }
+		RdiCommand.forEachCommand(cmd->{
+			if (cmd.getExecution() != null) {
+				dispatcher.register(cmd.getExecution());
+			}
+		});
     }
 }

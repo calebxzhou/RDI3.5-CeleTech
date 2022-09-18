@@ -1,5 +1,9 @@
 package calebzhou.rdi.core.server.utils;
 
+import calebzhou.rdi.core.server.RdiMemoryStorage;
+
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -9,5 +13,17 @@ public class ThreadPool {
         exe.execute(runnable);
     }
 
+	public static void doAfter(int seconds,Runnable runnable){
+		new Timer().schedule(
+				new TimerTask() {
+					@Override
+					public void run() {
+						runnable.run();
+						this.cancel();
+					}
+				},
+				seconds* 1000L
+		);
+	}
 
 }

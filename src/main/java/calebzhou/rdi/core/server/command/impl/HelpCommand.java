@@ -6,7 +6,10 @@ import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import net.minecraft.commands.CommandSourceStack;
 
 public class HelpCommand extends RdiCommand {
-    public HelpCommand( ) {
+    static {
+		RdiCommand.register(new HelpCommand());
+	}
+	private HelpCommand( ) {
         super("rdi-help");
     }
     static final String help = """

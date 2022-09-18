@@ -29,9 +29,12 @@ import static calebzhou.rdi.core.server.utils.PlayerUtils.isInIsland;
 import static calebzhou.rdi.core.server.utils.PlayerUtils.sendChatMessage;
 
 public class ChangeBiomeCommand extends RdiCommand {
-    public ChangeBiomeCommand() {
-        super("change-biome");
+	private ChangeBiomeCommand() {
+        super("change-biome","改变一个区域内的生物群系");
     }
+	static {
+		RdiCommand.register(new ChangeBiomeCommand());
+	}
     private static final DynamicCommandExceptionType ERROR_BIOME_NOT_FOUND = new DynamicCommandExceptionType(object -> Component.translatable("commands.locate.biome.not_found", object));
 
     @Override

@@ -25,4 +25,6 @@ public class NetworkPackets {
 
     //岛屿信息
     public static final ResourceLocation ISLAND_INFO =new ResourceLocation(RdiSharedConstants.MOD_ID,"island_info");
+	//设定密码
+	public static final ResourceLocation SET_PASSWORD = new ResourceLocation(RdiSharedConstants.MOD_ID,"set_password");
 }

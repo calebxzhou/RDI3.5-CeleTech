@@ -5,6 +5,8 @@ import calebzhou.rdi.core.server.RdiCoreServer;
 import calebzhou.rdi.core.server.RdiSharedConstants;
 import calebzhou.rdi.core.server.constant.ColorConst;
 import calebzhou.rdi.core.server.constant.FileConst;
+import calebzhou.rdi.core.server.model.RdiGeoLocation;
+import calebzhou.rdi.core.server.model.RdiWeather;
 import calebzhou.rdi.core.server.model.ResultData;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.core.BlockPos;
@@ -25,6 +27,7 @@ import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.Vec3;
 import org.quiltmc.qsl.networking.api.PacketByteBufs;
 import org.quiltmc.qsl.networking.api.ServerPlayNetworking;
 
@@ -32,7 +35,6 @@ import java.io.File;
 import java.util.EnumSet;
 import java.util.UUID;
 
-import static calebzhou.rdi.core.server.RdiSharedConstants.INIT_LOCATION;
 import static calebzhou.rdi.core.server.RdiSharedConstants.SPAWN_LOCATION;
 
 public class PlayerUtils {
@@ -77,7 +79,7 @@ public class PlayerUtils {
 		player.displayClientMessage(textComponent, isOnActionBar);
 	}
 	public static void sendServiceResultData(Player player, ResultData data) {
-		sendChatMessage(player,data.status()>0?RESPONSE_SUCCESS:RESPONSE_ERROR,data.message());
+		sendChatMessage(player,data.getStatus()>0?RESPONSE_SUCCESS:RESPONSE_ERROR,data.getMessage());
 	}
 	public static void sendChatMessage(Player player, Component textComponent) {
 		sendChatMessage(player,textComponent ,false);
@@ -199,7 +201,23 @@ public class PlayerUtils {
         player.getInventory().clearContent();
         player.kill();
 		PlayerUtils.teleport(player,RdiCoreServer.getServer().overworld(), SPAWN_LOCATION);
-        PlayerUtils.setSpawnPoint(player, Level.OVERWORLD, INIT_LOCATION);
-		player.connection.disconnect(Component.literal("成功重置您的存档！请重新连接服务器。"));
+        PlayerUtils.setSpawnPoint(player, Level.OVERWORLD, SPAWN_LOCATION);
+		//player.connection.disconnect(Component.literal("成功重置您的存档！请重新连接服务器。"));
     }
+
+	public static void teleport(ServerPlayer player, ServerLevel level, Vec3 vec3) {
+		teleport(player, level, vec3.x, vec3.y, vec3.z, 0f,0f);
+	}
+
+	public static void saveGeoLocation(ServerPlayer player, RdiGeoLocation geoLocation) {
+
+	}
+
+	public static void sendWeatherInfo(ServerPlayer player, RdiGeoLocation geoLocation, RdiWeather rdiWeather) {
+
+	}
+
+	public static void sayHello(ServerPlayer player) {
+		sendChatMessage(player, TimeUtils.getTimeChineseString()+"好,"+player.getDisplayName().getString());
+	}
 }

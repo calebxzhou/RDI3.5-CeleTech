@@ -10,10 +10,12 @@ import java.util.Arrays;
 import static calebzhou.rdi.core.server.utils.PlayerUtils.sendMessageToCommandSource;
 
 public class TpsCommand extends RdiCommand {
-    public TpsCommand(   ) {
-        super("tps");
+    private TpsCommand() {
+        super("tps","查询服务器的流畅程度");
     }
-
+	static {
+		RdiCommand.register(new TpsCommand());
+	}
     @Override
     public LiteralArgumentBuilder<CommandSourceStack> getExecution() {
         return baseArgBuilder.executes(context -> exec(context.getSource()));

@@ -15,8 +15,11 @@ import net.minecraft.world.effect.MobEffects;
 import static calebzhou.rdi.core.server.utils.PlayerUtils.sendChatMessage;
 
 public class Home1Command extends RdiCommand {
-    public Home1Command() {
-        super("home1");
+    static {
+		RdiCommand.register(new Home1Command());
+	}
+	private Home1Command() {
+        super("home1","回到一岛");
     }
 
     @Override
@@ -24,12 +27,12 @@ public class Home1Command extends RdiCommand {
         return baseArgBuilder.executes(context -> {
             ServerPlayer player = context.getSource().getPlayer();
 			ThreadPool.newThread(()->{
-				ResultData resultData = RdiHttpClient.sendRequest("get", "/v37/island1/" + player.getStringUUID());
-				if(resultData.status()<0){
+				ResultData resultData = RdiHttpClient.sendRequest("get", "/v37/island/" + player.getStringUUID());
+				if(resultData.getStatus()<0){
 					PlayerUtils.sendServiceResultData(player,resultData);
 					return;
 				}
-				String[] split = resultData.data().split(",");
+				String[] split = String.valueOf(resultData.getData()).split(",");
 				int x= Integer.parseInt(split[0]);
 				int y= Integer.parseInt(split[1]);
 				int z= Integer.parseInt(split[2]);

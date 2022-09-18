@@ -9,6 +9,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.LightLayer;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.structure.BoundingBox;
@@ -87,14 +88,10 @@ public class WorldUtils {
     public static void placeBlock(Level world, BlockPos bpos, BlockState blockState){
         world.setBlockAndUpdate(bpos,blockState);
     }
-    public static void placeInitialBlocks(Level world){
-        BlockPos basePos = new BlockPos(0,127,0);
-        placeBlock(world,basePos.offset(0,0,0),Blocks.DIRT.defaultBlockState());
-        placeBlock(world,basePos.offset(0,1,0),Blocks.OAK_SAPLING.defaultBlockState());
-        placeBlock(world,basePos.offset(0,0,-1),Blocks.WATER.defaultBlockState());
-        placeBlock(world,basePos.offset(-1,0,0),Blocks.LAVA.defaultBlockState());
-        placeBlock(world,basePos.offset(-1,0,-1),Blocks.OBSIDIAN.defaultBlockState());
+    public static void placeBlock(Level world, BlockPos bpos, Block block){
+        world.setBlockAndUpdate(bpos,block.defaultBlockState());
     }
+
     public static int getSkyLight(Level world,BlockPos bpos){
         return world.getLightEngine().getLayerListener(LightLayer.SKY).getLightValue(bpos);
     }
