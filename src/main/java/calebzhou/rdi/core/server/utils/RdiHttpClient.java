@@ -8,6 +8,7 @@ import it.unimi.dsi.fastutil.Pair;
 import net.minecraft.world.entity.player.Player;
 import okhttp3.*;
 
+import javax.annotation.Nullable;
 import javax.net.ssl.*;
 import java.io.IOException;
 import java.security.cert.CertificateException;
@@ -38,12 +39,13 @@ public class RdiHttpClient {
 
 
 	@SafeVarargs
-	public static ResultData sendRequest(String type, String url, Pair<String, String>... params){
+	public static ResultData sendRequest(String type, String url, Pair<String, Object>... params){
         Request.Builder okreq = new Request.Builder();
         okreq.url("https://"+ADDR+":26890"+url);
 		final FormBody bodyFromParams = getFormBodyFromParams(params);
+
 		switch (type){
-            case "post" -> okreq.post(bodyFromParams);
+			case "post" -> okreq.post(bodyFromParams);
             case "put" -> okreq.put(bodyFromParams);
             case "delete" -> okreq.delete(bodyFromParams);
             default -> okreq.get();
@@ -60,12 +62,12 @@ public class RdiHttpClient {
 
 
 	@SafeVarargs
-	public static FormBody getFormBodyFromParams(Pair<String,String>... params){
+	private static FormBody getFormBodyFromParams(Pair<String,Object>... params){
 		if(params==null)
 			return null;
 		FormBody.Builder builder = new FormBody.Builder();
-		for (Pair<String, String> param : params) {
-			builder.add(param.left(), param.right());
+		for (Pair<String, Object> param : params) {
+			builder.add(param.left(), String.valueOf(param.right()));
 		}
 		return builder.build();
 	}

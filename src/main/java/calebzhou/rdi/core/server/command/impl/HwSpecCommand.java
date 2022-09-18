@@ -2,7 +2,7 @@ package calebzhou.rdi.core.server.command.impl;
 
 import calebzhou.rdi.core.server.command.RdiCommand;
 import calebzhou.rdi.core.server.constant.FileConst;
-import calebzhou.rdi.core.server.utils.TextUtils;
+import calebzhou.rdi.core.server.utils.PlayerUtils;
 import calebzhou.rdi.core.server.utils.ThreadPool;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import net.minecraft.commands.CommandSourceStack;

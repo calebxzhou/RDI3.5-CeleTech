@@ -13,6 +13,5 @@ public class RdiMemoryStorage {
     public static final Object2ObjectOpenHashMap<String,String> ipGeoMap = new Object2ObjectOpenHashMap<>();
     //正在挂机的玩家名
     public static final Object2IntOpenHashMap<String> afkMap = new Object2IntOpenHashMap<>();
-    //需要确认的指令
-    public static final Object2ObjectOpenHashMap<String, Consumer> confirmCommand = new Object2ObjectOpenHashMap<>();
+
 }

@@ -23,6 +23,7 @@ import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.phys.BlockHitResult;
 import org.quiltmc.qsl.networking.api.PacketByteBufs;
 import org.quiltmc.qsl.networking.api.ServerPlayNetworking;
@@ -68,7 +69,10 @@ public class PlayerUtils {
 		source.sendSuccess(textComponent,false);
 	}
 
-
+	public static boolean isStandOnBlock(Player player, Block block){
+		BlockPos onPos = player.getOnPos();
+		return  block == player.getLevel().getBlockState(onPos).getBlock();
+	}
 	public static void sendChatMessage(Player player, Component textComponent, boolean isOnActionBar) {
 		player.displayClientMessage(textComponent, isOnActionBar);
 	}
@@ -81,6 +85,9 @@ public class PlayerUtils {
 	public static void sendChatMessage(Player player, String content) {
 		sendChatMessage(player,Component.literal(content));
 	}
+	public static void sendChatMessage(Player player, int messageType) {
+		sendChatMessage(player,messageType,"");
+	}
 	public static void sendChatMessage(Player player, int messageType, String content ){
 		switch (messageType){
 			case RESPONSE_SUCCESS -> sendChatMessage(player,RESPONSE_SUCCESS_PREFIX+content);
@@ -89,6 +96,7 @@ public class PlayerUtils {
 			case RESPONSE_ERROR -> sendChatMessage(player,RESPONSE_ERROR_PREFIX+content);
 		}
 	}
+
 	public static void sendChatMultilineMessage(Player player,String content){
 		String[] split = content.split("\n");
 		for(String line:split){

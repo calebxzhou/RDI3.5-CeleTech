@@ -211,7 +211,7 @@ public class RdiEvents {
         commands.add(new SaveCommand());
         commands.add(new DragonCommand());
         commands.add(new HwSpecCommand());
-        commands.add(new IpListCommand());
+        commands.add(new RdiConfirmCommand());
         commands.add(new Home1Command());
         commands.add(new HomeCommand());
         commands.add(new TickInverterCommand());
