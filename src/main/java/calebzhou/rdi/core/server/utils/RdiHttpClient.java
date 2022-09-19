@@ -3,6 +3,7 @@ package calebzhou.rdi.core.server.utils;
 import calebzhou.rdi.core.server.RdiCoreServer;
 import calebzhou.rdi.core.server.RdiSharedConstants;
 import calebzhou.rdi.core.server.model.ResultData;
+import com.google.gson.reflect.TypeToken;
 import it.unimi.dsi.fastutil.Pair;
 import okhttp3.*;
 
@@ -39,8 +40,9 @@ public class RdiHttpClient {
 			sendRequest(type, url, params);
 		});
 	}
+
 	@SafeVarargs
-	public static ResultData sendRequest(String type, String url, Pair<String, Object>... params){
+	public static <T> ResultData<T> sendRequest(Class<T> resultClass,String type, String url, Pair<String, Object>... params){
         Request.Builder okreq = new Request.Builder();
 		HttpUrl.Builder urlBuilder = HttpUrl.parse("https://"+ADDR+":26890"+url).newBuilder();
 		final FormBody bodyFromParams = getFormBodyFromParams(params);
@@ -70,7 +72,13 @@ public class RdiHttpClient {
 			e.printStackTrace();
 		}
 		System.out.println(respStr);
-		return RdiSerializer.GSON.fromJson(respStr, ResultData.class);
+		return RdiSerializer.GSON.fromJson(respStr,
+				resultClass == null ?
+						ResultData.class  : TypeToken.getParameterized(ResultData.class,resultClass).getType());
+	}
+	@SafeVarargs
+	public static ResultData sendRequest(String type, String url, Pair<String, Object>... params){
+         return sendRequest(null,type,url,params);
 	}
 
 

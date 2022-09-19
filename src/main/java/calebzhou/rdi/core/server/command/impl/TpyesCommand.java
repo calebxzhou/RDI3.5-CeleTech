@@ -16,10 +16,7 @@ import static calebzhou.rdi.core.server.utils.PlayerUtils.sendChatMessage;
 
 
 public class TpyesCommand extends RdiCommand {
-	static {
-		RdiCommand.register(new TpyesCommand());
-	}
-    private TpyesCommand() {
+	public TpyesCommand() {
         super("tpyes","接受传送请求");
     }
 

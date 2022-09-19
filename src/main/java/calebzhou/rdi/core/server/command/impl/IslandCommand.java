@@ -29,10 +29,7 @@ import static calebzhou.rdi.core.server.utils.IslandUtils.getIslandDimensionLoca
 import static calebzhou.rdi.core.server.utils.PlayerUtils.*;
 
 public class IslandCommand extends RdiCommand {
-	static {
-		RdiCommand.register(new IslandCommand());
-	}
-    private IslandCommand() {
+	public IslandCommand() {
         super("is","岛屿菜单。");
     }
     static final String islandHelp = """
@@ -154,13 +151,13 @@ public class IslandCommand extends RdiCommand {
     private void createIsland(ServerPlayer player){
         sendChatMessage(player, PlayerUtils.RESPONSE_INFO,"准备创建岛屿，不要触碰鼠标或者键盘！");
 		ThreadPool.newThread(()->{
-			ResultData resultData = RdiHttpClient.sendRequest("post", "/v37/island2/" + player.getStringUUID());
+			ResultData<Integer> resultData = RdiHttpClient.sendRequest(Integer.class,"post", "/v37/island2/" + player.getStringUUID());
 			if(!resultData.isSuccess()){
 				PlayerUtils.sendServiceResultData(player,resultData);
 				return;
 			}
 			sendChatMessage(player, PlayerUtils.RESPONSE_INFO,"开始创建岛屿，不要触碰鼠标或者键盘！");
-			int iid =Integer.parseInt(String.valueOf(resultData.getData()));
+			int iid =resultData.getData();
 			sendChatMessage(player, PlayerUtils.RESPONSE_INFO,"您的岛屿ID："+iid);
 			MinecraftServer server = RdiCoreServer.getServer();
 			ServerUtils.executeOnServerThread(()->{

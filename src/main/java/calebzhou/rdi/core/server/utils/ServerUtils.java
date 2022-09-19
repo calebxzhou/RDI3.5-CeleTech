@@ -20,6 +20,9 @@ import java.util.function.Predicate;
 
 public class ServerUtils {
     public static void broadcastChatMessage(String msg){
+        broadcastChatMessage(Component.literal( msg ));
+    }
+    public static void broadcastChatMessage(Component msg){
         for (ServerPlayer player : RdiCoreServer.getServer().getPlayerList().getPlayers()) {
             PlayerUtils.sendChatMessage(player,msg);
         }

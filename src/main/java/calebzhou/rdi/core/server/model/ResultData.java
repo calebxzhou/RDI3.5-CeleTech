@@ -1,12 +1,12 @@
 package calebzhou.rdi.core.server.model;
 
 
-public class ResultData{
+public class ResultData<T>{
 	private int status;
 	private String message;
-	private Object data ;
+	private T data ;
 
-	public ResultData(int status, String message, String data) {
+	public ResultData(int status, String message, T data) {
 		this.status = status;
 		this.message = message;
 		this.data = data;
@@ -20,7 +20,7 @@ public class ResultData{
 		return message;
 	}
 
-	public Object getData() {
+	public T getData() {
 		return data;
 	}
 

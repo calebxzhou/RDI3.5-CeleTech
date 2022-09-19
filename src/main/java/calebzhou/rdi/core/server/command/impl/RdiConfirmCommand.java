@@ -18,10 +18,7 @@ import static calebzhou.rdi.core.server.utils.PlayerUtils.*;
  * Created by calebzhou on 2022-09-18,9:27.
  */
 public class RdiConfirmCommand extends RdiCommand {
-	static {
-		RdiCommand.register(new RdiConfirmCommand());
-	}
-	private RdiConfirmCommand() {
+	public RdiConfirmCommand() {
 		super("rdi-confirm","确认执行指令。");
 	}
 

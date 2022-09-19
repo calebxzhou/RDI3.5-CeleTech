@@ -10,11 +10,8 @@ import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.server.level.ServerPlayer;
 
 public class SpawnCommand extends RdiCommand {
-	static {
-		RdiCommand.register(new SpawnCommand());
-	}
 
-    private SpawnCommand() {
+	public SpawnCommand() {
         super( "spawn","回到主城");
     }
 
@@ -24,7 +21,8 @@ public class SpawnCommand extends RdiCommand {
                 .executes(context -> {
                     ServerPlayer player = context.getSource().getPlayer();
                     PlayerUtils.teleport(player, RdiCoreServer.getServer().overworld(),RdiSharedConstants.SPAWN_LOCATION);
-                    return 1;
+					PlayerUtils.sendChatMessage(player,PlayerUtils.RESPONSE_SUCCESS,"成功回到了主城！");
+					return 1;
                 });
     }
 

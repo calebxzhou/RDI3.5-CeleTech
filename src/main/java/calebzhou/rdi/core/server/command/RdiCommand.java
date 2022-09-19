@@ -36,11 +36,4 @@ public abstract class RdiCommand {
 
 	public abstract LiteralArgumentBuilder<CommandSourceStack> getExecution();
 
-	private static final Set<RdiCommand> commands = new ObjectOpenHashSet<>();
-	public static void register(RdiCommand command){
-		commands.add(command);
-	}
-	public static void forEachCommand(Consumer<RdiCommand> toDo){
-		commands.forEach(toDo);
-	}
 }

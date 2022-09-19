@@ -19,10 +19,7 @@ import static calebzhou.rdi.core.server.utils.PlayerUtils.*;
 import static calebzhou.rdi.core.server.utils.PlayerUtils.sendChatMessage;
 
 public class TpaCommand extends RdiCommand {
-	static {
-		RdiCommand.register(new TpaCommand());
-	}
-    private TpaCommand() {
+	public TpaCommand() {
         super("tpa","传送到一个玩家身边");
     }
 

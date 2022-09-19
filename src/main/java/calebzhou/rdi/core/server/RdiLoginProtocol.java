@@ -6,6 +6,7 @@ import calebzhou.rdi.core.server.model.ResultData;
 import calebzhou.rdi.core.server.utils.RdiHttpClient;
 import calebzhou.rdi.core.server.utils.RdiSerializer;
 import calebzhou.rdi.core.server.utils.ThreadPool;
+import com.google.gson.JsonSyntaxException;
 import com.mojang.authlib.GameProfile;
 import it.unimi.dsi.fastutil.Pair;
 import net.minecraft.network.Connection;
@@ -21,26 +22,32 @@ import java.util.UUID;
  */
 public class RdiLoginProtocol {
 	public static void handleHello(Connection connection,ServerLoginPacketListenerImpl loginPacketListener, ServerboundHelloPacket helloPacket){
-		String json = helloPacket.name();
-		RdiCoreServer.LOGGER.info("收到登录请求：{}",json);
+		try {
+			String json = helloPacket.name();
+			RdiCoreServer.LOGGER.info("收到登录请求：{}",json);
 
-		if(!json.contains("{")){
-			connection.disconnect(Component.literal("登录协议错误 格式错误1，请更新客户端！"));
-			return;
-		}
-		RdiUser rdiUser = RdiSerializer.GSON.fromJson(json, RdiUser.class);
-		((AccessServerLoginPacketListenerImpl) loginPacketListener).setGameProfile(new GameProfile(UUID.fromString(rdiUser.getUuid()), rdiUser.getName()));
-		((AccessServerLoginPacketListenerImpl) loginPacketListener).setState(ServerLoginPacketListenerImpl.State.READY_TO_ACCEPT);
-		ThreadPool.newThread(()->{
-			ResultData resultData = RdiHttpClient.sendRequest("get", "/v37/account/isreg/" + rdiUser.getUuid());
-			if(resultData.isSuccess()){
-				if (Boolean.parseBoolean(String.valueOf(resultData.getData()))){
-					ResultData loginData = RdiHttpClient.sendRequest("get", "/v37/account/login/" + rdiUser.getUuid(), Pair.of("pwd", rdiUser.getPwd()));
-					if (!loginData.isSuccess()) {
-						connection.disconnect(Component.literal("RDI密码错误"));
+			if(!json.contains("{")){
+				RdiCoreServer.LOGGER.info("此请求协议格式错误！");
+				connection.disconnect(Component.literal("登录协议错误 格式错误1，请更新客户端！"));
+				return;
+			}
+			RdiUser rdiUser = RdiSerializer.GSON.fromJson(json, RdiUser.class);
+			((AccessServerLoginPacketListenerImpl) loginPacketListener).setGameProfile(new GameProfile(UUID.fromString(rdiUser.getUuid()), rdiUser.getName()));
+			((AccessServerLoginPacketListenerImpl) loginPacketListener).setState(ServerLoginPacketListenerImpl.State.READY_TO_ACCEPT);
+			ThreadPool.newThread(()->{
+				ResultData<Boolean> resultData = RdiHttpClient.sendRequest(Boolean.class,"get", "/v37/account/isreg/" + rdiUser.getUuid());
+				if(resultData.getData()){
+					if (Boolean.parseBoolean(String.valueOf(resultData.getData()))){
+						ResultData loginData = RdiHttpClient.sendRequest("get", "/v37/account/login/" + rdiUser.getUuid(), Pair.of("pwd", rdiUser.getPwd()));
+						if (!loginData.isSuccess()) {
+							RdiCoreServer.LOGGER.info("此请求密码错误！");
+							connection.disconnect(Component.literal("RDI密码错误"));
+						}
 					}
 				}
-			}
-		});
+			});
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 }

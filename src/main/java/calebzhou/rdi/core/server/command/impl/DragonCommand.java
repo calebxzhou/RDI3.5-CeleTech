@@ -12,10 +12,7 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobSpawnType;
 
 public class DragonCommand extends RdiCommand {
-	static{
-		RdiCommand.register(new DragonCommand());
-	}
-    private DragonCommand() {
+	public DragonCommand() {
         super("dragon","召唤一只末影龙");
     }
 	private final int expLvlNeed = 100;

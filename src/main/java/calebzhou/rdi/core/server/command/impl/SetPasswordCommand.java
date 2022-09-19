@@ -3,7 +3,6 @@ package calebzhou.rdi.core.server.command.impl;
 
 import calebzhou.rdi.core.server.NetworkPackets;
 import calebzhou.rdi.core.server.command.RdiCommand;
-import calebzhou.rdi.core.server.constant.FileConst;
 import calebzhou.rdi.core.server.model.ResultData;
 import calebzhou.rdi.core.server.utils.NetworkUtils;
 import calebzhou.rdi.core.server.utils.PlayerUtils;
@@ -15,20 +14,12 @@ import com.mojang.brigadier.context.CommandContext;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.server.level.ServerPlayer;
-import org.apache.commons.io.FileUtils;
-
-import java.io.File;
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 
 import static calebzhou.rdi.core.server.utils.PlayerUtils.*;
 
 public class SetPasswordCommand extends RdiCommand {
 
-	static{
-		RdiCommand.register(new SetPasswordCommand());
-	}
-    private SetPasswordCommand() {
+	public SetPasswordCommand() {
         super( "set-password","设定密码");
     }
 

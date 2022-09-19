@@ -15,10 +15,7 @@ import net.minecraft.world.level.block.Blocks;
 import static calebzhou.rdi.core.server.utils.PlayerUtils.*;
 
 public class GoNetherCommand extends RdiCommand {
-	static {
-		RdiCommand.register(new GoNetherCommand());
-	}
-    private GoNetherCommand() {
+	public GoNetherCommand() {
         super("go-nether","下地狱");
     }
 

@@ -1,6 +1,7 @@
 package calebzhou.rdi.core.server;
 
 import calebzhou.rdi.core.server.command.RdiCommand;
+import calebzhou.rdi.core.server.command.impl.*;
 import calebzhou.rdi.core.server.model.RdiGeoLocation;
 import calebzhou.rdi.core.server.model.RdiWeather;
 import calebzhou.rdi.core.server.model.ResultData;
@@ -8,6 +9,7 @@ import calebzhou.rdi.core.server.module.DeathRandomDrop;
 import calebzhou.rdi.core.server.utils.*;
 import com.mojang.brigadier.CommandDispatcher;
 import it.unimi.dsi.fastutil.Pair;
+import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 import net.fabricmc.fabric.api.entity.event.v1.ServerPlayerEvents;
 import net.fabricmc.fabric.api.event.player.PlayerBlockBreakEvents;
 import net.fabricmc.fabric.api.event.player.UseBlockCallback;
@@ -38,6 +40,10 @@ import org.quiltmc.qsl.networking.api.PacketSender;
 import org.quiltmc.qsl.networking.api.ServerPlayConnectionEvents;
 import xyz.nucleoid.fantasy.Fantasy;
 
+import java.io.File;
+import java.util.Set;
+
+import static calebzhou.rdi.core.server.RdiMemoryStorage.commandSet;
 import static calebzhou.rdi.core.server.utils.PlayerUtils.*;
 
 
@@ -66,12 +72,9 @@ public class RdiEvents {
 		return true;
 	}
 
-	private void recordChat(String pid, String cont){
-        ThreadPool.newThread(()->RdiHttpClient.sendRequest("post","/mcs/record/chat", Pair.of("pid",pid),Pair.of("cont", EncodingUtils.getUTF8StringFromGBKString(cont))));
-    }
     //玩家聊天
     private void onPlayerChat(PlayerChatMessage text, ServerPlayer player, ChatType.Bound bound) {
-        recordChat(player.getStringUUID(), text.unsignedContent().get().getString());
+		RdiHttpClient.sendRequestAsyncResponseless("post","/mcs/record/chat", Pair.of("pid",player.getStringUUID()),Pair.of("cont", EncodingUtils.getUTF8StringFromGBKString(text.signedContent().plain())));
     }
 
     //玩家死亡
@@ -153,22 +156,19 @@ public class RdiEvents {
     private void onPlayerJoin(ServerGamePacketListenerImpl listener, PacketSender sender, MinecraftServer server) {
         ServerPlayer player = listener.getPlayer();
         //提示账号是否有密码
-        /*ThreadPool.newThread(()-> {
-            File pwdFile = getPasswordFile(player);
-            if(!pwdFile.exists()){
-                sendChatMessage(player, RESPONSE_INFO,"您的账号数据尚未加密，可能会有丢失风险，建议使用/encrypt指令加密您的游戏数据");
-                sendClientPopup(player,"warning","RDI账号安全","建议使用/encrypt指令加密您的游戏数据");
-                return;
-            }
-        });*/
+        ThreadPool.newThread(()-> {
+			ResultData<Boolean> resultData = RdiHttpClient.sendRequest(Boolean.class,"get", "/v37/account/isreg/" + player.getStringUUID());
+            if(!resultData.getData()){
+				sendClientPopup(player,"warning","RDI账号安全","建议使用/set-password指令设置密码");
+			}
+        });
 		ThreadPool.newThread(()->{
-			ResultData request = RdiHttpClient.sendRequest("get", "/v37/public/ip2loca",Pair.of("ip",player.getIpAddress()));
+			/*ResultData<RdiGeoLocation> request = RdiHttpClient.sendRequest(RdiGeoLocation.class,"get", "/v37/public/ip2loca",Pair.of("ip",player.getIpAddress()));
 			if(request.isSuccess()){
-				RdiGeoLocation geoLocation = RdiSerializer.GSON.fromJson(String.valueOf(request.getData()), RdiGeoLocation.class);
-				request = RdiHttpClient.sendRequest("get", "/v37/public/weather", Pair.of("longitude", geoLocation.longitude), Pair.of("latitude", geoLocation.latitude));
+				RdiGeoLocation geoLocation = request.getData();
+				ResultData<RdiWeather> weatherResultData = RdiHttpClient.sendRequest(RdiWeather.class,"get", "/v37/public/weather", Pair.of("longitude", geoLocation.longitude), Pair.of("latitude", geoLocation.latitude));
 				if (request.isSuccess()) {
-					//TODO 泛型request
-					RdiWeather rdiWeather = RdiSerializer.GSON.fromJson(String.valueOf(request.getData()), RdiWeather.class);
+					RdiWeather rdiWeather = weatherResultData.getData();
 					PlayerUtils.sayHello(player);
 					PlayerUtils.saveGeoLocation(player,geoLocation);
 					PlayerUtils.sendWeatherInfo(player,geoLocation,rdiWeather);
@@ -182,51 +182,30 @@ public class RdiEvents {
 					);
 
 				}
-			}
+			}*/
 		});
-/*        //发送天气预报
-        RdiRequestThread.addTask(new RdiHttpPlayerRequest(
-                RdiHttpRequest.Type.get,
-                player,
-                weatherInfo->{
-					weatherInfo.getData()
-                    //地址信息
-                    String addrInfo = weatherInfo.split("\n")[0];
-                    if(addrInfo.startsWith("@")){
-                        addrInfo=addrInfo.replace("@","");
-                        //写入地址信息
-                        RdiMemoryStorage.ipGeoMap.put(player.getScoreboardName(),addrInfo);
-                    }
-                    //玩家不显示第一行地址信息
-                    weatherInfo = weatherInfo.replace(addrInfo,"").replace("@","");
-                    sendChatMessage(player, weatherInfo);
-
-                    //发送登录记录
-                    ThreadPool.newThread(()->);
-                    //发送id昵称信息
-                    ThreadPool.newThread(()->);
-
-                },
-                "misc/weather?ip="+ player.getIpAddress())
-        );*/
-        //查询是否有岛屿，如果没有就提示创建
-        /*ThreadPool.newThread(()->{
-        RdiRequestThread.addTask(new RdiHttpPlayerRequest(
-                RdiHttpRequest.Type.get,
-                player,
-                resp->{
-                    if(resp.equals("fail")){
-                        sendChatMessage(player, RESPONSE_INFO,"您没有加入任何岛屿，输入/is2 create指令立刻创建一个吧！");
-                    }
-                },
-                "island/" + player.getStringUUID()
-        ));});*/
     }
 
 
     //指令注册
     private void registerCommands(CommandDispatcher<CommandSourceStack> dispatcher, CommandBuildContext context, Commands.CommandSelection selection) {
-		RdiCommand.forEachCommand(cmd->{
+		commandSet.add(new ChangeBiomeCommand());
+		commandSet.add(new DragonCommand());
+		commandSet.add(new GoNetherCommand());
+		commandSet.add(new HelpCommand());
+		commandSet.add(new Home1Command());
+		commandSet.add(new HomeCommand());
+		commandSet.add(new IslandCommand());
+		commandSet.add(new MeltObsidianCommand());
+		commandSet.add(new RdiConfirmCommand());
+		commandSet.add(new SaveCommand());
+		commandSet.add(new SetPasswordCommand());
+		commandSet.add(new SpawnCommand());
+		commandSet.add(new SpeakCommand());
+		commandSet.add(new TpaCommand());
+		commandSet.add(new TpsCommand());
+		commandSet.add(new TpyesCommand());
+		commandSet.forEach(cmd->{
 			if (cmd.getExecution() != null) {
 				dispatcher.register(cmd.getExecution());
 			}

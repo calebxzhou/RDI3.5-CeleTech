@@ -17,10 +17,7 @@ import static calebzhou.rdi.core.server.utils.PlayerUtils.RESPONSE_ERROR;
 import static calebzhou.rdi.core.server.utils.PlayerUtils.sendChatMessage;
 
 public class HomeCommand extends RdiCommand {
-    static {
-		RdiCommand.register(new HomeCommand());
-	}
-	private HomeCommand() {
+	public HomeCommand() {
         super("home","回到我的岛屿");
     }
 
@@ -30,12 +27,12 @@ public class HomeCommand extends RdiCommand {
             ServerPlayer player = context.getSource().getPlayer();
             sendChatMessage(player, PlayerUtils.RESPONSE_INFO,"开始返回您的岛屿，请稍等...");
 			ThreadPool.newThread(()->{
-				ResultData resultData = RdiHttpClient.sendRequest("get", "/v37/island2/" + player.getStringUUID());
+				ResultData<Island2> resultData = RdiHttpClient.sendRequest(Island2.class,"get", "/v37/island2/" + player.getStringUUID());
 				if(!resultData.isSuccess()){
 					sendChatMessage(player,RESPONSE_ERROR,resultData.getMessage());
 					return;
 				}
-				Island2 island2 = RdiSerializer.GSON.fromJson(String.valueOf(resultData.getData()), Island2.class);
+				Island2 island2 = resultData.getData();
 				ResourceLocation dim = IslandUtils.getIslandDimensionLoca(island2.iid);
 				ServerUtils.executeOnServerThread(()->{
 					RuntimeWorldHandle worldHandle = Fantasy.get(RdiCoreServer.getServer()).getOrOpenPersistentWorld(dim, IslandUtils.getIslandWorldConfig());
