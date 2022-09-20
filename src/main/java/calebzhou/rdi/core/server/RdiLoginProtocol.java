@@ -34,18 +34,8 @@ public class RdiLoginProtocol {
 			RdiUser rdiUser = RdiSerializer.GSON.fromJson(json, RdiUser.class);
 			((AccessServerLoginPacketListenerImpl) loginPacketListener).setGameProfile(new GameProfile(UUID.fromString(rdiUser.getUuid()), rdiUser.getName()));
 			((AccessServerLoginPacketListenerImpl) loginPacketListener).setState(ServerLoginPacketListenerImpl.State.READY_TO_ACCEPT);
-			ThreadPool.newThread(()->{
-				ResultData<Boolean> resultData = RdiHttpClient.sendRequest(Boolean.class,"get", "/v37/account/isreg/" + rdiUser.getUuid());
-				if(resultData.getData()){
-					if (Boolean.parseBoolean(String.valueOf(resultData.getData()))){
-						ResultData loginData = RdiHttpClient.sendRequest("get", "/v37/account/login/" + rdiUser.getUuid(), Pair.of("pwd", rdiUser.getPwd()));
-						if (!loginData.isSuccess()) {
-							RdiCoreServer.LOGGER.info("此请求密码错误！");
-							connection.disconnect(Component.literal("RDI密码错误"));
-						}
-					}
-				}
-			});
+			RdiMemoryStorage.pidUserMap.put(rdiUser.getUuid(), rdiUser);
+
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

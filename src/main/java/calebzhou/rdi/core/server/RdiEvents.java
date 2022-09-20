@@ -20,6 +20,7 @@ import net.minecraft.commands.Commands;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Registry;
 import net.minecraft.network.chat.ChatType;
+import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.PlayerChatMessage;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
@@ -99,8 +100,8 @@ public class RdiEvents {
 		//如果在二岛
 		ServerLevel islandLevel = player.getLevel();
 		if(WorldUtils.isInIsland2(islandLevel)){
-			//如果岛上没有人 就卸载存档
-			if(islandLevel.getPlayers(p-> true).isEmpty()){
+			//如果岛上没有人（除了自己） 就卸载存档
+			if(islandLevel.getPlayers(playerLvl->!playerLvl.getStringUUID().equals(player.getStringUUID())).isEmpty()){
 				RdiCoreServer.LOGGER.info("岛屿"+WorldUtils.getDimensionName(islandLevel)+"没有玩家了，即将卸载");
 				Fantasy.get(RdiCoreServer.getServer()).unloadWorld(islandLevel);
 			}
@@ -156,33 +157,43 @@ public class RdiEvents {
     private void onPlayerJoin(ServerGamePacketListenerImpl listener, PacketSender sender, MinecraftServer server) {
         ServerPlayer player = listener.getPlayer();
         //提示账号是否有密码
-        ThreadPool.newThread(()-> {
-			ResultData<Boolean> resultData = RdiHttpClient.sendRequest(Boolean.class,"get", "/v37/account/isreg/" + player.getStringUUID());
-            if(!resultData.getData()){
+		String pid = player.getStringUUID();
+		ThreadPool.newThread(()-> {
+			ResultData<Boolean> resultData = RdiHttpClient.sendRequest(Boolean.class,"get", "/v37/account/isreg/" + pid);
+            if(resultData.getData()){
+				if (Boolean.parseBoolean(String.valueOf(resultData.getData()))){
+					ResultData loginData = RdiHttpClient.sendRequest("get", "/v37/account/login/" + pid, Pair.of("pwd", RdiMemoryStorage.pidUserMap.get(pid).getPwd()));
+					if (!loginData.isSuccess()) {
+						RdiCoreServer.LOGGER.info("此请求密码错误！");
+						player.connection.disconnect(Component.literal("RDI密码错误，请尝试重启游戏\n或者检查文件"+PlayerUtils.getPasswordStorageFile(player)));
+					}
+				}
+			}else{
 				sendClientPopup(player,"warning","RDI账号安全","建议使用/set-password指令设置密码");
 			}
         });
 		ThreadPool.newThread(()->{
-			/*ResultData<RdiGeoLocation> request = RdiHttpClient.sendRequest(RdiGeoLocation.class,"get", "/v37/public/ip2loca",Pair.of("ip",player.getIpAddress()));
+			ResultData<RdiGeoLocation> request = RdiHttpClient.sendRequest(RdiGeoLocation.class,"get", "/v37/public/ip2loca",Pair.of("ip",player.getIpAddress()));
 			if(request.isSuccess()){
 				RdiGeoLocation geoLocation = request.getData();
-				ResultData<RdiWeather> weatherResultData = RdiHttpClient.sendRequest(RdiWeather.class,"get", "/v37/public/weather", Pair.of("longitude", geoLocation.longitude), Pair.of("latitude", geoLocation.latitude));
-				if (request.isSuccess()) {
+				ResultData<RdiWeather> weatherResultData = RdiHttpClient.sendRequest(RdiWeather.class,"get", "/v37/public/weather", Pair.of("longitude", geoLocation.location.longitude), Pair.of("latitude", geoLocation.location.latitude));
+				if (weatherResultData.isSuccess()) {
 					RdiWeather rdiWeather = weatherResultData.getData();
 					PlayerUtils.sayHello(player);
 					PlayerUtils.saveGeoLocation(player,geoLocation);
 					PlayerUtils.sendWeatherInfo(player,geoLocation,rdiWeather);
+					PlayerUtils.sendTomorrowWeatherInfo(player,geoLocation,rdiWeather);
 					RdiHttpClient.sendRequestAsyncResponseless("post","/mcs/record/login",
-							Pair.of("pid",player.getStringUUID()),
+							Pair.of("pid", pid),
 							Pair.of("ip", player.getIpAddress()),
 							Pair.of("geo",geoLocation));
 					RdiHttpClient.sendRequestAsyncResponseless("post","/mcs/record/idname",
-							Pair.of("pid",player.getStringUUID()),
+							Pair.of("pid", pid),
 							Pair.of("name" , player.getScoreboardName())
 					);
 
 				}
-			}*/
+			}
 		});
     }
 

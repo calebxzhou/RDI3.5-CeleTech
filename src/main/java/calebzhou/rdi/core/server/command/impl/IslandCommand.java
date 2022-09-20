@@ -81,7 +81,7 @@ public class IslandCommand extends RdiCommand {
         return 1;
     }
 	private int sendIslandHelp(ServerPlayer player) {
-		PlayerUtils.sendChatMultilineMessage(player,islandHelp);
+		sendChatMultilineMessage(player,islandHelp);
 		return 1;
 	}
 
@@ -98,9 +98,9 @@ public class IslandCommand extends RdiCommand {
 				ResourceLocation dim = IslandUtils.getIslandDimensionLoca(String.valueOf(resultData.getData()));
 				ServerUtils.executeOnServerThread(()-> {
 					RuntimeWorldHandle worldHandle = Fantasy.get(RdiCoreServer.getServer()).getOrOpenPersistentWorld(dim, IslandUtils.getIslandWorldConfig());
-					PlayerUtils.resetProfile(player);
+					resetProfile(player);
 					worldHandle.delete();
-					sendChatMessage(player, PlayerUtils.RESPONSE_SUCCESS);
+					sendChatMessage(player, RESPONSE_SUCCESS);
 				});
 			}
 		});
@@ -119,16 +119,16 @@ public class IslandCommand extends RdiCommand {
 			ResultData resultData = RdiHttpClient.sendRequest("delete", "/island2/crew/" + player.getStringUUID());
 			if (resultData.isSuccess()) {
 				ServerUtils.executeOnServerThread(()-> {
-					PlayerUtils.resetProfile(player);
+					resetProfile(player);
 					sendChatMessage(player,RESPONSE_SUCCESS);
 				});
-			}else PlayerUtils.sendServiceResultData(player,resultData);
+			}else sendServiceResultData(player,resultData);
 		});
     }
 
 	private void transferIsland(ServerPlayer fromPlayer,ServerPlayer toPlayer){
 		if(fromPlayer==toPlayer){
-			sendChatMessage(fromPlayer,PlayerUtils.RESPONSE_ERROR,"目标玩家不能是自己！");
+			sendChatMessage(fromPlayer, RESPONSE_ERROR,"目标玩家不能是自己！");
 			return;
 		}
 		sendChatMessage(fromPlayer,RESPONSE_WARNING,"真的，要转让这个岛屿吗？您的个人全部数据，将会被删除！");
@@ -142,45 +142,45 @@ public class IslandCommand extends RdiCommand {
 		ThreadPool.newThread(()->{
 			ResultData resultData = RdiHttpClient.sendRequest("put", "/v37/island2/transfer/" + fromPlayer.getStringUUID() + "/" + toPlayer.getStringUUID());
 			if(resultData.isSuccess()){
-				sendChatMessage(fromPlayer,PlayerUtils.RESPONSE_SUCCESS);
-				sendChatMessage(toPlayer,PlayerUtils.RESPONSE_SUCCESS, fromPlayer.getScoreboardName()+"把岛屿转让给了你！");
-			}else PlayerUtils.sendServiceResultData(fromPlayer,resultData);
+				sendChatMessage(fromPlayer, RESPONSE_SUCCESS);
+				sendChatMessage(toPlayer, RESPONSE_SUCCESS, fromPlayer.getScoreboardName()+"把岛屿转让给了你！");
+			}else sendServiceResultData(fromPlayer,resultData);
 		});
     }
 
     private void createIsland(ServerPlayer player){
-        sendChatMessage(player, PlayerUtils.RESPONSE_INFO,"准备创建岛屿，不要触碰鼠标或者键盘！");
+        sendChatMessage(player, RESPONSE_INFO,"准备创建岛屿，不要触碰鼠标或者键盘！");
 		ThreadPool.newThread(()->{
 			ResultData<Integer> resultData = RdiHttpClient.sendRequest(Integer.class,"post", "/v37/island2/" + player.getStringUUID());
 			if(!resultData.isSuccess()){
-				PlayerUtils.sendServiceResultData(player,resultData);
+				sendServiceResultData(player,resultData);
 				return;
 			}
-			sendChatMessage(player, PlayerUtils.RESPONSE_INFO,"开始创建岛屿，不要触碰鼠标或者键盘！");
+			sendChatMessage(player, RESPONSE_INFO,"开始创建岛屿，不要触碰鼠标或者键盘！");
 			int iid =resultData.getData();
-			sendChatMessage(player, PlayerUtils.RESPONSE_INFO,"您的岛屿ID："+iid);
+			sendChatMessage(player, RESPONSE_INFO,"您的岛屿ID："+iid);
 			MinecraftServer server = RdiCoreServer.getServer();
 			ServerUtils.executeOnServerThread(()->{
 				Fantasy fantasy = Fantasy.get(server);
-				sendChatMessage(player, PlayerUtils.RESPONSE_INFO,"正在创建存档。。不要触碰鼠标或者键盘！");
+				sendChatMessage(player, RESPONSE_INFO,"正在创建存档。。不要触碰鼠标或者键盘！");
 				ResourceLocation islandDimension = getIslandDimensionLoca(iid);
 				RuntimeWorldHandle worldHandle = fantasy.getOrOpenPersistentWorld(islandDimension, IslandUtils.getIslandWorldConfig());
 				ServerLevel level = worldHandle.asWorld();
 				IslandUtils.placeInitialBlocks(level);
-				PlayerUtils.addEffect(player, MobEffects.SLOW_FALLING,10,2);
-				PlayerUtils.setSpawnPoint(player,level.dimension(),WorldUtils.INIT_POS.above(7));
-				sendChatMessage(player, PlayerUtils.RESPONSE_INFO,"准备传送。。。");
-				PlayerUtils.teleport(player,level, Vec3.atCenterOf(WorldUtils.INIT_POS).add(0.5,7,0.5));
-				sendChatMessage(player, PlayerUtils.RESPONSE_SUCCESS,"成功！");
+				addEffect(player, MobEffects.SLOW_FALLING,10,2);
+				setSpawnPoint(player,level.dimension(),WorldUtils.INIT_POS.above(2));
+				sendChatMessage(player, RESPONSE_INFO,"准备传送。。。");
+				teleport(player,level, Vec3.atCenterOf(WorldUtils.INIT_POS).add(0,7,0));
+				sendChatMessage(player, RESPONSE_SUCCESS,"成功！");
 			});
 		});
     }
     private void locateIsland(ServerPlayer player) {
-        if(!PlayerUtils.isInIsland(player)){
+        if(!isInIsland(player)){
 			sendChatMessage(player,RESPONSE_ERROR,"必须在您自己的岛屿上，才能设定传送点！");
 			return;
 		}
-		if(!PlayerUtils.isStandOnBlock(player, Blocks.OBSIDIAN)){
+		if(!isStandOnBlock(player, Blocks.OBSIDIAN)){
 			sendChatMessage(player,RESPONSE_ERROR,"必须在一块黑曜石上，才能设定传送点！");
 			return;
 		}
@@ -206,12 +206,12 @@ public class IslandCommand extends RdiCommand {
 			);
 			if(resultData.isSuccess()){
 				sendChatMessage(player,RESPONSE_SUCCESS,"将这个岛屿的传送点，更改为您目前所在的位置了！");
-			}else PlayerUtils.sendServiceResultData(player,resultData);
+			}else sendServiceResultData(player,resultData);
 		});
 	}
     private void kickPlayer(ServerPlayer fromPlayer, ServerPlayer kickPlayer) {
         if(fromPlayer==kickPlayer){
-            sendChatMessage(fromPlayer, PlayerUtils.RESPONSE_ERROR,"您不可以踢出自己!!");
+            sendChatMessage(fromPlayer, RESPONSE_ERROR,"您不可以踢出自己!!");
             return;
         }
 		sendChatMessage(fromPlayer,RESPONSE_WARNING,"真的，要踢出玩家"+kickPlayer.getScoreboardName()+"吗？他的全部数据将会被删除！");
@@ -228,13 +228,13 @@ public class IslandCommand extends RdiCommand {
 				sendChatMessage(kickPlayer, RESPONSE_WARNING,fromPlayer.getScoreboardName() + "删除了他的岛屿!");
 				resetProfile(kickPlayer);
 				sendChatMessage(fromPlayer, RESPONSE_SUCCESS);
-			}else PlayerUtils.sendServiceResultData(fromPlayer,resultData);
+			}else sendServiceResultData(fromPlayer,resultData);
 
 		});
 	}
     private void invitePlayer(ServerPlayer player, ServerPlayer invitedPlayer) {
         if(player==invitedPlayer){
-            sendChatMessage(player,PlayerUtils.RESPONSE_ERROR,"目标玩家不能是自己！");
+            sendChatMessage(player, RESPONSE_ERROR,"目标玩家不能是自己！");
             return;
         }
 		ThreadPool.newThread(()->{
@@ -244,7 +244,7 @@ public class IslandCommand extends RdiCommand {
 				sendChatMessage(invitedPlayer,RESPONSE_INFO,player.getScoreboardName()+"邀请您加入了他的岛屿");
 				sendChatMessage(invitedPlayer,"按下[H键]可以前往他的岛屿");
 				sendChatMessage(player,RESPONSE_SUCCESS,"1");
-			}else PlayerUtils.sendServiceResultData(player,resultData);
+			}else sendServiceResultData(player,resultData);
 		});
 
     }

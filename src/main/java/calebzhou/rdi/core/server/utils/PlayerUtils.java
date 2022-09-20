@@ -2,9 +2,11 @@ package calebzhou.rdi.core.server.utils;
 
 import calebzhou.rdi.core.server.NetworkPackets;
 import calebzhou.rdi.core.server.RdiCoreServer;
+import calebzhou.rdi.core.server.RdiMemoryStorage;
 import calebzhou.rdi.core.server.RdiSharedConstants;
 import calebzhou.rdi.core.server.constant.ColorConst;
 import calebzhou.rdi.core.server.constant.FileConst;
+import calebzhou.rdi.core.server.constant.WeatherConst;
 import calebzhou.rdi.core.server.model.RdiGeoLocation;
 import calebzhou.rdi.core.server.model.RdiWeather;
 import calebzhou.rdi.core.server.model.ResultData;
@@ -44,8 +46,8 @@ public class PlayerUtils {
 	public static final int RESPONSE_ERROR=-1;
 	public static final String RESPONSE_ERROR_PREFIX = "%s%s错误 >%s%s ".formatted(ColorConst.DARK_RED,ColorConst.BOLD,ColorConst.RESET,ColorConst.RED);
 	public static final String RESPONSE_SUCCESS_PREFIX = "%s%s成功 >%s%s ".formatted(ColorConst.DARK_GREEN,ColorConst.BOLD,ColorConst.RESET,ColorConst.BRIGHT_GREEN);
-	public static final String RESPONSE_INFO_PREFIX = "%s%s提示 >%s%s ".formatted(ColorConst.AQUA,ColorConst.BOLD,ColorConst.RESET,ColorConst.RED);
-	public static final String RESPONSE_WARNING_PREFIX = "%s%s警告 >%s%s ".formatted(ColorConst.GOLD,ColorConst.BOLD,ColorConst.RESET,ColorConst.RED);
+	public static final String RESPONSE_INFO_PREFIX = "%s%s提示 >%s%s ".formatted(ColorConst.AQUA,ColorConst.BOLD,ColorConst.RESET,ColorConst.AQUA);
+	public static final String RESPONSE_WARNING_PREFIX = "%s%s警告 >%s%s ".formatted(ColorConst.GOLD,ColorConst.BOLD,ColorConst.RESET,ColorConst.GOLD);
 
 	public static void sendPacketToClient(Player player, ResourceLocation pack, Object content) {
 		FriendlyByteBuf buf = PacketByteBufs.create();
@@ -208,16 +210,38 @@ public class PlayerUtils {
 	public static void teleport(ServerPlayer player, ServerLevel level, Vec3 vec3) {
 		teleport(player, level, vec3.x, vec3.y, vec3.z, 0f,0f);
 	}
-
+	//保存玩家的地址记录
 	public static void saveGeoLocation(ServerPlayer player, RdiGeoLocation geoLocation) {
-
+		RdiMemoryStorage.pidGeoMap.put(player.getStringUUID(),geoLocation);
 	}
 
 	public static void sendWeatherInfo(ServerPlayer player, RdiGeoLocation geoLocation, RdiWeather rdiWeather) {
+		String alert = ColorConst.GOLD+rdiWeather.alert+ColorConst.RESET;
+		String loca = geoLocation.city.replace("市","")+"-"+geoLocation.district.replace("区", "").replace("市", "");;
+		String tempNow = Math.floor(rdiWeather.temperature)+"℃";
+		String humidity = "湿度"+Math.floor(rdiWeather.humidity*100)+"%";
+		String skycon = WeatherConst.valueOf(rdiWeather.skycon).getName();
+		String airQuality = "空气"+rdiWeather.aqiChn+"("+rdiWeather.aqi+")";
+		/*String visibility = "能见度"+rdiWeather.visibility+"km";
+		String windSpeed = "风速"+rdiWeather.windSpeed+"km/h";
+		String pressure = "大气压"+rdiWeather.pressure/1000+"kPa";*/
+		String rain = "降水概率"+Math.floor(rdiWeather.rainProba*100)+"% ";
+		String rainChn = rdiWeather.rainDescr.replace("小彩云","dav").replace("彩云","dav");
+		String hourlyDescr = rdiWeather.hourlyDescr;
+		String sunRiseTime = "日出"+rdiWeather.sunRiseTime;
+		String sunSetTime = "日落"+rdiWeather.sunSetTime;
+		sendChatMessage(player,alert);
+		sendChatMessage(player,"%s %s %s %s %s %s %s %s %s %s".formatted(loca,tempNow,skycon,hourlyDescr,airQuality,humidity,rain,rdiWeather.rainProba>1?rainChn:"",sunRiseTime,sunSetTime));
+	}
+	public static void sendTomorrowWeatherInfo(ServerPlayer player, RdiGeoLocation geoLocation, RdiWeather rdiWeather) {
 
 	}
-
+	public static String getPasswordStorageFile(Player player){
+		return ".minecraft/mods/rdi/users/"+player.getStringUUID()+"_password.txt";
+	}
 	public static void sayHello(ServerPlayer player) {
 		sendChatMessage(player, TimeUtils.getTimeChineseString()+"好,"+player.getDisplayName().getString());
 	}
+
+
 }

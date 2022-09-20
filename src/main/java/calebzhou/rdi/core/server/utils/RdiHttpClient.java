@@ -43,6 +43,8 @@ public class RdiHttpClient {
 
 	@SafeVarargs
 	public static <T> ResultData<T> sendRequest(Class<T> resultClass,String type, String url, Pair<String, Object>... params){
+		if(RdiSharedConstants.DEBUG)
+			RdiCoreServer.LOGGER.info("HTTP发送{} {} {}",type,url,params);
         Request.Builder okreq = new Request.Builder();
 		HttpUrl.Builder urlBuilder = HttpUrl.parse("https://"+ADDR+":26890"+url).newBuilder();
 		final FormBody bodyFromParams = getFormBodyFromParams(params);
@@ -71,7 +73,8 @@ public class RdiHttpClient {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		System.out.println(respStr);
+		if(RdiSharedConstants.DEBUG)
+			RdiCoreServer.LOGGER.info("HTTP响应 {}",respStr);
 		return RdiSerializer.GSON.fromJson(respStr,
 				resultClass == null ?
 						ResultData.class  : TypeToken.getParameterized(ResultData.class,resultClass).getType());

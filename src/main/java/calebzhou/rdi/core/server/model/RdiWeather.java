@@ -11,6 +11,7 @@ public class RdiWeather {
     public double windDirection;
     public double pressure;
     public int aqi;
+    public String aqiChn;
     public double rainStrength;
     public double rainProba;
     public String rainDescr;

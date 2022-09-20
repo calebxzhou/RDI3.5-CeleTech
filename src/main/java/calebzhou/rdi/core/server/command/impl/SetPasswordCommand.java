@@ -11,6 +11,7 @@ import calebzhou.rdi.core.server.utils.ThreadPool;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
+import it.unimi.dsi.fastutil.Pair;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.server.level.ServerPlayer;
@@ -48,10 +49,10 @@ public class SetPasswordCommand extends RdiCommand {
 			return 1;
 		}
 		ThreadPool.newThread(()->{
-			ResultData resultData = RdiHttpClient.sendRequest("post", "/v37/setpwd/" + player.getStringUUID() + "/" + pwdVerify);
+			ResultData resultData = RdiHttpClient.sendRequest("post", "/v37/account/register/" + player.getStringUUID() , Pair.of("pwd",pwdVerify),Pair.of("ip",player.getIpAddress()));
 			if(resultData.isSuccess()){
 				sendChatMessage(player, RESPONSE_SUCCESS,"加密成功，请牢记密码："+pwdVerify);
-				sendChatMessage(player, RESPONSE_SUCCESS,"密码存储位置：.minecraft/mods/rdi/users/"+player.getStringUUID()+"_password.txt");
+				sendChatMessage(player, RESPONSE_SUCCESS,"密码存储位置："+getPasswordStorageFile(player));
 				sendChatMessage(player, RESPONSE_SUCCESS,"启动游戏时将自动读取密码，不需要您手动输入");
 				NetworkUtils.sendPacketToClient(player, NetworkPackets.SET_PASSWORD,pwdVerify);
 			}else PlayerUtils.sendServiceResultData(player,resultData);

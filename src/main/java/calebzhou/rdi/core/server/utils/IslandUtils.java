@@ -40,6 +40,7 @@ public class IslandUtils {
 		BlockPos chestPos = basePos.offset(0, 1, -1);
 		WorldUtils.placeBlock(world, chestPos,Blocks.CHEST.defaultBlockState());
 		if (world.getBlockEntity(chestPos) instanceof ChestBlockEntity chestBlockEntity) {
+			chestBlockEntity.setItem(0,new ItemStack(Items.DIRT,16));
 			chestBlockEntity.setItem(1,new ItemStack(Items.BONE,64));
 			chestBlockEntity.setItem(2,new ItemStack(Items.JUNGLE_SAPLING,4));
 			chestBlockEntity.setItem(3,new ItemStack(Items.LAVA_BUCKET,1));
