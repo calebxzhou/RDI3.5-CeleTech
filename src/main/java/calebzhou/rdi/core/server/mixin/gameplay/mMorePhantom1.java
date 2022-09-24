@@ -8,7 +8,7 @@ import org.spongepowered.asm.mixin.injection.ModifyConstant;
 
 //幻翼加速
 @Mixin(Phantom.class)
-public class MixinPhantom {
+public class mMorePhantom1 {
 
     @ModifyConstant(
             method = "updatePhantomSizeInfo()V"
@@ -21,7 +21,7 @@ public class MixinPhantom {
 }
 //幻翼变多
 @Mixin(PhantomSpawner.class)
-class PhantomSpawnerMixin{
+class mMorePhantom2{
     @ModifyConstant(
             method = "tick(Lnet/minecraft/server/level/ServerLevel;ZZ)I"
             ,constant = @Constant(intValue = 1,ordinal = 1)

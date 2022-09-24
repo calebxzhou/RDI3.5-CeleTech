@@ -9,6 +9,7 @@ import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.protocol.game.ClientboundPlayerInfoPacket;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
@@ -19,7 +20,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public class mPlayerList {
 
 
-	@Redirect(method = "write",at=@At(value = "INVOKE",target = "Lnet/minecraft/network/protocol/game/ClientboundPlayerInfoPacket$PlayerUpdate;getDisplayName()Lnet/minecraft/network/chat/Component;"))
+//在tab列表显示ip属地
+	/*@Redirect(method = "write",at=@At(value = "INVOKE",target = "Lnet/minecraft/network/protocol/game/ClientboundPlayerInfoPacket$PlayerUpdate;getDisplayName()Lnet/minecraft/network/chat/Component;"))
 	private Component setListDisplayNameWithProvince(ClientboundPlayerInfoPacket.PlayerUpdate instance){
 		String name = instance.getProfile().getName();
 		String uuid = instance.getProfile().getId().toString();
@@ -29,5 +31,5 @@ public class mPlayerList {
 		String additionalDisplayName = " [%s/%s]".formatted(province,carrier);
 		MutableComponent addiComponent = Component.empty().append(name).append(Component.literal(additionalDisplayName).withStyle(ChatFormatting.GRAY));
 		return addiComponent;
-	}
+	}*/
 }

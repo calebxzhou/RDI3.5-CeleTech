@@ -119,6 +119,9 @@ public class PlayerUtils {
     public static File getPasswordFile(String playerUuid){
         return  new File(FileConst.getPasswordFolder(),playerUuid+".txt");
     }
+	public static void teleportToSpawn(Player player){
+		teleport(player, RdiCoreServer.getServer().overworld(),RdiSharedConstants.SPAWN_LOCATION);
+	}
     public static void teleport(Player player,ServerLevel lvl,BlockPos bpos){
         teleport(player,lvl,bpos.getX(), bpos.getY(), bpos.getZ(),0,0);
     }
@@ -231,7 +234,7 @@ public class PlayerUtils {
 		String sunRiseTime = "日出"+rdiWeather.sunRiseTime;
 		String sunSetTime = "日落"+rdiWeather.sunSetTime;
 		sendChatMessage(player,alert);
-		sendChatMessage(player,"%s %s %s %s %s %s %s %s %s %s".formatted(loca,tempNow,skycon,hourlyDescr,airQuality,humidity,rain,rdiWeather.rainProba>1?rainChn:"",sunRiseTime,sunSetTime));
+		sendChatMessage(player,"%s %s %s %s %s %s %s %s %s %s".formatted(loca,tempNow,skycon,hourlyDescr,airQuality,humidity,rain,rdiWeather.rainProba>0.001?rainChn:"",sunRiseTime,sunSetTime));
 	}
 	public static void sendTomorrowWeatherInfo(ServerPlayer player, RdiGeoLocation geoLocation, RdiWeather rdiWeather) {
 

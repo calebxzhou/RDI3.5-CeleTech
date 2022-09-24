@@ -11,6 +11,8 @@ import org.quiltmc.qsl.lifecycle.api.event.ServerLifecycleEvents;
 
 import java.io.IOException;
 import java.util.SplittableRandom;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class RdiCoreServer implements ModInitializer {
 
@@ -31,6 +33,13 @@ public class RdiCoreServer implements ModInitializer {
         });
         RdiNetworkReceiver.INSTANCE.register();
         RdiEvents.INSTANCE.register();
+		//10秒检查一次维度的卸载队列
+		/*new Timer().schedule(new TimerTask() {
+			@Override
+			public void run() {
+
+			}
+		},0,10*1000);*/
         //TickInverter.INSTANCE.init();
     }
     public static void loadFiles() throws IOException{

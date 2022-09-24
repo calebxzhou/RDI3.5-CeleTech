@@ -26,6 +26,9 @@ public class WorldUtils {
         return RdiCoreServer.getServer().getLevel(ServerLevel.NETHER);
     }
 
+	public static boolean isNoPlayersInLevel(Player playerExitingIsland,ServerLevel level){
+		return level.getPlayers(playersInLevel->!playersInLevel.getStringUUID().equals(playerExitingIsland.getStringUUID())).isEmpty();
+	}
     public static Vec3i getIsland2ToNetherPos(int islandId){
         int netherRatioX=40;
         int netherRatioZ=40;

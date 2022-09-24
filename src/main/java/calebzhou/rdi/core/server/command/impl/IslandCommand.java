@@ -93,9 +93,9 @@ public class IslandCommand extends RdiCommand {
 	}
 	private void confirmedResetIsland(ServerPlayer player) {
 		ThreadPool.newThread(()->{
-			ResultData resultData = RdiHttpClient.sendRequest("delete", "/v37/island2/" + player.getStringUUID());
+			ResultData<Integer> resultData = RdiHttpClient.sendRequest(Integer.class,"delete", "/v37/island2/" + player.getStringUUID());
 			if(resultData.isSuccess()){
-				ResourceLocation dim = IslandUtils.getIslandDimensionLoca(String.valueOf(resultData.getData()));
+				ResourceLocation dim = IslandUtils.getIslandDimensionLoca(resultData.getData());
 				ServerUtils.executeOnServerThread(()-> {
 					RuntimeWorldHandle worldHandle = Fantasy.get(RdiCoreServer.getServer()).getOrOpenPersistentWorld(dim, IslandUtils.getIslandWorldConfig());
 					resetProfile(player);

@@ -9,4 +9,7 @@ public class ServerStatus {
 
     public static int flag =GOOD;
 
+	public static boolean worseThan20Tps(){
+		return flag >=BAD;
+	}
 }

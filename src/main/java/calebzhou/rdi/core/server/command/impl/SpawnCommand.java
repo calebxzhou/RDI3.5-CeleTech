@@ -20,7 +20,7 @@ public class SpawnCommand extends RdiCommand {
         return baseArgBuilder
                 .executes(context -> {
                     ServerPlayer player = context.getSource().getPlayer();
-                    PlayerUtils.teleport(player, RdiCoreServer.getServer().overworld(),RdiSharedConstants.SPAWN_LOCATION);
+                    PlayerUtils.teleportToSpawn(player);
 					PlayerUtils.sendChatMessage(player,PlayerUtils.RESPONSE_SUCCESS,"成功回到了主城！");
 					return 1;
                 });

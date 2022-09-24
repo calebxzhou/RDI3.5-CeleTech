@@ -10,6 +10,7 @@ import calebzhou.rdi.core.server.utils.*;
 import com.mojang.brigadier.CommandDispatcher;
 import it.unimi.dsi.fastutil.Pair;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
+import net.fabricmc.fabric.api.entity.event.v1.ServerEntityWorldChangeEvents;
 import net.fabricmc.fabric.api.entity.event.v1.ServerPlayerEvents;
 import net.fabricmc.fabric.api.event.player.PlayerBlockBreakEvents;
 import net.fabricmc.fabric.api.event.player.UseBlockCallback;
@@ -57,10 +58,14 @@ public class RdiEvents {
         ServerPlayConnectionEvents.DISCONNECT.register(this::onPlayerDisconnect);
 		PlayerBlockBreakEvents.BEFORE.register(this::beforeBreakBlock);
         PlayerBlockBreakEvents.AFTER.register(this::onBreakBlock);
-        UseBlockCallback.EVENT.register(this::onRightClickBlock);
-        ServerMessageEvents.CHAT_MESSAGE.register(this::onPlayerChat);
         ServerPlayerEvents.ALLOW_DEATH.register(this::onPlayerDeath);
+		ServerEntityWorldChangeEvents.AFTER_PLAYER_CHANGE_WORLD.register(this::onPlayerChangeWorld);
     }
+
+	//改变世界之后
+	private void onPlayerChangeWorld(ServerPlayer player, ServerLevel fromLevel, ServerLevel toLevel) {
+		 IslandUtils.unloadIsland(fromLevel,player);
+	}
 
 	//破坏方块之前
 	private boolean beforeBreakBlock(Level level, Player player, BlockPos pos, BlockState blockState, BlockEntity blockEntity) {
@@ -74,9 +79,6 @@ public class RdiEvents {
 	}
 
     //玩家聊天
-    private void onPlayerChat(PlayerChatMessage text, ServerPlayer player, ChatType.Bound bound) {
-		RdiHttpClient.sendRequestAsyncResponseless("post","/mcs/record/chat", Pair.of("pid",player.getStringUUID()),Pair.of("cont", EncodingUtils.getUTF8StringFromGBKString(text.signedContent().plain())));
-    }
 
     //玩家死亡
     private boolean onPlayerDeath(ServerPlayer player, DamageSource source, float damage) {
@@ -97,18 +99,10 @@ public class RdiEvents {
         RdiMemoryStorage.tpaMap.remove(player.getStringUUID());
         //记录登出信息
         RdiHttpClient.sendRequestAsyncResponseless("post","/mcs/record/logout", Pair.of("pid",player.getStringUUID()));
-		//如果在二岛
-		ServerLevel islandLevel = player.getLevel();
-		if(WorldUtils.isInIsland2(islandLevel)){
-			//如果岛上没有人（除了自己） 就卸载存档
-			if(islandLevel.getPlayers(playerLvl->!playerLvl.getStringUUID().equals(player.getStringUUID())).isEmpty()){
-				RdiCoreServer.LOGGER.info("岛屿"+WorldUtils.getDimensionName(islandLevel)+"没有玩家了，即将卸载");
-				Fantasy.get(RdiCoreServer.getServer()).unloadWorld(islandLevel);
-			}
-		}
+		IslandUtils.unloadIsland(player);
     }
     //act 0放置1破坏
-    private void recordBlock(String pid,String bid,int act,Level world,int x,int y,int z){
+    public static void recordBlock(String pid,String bid,int act,Level world,int x,int y,int z){
         //主世界主城以外的地方不记录
         if(world == RdiCoreServer.getServer().overworld()){
             boolean rangeInSpawn = (x > -256 && x < 256) && (z > -256 && z < 256);
@@ -135,27 +129,24 @@ public class RdiEvents {
         recordBlock(player.getStringUUID(), Registry.BLOCK.getKey(state.getBlock()).toString(),1, level, blockPos.getX(), blockPos.getY(), blockPos.getZ());
     }
 
-    //右键点击方块
-    private InteractionResult onRightClickBlock(Player player, Level level, InteractionHand hand, BlockHitResult result) {
-        BlockPos blockPos = result.getBlockPos();
-        Block block = level.getBlockState(blockPos).getBlock();
-		if(block instanceof SaplingBlock saplingBlock){
-			handlePlayerGrowTree(player,saplingBlock,level,blockPos);
-		}
-        //发送放置数据
-        recordBlock(player.getStringUUID(), Registry.BLOCK.getKey(block).toString(),0,level, blockPos.getX(), blockPos.getY(), blockPos.getZ());
-        return InteractionResult.PASS;
-    }
-	public static void handlePlayerGrowTree(Player player, SaplingBlock saplingBlock, Level level, BlockPos blockPos){
+
+	/*public static void handlePlayerGrowTree(Player player, SaplingBlock saplingBlock, Level level, BlockPos blockPos){
 		if(player.getHealth()<1f)
-			return  ;
+			return;
+		if(!player.getItemInHand(InteractionHand.MAIN_HAND).isEmpty())
+			return;
 		saplingBlock.performBonemeal((ServerLevel) level,player.getRandom(),blockPos,level.getBlockState(blockPos));
-		sendChatMessage(player, RESPONSE_INFO,"您成功给小树输了血，现在它已经长出来了捏~");
-		player.setHealth(player.getHealth()*0.1f);
-	}
+		player.hurt(DamageSource.MAGIC,19.5f);
+		sendChatMessage(player, RESPONSE_INFO,"您成功给小树输了营养，现在它已经长出来了捏~");
+	}*/
     //玩家连接服务器 连接成功
     private void onPlayerJoin(ServerGamePacketListenerImpl listener, PacketSender sender, MinecraftServer server) {
         ServerPlayer player = listener.getPlayer();
+		//准备传送到主城
+		if(RdiMemoryStorage.pidBeingGoSpawn.contains(player.getStringUUID())){
+			PlayerUtils.teleportToSpawn(player);
+			RdiMemoryStorage.pidBeingGoSpawn.remove(player.getStringUUID());
+		}
         //提示账号是否有密码
 		String pid = player.getStringUUID();
 		ThreadPool.newThread(()-> {
@@ -216,6 +207,7 @@ public class RdiEvents {
 		commandSet.add(new TpaCommand());
 		commandSet.add(new TpsCommand());
 		commandSet.add(new TpyesCommand());
+		commandSet.add(new WeatherCommand());
 		commandSet.forEach(cmd->{
 			if (cmd.getExecution() != null) {
 				dispatcher.register(cmd.getExecution());

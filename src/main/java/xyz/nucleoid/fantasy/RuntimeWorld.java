@@ -17,7 +17,9 @@ class RuntimeWorld extends ServerLevel {
 
     RuntimeWorld(MinecraftServer server, ResourceKey<Level> registryKey, RuntimeWorldConfig config, Style style) {
         super(
-                server, Util.backgroundExecutor(), ((MinecraftServerAccess) server).getStorageSource(),
+                server,
+				Util.backgroundExecutor(),
+				((MinecraftServerAccess) server).getStorageSource(),
                 new RuntimeWorldProperties(server.getWorldData(), config),
                 registryKey,
                 config.createDimensionOptions(server),

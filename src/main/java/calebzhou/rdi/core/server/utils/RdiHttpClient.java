@@ -46,7 +46,7 @@ public class RdiHttpClient {
 		if(RdiSharedConstants.DEBUG)
 			RdiCoreServer.LOGGER.info("HTTP发送{} {} {}",type,url,params);
         Request.Builder okreq = new Request.Builder();
-		HttpUrl.Builder urlBuilder = HttpUrl.parse("https://"+ADDR+":26890"+url).newBuilder();
+		HttpUrl.Builder urlBuilder = HttpUrl.parse("https://"+ADDR+":26837"+url).newBuilder();
 		final FormBody bodyFromParams = getFormBodyFromParams(params);
 
 		switch (type){

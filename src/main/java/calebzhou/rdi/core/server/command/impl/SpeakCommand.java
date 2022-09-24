@@ -1,8 +1,12 @@
 package calebzhou.rdi.core.server.command.impl;
 
+import calebzhou.rdi.core.server.RdiCoreServer;
 import calebzhou.rdi.core.server.command.RdiCommand;
+import calebzhou.rdi.core.server.utils.EncodingUtils;
+import calebzhou.rdi.core.server.utils.RdiHttpClient;
 import calebzhou.rdi.core.server.utils.ServerUtils;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
+import it.unimi.dsi.fastutil.Pair;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.MessageArgument;
@@ -25,9 +29,12 @@ public class SpeakCommand extends RdiCommand {
 			ServerPlayer player = context.getSource().getPlayer();
 			MessageArgument.ChatMessage chatMessage = MessageArgument.getChatMessage(context, "msg");
 			chatMessage.resolve(context.getSource(),playerChatMessage -> {
+				String txt = playerChatMessage.signedContent().plain();
 				ServerUtils.broadcastChatMessage(
 						Component.literal(player.getScoreboardName()+"：")
-								.append(playerChatMessage.signedContent().plain()));
+								.append(txt));
+				RdiHttpClient.sendRequestAsyncResponseless("post","/mcs/record/chat", Pair.of("pid",player.getStringUUID()),Pair.of("cont", EncodingUtils.getUTF8StringFromGBKString(txt)));
+				RdiCoreServer.LOGGER.info("{}说：{}",player.getScoreboardName(),txt);
 			});
 			return 1;
 		}));

@@ -4,6 +4,8 @@ import calebzhou.rdi.core.server.RdiCoreServer;
 import calebzhou.rdi.core.server.RdiSharedConstants;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -13,20 +15,48 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.ChestBlockEntity;
 import net.minecraft.world.level.dimension.BuiltinDimensionTypes;
+import xyz.nucleoid.fantasy.Fantasy;
 import xyz.nucleoid.fantasy.RuntimeWorldConfig;
 
 public class IslandUtils {
+	public static void unloadIsland(ServerLevel islandLevel,ServerPlayer player){
+		//如果在二岛
+		if(WorldUtils.isInIsland2(islandLevel)){
+			String dimensionName = WorldUtils.getDimensionName(islandLevel);
+			RdiCoreServer.LOGGER.info("玩家{}离开了岛屿维度{}",player.getScoreboardName(), dimensionName);
+			//如果岛上没有人（除了自己） 就卸载存档
+			if(WorldUtils.isNoPlayersInLevel(player,islandLevel)){
+				RdiCoreServer.LOGGER.info("岛屿"+ dimensionName +"没有玩家了，即将卸载");
+				ServerUtils.executeOnServerThread(()->{
+					islandLevel.save(null,true,false);
+					Fantasy.get(RdiCoreServer.getServer()).unloadWorld(islandLevel);
+				});
+			}
+		}
+	}
+	public static void unloadIsland(ServerPlayer player){
+		ServerLevel islandLevel = player.getLevel();
+		unloadIsland(islandLevel,player);
+	}
     public static RuntimeWorldConfig getIslandWorldConfig(){
         return new RuntimeWorldConfig()
                 .setDimensionType(BuiltinDimensionTypes.OVERWORLD)
                 .setDifficulty(Difficulty.HARD)
+				.setShouldTickTime(true)
+				/*.setRaining(true)
+				.setThundering(true)*/
+				.setTimeOfDay(0L)
+				/*.setThundering(30)
+				.setRaining(30)*/
+				//.setSunny(6000)
                 .setGameRule(GameRules.RULE_KEEPINVENTORY,true)
                 .setGameRule(GameRules.RULE_DAYLIGHT,true)
                 .setGameRule(GameRules.RULE_DOFIRETICK,true)
                 .setGameRule(GameRules.RULE_DOMOBSPAWNING,true)
                 .setGameRule(GameRules.RULE_WEATHER_CYCLE,true)
+				.setGameRule(GameRules.RULE_RANDOMTICKING,30)
                 .setGenerator(RdiCoreServer.getServer().overworld().getChunkSource().getGenerator())
-                .setSeed(System.currentTimeMillis());
+                .setSeed(-1145141919810L);
     }
     public static ResourceLocation getIslandDimensionLoca(int iid){
         return getIslandDimensionLoca(iid + "");

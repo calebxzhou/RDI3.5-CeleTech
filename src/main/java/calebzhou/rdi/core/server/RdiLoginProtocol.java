@@ -21,7 +21,7 @@ import java.util.UUID;
  * Created by calebzhou on 2022-09-18,21:08.
  */
 public class RdiLoginProtocol {
-	public static void handleHello(Connection connection,ServerLoginPacketListenerImpl loginPacketListener, ServerboundHelloPacket helloPacket){
+	public static boolean handleHello(Connection connection,ServerLoginPacketListenerImpl loginPacketListener, ServerboundHelloPacket helloPacket){
 		try {
 			String json = helloPacket.name();
 			RdiCoreServer.LOGGER.info("收到登录请求：{}",json);
@@ -29,15 +29,16 @@ public class RdiLoginProtocol {
 			if(!json.contains("{")){
 				RdiCoreServer.LOGGER.info("此请求协议格式错误！");
 				connection.disconnect(Component.literal("登录协议错误 格式错误1，请更新客户端！"));
-				return;
+				return false;
 			}
 			RdiUser rdiUser = RdiSerializer.GSON.fromJson(json, RdiUser.class);
 			((AccessServerLoginPacketListenerImpl) loginPacketListener).setGameProfile(new GameProfile(UUID.fromString(rdiUser.getUuid()), rdiUser.getName()));
-			((AccessServerLoginPacketListenerImpl) loginPacketListener).setState(ServerLoginPacketListenerImpl.State.READY_TO_ACCEPT);
-			RdiMemoryStorage.pidUserMap.put(rdiUser.getUuid(), rdiUser);
 
+			RdiMemoryStorage.pidUserMap.put(rdiUser.getUuid(), rdiUser);
+			return true;
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		return false;
 	}
 }

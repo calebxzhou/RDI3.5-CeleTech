@@ -4,20 +4,27 @@ import calebzhou.rdi.core.server.RdiCoreServer;
 import calebzhou.rdi.core.server.ServerStatus;
 import calebzhou.rdi.core.server.utils.ServerUtils;
 import it.unimi.dsi.fastutil.objects.Object2ObjectLinkedOpenHashMap;
+import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 import net.minecraft.core.Registry;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.PathfinderMob;
+import net.minecraft.world.entity.animal.AbstractGolem;
 import net.minecraft.world.entity.animal.Animal;
 import net.minecraft.world.entity.animal.IronGolem;
 import net.minecraft.world.entity.animal.SnowGolem;
 import net.minecraft.world.entity.decoration.ArmorStand;
+import net.minecraft.world.entity.decoration.HangingEntity;
 import net.minecraft.world.entity.decoration.ItemFrame;
 import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.entity.monster.Enemy;
 import net.minecraft.world.entity.npc.Villager;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.vehicle.AbstractMinecart;
 import net.minecraft.world.entity.vehicle.Boat;
 
+import java.util.Set;
 import java.util.function.Consumer;
 
 public class EntityTickInverter implements ITickDelayable{
@@ -46,50 +53,64 @@ public class EntityTickInverter implements ITickDelayable{
             delayTickList.removeFirst();
         }
     }
+	//最后tick的实体种类
+	static final Set<Class<? extends Entity>> entitiesTickFinally = new ObjectOpenHashSet<>();
+	//实体清除白名单
+	static final Set<Class<? extends Entity>> entitiesClearWhiteList = new ObjectOpenHashSet<>();
+	static {
+		entitiesTickFinally.add(Villager.class);
+
+		entitiesClearWhiteList.add(ServerPlayer.class);
+		entitiesClearWhiteList.add(Villager.class);
+		entitiesClearWhiteList.add(ArmorStand.class);
+		entitiesClearWhiteList.add(Boat.class);
+	}
     public void tick(Consumer tickConsumer, Entity entity){
+		boolean isTickable = true;
+		if(ServerStatus.worseThan20Tps()){
+			if(entitiesTickFinally.contains(entity.getClass()))
+				isTickable=false;
+			if(entity instanceof Enemy
+					|| entity instanceof PathfinderMob)
+				isTickable=false;
+		}
         EntityBeingTick invoker = new EntityBeingTick(tickConsumer,entity);
         if(delayTickList.containsKey(entity.getStringUUID())){
-            return;
+            isTickable=false;
         }
         try {
-            tickConsumer.accept(entity);
+			if(isTickable){
+				tickConsumer.accept(entity);
+			}
         } catch (Exception e) {
             handleEntityException(e,entity,"7");
         }
         //tick计时
         //如果服务器延迟高于BAD
-        if(ServerStatus.flag>= ServerStatus.BAD ){
+        if(ServerStatus.worseThan20Tps()){
             delayTickList.put(entity.getStringUUID(),invoker);
+			boolean remove = true;
+			if(entity instanceof AbstractMinecart
+					|| entity instanceof Animal
+					|| entity instanceof AbstractGolem
+					|| entity instanceof Player
+					|| entity instanceof HangingEntity
+					|| entitiesClearWhiteList.contains(entity.getClass())){
+				remove = false;
+			} else if(entity instanceof ItemEntity ite && ite.getItem().hasTag()){
+				//掉落物品有nbt的不清除
+				remove=false;
+			}
+			else if(entity instanceof Mob mobEnt && mobEnt.isPersistenceRequired()) {
+				//有持久特性的怪物不清除
+				remove=false;
+			}else if(Registry.ENTITY_TYPE.getKey(entity.getType()).getNamespace().equals("botania"))
+				remove=false;
+			if(remove){
+				RdiCoreServer.LOGGER.info("即将清除：{}",entity.toString());
+				entity.remove(Entity.RemovalReason.DISCARDED);
+			}
         }
-        if(ServerStatus.flag>= ServerStatus.BAD){
-            boolean remove = true;
-            if(entity instanceof AbstractMinecart
-                    || entity instanceof Player
-                    || entity instanceof Villager
-                    || entity instanceof Animal
-                    || entity instanceof ArmorStand
-                    || entity instanceof Boat
-                    || entity instanceof ItemFrame
-                    || entity instanceof IronGolem
-                    || entity instanceof SnowGolem){
-                remove=false;
-            }
-            else if(entity instanceof ItemEntity ite){
-                if(ite.getItem().hasTag())
-                    remove=false;
-            }
-            else if(entity instanceof Mob mobEnt) {
-                if(mobEnt.isPersistenceRequired())
-                    remove=false;
-            }else if(Registry.ENTITY_TYPE.getKey(entity.getType()).getNamespace().equals("botania"))
-                remove=false;
-
-            if(remove){
-                RdiCoreServer.LOGGER.info("即将清除：{}",entity.toString());
-                entity.remove(Entity.RemovalReason.DISCARDED);
-            }
-        }
-
 
     }
     private EntityTickInverter(){}

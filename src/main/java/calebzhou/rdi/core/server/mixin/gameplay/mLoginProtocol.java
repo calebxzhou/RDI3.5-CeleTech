@@ -2,6 +2,7 @@ package calebzhou.rdi.core.server.mixin.gameplay;
 
 
 import calebzhou.rdi.core.server.RdiLoginProtocol;
+import calebzhou.rdi.core.server.mixin.AccessServerLoginPacketListenerImpl;
 import com.mojang.authlib.GameProfile;
 import net.minecraft.network.Connection;
 import net.minecraft.network.FriendlyByteBuf;
@@ -38,7 +39,12 @@ class mNewLoginProtocol {
 	//格式：姓名@uuid
 	@Overwrite
 	public void handleHello(ServerboundHelloPacket serverboundHelloPacket) {
-		RdiLoginProtocol.handleHello(connection,(ServerLoginPacketListenerImpl) (Object)this,serverboundHelloPacket);
+		boolean b = RdiLoginProtocol.handleHello(connection, (ServerLoginPacketListenerImpl) (Object) this, serverboundHelloPacket);
+		if(b){
+			((AccessServerLoginPacketListenerImpl) this).setState(ServerLoginPacketListenerImpl.State.READY_TO_ACCEPT);
+		}else{
+			connection.disconnect(Component.literal("登录协议错误 格式错误2，请更新客户端！"));
+		}
 	}
 
 	@Overwrite

@@ -1,9 +1,8 @@
 package xyz.nucleoid.fantasy;
 
+import calebzhou.rdi.core.server.RdiCoreServer;
 import com.google.common.base.Preconditions;
 import it.unimi.dsi.fastutil.objects.ReferenceOpenHashSet;
-import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
-import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
@@ -18,6 +17,8 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.quiltmc.qsl.lifecycle.api.event.ServerLifecycleEvents;
+import org.quiltmc.qsl.lifecycle.api.event.ServerTickEvents;
 import xyz.nucleoid.fantasy.mixin.MinecraftServerAccess;
 
 import java.io.IOException;
@@ -35,7 +36,7 @@ import java.util.Set;
  * @see Fantasy#getOrOpenPersistentWorld(ResourceLocation, RuntimeWorldConfig)
  */
 public final class Fantasy {
-    public static final Logger LOGGER = LogManager.getLogger(Fantasy.class);
+    public static final Logger LOGGER = RdiCoreServer.LOGGER;
     public static final String ID = "fantasy";
     public static final ResourceKey<DimensionType> DEFAULT_DIM_TYPE = ResourceKey.create(Registry.DIMENSION_TYPE_REGISTRY, new ResourceLocation(Fantasy.ID, "default"));
 
@@ -49,12 +50,12 @@ public final class Fantasy {
     private final Set<ServerLevel> deletionQueue = new ReferenceOpenHashSet<>();
 
     static {
-        ServerTickEvents.START_SERVER_TICK.register(server -> {
+        ServerTickEvents.START.register(server -> {
             Fantasy fantasy = get(server);
             fantasy.tick();
         });
 
-        ServerLifecycleEvents.SERVER_STOPPING.register(server -> {
+        ServerLifecycleEvents.STOPPING.register(server -> {
             Fantasy fantasy = get(server);
             fantasy.onServerStopping();
         });

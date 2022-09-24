@@ -16,7 +16,7 @@ import static calebzhou.rdi.core.server.utils.PlayerUtils.sendChatMessage;
 
 public class Home1Command extends RdiCommand {
 	public Home1Command() {
-        super("home1","回到一岛");
+        super("home1","回到一岛（仅限老玩家）");
     }
 
     @Override

@@ -1,6 +1,8 @@
 package calebzhou.rdi.core.server.mixin.gameplay;
 
+import calebzhou.rdi.core.server.RdiEvents;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Registry;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.level.ServerPlayerGameMode;
 import net.minecraft.world.InteractionHand;
@@ -22,7 +24,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 public class mPlayerEvents {
 }
 //成功破坏方块
-@Mixin(ServerPlayerGameMode.class)
+/*@Mixin(ServerPlayerGameMode.class)
 class mBreakBlock{
     @Shadow @Final protected ServerPlayer player;
 
@@ -32,16 +34,21 @@ class mBreakBlock{
 
     }
 
-}
+}*/
 //成功放置方块
 @Mixin(ServerPlayerGameMode.class)
 class mPlaceBlock {
 
-    @Inject(at = @At("TAIL"),method = "useItemOn")
-    private void place(ServerPlayer player, Level world, ItemStack stack, InteractionHand hand, BlockHitResult hitResult, CallbackInfoReturnable<InteractionResult> info) {
+	@Shadow
+	@Final
+	protected ServerPlayer player;
+
+	@Inject(at = @At("TAIL"),method = "useItemOn")
+    private void rdi_recordPlace(ServerPlayer player, Level world, ItemStack stack, InteractionHand hand, BlockHitResult hitResult, CallbackInfoReturnable<InteractionResult> info) {
         UseOnContext context  = new UseOnContext(player, hand, hitResult);
         BlockPos blockPos = context.getClickedPos();
         BlockState blockState = player.getLevel().getBlockState(blockPos);
-
+		//记录
+		RdiEvents.recordBlock(player.getStringUUID(), Registry.BLOCK.getKey(blockState.getBlock()).toString(),0,world,blockPos.getX(), blockPos.getY(), blockPos.getZ());
     }
 }

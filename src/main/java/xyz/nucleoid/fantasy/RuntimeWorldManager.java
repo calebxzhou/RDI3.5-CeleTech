@@ -1,5 +1,7 @@
 package xyz.nucleoid.fantasy;
 
+import calebzhou.rdi.core.server.RdiCoreServer;
+import calebzhou.rdi.core.server.utils.ServerUtils;
 import com.mojang.serialization.Lifecycle;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerWorldEvents;
 import net.minecraft.core.MappedRegistry;
@@ -53,33 +55,38 @@ final class RuntimeWorldManager {
     }
 	boolean unload(ServerLevel world){
 		ResourceKey<Level> dimensionKey = world.dimension();
-		Fantasy.LOGGER.info("unloading world {}", dimensionKey.toString());
+		Fantasy.LOGGER.info("卸载维度中 {}", dimensionKey.toString());
 		if (this.serverAccess.getLevels().remove(dimensionKey, world)) {
 			ServerWorldLoadEvents.UNLOAD.invoker().unloadWorld(this.server, world);
 			MappedRegistry<LevelStem> dimensionsRegistry = getDimensionsRegistry(this.server);
 			RemoveFromRegistry.remove(dimensionsRegistry, dimensionKey.location());
-			Fantasy.LOGGER.info("unloading world {} successful", dimensionKey.toString());
+			Fantasy.LOGGER.info("成功卸载维度 {} ", dimensionKey.toString());
 			return true;
 		}
 		return false;
 	}
     void delete(ServerLevel world) {
-		if(!unload(world))
-			return;
-		ResourceKey<Level> dimensionKey = world.dimension();
-		LevelStorageSource.LevelStorageAccess session = this.serverAccess.getStorageSource();
-		File worldDirectory = session.getDimensionPath(dimensionKey).toFile();
-		if (worldDirectory.exists()) {
-                try {
-                    FileUtils.deleteDirectory(worldDirectory);
-                } catch (IOException e) {
-                    Fantasy.LOGGER.warn("Failed to delete world directory", e);
-                    try {
-                        FileUtils.forceDeleteOnExit(worldDirectory);
-                    } catch (IOException ignored) {
-                    }
-                }
-            }
+			if(!unload(world))
+				return;
+			ResourceKey<Level> dimensionKey = world.dimension();
+			Fantasy.LOGGER.info("删除维度中 {}", dimensionKey.toString());
+			LevelStorageSource.LevelStorageAccess session = this.serverAccess.getStorageSource();
+			File worldDirectory = session.getDimensionPath(dimensionKey).toFile();
+			if (worldDirectory.exists()) {
+				try {
+					FileUtils.deleteDirectory(worldDirectory);
+				} catch (IOException e) {
+					Fantasy.LOGGER.warn("删除存档文件夹失败 {} {}", e.getMessage(),e.getCause());
+					try {
+						Fantasy.LOGGER.info("强制删除中");
+						FileUtils.forceDelete(worldDirectory);
+					} catch (IOException ignored) {
+						ignored.printStackTrace();
+					}
+				}
+				Fantasy.LOGGER.info("删除维度成功！ {}", dimensionKey.toString());
+			}
+
     }
 
     private static MappedRegistry<LevelStem> getDimensionsRegistry(MinecraftServer server) {

@@ -24,7 +24,7 @@ public class ServerUtils {
     }
     public static void broadcastChatMessage(Component msg){
         for (ServerPlayer player : RdiCoreServer.getServer().getPlayerList().getPlayers()) {
-            PlayerUtils.sendChatMessage(player,msg);
+            PlayerUtils.sendChatMessage(player,msg,true);
         }
     }
     public static void executeCommandOnServer(String command){

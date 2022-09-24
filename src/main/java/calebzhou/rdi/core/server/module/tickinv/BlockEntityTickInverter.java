@@ -19,7 +19,7 @@ public class BlockEntityTickInverter implements ITickDelayable{
             invoker.tick();
 
             //如果服务器延迟高于BAD
-            if(ServerStatus.flag>= ServerStatus.BAD){
+            if(ServerStatus.flag>= ServerStatus.WORST){
                 delayTickList.put(bpos,invoker);
             }
         } catch (Exception e) {
@@ -38,7 +38,7 @@ public class BlockEntityTickInverter implements ITickDelayable{
         if(delayTickList.size()==0)
             return;
         BlockPos blockPos = delayTickList.firstKey();
-        if(ServerStatus.flag< ServerStatus.BAD){
+        if(ServerStatus.flag< ServerStatus.WORST){
             delayTickList.get(blockPos).tick();
             delayTickList.removeFirst();
         }
