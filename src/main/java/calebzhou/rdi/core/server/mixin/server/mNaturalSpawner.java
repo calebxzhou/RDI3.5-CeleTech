@@ -1,6 +1,6 @@
 package calebzhou.rdi.core.server.mixin.server;
 
-import calebzhou.rdi.core.server.ServerStatus;
+import calebzhou.rdi.core.server.ServerLaggingStatus;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.NaturalSpawner;
 import net.minecraft.world.level.chunk.LevelChunk;
@@ -16,7 +16,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public class mNaturalSpawner {
 	@Inject(method = "spawnForChunk",at=@At("HEAD"),cancellable = true)
 	private static void RdiSpawnWithTpsCheck(ServerLevel level, LevelChunk chunk, NaturalSpawner.SpawnState spawnState, boolean spawnFriendlies, boolean spawnMonsters, boolean forcedDespawn, CallbackInfo ci){
-		if(ServerStatus.worseThan20Tps())
+		if(ServerLaggingStatus.isServerLagging())
 			ci.cancel();
 	}
 }

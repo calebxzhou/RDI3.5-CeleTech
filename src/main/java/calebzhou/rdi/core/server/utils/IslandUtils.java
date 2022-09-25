@@ -75,6 +75,8 @@ public class IslandUtils {
 			chestBlockEntity.setItem(2,new ItemStack(Items.JUNGLE_SAPLING,4));
 			chestBlockEntity.setItem(3,new ItemStack(Items.LAVA_BUCKET,1));
 			chestBlockEntity.setItem(4,new ItemStack(Items.WATER_BUCKET,2));
+			chestBlockEntity.setItem(5,new ItemStack(Items.COW_SPAWN_EGG,1));
+			chestBlockEntity.setItem(6,new ItemStack(Items.SHEEP_SPAWN_EGG,1));
 		}
 	}
 }

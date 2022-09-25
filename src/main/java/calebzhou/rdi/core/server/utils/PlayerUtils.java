@@ -132,7 +132,15 @@ public class PlayerUtils {
     }
 	//是否是新手
 	public static boolean isFreshPlayer(Player player){
-		return player.experienceLevel==0 && player.getInventory().isEmpty();
+		return player.experienceLevel==0;
+	}
+	//是否在主城
+	public static boolean isInMainTown(Player player){
+		BlockPos onPos = player.getOnPos();
+		return  (onPos.getX() > -256 && onPos.getX() < 256)
+				&&
+				(onPos.getZ() > -256 && onPos.getZ() < 256)
+				&& isInOverworld(player);
 	}
 	/**
 	 * 是否在主世界

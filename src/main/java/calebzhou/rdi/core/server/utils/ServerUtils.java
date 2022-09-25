@@ -24,6 +24,11 @@ public class ServerUtils {
     }
     public static void broadcastChatMessage(Component msg){
         for (ServerPlayer player : RdiCoreServer.getServer().getPlayerList().getPlayers()) {
+            PlayerUtils.sendChatMessage(player,msg);
+        }
+    }
+    public static void broadcastActionBarMessage(Component msg){
+        for (ServerPlayer player : RdiCoreServer.getServer().getPlayerList().getPlayers()) {
             PlayerUtils.sendChatMessage(player,msg,true);
         }
     }

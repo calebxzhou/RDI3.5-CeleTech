@@ -1,36 +1,16 @@
 package calebzhou.rdi.core.server.module.tickinv;
 
-import calebzhou.rdi.core.server.RdiCoreServer;
-import calebzhou.rdi.core.server.ServerStatus;
+import calebzhou.rdi.core.server.ServerLaggingStatus;
 import calebzhou.rdi.core.server.utils.ServerUtils;
-import it.unimi.dsi.fastutil.objects.Object2ObjectLinkedOpenHashMap;
-import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
-import net.minecraft.core.Registry;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.Mob;
-import net.minecraft.world.entity.PathfinderMob;
-import net.minecraft.world.entity.animal.AbstractGolem;
 import net.minecraft.world.entity.animal.Animal;
-import net.minecraft.world.entity.animal.IronGolem;
-import net.minecraft.world.entity.animal.SnowGolem;
-import net.minecraft.world.entity.decoration.ArmorStand;
-import net.minecraft.world.entity.decoration.HangingEntity;
-import net.minecraft.world.entity.decoration.ItemFrame;
-import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.monster.Enemy;
-import net.minecraft.world.entity.npc.Villager;
+import net.minecraft.world.entity.npc.AbstractVillager;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.entity.vehicle.AbstractMinecart;
-import net.minecraft.world.entity.vehicle.Boat;
 
-import java.util.Set;
 import java.util.function.Consumer;
 
-public class EntityTickInverter implements ITickDelayable{
-    public static final EntityTickInverter INSTANCE= new EntityTickInverter();
-    private final Object2ObjectLinkedOpenHashMap<String,EntityBeingTick> delayTickList = new Object2ObjectLinkedOpenHashMap<>();
-    private static final int ENTITY_TICK_LIMIT = 40;//ms 实体40ms没tick完就直接冻结
+public class EntityTickInverter{
     public static void handleEntityException(Exception ex, Entity entity, String msg){
         ServerUtils.broadcastChatMessage("在"+entity.toString()+"tick entity错误！"+ex+"原因："+msg+ex.getCause()+"。已经强制删除！");
         ex.printStackTrace();
@@ -39,35 +19,71 @@ public class EntityTickInverter implements ITickDelayable{
             entity=null;
         }
     }
-    public int getDelayTickListSize(){
-        return delayTickList.size();
-    }
-    public void releaseDelayTickList(){
 
-        if(delayTickList.size()==0)
-            return;
-        String uid = delayTickList.firstKey();
-        if(ServerStatus.flag< ServerStatus.BAD){
-            EntityBeingTick entityBeingTick = delayTickList.get(uid);
-            entityBeingTick.tickConsumer.accept(entityBeingTick.entity);
-            delayTickList.removeFirst();
-        }
-    }
-	//最后tick的实体种类
-	static final Set<Class<? extends Entity>> entitiesTickFinally = new ObjectOpenHashSet<>();
-	//实体清除白名单
-	static final Set<Class<? extends Entity>> entitiesClearWhiteList = new ObjectOpenHashSet<>();
-	static {
-		entitiesTickFinally.add(Villager.class);
+    public static void handleTick(Consumer tickConsumer, Entity entity){
+		try {
+			if(entity instanceof Player) {
+				tickConsumer.accept(entity);
+			}else if(entity instanceof AbstractVillager villager){
+				handleVillagerTick(tickConsumer,villager);
+			}else if(entity instanceof Enemy monster){
+				handleMonsterTick(tickConsumer,monster);
+			}else if(entity instanceof Animal animal){
+				handleAnimalTick(tickConsumer,animal);
+			}else{
+				if(!ServerLaggingStatus.isServerVeryLagging())
+					tickConsumer.accept(entity);
+			}
+		} catch (Exception e) {
+			EntityTickInverter.handleEntityException(e,entity,"3");
+			entity.discard();
+		}
 
-		entitiesClearWhiteList.add(ServerPlayer.class);
-		entitiesClearWhiteList.add(Villager.class);
-		entitiesClearWhiteList.add(ArmorStand.class);
-		entitiesClearWhiteList.add(Boat.class);
+
+    }
+
+
+
+	//动物一秒5动
+	private static int ticksAnimalNow=0;
+	private static final int tickAnimalRequired=20/5;
+	private static void handleAnimalTick(Consumer tickConsumer, Animal animal) {
+		if(ticksAnimalNow>=tickAnimalRequired){
+			if(!ServerLaggingStatus.isServerLagging()) tickConsumer.accept(animal);
+			ticksAnimalNow=0;
+		}else{
+			++ticksAnimalNow;
+		}
 	}
-    public void tick(Consumer tickConsumer, Entity entity){
-		boolean isTickable = true;
-		if(ServerStatus.worseThan20Tps()){
+
+	private static int ticksMonsterNow=0;
+	private static final int tickMonsterRequired=20/20;
+	//怪物一秒20动
+	private static void handleMonsterTick(Consumer tickConsumer, Enemy monster) {
+		//if(ticksMonsterNow>=tickMonsterRequired){
+			if(!ServerLaggingStatus.isServerLagging())
+				tickConsumer.accept(monster);
+			/*ticksMonsterNow=0;
+		}else{
+			++ticksMonsterNow;
+		}*/
+	}
+
+	//村民一秒5动
+	private static int ticksVillageNow=0;
+	private static final int tickVillageRequired=20/5;
+	private static void handleVillagerTick(Consumer tickConsumer, AbstractVillager villager) {
+		if(ticksVillageNow>=tickVillageRequired){
+			if(!ServerLaggingStatus.isServerLagging()) tickConsumer.accept(villager);
+			ticksVillageNow=0;
+		}else{
+			++ticksVillageNow;
+		}
+	}
+
+	private EntityTickInverter(){}
+}
+/*if(ServerLaggingStatus.worseThan20Tps()){
 			if(entitiesTickFinally.contains(entity.getClass()))
 				isTickable=false;
 			if(entity instanceof Enemy
@@ -75,20 +91,16 @@ public class EntityTickInverter implements ITickDelayable{
 				isTickable=false;
 		}
         EntityBeingTick invoker = new EntityBeingTick(tickConsumer,entity);
-        if(delayTickList.containsKey(entity.getStringUUID())){
-            isTickable=false;
-        }
         try {
 			if(isTickable){
 				tickConsumer.accept(entity);
 			}
         } catch (Exception e) {
             handleEntityException(e,entity,"7");
-        }
-        //tick计时
-        //如果服务器延迟高于BAD
-        if(ServerStatus.worseThan20Tps()){
-            delayTickList.put(entity.getStringUUID(),invoker);
+        }*/
+//tick计时
+//如果服务器延迟高于BAD
+        /*if(ServerLaggingStatus.worseThan20Tps()){
 			boolean remove = true;
 			if(entity instanceof AbstractMinecart
 					|| entity instanceof Animal
@@ -110,8 +122,17 @@ public class EntityTickInverter implements ITickDelayable{
 				RdiCoreServer.LOGGER.info("即将清除：{}",entity.toString());
 				entity.remove(Entity.RemovalReason.DISCARDED);
 			}
-        }
+        }*/
+	/*//最后tick的实体种类
+	static final Set<Class<? extends Entity>> entitiesTickFinally = new ObjectOpenHashSet<>();
+	//实体清除白名单
+	static final Set<Class<? extends Entity>> entitiesClearWhiteList = new ObjectOpenHashSet<>();
+	static {
+		entitiesTickFinally.add(Villager.class);
 
-    }
-    private EntityTickInverter(){}
-}
+		entitiesClearWhiteList.add(ServerPlayer.class);
+		entitiesClearWhiteList.add(Villager.class);
+		entitiesClearWhiteList.add(ArmorStand.class);
+		entitiesClearWhiteList.add(Boat.class);
+	}
+*/

@@ -58,9 +58,18 @@ public class RdiEvents {
         ServerPlayConnectionEvents.DISCONNECT.register(this::onPlayerDisconnect);
 		PlayerBlockBreakEvents.BEFORE.register(this::beforeBreakBlock);
         PlayerBlockBreakEvents.AFTER.register(this::onBreakBlock);
+		UseBlockCallback.EVENT.register(this::onUseBlock);
         ServerPlayerEvents.ALLOW_DEATH.register(this::onPlayerDeath);
 		ServerEntityWorldChangeEvents.AFTER_PLAYER_CHANGE_WORLD.register(this::onPlayerChangeWorld);
     }
+
+	private InteractionResult onUseBlock(Player player, Level level, InteractionHand hand, BlockHitResult result) {
+		if(isFreshPlayer(player)&&isInMainTown(player))
+			return InteractionResult.FAIL;
+
+		return InteractionResult.PASS;
+
+	}
 
 	//改变世界之后
 	private void onPlayerChangeWorld(ServerPlayer player, ServerLevel fromLevel, ServerLevel toLevel) {
@@ -69,11 +78,9 @@ public class RdiEvents {
 
 	//破坏方块之前
 	private boolean beforeBreakBlock(Level level, Player player, BlockPos pos, BlockState blockState, BlockEntity blockEntity) {
-		if(isInOverworld(player)){
-			if(isFreshPlayer(player)){
+		if(isInMainTown(player)&&isFreshPlayer(player)){
 				sendChatMessage(player, RESPONSE_INFO,"按下T键，输入/is create指令创建一个岛屿吧！或者让您的朋友输入/is invite "+player.getScoreboardName()+"来邀请您加入他的岛屿");
 				return false;
-			}
 		}
 		return true;
 	}
@@ -172,7 +179,8 @@ public class RdiEvents {
 					RdiWeather rdiWeather = weatherResultData.getData();
 					PlayerUtils.sayHello(player);
 					PlayerUtils.saveGeoLocation(player,geoLocation);
-					PlayerUtils.sendWeatherInfo(player,geoLocation,rdiWeather);
+					RdiMemoryStorage.pidWeatherMap.put(player.getStringUUID(),rdiWeather);
+					PlayerUtils.sendWeatherInfo(player,geoLocation,rdiWeather);;
 					PlayerUtils.sendTomorrowWeatherInfo(player,geoLocation,rdiWeather);
 					RdiHttpClient.sendRequestAsyncResponseless("post","/mcs/record/login",
 							Pair.of("pid", pid),

@@ -1,56 +1,33 @@
 package calebzhou.rdi.core.server.mixin.server;
 
-import calebzhou.rdi.core.server.RdiCoreServer;
-import calebzhou.rdi.core.server.ServerStatus;
 import calebzhou.rdi.core.server.module.tickinv.BlockEntityTickInverter;
 import calebzhou.rdi.core.server.module.tickinv.EntityTickInverter;
 import calebzhou.rdi.core.server.module.tickinv.WorldTickThreadManager;
-import calebzhou.rdi.core.server.utils.PlayerUtils;
 import calebzhou.rdi.core.server.utils.ServerUtils;
-import net.minecraft.*;
-import net.minecraft.client.server.IntegratedServer;
 import net.minecraft.core.BlockPos;
-import net.minecraft.gametest.framework.GameTestTicker;
-import net.minecraft.network.protocol.game.ClientboundSetTimePacket;
-import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.ServerFunctionManager;
-import net.minecraft.server.level.ChunkMap;
-import net.minecraft.server.level.DistanceManager;
-import net.minecraft.server.level.ServerChunkCache;
-import net.minecraft.server.level.ServerLevel;
-import net.minecraft.server.network.ServerConnectionListener;
-import net.minecraft.server.players.PlayerList;
+import net.minecraft.server.level.*;
 import net.minecraft.util.RandomSource;
 import net.minecraft.util.profiling.ProfilerFiller;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.level.GameRules;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.TickingBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.ticks.LevelChunkTicks;
 import net.minecraft.world.ticks.LevelTicks;
-import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import xyz.nucleoid.fantasy.mixin.MinecraftServerAccess;
 
-import java.util.List;
-import java.util.Map;
 import java.util.Queue;
 import java.util.function.BiConsumer;
 import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
-import java.util.function.Supplier;
-
-import static org.spongepowered.asm.mixin.injection.At.Shift.AFTER;
 
 @Mixin(Level.class)
 public abstract class mTickInvertLevel {
@@ -58,79 +35,22 @@ public abstract class mTickInvertLevel {
             at = @At(value = "INVOKE",
                     target = "Lnet/minecraft/world/level/block/entity/TickingBlockEntity;tick()V"))
     private void tickBlockEntity(TickingBlockEntity invoker){
-        BlockEntityTickInverter.INSTANCE.tick(invoker);
+        BlockEntityTickInverter.handleTick((Level)(Object)this,invoker);
     }
 	@Overwrite
 	public <T extends Entity> void guardEntityTick(Consumer<T> consumerEntity, T entity) {
-		try {
-			EntityTickInverter.INSTANCE.tick(consumerEntity,(Entity) entity);
-		} catch (Exception e) {
-			EntityTickInverter.handleEntityException(e,entity,"3");
-			entity.discard();
-		}
+		EntityTickInverter.handleTick(consumerEntity, entity);
 	}
-  /*  @Redirect(method = "guardEntityTick(Ljava/util/function/Consumer;Lnet/minecraft/world/entity/Entity;)V",
-            at = @At(value = "INVOKE",
-                    target = "Ljava/util/function/Consumer;accept(Ljava/lang/Object;)V"))
-    private void tickEntity(Consumer tickConsumer, Object entity){
-        EntityTickInverter.INSTANCE.tick(tickConsumer,(Entity) entity);
-    }*/
 }
 @Mixin(MinecraftServer.class)
 abstract
 class mTickInvertServer {
-    @Shadow
-    @Final
-    private Map<ResourceKey<Level>, ServerLevel> levels;
     @Shadow public abstract void tickServer(BooleanSupplier booleanSupplier);
 
     @Shadow public abstract void tickChildren(BooleanSupplier booleanSupplier);
 
     @Shadow public abstract ServerFunctionManager getFunctions();
-    @Shadow private long nextTickTime;
 
-	@Shadow
-	public abstract Iterable<ServerLevel> getAllLevels();
-
-	@Shadow
-	private ProfilerFiller profiler;
-
-	@Shadow
-	private PlayerList playerList;
-
-	@Shadow
-	@Final
-	private List<Runnable> tickables;
-
-	@Shadow
-	private int tickCount;
-
-	@Shadow
-	public abstract @Nullable ServerConnectionListener getConnection();
-
-	//设置服务器延迟等级
-    @Inject(method = "runServer()V",
-            at =@At(value = "INVOKE",target = "Lnet/minecraft/server/MinecraftServer;startMetricsRecordingTick()V"))
-    private void setServerStatus(CallbackInfo ci){
-        long milisBehind = Util.getMillis()-nextTickTime;
-        if(milisBehind>4000){
-            ServerStatus.flag=(ServerStatus.WORST);
-        }else if(milisBehind>2100){
-            ServerStatus.flag=(ServerStatus.BAD);
-			ServerUtils.broadcastChatMessage("服务器正在存档");
-        }else if(milisBehind>1500){
-            ServerStatus.flag=(ServerStatus.GOOD);
-        }else
-            ServerStatus.flag=(ServerStatus.BEST);
-    }
-
-    //消耗掉延迟tick列表
-    @Inject(method = "runServer",at=@At(value = "INVOKE",target = "Lnet/minecraft/server/MinecraftServer;tickServer(Ljava/util/function/BooleanSupplier;)V"))
-
-    private void releaseDelayTicks(CallbackInfo ci){
-        BlockEntityTickInverter.INSTANCE.releaseDelayTickList();
-        EntityTickInverter.INSTANCE.releaseDelayTickList();
-    }
     //用try-catch包起来服务器运行主体，防止崩溃
     @Redirect(method = "runServer",
             at = @At(value = "INVOKE", target = "Lnet/minecraft/server/MinecraftServer;tickServer(Ljava/util/function/BooleanSupplier;)V"))
@@ -178,7 +98,7 @@ class mTickInvertServer {
             method = "tickChildren",
             at = @At(value = "INVOKE", target = "Lnet/minecraft/server/level/ServerLevel;tick(Ljava/util/function/BooleanSupplier;)V"))
     private void tickWorldNoCrash(ServerLevel world, BooleanSupplier shouldKeepTicking){
-        WorldTickThreadManager.INSTANCE.onServerCallWorldTick(world,shouldKeepTicking);
+        WorldTickThreadManager.onServerCallWorldTick(world,shouldKeepTicking);
     }
 
 

@@ -61,6 +61,8 @@ final class RuntimeWorldManager {
 			MappedRegistry<LevelStem> dimensionsRegistry = getDimensionsRegistry(this.server);
 			RemoveFromRegistry.remove(dimensionsRegistry, dimensionKey.location());
 			Fantasy.LOGGER.info("成功卸载维度 {} ", dimensionKey.toString());
+			dimensionKey=null;
+			world=null;
 			return true;
 		}
 		return false;
@@ -85,6 +87,8 @@ final class RuntimeWorldManager {
 					}
 				}
 				Fantasy.LOGGER.info("删除维度成功！ {}", dimensionKey.toString());
+				dimensionKey=null;
+				world=null;
 			}
 
     }

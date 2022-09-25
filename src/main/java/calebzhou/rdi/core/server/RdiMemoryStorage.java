@@ -21,6 +21,8 @@ public class RdiMemoryStorage {
     public static final Object2ObjectOpenHashMap<String,String> tpaMap = new Object2ObjectOpenHashMap<>();
 	//pid vs 玩家地理位置
 	public static final Object2ObjectOpenHashMap<String,RdiGeoLocation> pidGeoMap = new Object2ObjectOpenHashMap<>();
+	//pid vs 玩家天气
+	public static final Object2ObjectOpenHashMap<String,RdiWeather> pidWeatherMap = new Object2ObjectOpenHashMap<>();
 	public static final Object2ObjectOpenHashMap<String, RdiUser> pidUserMap = new Object2ObjectOpenHashMap<>();
     //正在挂机的玩家名
     public static final Object2IntOpenHashMap<String> afkMap = new Object2IntOpenHashMap<>();
