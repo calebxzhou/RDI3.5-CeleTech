@@ -100,13 +100,12 @@ public class RdiPlayerLocation implements Serializable {
 
 	@Override
 	public String toString() {
-		return "RdiPlayerLocation{" +
-				"level=" + WorldUtils.getDimensionName(level) +
-				", x=" + x +
-				", y=" + y +
-				", z=" + z +
-				", w=" + w +
-				", p=" + p +
+		return "{" + WorldUtils.getDimensionName(level) +
+				", x=" + Math.round(x) +
+				", y=" + Math.round(y) +
+				", z=" + Math.round(z) +
+				", w=" + Math.round(w) +
+				", p=" + Math.round(p) +
 				'}';
 	}
 }

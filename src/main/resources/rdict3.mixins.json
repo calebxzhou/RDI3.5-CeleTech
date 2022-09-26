@@ -46,6 +46,7 @@
     "gameplay.mNewLoginProtocol",
     "gameplay.mNoDroppingVoid",
     "gameplay.mNoStackOverflowReadAdvancements",
+    "gameplay.mNoVanillaMessageCommand",
     "gameplay.mNoWarnSkippingEntity",
     "gameplay.mPlaceBlock",
     "gameplay.mPlayerAttributes",

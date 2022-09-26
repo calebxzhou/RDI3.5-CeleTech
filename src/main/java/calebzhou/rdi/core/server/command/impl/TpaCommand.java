@@ -36,10 +36,10 @@ public class TpaCommand extends RdiCommand {
             return 1;
         }
         String toPlayerId = toPlayer.getStringUUID();
-        if(fromPlayerId.equals(toPlayerId)){
+        /*if(fromPlayerId.equals(toPlayerId)){
             sendChatMessage(fromPlayer, RESPONSE_ERROR,"禁止原地TP");
             return 1;
-        }
+        }*/
         if(fromPlayer.experienceLevel<3){
             sendChatMessage(fromPlayer, RESPONSE_ERROR,"经验不足,您需要3级经验.");
             return 1;

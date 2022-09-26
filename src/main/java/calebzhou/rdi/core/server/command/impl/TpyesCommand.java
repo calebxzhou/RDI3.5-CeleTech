@@ -1,6 +1,7 @@
 package calebzhou.rdi.core.server.command.impl;
 
 import calebzhou.rdi.core.server.RdiMemoryStorage;
+import calebzhou.rdi.core.server.RdiPlayerLocationRecorder;
 import calebzhou.rdi.core.server.command.RdiCommand;
 import calebzhou.rdi.core.server.utils.PlayerUtils;
 import com.mojang.brigadier.arguments.StringArgumentType;
@@ -23,6 +24,7 @@ public class TpyesCommand extends RdiCommand {
     @Override
     public LiteralArgumentBuilder<CommandSourceStack> getExecution() {
         return baseArgBuilder.executes(context -> {
+
 			ServerPlayer toPlayer = context.getSource().getPlayer();
 			if(toPlayer.experienceLevel<3){
 				sendChatMessage(toPlayer, RESPONSE_ERROR,"经验不足,您需要3级经验.");
@@ -35,6 +37,7 @@ public class TpyesCommand extends RdiCommand {
 				return 1;
 			}
 			ServerPlayer fromPlayer = PlayerUtils.getPlayerByUuid(fromPlayerId);
+			RdiPlayerLocationRecorder.record(fromPlayer);
 			if(fromPlayer == null){
 				sendChatMessage(toPlayer,RESPONSE_ERROR, "玩家不在线！");
 				return 1;

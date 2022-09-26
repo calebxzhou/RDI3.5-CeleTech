@@ -138,13 +138,6 @@ public class PlayerUtils {
     public static void addEffect(ServerPlayer player, MobEffect effect,int seconds,int amplifier){
         player.addEffect(new MobEffectInstance(effect,seconds*20,amplifier));
     }
-    public static File getPasswordFile(ServerPlayer player)
-    {
-        return getPasswordFile(player.getStringUUID());
-    }
-    public static File getPasswordFile(String playerUuid){
-        return  new File(FileConst.getPasswordFolder(),playerUuid+".txt");
-    }
 
 	//是否是新手
 	public static boolean isFreshPlayer(Player player){

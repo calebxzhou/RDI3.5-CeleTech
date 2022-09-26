@@ -1,6 +1,7 @@
 package calebzhou.rdi.core.server.command.impl;
 
 import calebzhou.rdi.core.server.RdiMemoryStorage;
+import calebzhou.rdi.core.server.RdiPlayerLocationRecorder;
 import calebzhou.rdi.core.server.command.RdiCommand;
 import calebzhou.rdi.core.server.model.RdiPlayerLocation;
 import calebzhou.rdi.core.server.utils.PlayerUtils;
@@ -20,13 +21,17 @@ public class BackCommand extends RdiCommand {
 	public LiteralArgumentBuilder<CommandSourceStack> getExecution() {
 		return baseArgBuilder.executes(context -> {
 			ServerPlayer player = context.getSource().getPlayer();
-			RdiPlayerLocation pos = RdiMemoryStorage.pidBackPos.get(player.getStringUUID());
+			RdiPlayerLocation pos = RdiPlayerLocationRecorder.getLocation(player);
+			if(pos == null){
+				PlayerUtils.sendChatMessage(player,PlayerUtils.RESPONSE_ERROR,"您没有传送记录！");
+				return 1;
+			}
 			if(player.experienceLevel<3){
 				PlayerUtils.sendChatMessage(player,PlayerUtils.RESPONSE_ERROR,"需要3级经验才能返回上次记录的传送位置！");
 				return 1;
 			}
 			PlayerUtils.teleport(player,pos);
-			RdiMemoryStorage.pidBackPos.remove(player.getStringUUID());
+			RdiPlayerLocationRecorder.remove(player);
 			PlayerUtils.sendChatMessage(player,PlayerUtils.RESPONSE_SUCCESS);
 			return 1;
 		});

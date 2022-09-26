@@ -33,23 +33,11 @@ public class RdiCoreServer implements ModInitializer {
         });
         RdiNetworkReceiver.INSTANCE.register();
         RdiEvents.INSTANCE.register();
-		//10秒检查一次维度的卸载队列
-		/*new Timer().schedule(new TimerTask() {
-			@Override
-			public void run() {
-
-			}
-		},0,10*1000);*/
-        //TickInverter.INSTANCE.init();
     }
     public static void loadFiles() throws IOException{
         if(!FileConst.getMainFolder().exists()){
             LOGGER.info("没有配置存储文件夹，正在创建！");
             FileConst.getMainFolder().mkdir();
-        }
-        if(!FileConst.getPasswordFolder().exists()){
-            LOGGER.info("没有密码存储文件夹，正在创建！");
-            FileConst.getPasswordFolder().mkdir();
         }
         if(!FileConst.getHwSpecFolder().exists()){
             LOGGER.info("没有hwspec文件夹，正在创建！");

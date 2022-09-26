@@ -104,9 +104,7 @@ public class RdiEvents {
         //随机掉落物品
         DeathRandomDrop.handleDeath(player);
 		//记录地点
-		RdiPlayerLocation location = RdiPlayerLocation.create(player);
-		sendChatMessage(player,RESPONSE_SUCCESS,"已经记录此地点为%s，使用/back指令可以返回。".formatted(location.toString()));
-		RdiMemoryStorage.pidBackPos.put(pid, location);
+		RdiPlayerLocationRecorder.record(player);
         return true;
     }
 
@@ -214,6 +212,7 @@ public class RdiEvents {
     //指令注册
     private void registerCommands(CommandDispatcher<CommandSourceStack> dispatcher, CommandBuildContext context, Commands.CommandSelection selection) {
 		commandSet.add(new BackCommand());
+		commandSet.add(new TellCommand());
 		commandSet.add(new ChangeBiomeCommand());
 		commandSet.add(new DragonCommand());
 		commandSet.add(new GoNetherCommand());
