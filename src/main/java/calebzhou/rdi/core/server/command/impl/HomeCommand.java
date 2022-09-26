@@ -27,7 +27,7 @@ public class HomeCommand extends RdiCommand {
             ServerPlayer player = context.getSource().getPlayer();
             sendChatMessage(player, PlayerUtils.RESPONSE_INFO,"开始返回您的岛屿，请稍等...");
 			ThreadPool.newThread(()->{
-				ResultData<Island2> resultData = RdiHttpClient.sendRequest(Island2.class,"get", "/v37/island2/" + player.getStringUUID());
+				ResultData<Island2> resultData = IslandUtils.getIslandByPlayer(player);
 				if(!resultData.isSuccess()){
 					sendChatMessage(player,RESPONSE_ERROR,resultData.getMessage());
 					return;

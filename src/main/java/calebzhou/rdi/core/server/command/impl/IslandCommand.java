@@ -36,7 +36,7 @@ public class IslandCommand extends RdiCommand {
             =====RDI空岛v2管理菜单=====
             指令参数
             create 创建岛屿 reset 删除岛屿 kick 移除成员 invite 邀请成员 loca 更改传送点
-            transfer 改变岛主 quit 退出加入的岛屿
+            transfer 改变岛主 quit 退出加入的岛屿 info 岛屿信息
             ====================
             """;
 

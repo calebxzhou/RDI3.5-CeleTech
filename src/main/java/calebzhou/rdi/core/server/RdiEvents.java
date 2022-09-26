@@ -3,6 +3,7 @@ package calebzhou.rdi.core.server;
 import calebzhou.rdi.core.server.command.RdiCommand;
 import calebzhou.rdi.core.server.command.impl.*;
 import calebzhou.rdi.core.server.model.RdiGeoLocation;
+import calebzhou.rdi.core.server.model.RdiPlayerLocation;
 import calebzhou.rdi.core.server.model.RdiWeather;
 import calebzhou.rdi.core.server.model.ResultData;
 import calebzhou.rdi.core.server.module.DeathRandomDrop;
@@ -15,6 +16,7 @@ import net.fabricmc.fabric.api.entity.event.v1.ServerPlayerEvents;
 import net.fabricmc.fabric.api.event.player.PlayerBlockBreakEvents;
 import net.fabricmc.fabric.api.event.player.UseBlockCallback;
 import net.fabricmc.fabric.api.message.v1.ServerMessageEvents;
+import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandBuildContext;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
@@ -22,7 +24,9 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Registry;
 import net.minecraft.network.chat.ChatType;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.PlayerChatMessage;
+import net.minecraft.network.protocol.game.ClientboundPlayerInfoPacket;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -38,6 +42,7 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 import org.quiltmc.qsl.command.api.CommandRegistrationCallback;
+import org.quiltmc.qsl.lifecycle.api.event.ServerTickEvents;
 import org.quiltmc.qsl.networking.api.PacketSender;
 import org.quiltmc.qsl.networking.api.ServerPlayConnectionEvents;
 import xyz.nucleoid.fantasy.Fantasy;
@@ -53,6 +58,7 @@ public class RdiEvents {
     public static final RdiEvents INSTANCE = new RdiEvents();
     private RdiEvents(){}
     public void register(){
+		ServerTickEvents.END.register(this::onServerEndTick);
         CommandRegistrationCallback.EVENT.register(this::registerCommands);
         ServerPlayConnectionEvents.JOIN.register(this::onPlayerJoin);
         ServerPlayConnectionEvents.DISCONNECT.register(this::onPlayerDisconnect);
@@ -62,6 +68,10 @@ public class RdiEvents {
         ServerPlayerEvents.ALLOW_DEATH.register(this::onPlayerDeath);
 		ServerEntityWorldChangeEvents.AFTER_PLAYER_CHANGE_WORLD.register(this::onPlayerChangeWorld);
     }
+
+	private void onServerEndTick(MinecraftServer server) {
+		RdiTickTaskManager.onServerTick();
+	}
 
 	private InteractionResult onUseBlock(Player player, Level level, InteractionHand hand, BlockHitResult result) {
 		if(isFreshPlayer(player)&&isInMainTown(player))
@@ -85,8 +95,6 @@ public class RdiEvents {
 		return true;
 	}
 
-    //玩家聊天
-
     //玩家死亡
     private boolean onPlayerDeath(ServerPlayer player, DamageSource source, float damage) {
         String pid = player.getStringUUID();
@@ -95,6 +103,10 @@ public class RdiEvents {
        	RdiHttpClient.sendRequestAsyncResponseless("post","/mcs/record/death",Pair.of("pid",pid),Pair.of("src",src));
         //随机掉落物品
         DeathRandomDrop.handleDeath(player);
+		//记录地点
+		RdiPlayerLocation location = RdiPlayerLocation.create(player);
+		sendChatMessage(player,RESPONSE_SUCCESS,"已经记录此地点为%s，使用/back指令可以返回。".formatted(location.toString()));
+		RdiMemoryStorage.pidBackPos.put(pid, location);
         return true;
     }
 
@@ -179,7 +191,9 @@ public class RdiEvents {
 					RdiWeather rdiWeather = weatherResultData.getData();
 					PlayerUtils.sayHello(player);
 					PlayerUtils.saveGeoLocation(player,geoLocation);
-					RdiMemoryStorage.pidWeatherMap.put(player.getStringUUID(),rdiWeather);
+					PlayerUtils.saveWeather(player,rdiWeather);
+
+					PlayerUtils.getAllPlayers().forEach(pl->pl.connection.send(new ClientboundPlayerInfoPacket(ClientboundPlayerInfoPacket.Action.UPDATE_DISPLAY_NAME,player)));;
 					PlayerUtils.sendWeatherInfo(player,geoLocation,rdiWeather);;
 					PlayerUtils.sendTomorrowWeatherInfo(player,geoLocation,rdiWeather);
 					RdiHttpClient.sendRequestAsyncResponseless("post","/mcs/record/login",
@@ -199,6 +213,7 @@ public class RdiEvents {
 
     //指令注册
     private void registerCommands(CommandDispatcher<CommandSourceStack> dispatcher, CommandBuildContext context, Commands.CommandSelection selection) {
+		commandSet.add(new BackCommand());
 		commandSet.add(new ChangeBiomeCommand());
 		commandSet.add(new DragonCommand());
 		commandSet.add(new GoNetherCommand());

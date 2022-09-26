@@ -1,9 +1,12 @@
 package calebzhou.rdi.core.server.command.impl;
 
 import calebzhou.rdi.core.server.RdiCoreServer;
+import calebzhou.rdi.core.server.RdiTickTaskManager;
+import calebzhou.rdi.core.server.ServerLaggingStatus;
 import calebzhou.rdi.core.server.command.RdiCommand;
 import calebzhou.rdi.core.server.constant.ColorConst;
 import calebzhou.rdi.core.server.utils.ThreadPool;
+import calebzhou.rdi.core.server.utils.WorldUtils;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import net.minecraft.commands.CommandSourceStack;
 import java.util.Arrays;
@@ -22,7 +25,7 @@ public class TpsCommand extends RdiCommand {
     //100%负载tick时间
     final double stdTickTime = 70.0;
     final int displayMaxMemory=1023;
-    private int exec(CommandSourceStack player) {
+    private int exec(CommandSourceStack sourceStack) {
         ThreadPool.newThread(()->{
             //平均tick时间
             double meanTickTime = Arrays.stream(RdiCoreServer.getServer().tickTimes).average().getAsDouble() * 1.0E-6D;
@@ -40,11 +43,21 @@ public class TpsCommand extends RdiCommand {
                 if (i == 22)
                     squaresToSend.append(ColorConst.RED);
             }
-            sendMessageToCommandSource(player,"%d%%/%.2fTPS/%.2fms%s".formatted(Math.round(ratio * 100),meanTPS,meanTickTime, squaresToSend));
+            sendMessageToCommandSource(sourceStack,"%d%%/%.2fTPS/%.2fms%s".formatted(Math.round(ratio * 100),meanTPS,meanTickTime, squaresToSend));
+            sendMessageToCommandSource(sourceStack,
+				"延迟?%s %sms,存档延迟任务数 %s"
+					.formatted(
+							ServerLaggingStatus.isServerLagging()?"是":"否",
+							ServerLaggingStatus.getMsBehind(),
+							RdiTickTaskManager.getQueueSize(
+									WorldUtils.getDimensionName(sourceStack.getLevel())
+							)
+					)
+			);
             long totalMemory = Runtime.getRuntime().totalMemory();
             long memoryUsed = totalMemory - Runtime.getRuntime().freeMemory();
             float memoryUsage =  (float)memoryUsed/(float)totalMemory;
-			sendMessageToCommandSource(player,"ram=%.1fMB/%dMB(%.1f%%)".formatted(displayMaxMemory*memoryUsage,displayMaxMemory,memoryUsage*100));
+			sendMessageToCommandSource(sourceStack,"ram=%.1fMB/%dMB(%.1f%%)".formatted(displayMaxMemory*memoryUsage,displayMaxMemory,memoryUsage*100));
         });
 
 

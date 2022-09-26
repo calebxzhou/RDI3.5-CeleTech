@@ -3,6 +3,7 @@ package calebzhou.rdi.core.server.command.impl;
 import calebzhou.rdi.core.server.RdiMemoryStorage;
 import calebzhou.rdi.core.server.command.RdiCommand;
 import calebzhou.rdi.core.server.model.RdiPlayerLocation;
+import calebzhou.rdi.core.server.utils.PlayerUtils;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.server.level.ServerPlayer;
@@ -12,7 +13,7 @@ import net.minecraft.server.level.ServerPlayer;
  */
 public class BackCommand extends RdiCommand {
 	public BackCommand() {
-		super("back");
+		super("back","返回上次传送位置");
 	}
 
 	@Override
@@ -20,7 +21,14 @@ public class BackCommand extends RdiCommand {
 		return baseArgBuilder.executes(context -> {
 			ServerPlayer player = context.getSource().getPlayer();
 			RdiPlayerLocation pos = RdiMemoryStorage.pidBackPos.get(player.getStringUUID());
-return 1;
+			if(player.experienceLevel<3){
+				PlayerUtils.sendChatMessage(player,PlayerUtils.RESPONSE_ERROR,"需要3级经验才能返回上次记录的传送位置！");
+				return 1;
+			}
+			PlayerUtils.teleport(player,pos);
+			RdiMemoryStorage.pidBackPos.remove(player.getStringUUID());
+			PlayerUtils.sendChatMessage(player,PlayerUtils.RESPONSE_SUCCESS);
+			return 1;
 		});
 	}
 }

@@ -1,8 +1,10 @@
 package calebzhou.rdi.core.server.model;
 
+import calebzhou.rdi.core.server.utils.WorldUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Vec3i;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.phys.Vec3;
 
 import java.io.Serializable;
@@ -38,7 +40,11 @@ public class RdiPlayerLocation implements Serializable {
 		this.p = p;
 	}
 
-	public ServerLevel getLevel() {
+	public static RdiPlayerLocation create(ServerPlayer player) {
+		return new RdiPlayerLocation(player.getLevel(),player.getX(),player.getY(),player.getZ(),player.getYRot(),player.getXRot());
+	}
+
+    public ServerLevel getLevel() {
 		return level;
 	}
 
@@ -90,5 +96,17 @@ public class RdiPlayerLocation implements Serializable {
 	public RdiPlayerLocation setP(double p) {
 		this.p = p;
 		return this;
+	}
+
+	@Override
+	public String toString() {
+		return "RdiPlayerLocation{" +
+				"level=" + WorldUtils.getDimensionName(level) +
+				", x=" + x +
+				", y=" + y +
+				", z=" + z +
+				", w=" + w +
+				", p=" + p +
+				'}';
 	}
 }

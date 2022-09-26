@@ -21,7 +21,10 @@ public class NetworkPackets {
     public static final ResourceLocation SAVE_WORLD = new ResourceLocation(RdiSharedConstants.MOD_ID,"save_world");
     //快速繁殖
     public static final ResourceLocation ANIMAL_SEX=new ResourceLocation(RdiSharedConstants.MOD_ID,"animal_sex");
-    //S2C 服务端->客户端
+
+	//S2C 服务端->客户端
+	//玩家所在地温度、距离
+	public static final ResourceLocation PLAYER_WEATHER_GEO = new ResourceLocation(RdiSharedConstants.MOD_ID,"player_weather_geo");
 
     //岛屿信息
     public static final ResourceLocation ISLAND_INFO =new ResourceLocation(RdiSharedConstants.MOD_ID,"island_info");

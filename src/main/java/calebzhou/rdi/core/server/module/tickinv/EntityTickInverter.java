@@ -56,17 +56,11 @@ public class EntityTickInverter{
 		}
 	}
 
-	private static int ticksMonsterNow=0;
-	private static final int tickMonsterRequired=20/20;
-	//怪物一秒20动
+
+	//怪物只要不卡就动
 	private static void handleMonsterTick(Consumer tickConsumer, Enemy monster) {
-		//if(ticksMonsterNow>=tickMonsterRequired){
-			if(!ServerLaggingStatus.isServerLagging())
-				tickConsumer.accept(monster);
-			/*ticksMonsterNow=0;
-		}else{
-			++ticksMonsterNow;
-		}*/
+		if(!ServerLaggingStatus.isServerLagging())
+			tickConsumer.accept(monster);
 	}
 
 	//村民一秒5动

@@ -19,9 +19,13 @@ public class ServerLaggingStatus {
 		if(msBehind>0)
 			RdiCoreServer.LOGGER.info("服务器tick时间 落后{}ms",msBehind);
 		if(isServerVeryLagging()){
-			ServerUtils.broadcastActionBarMessage(Component.literal("服务器正在存档与释放内存"));
+			ServerUtils.broadcastActionBarMessage(Component.literal("正在存档与清理内存"));
 		}
 
+	}
+
+	public static long getMsBehind() {
+		return msBehind;
 	}
 
 	public static boolean isServerVeryLagging(){

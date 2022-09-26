@@ -2,6 +2,9 @@ package calebzhou.rdi.core.server.utils;
 
 import calebzhou.rdi.core.server.RdiCoreServer;
 import calebzhou.rdi.core.server.RdiSharedConstants;
+import calebzhou.rdi.core.server.RdiTickTaskManager;
+import calebzhou.rdi.core.server.model.Island2;
+import calebzhou.rdi.core.server.model.ResultData;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
@@ -19,6 +22,9 @@ import xyz.nucleoid.fantasy.Fantasy;
 import xyz.nucleoid.fantasy.RuntimeWorldConfig;
 
 public class IslandUtils {
+	public static ResultData<Island2> getIslandByPlayer(Player player){
+		return RdiHttpClient.sendRequest(Island2.class,"get", "/v37/island2/"+player.getStringUUID());
+	}
 	public static void unloadIsland(ServerLevel islandLevel,ServerPlayer player){
 		//如果在二岛
 		if(WorldUtils.isInIsland2(islandLevel)){
@@ -27,6 +33,7 @@ public class IslandUtils {
 			//如果岛上没有人（除了自己） 就卸载存档
 			if(WorldUtils.isNoPlayersInLevel(player,islandLevel)){
 				RdiCoreServer.LOGGER.info("岛屿"+ dimensionName +"没有玩家了，即将卸载");
+				RdiTickTaskManager.removeDimension(dimensionName);
 				ServerUtils.executeOnServerThread(()->{
 					islandLevel.save(null,true,false);
 					Fantasy.get(RdiCoreServer.getServer()).unloadWorld(islandLevel);

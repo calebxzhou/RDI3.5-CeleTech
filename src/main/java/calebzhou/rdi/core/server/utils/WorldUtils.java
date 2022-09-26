@@ -3,7 +3,10 @@ package calebzhou.rdi.core.server.utils;
 import calebzhou.rdi.core.server.RdiCoreServer;
 import calebzhou.rdi.core.server.RdiSharedConstants;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Registry;
 import net.minecraft.core.Vec3i;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
@@ -22,6 +25,11 @@ public class WorldUtils {
             serverWorld.setBlockAndUpdate(blockPos, block);
         }
     }
+	public static ServerLevel getLevelByDimensionName(String dimKey){
+		ResourceLocation resourceLocation = new ResourceLocation(dimKey);
+		ResourceKey<Level> worldKey = ResourceKey.create(Registry.DIMENSION_REGISTRY, resourceLocation);
+		return RdiCoreServer.getServer().getLevel(worldKey);
+	}
     public static ServerLevel getNether(){
         return RdiCoreServer.getServer().getLevel(ServerLevel.NETHER);
     }

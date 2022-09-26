@@ -1,10 +1,18 @@
 package calebzhou.rdi.core.server.mixin.server;
 
+import calebzhou.rdi.core.server.RdiCoreServer;
+import calebzhou.rdi.core.server.RdiTickTaskManager;
+import calebzhou.rdi.core.server.ServerLaggingStatus;
+import calebzhou.rdi.core.server.mixin.AccessCollectingNeighborUpdater;
+import calebzhou.rdi.core.server.mixin.AccessMultiNeighborUpdate;
 import calebzhou.rdi.core.server.module.tickinv.BlockEntityTickInverter;
 import calebzhou.rdi.core.server.module.tickinv.EntityTickInverter;
 import calebzhou.rdi.core.server.module.tickinv.WorldTickThreadManager;
+import calebzhou.rdi.core.server.utils.PlayerUtils;
 import calebzhou.rdi.core.server.utils.ServerUtils;
+import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.ServerFunctionManager;
 import net.minecraft.server.level.*;
@@ -12,9 +20,14 @@ import net.minecraft.util.RandomSource;
 import net.minecraft.util.profiling.ProfilerFiller;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.NaturalSpawner;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.TickingBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.chunk.LevelChunk;
 import net.minecraft.world.level.material.FluidState;
+import net.minecraft.world.level.redstone.CollectingNeighborUpdater;
 import net.minecraft.world.ticks.LevelChunkTicks;
 import net.minecraft.world.ticks.LevelTicks;
 import org.spongepowered.asm.mixin.Final;
@@ -22,7 +35,9 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.util.Queue;
 import java.util.function.BiConsumer;
@@ -265,4 +280,56 @@ class mTickInvertChunk {
         return false;
     }
 
+}
+@Mixin(CollectingNeighborUpdater.class)
+abstract
+class mTickInvertNeighborUpdater{
+
+	@Shadow
+	@Final
+	private Level level;
+
+	@Redirect(method = "runUpdates", at = @At(value = "INVOKE",target = "Lnet/minecraft/world/level/redstone/CollectingNeighborUpdater$NeighborUpdates;runNext(Lnet/minecraft/world/level/Level;)Z"))
+	private boolean RDIrunnext(CollectingNeighborUpdater.NeighborUpdates neighborUpdates, Level level){
+		if(ServerLaggingStatus.isServerLagging()){
+
+			BlockPos updatePos;
+			Block sourceBlock;
+			if(neighborUpdates instanceof CollectingNeighborUpdater.MultiNeighborUpdate update){
+				updatePos = ((AccessMultiNeighborUpdate)(Object)update).getSourcePos();
+				sourceBlock = ((AccessMultiNeighborUpdate)(Object)update).getSourceBlock();
+			}else if(neighborUpdates instanceof CollectingNeighborUpdater.FullNeighborUpdate update){
+				sourceBlock = update.block();
+				updatePos = update.pos();
+			}else if(neighborUpdates instanceof CollectingNeighborUpdater.SimpleNeighborUpdate update){
+				sourceBlock = update.block();
+				updatePos = update.pos();
+			}else if(neighborUpdates instanceof CollectingNeighborUpdater.ShapeUpdate update){
+				sourceBlock = update.state().getBlock();
+				updatePos = update.pos();
+			}else{
+				sourceBlock = Blocks.AIR;
+				updatePos = BlockPos.ZERO;
+			}
+			if(RdiCoreServer.getServer().overworld() != level)
+				PlayerUtils.broadcastMessageToLevel(level,Component.literal("提交延迟tick邻块任务").append(sourceBlock.getName()).append(Component.literal(updatePos.toShortString())).withStyle(ChatFormatting.GOLD), true);
+			RdiTickTaskManager.addDelayTickTask(level,()->{
+				((AccessCollectingNeighborUpdater) this).invokeAddAndRun(updatePos,neighborUpdates);//neighborUpdates.runNext(level);
+				if(RdiCoreServer.getServer().overworld() != level)
+					PlayerUtils.broadcastMessageToLevel(level,Component.literal("延迟tick邻块").append(sourceBlock.getName()).append(Component.literal(updatePos.toShortString())).withStyle(ChatFormatting.AQUA),true);
+			});
+			return false;
+		}else{
+			return neighborUpdates.runNext(level);
+		}
+	}
+}
+@Mixin(NaturalSpawner.class)
+class mTickInvertSpawner {
+	//卡顿时取消刷怪
+	@Inject(method = "spawnForChunk",at=@At("HEAD"),cancellable = true)
+	private static void RdiSpawnWithTpsCheck(ServerLevel level, LevelChunk chunk, NaturalSpawner.SpawnState spawnState, boolean spawnFriendlies, boolean spawnMonsters, boolean forcedDespawn, CallbackInfo ci){
+		if(ServerLaggingStatus.isServerLagging())
+			ci.cancel();
+	}
 }

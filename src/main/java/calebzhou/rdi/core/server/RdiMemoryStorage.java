@@ -26,7 +26,7 @@ public class RdiMemoryStorage {
 	public static final Object2ObjectOpenHashMap<String, RdiUser> pidUserMap = new Object2ObjectOpenHashMap<>();
     //正在挂机的玩家名
     public static final Object2IntOpenHashMap<String> afkMap = new Object2IntOpenHashMap<>();
-	//玩家pid vs 执行传送前的位置（back指令专用）
+	//玩家pid vs 上次死亡的位置（back指令专用）
 	public static final Object2ObjectOpenHashMap<String, RdiPlayerLocation> pidBackPos = new Object2ObjectOpenHashMap<>();
 	//准备传送回主城的玩家pid列表
 	public static final ObjectArrayList<String> pidBeingGoSpawn = new ObjectArrayList<>();

@@ -8,6 +8,7 @@ import calebzhou.rdi.core.server.constant.ColorConst;
 import calebzhou.rdi.core.server.constant.FileConst;
 import calebzhou.rdi.core.server.constant.WeatherConst;
 import calebzhou.rdi.core.server.model.RdiGeoLocation;
+import calebzhou.rdi.core.server.model.RdiPlayerLocation;
 import calebzhou.rdi.core.server.model.RdiWeather;
 import calebzhou.rdi.core.server.model.ResultData;
 import net.minecraft.commands.CommandSourceStack;
@@ -15,13 +16,16 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.protocol.game.ClientboundBossEventPacket;
 import net.minecraft.network.protocol.game.ClientboundPlayerPositionPacket;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerBossEvent;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.level.TicketType;
 import net.minecraft.util.Mth;
+import net.minecraft.world.BossEvent;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.player.Player;
@@ -35,7 +39,9 @@ import org.quiltmc.qsl.networking.api.ServerPlayNetworking;
 
 import java.io.File;
 import java.util.EnumSet;
+import java.util.List;
 import java.util.UUID;
+import java.util.function.Predicate;
 
 import static calebzhou.rdi.core.server.RdiSharedConstants.SPAWN_LOCATION;
 
@@ -66,6 +72,26 @@ public class PlayerUtils {
 		ServerPlayNetworking.send((ServerPlayer) player,pack,buf);
 	}
 
+
+	public static List<ServerPlayer> getPlayersInLevel(Level level){
+		return getPlayersInLevel(level,p->true);
+	}
+	public static List<ServerPlayer> getPlayersInLevel(Level level, Predicate<? super ServerPlayer> condition){
+		return ((ServerLevel) level).getPlayers(condition);
+	}
+	public static void sendBossBar(Player player,Component component,BossEvent.BossBarColor bossBarColor, BossEvent.BossBarOverlay bossBarOverlay){
+		ClientboundBossEventPacket addPacket = ClientboundBossEventPacket.createAddPacket(new ServerBossEvent(component, bossBarColor, bossBarOverlay));
+		((ServerPlayer)player).connection.send(addPacket);
+		addPacket=null;
+	}
+	public static void broadcastMessageToLevel(ServerLevel level,Component component,boolean actionBar){
+		getPlayersInLevel(level).forEach(player -> {
+			sendChatMessage(player,component,actionBar);
+		});
+	}
+	public static void broadcastMessageToLevel(Level level,Component component,boolean actionBar){
+		broadcastMessageToLevel((ServerLevel) level,component,actionBar);
+	}
 	public static void sendMessageToCommandSource(CommandSourceStack source , String content){
 		sendMessageToCommandSource(source,Component.literal(content));
 	}
@@ -119,17 +145,7 @@ public class PlayerUtils {
     public static File getPasswordFile(String playerUuid){
         return  new File(FileConst.getPasswordFolder(),playerUuid+".txt");
     }
-	public static void teleportToSpawn(Player player){
-		teleport(player, RdiCoreServer.getServer().overworld(),RdiSharedConstants.SPAWN_LOCATION);
-	}
-    public static void teleport(Player player,ServerLevel lvl,BlockPos bpos){
-        teleport(player,lvl,bpos.getX(), bpos.getY(), bpos.getZ(),0,0);
-    }
-    //传送1到2 玩家
-    public static void teleport(Player player1, Player player2){
-        teleport(player1, (ServerLevel) player2.getLevel(), player2.getX(),
-                player2.getY(), player2.getZ(), player2.getYRot(), player2.getXRot());
-    }
+
 	//是否是新手
 	public static boolean isFreshPlayer(Player player){
 		return player.experienceLevel==0;
@@ -172,6 +188,27 @@ public class PlayerUtils {
 	}
 	public static void sendClientDialog(Player player,String type, String title, String msg){
 		sendPacketToClient(player, NetworkPackets.DIALOG_INFO,String.format("%s|%s|%s",type,title,msg));
+	}
+	public static void teleportToSpawn(Player player){
+		teleport(player, RdiCoreServer.getServer().overworld(),RdiSharedConstants.SPAWN_LOCATION);
+	}
+	public static void teleport(Player player,ServerLevel lvl,BlockPos bpos){
+		teleport(player,lvl,bpos.getX(), bpos.getY(), bpos.getZ(),0,0);
+	}
+	//传送1到2 玩家
+	public static void teleport(Player player1, Player player2){
+		teleport(player1, (ServerLevel) player2.getLevel(), player2.getX(),
+				player2.getY(), player2.getZ(), player2.getYRot(), player2.getXRot());
+	}
+	public static void teleport(Player player, RdiPlayerLocation playerLocation){
+		teleport(player,
+				playerLocation.getLevel(),
+				playerLocation.getX(),
+				playerLocation.getY(),
+				playerLocation.getZ(),
+				playerLocation.getW(),
+				playerLocation.getP())
+		;
 	}
     //传送到指定位置
     public static void teleport(Player player, ServerLevel world, double x, double y, double z, double yaw, double pitch){
@@ -255,4 +292,10 @@ public class PlayerUtils {
 	}
 
 
+	public static void saveWeather(ServerPlayer player, RdiWeather rdiWeather) {
+		RdiMemoryStorage.pidWeatherMap.put(player.getStringUUID(),rdiWeather);
+	}
+	public static List<ServerPlayer> getAllPlayers(){
+		return RdiCoreServer.getServer().getPlayerList().getPlayers();
+	}
 }
