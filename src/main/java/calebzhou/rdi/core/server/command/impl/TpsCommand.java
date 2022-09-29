@@ -8,11 +8,15 @@ import calebzhou.rdi.core.server.constant.ColorConst;
 import calebzhou.rdi.core.server.utils.ThreadPool;
 import calebzhou.rdi.core.server.utils.WorldUtils;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
+import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.network.chat.Component;
+
 import java.util.Arrays;
 import static calebzhou.rdi.core.server.utils.PlayerUtils.sendMessageToCommandSource;
 
 public class TpsCommand extends RdiCommand {
+	public static final Object2ObjectOpenHashMap<String, Component> delayTickStatus = new Object2ObjectOpenHashMap<>();
 	public TpsCommand() {
         super("tps","查询服务器的流畅程度");
     }
@@ -44,20 +48,22 @@ public class TpsCommand extends RdiCommand {
                     squaresToSend.append(ColorConst.RED);
             }
             sendMessageToCommandSource(sourceStack,"%d%%/%.2fTPS/%.2fms%s".formatted(Math.round(ratio * 100),meanTPS,meanTickTime, squaresToSend));
-            sendMessageToCommandSource(sourceStack,
-				"延迟?%s %sms,存档延迟任务数 %s"
+			String dimensionName = WorldUtils.getDimensionName(sourceStack.getLevel());
+			int queueSize = RdiTickTaskManager.getQueueSize(dimensionName);
+			sendMessageToCommandSource(sourceStack,
+				"延迟?%s %sms 任务数%s "
 					.formatted(
 							ServerLaggingStatus.isServerLagging()?"是":"否",
 							ServerLaggingStatus.getMsBehind(),
-							RdiTickTaskManager.getQueueSize(
-									WorldUtils.getDimensionName(sourceStack.getLevel())
-							)
+							queueSize
 					)
 			);
             long totalMemory = Runtime.getRuntime().totalMemory();
             long memoryUsed = totalMemory - Runtime.getRuntime().freeMemory();
             float memoryUsage =  (float)memoryUsed/(float)totalMemory;
 			sendMessageToCommandSource(sourceStack,"ram=%.1fMB/%dMB(%.1f%%)".formatted(displayMaxMemory*memoryUsage,displayMaxMemory,memoryUsage*100));
+			if(queueSize>0)
+				sourceStack.sendSuccess(delayTickStatus.get(dimensionName),false);
         });
 
 

@@ -25,7 +25,7 @@ public class IslandUtils {
 	public static ResultData<Island2> getIslandByPlayer(Player player){
 		return RdiHttpClient.sendRequest(Island2.class,"get", "/v37/island2/"+player.getStringUUID());
 	}
-	public static void unloadIsland(ServerLevel islandLevel,ServerPlayer player){
+	/*public static void unloadIsland(ServerLevel islandLevel,ServerPlayer player){
 		//如果在二岛
 		if(WorldUtils.isInIsland2(islandLevel)){
 			String dimensionName = WorldUtils.getDimensionName(islandLevel);
@@ -40,11 +40,11 @@ public class IslandUtils {
 				});
 			}
 		}
-	}
-	public static void unloadIsland(ServerPlayer player){
+	}*/
+	/*public static void unloadIsland(ServerPlayer player){
 		ServerLevel islandLevel = player.getLevel();
 		unloadIsland(islandLevel,player);
-	}
+	}*/
     public static RuntimeWorldConfig getIslandWorldConfig(){
         return new RuntimeWorldConfig()
                 .setDimensionType(BuiltinDimensionTypes.OVERWORLD)
@@ -52,7 +52,7 @@ public class IslandUtils {
 				.setShouldTickTime(true)
 				/*.setRaining(true)
 				.setThundering(true)*/
-				.setTimeOfDay(0L)
+				//.setTimeOfDay(0L)
 				/*.setThundering(30)
 				.setRaining(30)*/
 				//.setSunny(6000)

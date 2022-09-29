@@ -3,13 +3,16 @@ package calebzhou.rdi.core.server.mixin.server;
 import calebzhou.rdi.core.server.RdiCoreServer;
 import calebzhou.rdi.core.server.RdiTickTaskManager;
 import calebzhou.rdi.core.server.ServerLaggingStatus;
+import calebzhou.rdi.core.server.command.impl.TpsCommand;
 import calebzhou.rdi.core.server.mixin.AccessCollectingNeighborUpdater;
+import calebzhou.rdi.core.server.mixin.AccessLegacyRandomSource;
 import calebzhou.rdi.core.server.mixin.AccessMultiNeighborUpdate;
+import calebzhou.rdi.core.server.mixin.AccessSpawnState;
 import calebzhou.rdi.core.server.module.tickinv.BlockEntityTickInverter;
 import calebzhou.rdi.core.server.module.tickinv.EntityTickInverter;
 import calebzhou.rdi.core.server.module.tickinv.WorldTickThreadManager;
-import calebzhou.rdi.core.server.utils.PlayerUtils;
 import calebzhou.rdi.core.server.utils.ServerUtils;
+import calebzhou.rdi.core.server.utils.WorldUtils;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
@@ -19,6 +22,7 @@ import net.minecraft.server.level.*;
 import net.minecraft.util.RandomSource;
 import net.minecraft.util.profiling.ProfilerFiller;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.NaturalSpawner;
 import net.minecraft.world.level.block.Block;
@@ -26,10 +30,12 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.TickingBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.chunk.LevelChunk;
+import net.minecraft.world.level.levelgen.LegacyRandomSource;
 import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.level.redstone.CollectingNeighborUpdater;
 import net.minecraft.world.ticks.LevelChunkTicks;
 import net.minecraft.world.ticks.LevelTicks;
+import org.apache.commons.lang3.RandomUtils;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
@@ -39,7 +45,9 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
+import java.util.Arrays;
 import java.util.Queue;
+import java.util.Random;
 import java.util.function.BiConsumer;
 import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
@@ -311,12 +319,16 @@ class mTickInvertNeighborUpdater{
 				sourceBlock = Blocks.AIR;
 				updatePos = BlockPos.ZERO;
 			}
-			if(RdiCoreServer.getServer().overworld() != level)
-				PlayerUtils.broadcastMessageToLevel(level,Component.literal("提交延迟tick邻块任务").append(sourceBlock.getName()).append(Component.literal(updatePos.toShortString())).withStyle(ChatFormatting.GOLD), true);
+			if(RdiCoreServer.getServer().overworld() != level){
+				TpsCommand.delayTickStatus.put(WorldUtils.getDimensionName(level),
+						Component.literal("提交延迟tick邻块任务").append(sourceBlock.getName()).append(Component.literal(updatePos.toShortString())).withStyle(ChatFormatting.GOLD)
+				);
+			}
 			RdiTickTaskManager.addDelayTickTask(level,()->{
 				((AccessCollectingNeighborUpdater) this).invokeAddAndRun(updatePos,neighborUpdates);//neighborUpdates.runNext(level);
-				if(RdiCoreServer.getServer().overworld() != level)
-					PlayerUtils.broadcastMessageToLevel(level,Component.literal("延迟tick邻块").append(sourceBlock.getName()).append(Component.literal(updatePos.toShortString())).withStyle(ChatFormatting.AQUA),true);
+				TpsCommand.delayTickStatus.put(WorldUtils.getDimensionName(level),
+						Component.literal("延迟tick邻块").append(sourceBlock.getName()).append(Component.literal(updatePos.toShortString())).withStyle(ChatFormatting.AQUA)
+				);
 			});
 			return false;
 		}else{
@@ -325,11 +337,75 @@ class mTickInvertNeighborUpdater{
 	}
 }
 @Mixin(NaturalSpawner.class)
+abstract
 class mTickInvertSpawner {
+	@Shadow
+	@Final
+	private static MobCategory[] SPAWNING_CATEGORIES;
+	private static RandomSource instance;
+
+	@Shadow
+	public static void spawnCategoryForChunk(MobCategory category, ServerLevel level, LevelChunk chunk, NaturalSpawner.SpawnPredicate filter, NaturalSpawner.AfterSpawnCallback callback) {
+	}
+
 	//卡顿时取消刷怪
 	@Inject(method = "spawnForChunk",at=@At("HEAD"),cancellable = true)
 	private static void RdiSpawnWithTpsCheck(ServerLevel level, LevelChunk chunk, NaturalSpawner.SpawnState spawnState, boolean spawnFriendlies, boolean spawnMonsters, boolean forcedDespawn, CallbackInfo ci){
 		if(ServerLaggingStatus.isServerLagging())
 			ci.cancel();
 	}
+	/*@Overwrite
+	public static void spawnForChunk(
+			ServerLevel level, LevelChunk chunk, NaturalSpawner.SpawnState spawnState, boolean spawnFriendlies, boolean spawnMonsters, boolean forcedDespawn
+	) {
+		level.getProfiler().push("spawner");
+		AccessSpawnState state = ((AccessSpawnState) spawnState);
+		Arrays.stream(SPAWNING_CATEGORIES).parallel().forEach(mobCategory -> {
+			if ((spawnFriendlies || !mobCategory.isFriendly())
+					&& (spawnMonsters || mobCategory.isFriendly())
+					&& (forcedDespawn || !mobCategory.isPersistent())
+					&& state.invokeCanSpawnForCategory(mobCategory, chunk.getPos())) {
+				spawnCategoryForChunk(mobCategory, level, chunk, state::invokeCanSpawn, state::invokeAfterSpawn);
+			}
+		});
+
+		level.getProfiler().pop();
+	}
+	*//*@Redirect(method = "getRandomPosWithin",at=@At(value = "INVOKE",target = "Lnet/minecraft/util/RandomSource;nextInt(I)I"))
+	private static int replaceRandomSource (RandomSource instance, int i){
+		return RandomUtils.nextInt(0,i);
+	}*//*
+	@Redirect(method = "spawnCategoryForPosition(Lnet/minecraft/world/entity/MobCategory;Lnet/minecraft/server/level/ServerLevel;Lnet/minecraft/world/level/chunk/ChunkAccess;Lnet/minecraft/core/BlockPos;Lnet/minecraft/world/level/NaturalSpawner$SpawnPredicate;Lnet/minecraft/world/level/NaturalSpawner$AfterSpawnCallback;)V",at=@At(value = "INVOKE",target = "Lnet/minecraft/util/RandomSource;nextInt(I)I"))
+	private
+	static int nextInt(RandomSource instance, int i){
+		return RandomUtils.nextInt(0,i);
+	}
+	@Redirect(method = "spawnCategoryForPosition(Lnet/minecraft/world/entity/MobCategory;" +
+			"Lnet/minecraft/server/level/ServerLevel;Lnet/minecraft/world/level/chunk/ChunkAccess;" +
+			"Lnet/minecraft/core/BlockPos;Lnet/minecraft/world/level/NaturalSpawner$SpawnPredicate;Lnet/minecraft/world/level/NaturalSpawner$AfterSpawnCallback;)V",
+	at=@At(value = "INVOKE",target = "Lnet/minecraft/util/RandomSource;nextFloat()F"))
+	private static float nextFloat(RandomSource instance){
+		return RandomUtils.nextFloat();
+	}
+	@Redirect(method = "spawnMobsForChunkGeneration",at = @At(value = "INVOKE",target = "Lnet/minecraft/util/RandomSource;nextFloat()F"))
+	private static float changeRandomSource(RandomSource instance){
+		return RandomUtils.nextFloat();
+	}
+	@Redirect(method = "spawnMobsForChunkGeneration",at = @At(value = "INVOKE",target = "Lnet/minecraft/util/RandomSource;nextInt(I)I"))
+	private static int changeRandomSource(RandomSource instance, int i){
+		return RandomUtils.nextInt(0,i);
+	}
+	@Redirect(method = "getRandomPosWithin",at=@At(value = "INVOKE",target = "Lnet/minecraft/util/RandomSource;nextInt(I)I"))
+	private static int changeRandomSource2(RandomSource instance, int i){
+		return RandomUtils.nextInt(0,i);
+	}
+	@Redirect(method = "getRandomPosWithin",at=@At(value = "INVOKE",target = "Lnet/minecraft/util/Mth;randomBetweenInclusive(Lnet/minecraft/util/RandomSource;II)I"))
+	private static int changeRandomSource3(RandomSource random, int minInclusive, int maxInclusive){
+		if(random instanceof LegacyRandomSource legacyRandomSource){
+			long seed = ((AccessLegacyRandomSource) legacyRandomSource).getSeed().get();
+			return new LegacyRandomSource(seed).nextInt(maxInclusive - minInclusive + 1) + minInclusive;
+		}else{
+			return random.nextInt(maxInclusive - minInclusive + 1) + minInclusive;
+		}
+	}*/
 }

@@ -2,10 +2,7 @@ package calebzhou.rdi.core.server;
 
 import calebzhou.rdi.core.server.command.RdiCommand;
 import calebzhou.rdi.core.server.command.impl.*;
-import calebzhou.rdi.core.server.model.RdiGeoLocation;
-import calebzhou.rdi.core.server.model.RdiPlayerLocation;
-import calebzhou.rdi.core.server.model.RdiWeather;
-import calebzhou.rdi.core.server.model.ResultData;
+import calebzhou.rdi.core.server.model.*;
 import calebzhou.rdi.core.server.module.DeathRandomDrop;
 import calebzhou.rdi.core.server.utils.*;
 import com.mojang.brigadier.CommandDispatcher;
@@ -74,8 +71,10 @@ public class RdiEvents {
 	}
 
 	private InteractionResult onUseBlock(Player player, Level level, InteractionHand hand, BlockHitResult result) {
-		if(isFreshPlayer(player)&&isInMainTown(player))
+		if(isFreshPlayer(player)&&isInMainTown(player)&&!player.getScoreboardName().equals("gentlemio")){
+			sendChatMessage(player,RESPONSE_ERROR,"请创建岛屿！/is create");
 			return InteractionResult.FAIL;
+		}
 
 		return InteractionResult.PASS;
 
@@ -83,14 +82,24 @@ public class RdiEvents {
 
 	//改变世界之后
 	private void onPlayerChangeWorld(ServerPlayer player, ServerLevel fromLevel, ServerLevel toLevel) {
-		 IslandUtils.unloadIsland(fromLevel,player);
+		RdiCoreServer.LOGGER.info("{}离开{}去{}",player.getScoreboardName(),WorldUtils.getDimensionName(fromLevel),WorldUtils.getDimensionName(toLevel));
+		//要去的维度在岛屿卸载队列里面
+		if(RdiIslandUnloadManager.isIslandInQueue(toLevel)){
+			RdiIslandUnloadManager.removeIslandFromQueue(toLevel);
+		}else
+		//离开的维度是岛屿维度 并且里面没人
+		if(WorldUtils.isInIsland2(fromLevel) && WorldUtils.isNoPlayersInLevel(fromLevel)){
+			RdiIslandUnloadManager.addIslandToUnloadQueue(fromLevel);
+		}
+
+		//IslandUtils.unloadIsland(fromLevel,player);
 	}
 
 	//破坏方块之前
 	private boolean beforeBreakBlock(Level level, Player player, BlockPos pos, BlockState blockState, BlockEntity blockEntity) {
-		if(isInMainTown(player)&&isFreshPlayer(player)){
-				sendChatMessage(player, RESPONSE_INFO,"按下T键，输入/is create指令创建一个岛屿吧！或者让您的朋友输入/is invite "+player.getScoreboardName()+"来邀请您加入他的岛屿");
-				return false;
+		if(isInMainTown(player)&&player.experienceLevel<100&&!player.getScoreboardName().equals("gentlemio")){
+			sendChatMessage(player, RESPONSE_INFO,"按下T键，输入/is create指令创建一个岛屿吧！或者让您的朋友输入/is invite "+player.getScoreboardName()+"来邀请您加入他的岛屿");
+			return false;
 		}
 		return true;
 	}
@@ -116,29 +125,25 @@ public class RdiEvents {
         RdiMemoryStorage.tpaMap.remove(player.getStringUUID());
         //记录登出信息
         RdiHttpClient.sendRequestAsyncResponseless("post","/mcs/record/logout", Pair.of("pid",player.getStringUUID()));
-		IslandUtils.unloadIsland(player);
+		RdiIslandUnloadManager.addIslandToUnloadQueue(player.getLevel());
     }
     //act 0放置1破坏
     public static void recordBlock(String pid,String bid,int act,Level world,int x,int y,int z){
-        //主世界主城以外的地方不记录
-        if(world == RdiCoreServer.getServer().overworld()){
-            boolean rangeInSpawn = (x > -256 && x < 256) && (z > -256 && z < 256);
-            if(!rangeInSpawn){
-                return;
-            }
-        }
-        //末地 地狱不记录
-        if(world == RdiCoreServer.getServer().getLevel(Level.NETHER) || world == RdiCoreServer.getServer().getLevel(Level.END))
-            return;
-        RdiHttpClient.sendRequestAsyncResponseless("post", "/mcs/record/block",
-				Pair.of("pid",pid),
-				Pair.of("bid",bid),
-				Pair.of("act",act),
-				Pair.of("world",world),
-				Pair.of("x",x),
-				Pair.of("y",y),
-				Pair.of("z",z)
-		);
+		//只记录主世界主城以内
+		if(world == RdiCoreServer.getServer().overworld()){
+			boolean rangeInSpawn = (x > -256 && x < 256) && (z > -256 && z < 256);
+			if(rangeInSpawn){
+				RdiHttpClient.sendRequestAsyncResponseless("post", "/mcs/record/block",
+						Pair.of("pid",pid),
+						Pair.of("bid",bid),
+						Pair.of("act",act),
+						Pair.of("world",world),
+						Pair.of("x",x),
+						Pair.of("y",y),
+						Pair.of("z",z)
+				);
+			}
+		}
     }
     //成功破坏方块
     private void onBreakBlock(Level level, Player player, BlockPos blockPos, BlockState state, BlockEntity block) {
@@ -164,20 +169,31 @@ public class RdiEvents {
 			PlayerUtils.teleportToSpawn(player);
 			RdiMemoryStorage.pidBeingGoSpawn.remove(player.getStringUUID());
 		}
+		if(PlayerUtils.isInIsland(player))
+			RdiIslandUnloadManager.removeIslandFromQueue(player.getLevel());
         //提示账号是否有密码
 		String pid = player.getStringUUID();
 		ThreadPool.newThread(()-> {
 			ResultData<Boolean> resultData = RdiHttpClient.sendRequest(Boolean.class,"get", "/v37/account/isreg/" + pid);
-            if(resultData.getData()){
+			RdiUser rdiUser = RdiMemoryStorage.pidUserMap.get(pid);
+			if(rdiUser==null){
+				player.connection.disconnect(Component.literal("用户对象不能为空"));
+				return;
+			}
+			if(resultData.getData()){
 				if (Boolean.parseBoolean(String.valueOf(resultData.getData()))){
-					ResultData loginData = RdiHttpClient.sendRequest("get", "/v37/account/login/" + pid, Pair.of("pwd", RdiMemoryStorage.pidUserMap.get(pid).getPwd()));
+					ResultData loginData = RdiHttpClient.sendRequest("get", "/v37/account/login/" + pid, Pair.of("pwd", rdiUser.getPwd()));
 					if (!loginData.isSuccess()) {
 						RdiCoreServer.LOGGER.info("此请求密码错误！");
 						player.connection.disconnect(Component.literal("RDI密码错误，请尝试重启游戏\n或者检查文件"+PlayerUtils.getPasswordStorageFile(player)));
 					}
 				}
 			}else{
-				sendClientPopup(player,"warning","RDI账号安全","建议使用/set-password指令设置密码");
+				//只有盗版才提示
+				if (rdiUser.getType().equals("legacy")) {
+					sendClientPopup(player,"warning","RDI账号安全","建议使用/set-password指令设置密码");
+				}
+
 			}
         });
 		ThreadPool.newThread(()->{
@@ -187,17 +203,17 @@ public class RdiEvents {
 				ResultData<RdiWeather> weatherResultData = RdiHttpClient.sendRequest(RdiWeather.class,"get", "/v37/public/weather", Pair.of("longitude", geoLocation.location.longitude), Pair.of("latitude", geoLocation.location.latitude));
 				if (weatherResultData.isSuccess()) {
 					RdiWeather rdiWeather = weatherResultData.getData();
-					PlayerUtils.sayHello(player);
+
 					PlayerUtils.saveGeoLocation(player,geoLocation);
 					PlayerUtils.saveWeather(player,rdiWeather);
 
 					PlayerUtils.getAllPlayers().forEach(pl->pl.connection.send(new ClientboundPlayerInfoPacket(ClientboundPlayerInfoPacket.Action.UPDATE_DISPLAY_NAME,player)));;
 					PlayerUtils.sendWeatherInfo(player,geoLocation,rdiWeather);;
-					PlayerUtils.sendTomorrowWeatherInfo(player,geoLocation,rdiWeather);
+					PlayerUtils.sayHello(player);
 					RdiHttpClient.sendRequestAsyncResponseless("post","/mcs/record/login",
 							Pair.of("pid", pid),
 							Pair.of("ip", player.getIpAddress()),
-							Pair.of("geo",geoLocation));
+							Pair.of("geo",geoLocation.toString()));
 					RdiHttpClient.sendRequestAsyncResponseless("post","/mcs/record/idname",
 							Pair.of("pid", pid),
 							Pair.of("name" , player.getScoreboardName())
@@ -230,6 +246,7 @@ public class RdiEvents {
 		commandSet.add(new TpsCommand());
 		commandSet.add(new TpyesCommand());
 		commandSet.add(new WeatherCommand());
+		commandSet.add(new RdiNumberCommand());
 		commandSet.forEach(cmd->{
 			if (cmd.getExecution() != null) {
 				dispatcher.register(cmd.getExecution());

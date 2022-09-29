@@ -9,7 +9,7 @@ public class RdiSharedConstants {
 
 	public static final String PROTOCOL_NAME ="RDI Core 3.7";
     //调试模式
-    public static final boolean DEBUG = false;
+    public static final boolean DEBUG = true;
     //modid
     public static final String MOD_ID ="rdict3";
     //空岛存档维度id前缀
@@ -21,7 +21,7 @@ public class RdiSharedConstants {
 	public static final BlockPos SPAWN_LOCATION =new BlockPos(0,138,0);
 	//初始点
 	//public static final BlockPos INIT_LOCATION =new BlockPos(0,-60,0);
-    public static final String[] COLD_STORIES_AUTHOR = new String[]{
+    /*public static final String[] COLD_STORIES_AUTHOR = new String[]{
             "pop75189",
             "ryannZ"
     };
@@ -35,5 +35,5 @@ public class RdiSharedConstants {
             "dav喜欢骑自行车，去见客户三四十公里也会骑他拼夕夕买的山寨捷安特XTC888",
             "dav喜欢小米手机，买过的8台智能机全都是小米",
             "dav在东北读了高中和大学，也许他算半个东北人（？",
-    };
+    };*/
 }

@@ -2,6 +2,7 @@ package calebzhou.rdi.core.server.command.impl;
 
 import calebzhou.rdi.core.server.RdiCommandConfirmer;
 import calebzhou.rdi.core.server.RdiCoreServer;
+import calebzhou.rdi.core.server.RdiIslandUnloadManager;
 import calebzhou.rdi.core.server.command.RdiCommand;
 import calebzhou.rdi.core.server.model.ResultData;
 import calebzhou.rdi.core.server.utils.*;
@@ -17,7 +18,6 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.effect.MobEffects;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.phys.Vec3;
 import xyz.nucleoid.fantasy.Fantasy;
@@ -87,15 +87,14 @@ public class IslandCommand extends RdiCommand {
 
 	private void resetIsland(ServerPlayer player){
 		sendChatMessage(player,RESPONSE_WARNING,"真的，要重置这个岛屿吗？所有的数据将会被删除！");
-		String cmdId = UUID.randomUUID().toString();
-		RdiCommandConfirmer.put(cmdId,this::confirmedResetIsland);
-		sendChatMessage(player,RESPONSE_WARNING,"要确认重置，请输入指令：/rdi-confirm "+cmdId);
+		RdiCommandConfirmer.addConfirm(player,this::confirmedResetIsland);
 	}
 	private void confirmedResetIsland(ServerPlayer player) {
 		ThreadPool.newThread(()->{
 			ResultData<Integer> resultData = RdiHttpClient.sendRequest(Integer.class,"delete", "/v37/island2/" + player.getStringUUID());
 			if(resultData.isSuccess()){
 				ResourceLocation dim = IslandUtils.getIslandDimensionLoca(resultData.getData());
+				RdiIslandUnloadManager.removeIslandFromQueue(dim.toString());
 				ServerUtils.executeOnServerThread(()-> {
 					RuntimeWorldHandle worldHandle = Fantasy.get(RdiCoreServer.getServer()).getOrOpenPersistentWorld(dim, IslandUtils.getIslandWorldConfig());
 					resetProfile(player);
@@ -110,9 +109,7 @@ public class IslandCommand extends RdiCommand {
 
 	private void quitIsland(ServerPlayer player){
 		sendChatMessage(player,RESPONSE_WARNING,"真的，要退出这个岛屿吗？您的个人全部数据，将会被删除！");
-		String cmdId = UUID.randomUUID().toString();
-		RdiCommandConfirmer.put(cmdId,this::confirmedQuitIsland);
-		sendChatMessage(player,RESPONSE_WARNING,"要确认退出，请输入指令：/rdi-confirm "+cmdId);
+		RdiCommandConfirmer.addConfirm(player,this::confirmedQuitIsland);
 	}
     private void confirmedQuitIsland(ServerPlayer player) {
 		ThreadPool.newThread(()->{
@@ -132,11 +129,9 @@ public class IslandCommand extends RdiCommand {
 			return;
 		}
 		sendChatMessage(fromPlayer,RESPONSE_WARNING,"真的，要转让这个岛屿吗？您的个人全部数据，将会被删除！");
-		String cmdId = UUID.randomUUID().toString();
-		RdiCommandConfirmer.put(cmdId,
+		RdiCommandConfirmer.addConfirm(fromPlayer,
 				fromPlayerAfterConfirm ->
 						confirmedTransferToPlayer(fromPlayerAfterConfirm,toPlayer));
-		sendChatMessage(fromPlayer,RESPONSE_WARNING,"要确认转让，请输入指令：/rdi-confirm "+cmdId);
 	}
     private void confirmedTransferToPlayer(ServerPlayer fromPlayer, ServerPlayer toPlayer) {
 		ThreadPool.newThread(()->{
@@ -171,7 +166,7 @@ public class IslandCommand extends RdiCommand {
 				setSpawnPoint(player,level.dimension(),WorldUtils.INIT_POS.above(2));
 				sendChatMessage(player, RESPONSE_INFO,"准备传送。。。");
 				teleport(player,level, Vec3.atCenterOf(WorldUtils.INIT_POS).add(0,7,0));
-				sendChatMessage(player, RESPONSE_SUCCESS,"成功！");
+				sendChatMessage(player, RESPONSE_SUCCESS,"成功！以后用H键就可以回到您的岛屿了！");
 			});
 		});
     }
@@ -186,9 +181,7 @@ public class IslandCommand extends RdiCommand {
 		}
 		sendChatMessage(player,RESPONSE_WARNING,"真的要，将这个岛屿的传送点，更改为您目前所在的位置，（%s）吗？"
 				.formatted(player.getOnPos().toShortString()));
-		String cmdId = UUID.randomUUID().toString();
-		RdiCommandConfirmer.put(cmdId,this::confirmLocateIsland);
-		sendChatMessage(player,RESPONSE_WARNING,"要确认改变传送点，请保持原地不动，输入指令：/rdi-confirm "+cmdId);
+		RdiCommandConfirmer.addConfirm(player,this::confirmLocateIsland);
     }
 	private void confirmLocateIsland(ServerPlayer player){
 		double x = player.getX();
@@ -215,11 +208,9 @@ public class IslandCommand extends RdiCommand {
             return;
         }
 		sendChatMessage(fromPlayer,RESPONSE_WARNING,"真的，要踢出玩家"+kickPlayer.getScoreboardName()+"吗？他的全部数据将会被删除！");
-		String cmdId = UUID.randomUUID().toString();
-		RdiCommandConfirmer.put(cmdId,
+		RdiCommandConfirmer.addConfirm(fromPlayer,
 				fromPlayerAfterConfirm ->
 						confirmKickPlayer(fromPlayerAfterConfirm,kickPlayer));
-		sendChatMessage(fromPlayer,RESPONSE_WARNING,"要确认踢出，请输入指令：/rdi-confirm "+cmdId);
     }
 	private void confirmKickPlayer(ServerPlayer fromPlayer,ServerPlayer kickPlayer){
 		ThreadPool.newThread(()->{

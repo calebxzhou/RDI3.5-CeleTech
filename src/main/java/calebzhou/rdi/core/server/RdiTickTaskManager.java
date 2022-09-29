@@ -11,7 +11,7 @@ import net.minecraft.world.level.Level;
  */
 @SuppressWarnings("ALL")
 public class RdiTickTaskManager {
-	private static final int queueSize = 204800;
+	private static final int queueSize = 1024000;
 	//维度名vsTick队列
 	private static final Object2ObjectOpenHashMap<String, EvictingQueue<Runnable>> dimensionTickQueueMap = new Object2ObjectOpenHashMap<>();
 	public static void addDelayTickTask(Level level, Runnable tickableRunnable){

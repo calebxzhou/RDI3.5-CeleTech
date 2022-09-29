@@ -37,6 +37,9 @@ public class WorldUtils {
 	public static boolean isNoPlayersInLevel(Player playerExitingIsland,ServerLevel level){
 		return level.getPlayers(playersInLevel->!playersInLevel.getStringUUID().equals(playerExitingIsland.getStringUUID())).isEmpty();
 	}
+	public static boolean isNoPlayersInLevel(ServerLevel level){
+		return level.getPlayers(p->true).isEmpty();
+	}
     public static Vec3i getIsland2ToNetherPos(int islandId){
         int netherRatioX=40;
         int netherRatioZ=40;
@@ -113,4 +116,8 @@ public class WorldUtils {
     public static Player getNearestPlayer(LevelAccessor world, BlockPos pos){
         return  world.getNearestPlayer(pos.getX(), pos.getY(), pos.getZ(), 20,false);
     }
+
+	public static boolean isOverworld(ServerLevel toLevel) {
+		return toLevel == RdiCoreServer.getServer().overworld();
+	}
 }

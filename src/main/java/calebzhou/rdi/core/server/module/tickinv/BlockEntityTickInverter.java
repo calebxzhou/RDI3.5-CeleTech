@@ -3,6 +3,7 @@ package calebzhou.rdi.core.server.module.tickinv;
 import calebzhou.rdi.core.server.RdiCoreServer;
 import calebzhou.rdi.core.server.RdiTickTaskManager;
 import calebzhou.rdi.core.server.ServerLaggingStatus;
+import calebzhou.rdi.core.server.command.impl.TpsCommand;
 import calebzhou.rdi.core.server.mixin.AccessBoundTickingBlockEntity;
 import calebzhou.rdi.core.server.mixin.AccessCollectingNeighborUpdater;
 import calebzhou.rdi.core.server.utils.PlayerUtils;
@@ -33,10 +34,10 @@ public class BlockEntityTickInverter  {
 						true);*/
 				RdiTickTaskManager.addDelayTickTask(level,()->{
 					ticker.tick();
-					PlayerUtils.broadcastMessageToLevel(level,
+					TpsCommand.delayTickStatus.put(WorldUtils.getDimensionName(level),
 							Component.literal("延迟tick容器")
 									.append(ticker.getType())
-									.append(Component.literal(ticker.getPos().toShortString())),true);
+									.append(Component.literal(ticker.getPos().toShortString())));
 				});
 			}
 

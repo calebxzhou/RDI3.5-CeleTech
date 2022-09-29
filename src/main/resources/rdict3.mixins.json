@@ -7,8 +7,10 @@
   "mixins": [
     "AccessBoundTickingBlockEntity",
     "AccessCollectingNeighborUpdater",
+    "AccessLegacyRandomSource",
     "AccessMultiNeighborUpdate",
     "AccessServerLoginPacketListenerImpl",
+    "AccessSpawnState",
     "gameplay.mArrowDamangeUp",
     "gameplay.mBlaze",
     "gameplay.mBowAttackGoal",

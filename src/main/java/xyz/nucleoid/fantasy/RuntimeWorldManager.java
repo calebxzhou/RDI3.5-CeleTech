@@ -60,12 +60,13 @@ final class RuntimeWorldManager {
 			ServerWorldLoadEvents.UNLOAD.invoker().unloadWorld(this.server, world);
 			MappedRegistry<LevelStem> dimensionsRegistry = getDimensionsRegistry(this.server);
 			RemoveFromRegistry.remove(dimensionsRegistry, dimensionKey.location());
-			Fantasy.LOGGER.info("成功卸载维度 {} ", dimensionKey.toString());
+
 			try {
 				world.close();
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
+			Fantasy.LOGGER.info("成功卸载维度 {} ", dimensionKey.toString());
 			dimensionKey=null;
 			world=null;
 			return true;

@@ -1,11 +1,13 @@
 package calebzhou.rdi.core.server.model;
 
 
+import calebzhou.rdi.core.server.utils.RdiSerializer;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 
+import java.io.Serializable;
 import java.util.Objects;
 
-public class RdiGeoLocation {
+public class RdiGeoLocation implements Serializable {
     public String nation;
     public String province;
     public String city;
@@ -20,5 +22,9 @@ public class RdiGeoLocation {
 		if (o == null || getClass() != o.getClass()) return false;
 		RdiGeoLocation that = (RdiGeoLocation) o;
 		return new EqualsBuilder().append(location.latitude, that.location.latitude).append(location.longitude, that.location.longitude).isEquals();
+	}
+	@Override
+	public String toString() {
+		return RdiSerializer.GSON.toJson(this);
 	}
 }

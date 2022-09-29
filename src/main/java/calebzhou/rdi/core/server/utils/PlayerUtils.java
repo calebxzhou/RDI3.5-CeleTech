@@ -5,12 +5,10 @@ import calebzhou.rdi.core.server.RdiCoreServer;
 import calebzhou.rdi.core.server.RdiMemoryStorage;
 import calebzhou.rdi.core.server.RdiSharedConstants;
 import calebzhou.rdi.core.server.constant.ColorConst;
-import calebzhou.rdi.core.server.constant.FileConst;
 import calebzhou.rdi.core.server.constant.WeatherConst;
-import calebzhou.rdi.core.server.model.RdiGeoLocation;
-import calebzhou.rdi.core.server.model.RdiPlayerLocation;
-import calebzhou.rdi.core.server.model.RdiWeather;
-import calebzhou.rdi.core.server.model.ResultData;
+import calebzhou.rdi.core.server.model.*;
+import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
+import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
@@ -37,7 +35,6 @@ import net.minecraft.world.phys.Vec3;
 import org.quiltmc.qsl.networking.api.PacketByteBufs;
 import org.quiltmc.qsl.networking.api.ServerPlayNetworking;
 
-import java.io.File;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.UUID;
@@ -258,30 +255,37 @@ public class PlayerUtils {
 
 	public static void sendWeatherInfo(ServerPlayer player, RdiGeoLocation geoLocation, RdiWeather rdiWeather) {
 		String alert = ColorConst.GOLD+rdiWeather.alert+ColorConst.RESET;
-		String loca = geoLocation.city.replace("市","")+"-"+geoLocation.district.replace("区", "").replace("市", "");;
+		String loca;
+		if("中国".equals(geoLocation.nation)){
+			loca = geoLocation.city.replace("市","")
+					.replace("特别行政区","")
+					+"-"+geoLocation.district.replace("区", "")
+					.replace("市", "").replace("县","");
+		}else{
+			loca = geoLocation.city+","+geoLocation.province;
+		}
+
 		String tempNow = Math.floor(rdiWeather.temperature)+"℃";
 		String humidity = "湿度"+Math.floor(rdiWeather.humidity*100)+"%";
 		String skycon = WeatherConst.valueOf(rdiWeather.skycon).getName();
-		String airQuality = "空气"+rdiWeather.aqiChn+"("+rdiWeather.aqi+")";
+		String airQuality = "空气"+rdiWeather.aqiDescription+"("+rdiWeather.aqiValue+")";
 		/*String visibility = "能见度"+rdiWeather.visibility+"km";
 		String windSpeed = "风速"+rdiWeather.windSpeed+"km/h";
 		String pressure = "大气压"+rdiWeather.pressure/1000+"kPa";*/
 		String rain = "降水概率"+Math.floor(rdiWeather.rainProba*100)+"% ";
-		String rainChn = rdiWeather.rainDescr.replace("小彩云","dav").replace("彩云","dav");
+		String rainChn = rdiWeather.minuteRainDescription.replace("小彩云","dav").replace("彩云","dav");
 		String hourlyDescr = rdiWeather.hourlyDescr;
 		String sunRiseTime = "日出"+rdiWeather.sunRiseTime;
 		String sunSetTime = "日落"+rdiWeather.sunSetTime;
+		String wind = "风速%.2fkm/h %.1f°".formatted(rdiWeather.windSpeed,rdiWeather.windDirection);
 		sendChatMessage(player,alert);
-		sendChatMessage(player,"%s %s %s %s %s %s %s %s %s %s".formatted(loca,tempNow,skycon,hourlyDescr,airQuality,humidity,rain,rdiWeather.rainProba>0.001?rainChn:"",sunRiseTime,sunSetTime));
-	}
-	public static void sendTomorrowWeatherInfo(ServerPlayer player, RdiGeoLocation geoLocation, RdiWeather rdiWeather) {
-
+		sendChatMessage(player,"%s %s %s %s %s %s %s %s %s %s %s".formatted(loca,tempNow,skycon,hourlyDescr,airQuality,humidity,rain,rdiWeather.rainProba>0.001?rainChn:"",sunRiseTime,sunSetTime,wind));
 	}
 	public static String getPasswordStorageFile(Player player){
 		return ".minecraft/mods/rdi/users/"+player.getStringUUID()+"_password.txt";
 	}
 	public static void sayHello(ServerPlayer player) {
-		sendChatMessage(player, TimeUtils.getTimeChineseString()+"好,"+player.getDisplayName().getString());
+		sendChatMessage(player, TimeUtils.getTimeChineseString()+"好,"+player.getDisplayName().getString()+"。输入/rdi-help打开帮助菜单");
 	}
 
 
@@ -290,5 +294,103 @@ public class PlayerUtils {
 	}
 	public static List<ServerPlayer> getAllPlayers(){
 		return RdiCoreServer.getServer().getPlayerList().getPlayers();
+	}
+	public static final Object2ObjectOpenHashMap<String,Integer> provinceCodeMap = new Object2ObjectOpenHashMap<>();
+	static {
+		provinceCodeMap.put("北京",11);
+		provinceCodeMap.put("天津",12);
+		provinceCodeMap.put("河北",13);
+		provinceCodeMap.put("山西",14);
+		provinceCodeMap.put("内蒙",15);
+
+		provinceCodeMap.put("辽宁",21);
+		provinceCodeMap.put("吉林",22);
+		provinceCodeMap.put("黑龙",23);
+
+		provinceCodeMap.put("上海",31);
+		provinceCodeMap.put("江苏",32);
+		provinceCodeMap.put("浙江",33);
+		provinceCodeMap.put("安徽",34);
+		provinceCodeMap.put("福建",35);
+		provinceCodeMap.put("江西",36);
+		provinceCodeMap.put("山东",37);
+
+		provinceCodeMap.put("河南",41);
+		provinceCodeMap.put("湖北",42);
+		provinceCodeMap.put("湖南",43);
+		provinceCodeMap.put("广东",44);
+		provinceCodeMap.put("广西",45);
+		provinceCodeMap.put("海南",46);
+
+		provinceCodeMap.put("重庆",50);
+		provinceCodeMap.put("四川",51);
+		provinceCodeMap.put("贵州",52);
+		provinceCodeMap.put("云南",53);
+		provinceCodeMap.put("西藏",54);
+
+		provinceCodeMap.put("陕西",61);
+		provinceCodeMap.put("甘肃",62);
+		provinceCodeMap.put("青海",63);
+		provinceCodeMap.put("宁夏",64);
+		provinceCodeMap.put("新疆",65);
+		provinceCodeMap.put("台湾",71);
+		provinceCodeMap.put("香港",81);
+		provinceCodeMap.put("澳门",82);
+	}
+	public static Component getTabListDisplayName(Player player){
+
+		String pid = player.getStringUUID();
+		RdiWeather rdiWeather = RdiMemoryStorage.pidWeatherMap.get(pid);
+		if(rdiWeather==null)
+			return  null;
+		double temperature = rdiWeather.temperature;
+		ChatFormatting color = ChatFormatting.WHITE;
+		if(temperature>40)
+			color = ChatFormatting.DARK_RED;
+		else if(temperature>30)
+			color = ChatFormatting.RED;
+		else if(temperature>20)
+			color = ChatFormatting.GOLD;
+		else if(temperature>10)
+			color = ChatFormatting.GREEN;
+		else if(temperature>0)
+			color = ChatFormatting.AQUA;
+		else if(temperature>-10)
+			color = ChatFormatting.BLUE;
+		else if(temperature<=-10)
+			color = ChatFormatting.DARK_BLUE;
+
+		RdiGeoLocation geoLocation = RdiMemoryStorage.pidGeoMap.get(pid);
+		String ispDisplay = switch (geoLocation.isp) {
+			case "联通" -> "u";
+			case "电信" -> "t";
+			case "移动","铁通" -> "m";
+			case "鹏博士" -> "p";
+			case "方正宽带" -> "f";
+			case "教育网" -> "e";
+			case "腾讯" -> "te";
+			default -> "*";
+		};
+		Integer provCode = provinceCodeMap.get(geoLocation.province.substring(0, 2));
+		String provinceCodeDisplay ;
+		if(provCode==null){
+			try {
+				provinceCodeDisplay = geoLocation.nation.split("\\|")[1];
+			} catch (ArrayIndexOutOfBoundsException e) {
+				e.printStackTrace();
+				return Component.empty()
+						.append(player.getScoreboardName());
+			}
+		}else{
+			provinceCodeDisplay = provCode+"";
+		}
+
+		return Component.empty()
+				.append(player.getScoreboardName())
+				.append(" ")
+				.append(Component.literal("%s℃".formatted(Math.round(temperature))).withStyle(color))
+				.append(Component.literal(ispDisplay).withStyle(ChatFormatting.ITALIC))
+				.append(Component.literal(provinceCodeDisplay).withStyle(ChatFormatting.GRAY))
+				;
 	}
 }
