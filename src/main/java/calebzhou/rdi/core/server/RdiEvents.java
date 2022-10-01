@@ -1,28 +1,21 @@
 package calebzhou.rdi.core.server;
 
-import calebzhou.rdi.core.server.command.RdiCommand;
 import calebzhou.rdi.core.server.command.impl.*;
 import calebzhou.rdi.core.server.model.*;
 import calebzhou.rdi.core.server.module.DeathRandomDrop;
 import calebzhou.rdi.core.server.utils.*;
 import com.mojang.brigadier.CommandDispatcher;
 import it.unimi.dsi.fastutil.Pair;
-import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 import net.fabricmc.fabric.api.entity.event.v1.ServerEntityWorldChangeEvents;
 import net.fabricmc.fabric.api.entity.event.v1.ServerPlayerEvents;
 import net.fabricmc.fabric.api.event.player.PlayerBlockBreakEvents;
 import net.fabricmc.fabric.api.event.player.UseBlockCallback;
-import net.fabricmc.fabric.api.message.v1.ServerMessageEvents;
-import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandBuildContext;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Registry;
-import net.minecraft.network.chat.ChatType;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.network.chat.PlayerChatMessage;
 import net.minecraft.network.protocol.game.ClientboundPlayerInfoPacket;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
@@ -33,8 +26,6 @@ import net.minecraft.world.InteractionResult;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.SaplingBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
@@ -42,10 +33,6 @@ import org.quiltmc.qsl.command.api.CommandRegistrationCallback;
 import org.quiltmc.qsl.lifecycle.api.event.ServerTickEvents;
 import org.quiltmc.qsl.networking.api.PacketSender;
 import org.quiltmc.qsl.networking.api.ServerPlayConnectionEvents;
-import xyz.nucleoid.fantasy.Fantasy;
-
-import java.io.File;
-import java.util.Set;
 
 import static calebzhou.rdi.core.server.RdiMemoryStorage.commandSet;
 import static calebzhou.rdi.core.server.utils.PlayerUtils.*;
@@ -60,7 +47,7 @@ public class RdiEvents {
         ServerPlayConnectionEvents.JOIN.register(this::onPlayerJoin);
         ServerPlayConnectionEvents.DISCONNECT.register(this::onPlayerDisconnect);
 		PlayerBlockBreakEvents.BEFORE.register(this::beforeBreakBlock);
-        PlayerBlockBreakEvents.AFTER.register(this::onBreakBlock);
+        PlayerBlockBreakEvents.AFTER.register(this::onAfterBreakBlock);
 		UseBlockCallback.EVENT.register(this::onUseBlock);
         ServerPlayerEvents.ALLOW_DEATH.register(this::onPlayerDeath);
 		ServerEntityWorldChangeEvents.AFTER_PLAYER_CHANGE_WORLD.register(this::onPlayerChangeWorld);
@@ -71,8 +58,9 @@ public class RdiEvents {
 	}
 
 	private InteractionResult onUseBlock(Player player, Level level, InteractionHand hand, BlockHitResult result) {
-		if(isFreshPlayer(player)&&isInMainTown(player)&&!player.getScoreboardName().equals("gentlemio")){
-			sendChatMessage(player,RESPONSE_ERROR,"请创建岛屿！/is create");
+		if(isInMainTown(player)
+				&& RdiMemoryStorage.pidUserMap.get(player.getStringUUID()).isGenuine() ){
+			sendChatMessage(player, RESPONSE_ERROR,"请使用微软账号登录服务器以建造主城！");
 			return InteractionResult.FAIL;
 		}
 
@@ -91,14 +79,13 @@ public class RdiEvents {
 		if(WorldUtils.isInIsland2(fromLevel) && WorldUtils.isNoPlayersInLevel(fromLevel)){
 			RdiIslandUnloadManager.addIslandToUnloadQueue(fromLevel);
 		}
-
-		//IslandUtils.unloadIsland(fromLevel,player);
 	}
 
 	//破坏方块之前
 	private boolean beforeBreakBlock(Level level, Player player, BlockPos pos, BlockState blockState, BlockEntity blockEntity) {
-		if(isInMainTown(player)&&player.experienceLevel<100&&!player.getScoreboardName().equals("gentlemio")){
-			sendChatMessage(player, RESPONSE_INFO,"按下T键，输入/is create指令创建一个岛屿吧！或者让您的朋友输入/is invite "+player.getScoreboardName()+"来邀请您加入他的岛屿");
+		if(isInMainTown(player)
+				&& RdiMemoryStorage.pidUserMap.get(player.getStringUUID()).isGenuine() ){
+			sendChatMessage(player, RESPONSE_ERROR,"请使用微软账号登录服务器以建造主城！");
 			return false;
 		}
 		return true;
@@ -122,9 +109,15 @@ public class RdiEvents {
         ServerPlayer player = listener.getPlayer();
 		//移除挂机信息和传送信息
         RdiMemoryStorage.afkMap.removeInt(player.getScoreboardName());
-        RdiMemoryStorage.tpaMap.remove(player.getStringUUID());
+		String pid = player.getStringUUID();
+		RdiMemoryStorage.tpaMap.remove(pid);
+        RdiMemoryStorage.pidGeoMap.remove(pid);
+        RdiMemoryStorage.pidWeatherMap.remove(pid);
+        RdiMemoryStorage.pidUserMap.remove(pid);
+        RdiMemoryStorage.pidBeingGoSpawn.remove(pid);
+		RdiMemoryStorage.pidToSpeakPlayersMap.remove(pid);
         //记录登出信息
-        RdiHttpClient.sendRequestAsyncResponseless("post","/mcs/record/logout", Pair.of("pid",player.getStringUUID()));
+        RdiHttpClient.sendRequestAsyncResponseless("post","/mcs/record/logout", Pair.of("pid", pid));
 		RdiIslandUnloadManager.addIslandToUnloadQueue(player.getLevel());
     }
     //act 0放置1破坏
@@ -146,7 +139,7 @@ public class RdiEvents {
 		}
     }
     //成功破坏方块
-    private void onBreakBlock(Level level, Player player, BlockPos blockPos, BlockState state, BlockEntity block) {
+    private void onAfterBreakBlock(Level level, Player player, BlockPos blockPos, BlockState state, BlockEntity block) {
         //发送破坏数据
         recordBlock(player.getStringUUID(), Registry.BLOCK.getKey(state.getBlock()).toString(),1, level, blockPos.getX(), blockPos.getY(), blockPos.getZ());
     }
@@ -193,7 +186,6 @@ public class RdiEvents {
 				if (rdiUser.getType().equals("legacy")) {
 					sendClientPopup(player,"warning","RDI账号安全","建议使用/set-password指令设置密码");
 				}
-
 			}
         });
 		ThreadPool.newThread(()->{
@@ -206,7 +198,8 @@ public class RdiEvents {
 
 					PlayerUtils.saveGeoLocation(player,geoLocation);
 					PlayerUtils.saveWeather(player,rdiWeather);
-
+					NetworkUtils.sendPacketToClient(player,NetworkPackets.GEO_LOCATION, RdiSerializer.GSON.toJson(geoLocation));
+					NetworkUtils.sendPacketToClient(player,NetworkPackets.WEATHER, RdiSerializer.GSON.toJson(rdiWeather));
 					PlayerUtils.getAllPlayers().forEach(pl->pl.connection.send(new ClientboundPlayerInfoPacket(ClientboundPlayerInfoPacket.Action.UPDATE_DISPLAY_NAME,player)));;
 					PlayerUtils.sendWeatherInfo(player,geoLocation,rdiWeather);;
 					PlayerUtils.sayHello(player);
@@ -247,6 +240,7 @@ public class RdiEvents {
 		commandSet.add(new TpyesCommand());
 		commandSet.add(new WeatherCommand());
 		commandSet.add(new RdiNumberCommand());
+		commandSet.add(new SpeakScopeCommand());
 		commandSet.forEach(cmd->{
 			if (cmd.getExecution() != null) {
 				dispatcher.register(cmd.getExecution());

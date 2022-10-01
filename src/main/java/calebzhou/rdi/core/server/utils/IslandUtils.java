@@ -45,17 +45,12 @@ public class IslandUtils {
 		ServerLevel islandLevel = player.getLevel();
 		unloadIsland(islandLevel,player);
 	}*/
-    public static RuntimeWorldConfig getIslandWorldConfig(){
+    public static RuntimeWorldConfig getIslandWorldConfig(long gameTime){
         return new RuntimeWorldConfig()
                 .setDimensionType(BuiltinDimensionTypes.OVERWORLD)
                 .setDifficulty(Difficulty.HARD)
 				.setShouldTickTime(true)
-				/*.setRaining(true)
-				.setThundering(true)*/
-				//.setTimeOfDay(0L)
-				/*.setThundering(30)
-				.setRaining(30)*/
-				//.setSunny(6000)
+				.setTimeOfDay(gameTime)
                 .setGameRule(GameRules.RULE_KEEPINVENTORY,true)
                 .setGameRule(GameRules.RULE_DAYLIGHT,true)
                 .setGameRule(GameRules.RULE_DOFIRETICK,true)

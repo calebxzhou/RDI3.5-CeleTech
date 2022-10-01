@@ -1,6 +1,8 @@
 package calebzhou.rdi.core.server.model;
 
 
+import calebzhou.rdi.core.server.utils.RdiSerializer;
+
 public class RdiWeather {
 	public String alert;
 	public double temperature;
@@ -16,4 +18,11 @@ public class RdiWeather {
 	public String hourlyDescr;
 	public String sunRiseTime;
 	public String sunSetTime;
+	public double lowTemp;
+	public double highTemp;
+
+	@Override
+	public String toString() {
+		return RdiSerializer.GSON.toJson(this);
+	}
 }

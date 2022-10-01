@@ -35,7 +35,8 @@ public class HomeCommand extends RdiCommand {
 				Island2 island2 = resultData.getData();
 				ResourceLocation dim = IslandUtils.getIslandDimensionLoca(island2.iid);
 				ServerUtils.executeOnServerThread(()->{
-					RuntimeWorldHandle worldHandle = Fantasy.get(RdiCoreServer.getServer()).getOrOpenPersistentWorld(dim, IslandUtils.getIslandWorldConfig());
+					long gameTime = System.currentTimeMillis()-island2.ts.getTime();
+					RuntimeWorldHandle worldHandle = Fantasy.get(RdiCoreServer.getServer()).getOrOpenPersistentWorld(dim, IslandUtils.getIslandWorldConfig(gameTime));
 					ServerLevel world = worldHandle.asWorld();
 					PlayerUtils.teleport(
 							player,

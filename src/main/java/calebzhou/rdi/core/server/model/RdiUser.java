@@ -32,4 +32,7 @@ public class RdiUser {
 		this.pwd = pwd;
 		this.type = type;
 	}
+	public boolean isGenuine(){
+		return "mojang".equals(type);
+	}
 }

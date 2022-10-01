@@ -96,7 +96,7 @@ public class IslandCommand extends RdiCommand {
 				ResourceLocation dim = IslandUtils.getIslandDimensionLoca(resultData.getData());
 				RdiIslandUnloadManager.removeIslandFromQueue(dim.toString());
 				ServerUtils.executeOnServerThread(()-> {
-					RuntimeWorldHandle worldHandle = Fantasy.get(RdiCoreServer.getServer()).getOrOpenPersistentWorld(dim, IslandUtils.getIslandWorldConfig());
+					RuntimeWorldHandle worldHandle = Fantasy.get(RdiCoreServer.getServer()).getOrOpenPersistentWorld(dim, IslandUtils.getIslandWorldConfig(0));
 					resetProfile(player);
 					worldHandle.delete();
 					sendChatMessage(player, RESPONSE_SUCCESS);
@@ -159,7 +159,7 @@ public class IslandCommand extends RdiCommand {
 				Fantasy fantasy = Fantasy.get(server);
 				sendChatMessage(player, RESPONSE_INFO,"正在创建存档。。不要触碰鼠标或者键盘！");
 				ResourceLocation islandDimension = getIslandDimensionLoca(iid);
-				RuntimeWorldHandle worldHandle = fantasy.getOrOpenPersistentWorld(islandDimension, IslandUtils.getIslandWorldConfig());
+				RuntimeWorldHandle worldHandle = fantasy.getOrOpenPersistentWorld(islandDimension, IslandUtils.getIslandWorldConfig(0));
 				ServerLevel level = worldHandle.asWorld();
 				IslandUtils.placeInitialBlocks(level);
 				addEffect(player, MobEffects.SLOW_FALLING,10,2);

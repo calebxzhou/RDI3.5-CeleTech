@@ -14,6 +14,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.protocol.game.ClientboundBossEventPacket;
 import net.minecraft.network.protocol.game.ClientboundPlayerPositionPacket;
 import net.minecraft.resources.ResourceKey;
@@ -70,6 +71,9 @@ public class PlayerUtils {
 	}
 
 
+	public static List<ServerPlayer> getPlayersInLevel(Player player){
+		return getPlayersInLevel(player.level);
+	}
 	public static List<ServerPlayer> getPlayersInLevel(Level level){
 		return getPlayersInLevel(level,p->true);
 	}
@@ -265,7 +269,9 @@ public class PlayerUtils {
 			loca = geoLocation.city+","+geoLocation.province;
 		}
 
-		String tempNow = Math.floor(rdiWeather.temperature)+"℃";
+		String tempNow = Math.floor(rdiWeather.lowTemp)+" ~ "
+				+ColorConst.GOLD+Math.floor(rdiWeather.temperature)+"℃"+ColorConst.RESET+" ~ "+
+				Math.floor(rdiWeather.highTemp);
 		String humidity = "湿度"+Math.floor(rdiWeather.humidity*100)+"%";
 		String skycon = WeatherConst.valueOf(rdiWeather.skycon).getName();
 		String airQuality = "空气"+rdiWeather.aqiDescription+"("+rdiWeather.aqiValue+")";
@@ -285,7 +291,7 @@ public class PlayerUtils {
 		return ".minecraft/mods/rdi/users/"+player.getStringUUID()+"_password.txt";
 	}
 	public static void sayHello(ServerPlayer player) {
-		sendChatMessage(player, TimeUtils.getTimeChineseString()+"好,"+player.getDisplayName().getString()+"。输入/rdi-help打开帮助菜单");
+		sendChatMessage(player, TimeUtils.getTimeChineseString()+"好,"+player.getDisplayName().getString()+ColorConst.AQUA+"。输入/rdi-help打开帮助菜单");
 	}
 
 
@@ -337,9 +343,15 @@ public class PlayerUtils {
 		provinceCodeMap.put("香港",81);
 		provinceCodeMap.put("澳门",82);
 	}
+	//TAB列表显示名称
 	public static Component getTabListDisplayName(Player player){
 
 		String pid = player.getStringUUID();
+		RdiUser rdiUser = RdiMemoryStorage.pidUserMap.get(pid);
+		MutableComponent nameComponent = Component.literal(player.getScoreboardName());
+		if (rdiUser.isGenuine()) {
+			nameComponent.withStyle(ChatFormatting.GOLD);
+		}
 		RdiWeather rdiWeather = RdiMemoryStorage.pidWeatherMap.get(pid);
 		if(rdiWeather==null)
 			return  null;
@@ -386,7 +398,7 @@ public class PlayerUtils {
 		}
 
 		return Component.empty()
-				.append(player.getScoreboardName())
+				.append(nameComponent)
 				.append(" ")
 				.append(Component.literal("%s℃".formatted(Math.round(temperature))).withStyle(color))
 				.append(Component.literal(ispDisplay).withStyle(ChatFormatting.ITALIC))

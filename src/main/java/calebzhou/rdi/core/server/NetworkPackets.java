@@ -23,8 +23,10 @@ public class NetworkPackets {
     public static final ResourceLocation ANIMAL_SEX=new ResourceLocation(RdiSharedConstants.MOD_ID,"animal_sex");
 
 	//S2C 服务端->客户端
-	//玩家所在地温度、距离
-	public static final ResourceLocation PLAYER_WEATHER_GEO = new ResourceLocation(RdiSharedConstants.MOD_ID,"player_weather_geo");
+	//玩家天气信息
+	public static final ResourceLocation WEATHER = new ResourceLocation(RdiSharedConstants.MOD_ID,"weather");
+	//玩家地理定位
+	public static final ResourceLocation GEO_LOCATION = new ResourceLocation(RdiSharedConstants.MOD_ID,"geo_location");
 
     //岛屿信息
     public static final ResourceLocation ISLAND_INFO =new ResourceLocation(RdiSharedConstants.MOD_ID,"island_info");

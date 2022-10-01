@@ -16,7 +16,8 @@ public abstract class RdiCommand {
 
     protected LiteralArgumentBuilder<CommandSourceStack> baseArgBuilder;
 
-    protected RdiCommand(String commandName){
+
+	protected RdiCommand(String commandName){
         this.commandName=commandName;
 		this.description="";
         this.baseArgBuilder= Commands.literal(commandName);
