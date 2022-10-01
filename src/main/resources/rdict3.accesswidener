@@ -14,3 +14,4 @@ accessible class net/minecraft/world/level/redstone/CollectingNeighborUpdater$Mu
 accessible class net/minecraft/world/level/redstone/CollectingNeighborUpdater$FullNeighborUpdate
 accessible class net/minecraft/world/level/redstone/CollectingNeighborUpdater$ShapeUpdate
 accessible class net/minecraft/world/level/redstone/CollectingNeighborUpdater$SimpleNeighborUpdate
+accessible class net/minecraft/server/level/ServerChunkCache$MainThreadExecutor

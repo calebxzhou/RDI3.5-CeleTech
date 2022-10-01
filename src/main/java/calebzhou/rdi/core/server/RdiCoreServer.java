@@ -11,8 +11,6 @@ import org.quiltmc.qsl.lifecycle.api.event.ServerLifecycleEvents;
 
 import java.io.IOException;
 import java.util.SplittableRandom;
-import java.util.Timer;
-import java.util.TimerTask;
 
 public class RdiCoreServer implements ModInitializer {
 

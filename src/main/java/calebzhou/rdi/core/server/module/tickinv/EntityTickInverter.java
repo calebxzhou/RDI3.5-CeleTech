@@ -68,7 +68,8 @@ public class EntityTickInverter{
 	private static final int tickVillageRequired=20/5;
 	private static void handleVillagerTick(Consumer tickConsumer, AbstractVillager villager) {
 		if(ticksVillageNow>=tickVillageRequired){
-			if(!ServerLaggingStatus.isServerLagging()) tickConsumer.accept(villager);
+			if(!ServerLaggingStatus.isServerLagging())
+				tickConsumer.accept(villager);
 			ticksVillageNow=0;
 		}else{
 			++ticksVillageNow;

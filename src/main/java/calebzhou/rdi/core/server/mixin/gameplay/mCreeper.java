@@ -1,9 +1,13 @@
 package calebzhou.rdi.core.server.mixin.gameplay;
 
 
+import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
+import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.monster.Creeper;
+import net.minecraft.world.entity.monster.Monster;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Mutable;
+import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.Constant;
 import org.spongepowered.asm.mixin.injection.ModifyConstant;
@@ -13,17 +17,13 @@ import org.spongepowered.asm.mixin.injection.ModifyConstant;
 public abstract class mCreeper {
 
     @Shadow @Mutable
-    private int maxSwell = 20;
+    private int maxSwell = 50;
     @Shadow @Mutable
-    private int explosionRadius = 8;
+    private int explosionRadius = 5;
 
-//加速
-    @ModifyConstant(
-            method = "Lnet/minecraft/world/entity/monster/Creeper;createAttributes()Lnet/minecraft/world/entity/ai/attributes/AttributeSupplier$Builder;"
-            ,constant = @Constant(doubleValue = 0.25D)
-    )
-    private static double changeSpeed(double spd){
-        return 0.4D;
-    }
+	@Overwrite
+	public static AttributeSupplier.Builder createAttributes() {
+		return Monster.createMonsterAttributes().add(Attributes.MOVEMENT_SPEED, 0.4).add(Attributes.MAX_HEALTH,30);
+	}
 
 }

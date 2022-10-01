@@ -48,25 +48,29 @@ public class RdiEvents {
         ServerPlayConnectionEvents.DISCONNECT.register(this::onPlayerDisconnect);
 		PlayerBlockBreakEvents.BEFORE.register(this::beforeBreakBlock);
         PlayerBlockBreakEvents.AFTER.register(this::onAfterBreakBlock);
-		UseBlockCallback.EVENT.register(this::onUseBlock);
+		//UseBlockCallback.EVENT.register(this::onUseBlock);
         ServerPlayerEvents.ALLOW_DEATH.register(this::onPlayerDeath);
 		ServerEntityWorldChangeEvents.AFTER_PLAYER_CHANGE_WORLD.register(this::onPlayerChangeWorld);
     }
 
 	private void onServerEndTick(MinecraftServer server) {
-		RdiTickTaskManager.onServerTick();
+		for (int i=0;i<1000;++i){
+			if(!ServerLaggingStatus.isServerLagging())
+				RdiTickTaskManager.onServerTick();
+			else
+				break;
+		}
 	}
 
-	private InteractionResult onUseBlock(Player player, Level level, InteractionHand hand, BlockHitResult result) {
-		if(isInMainTown(player)
-				&& RdiMemoryStorage.pidUserMap.get(player.getStringUUID()).isGenuine() ){
-			sendChatMessage(player, RESPONSE_ERROR,"请使用微软账号登录服务器以建造主城！");
+	/*private InteractionResult onUseBlock(Player player, Level level, InteractionHand hand, BlockHitResult result) {
+		if(isInMainTown(player)  && satisfyMainTownBuildCondition(player) ){
+			sendChatMessage(player, RESPONSE_ERROR,"要建造主城，您需要有50级经验或者使用微软账号登录。");
 			return InteractionResult.FAIL;
 		}
 
 		return InteractionResult.PASS;
 
-	}
+	}*/
 
 	//改变世界之后
 	private void onPlayerChangeWorld(ServerPlayer player, ServerLevel fromLevel, ServerLevel toLevel) {
@@ -83,9 +87,8 @@ public class RdiEvents {
 
 	//破坏方块之前
 	private boolean beforeBreakBlock(Level level, Player player, BlockPos pos, BlockState blockState, BlockEntity blockEntity) {
-		if(isInMainTown(player)
-				&& RdiMemoryStorage.pidUserMap.get(player.getStringUUID()).isGenuine() ){
-			sendChatMessage(player, RESPONSE_ERROR,"请使用微软账号登录服务器以建造主城！");
+		if( isInMainTown(player) && !satisfyMainTownBuildCondition(player) ){
+			sendChatMessage(player, RESPONSE_ERROR,"要破坏主城方块，您需要有50级经验或者使用微软账号登录。");
 			return false;
 		}
 		return true;

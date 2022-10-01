@@ -9,6 +9,7 @@ import calebzhou.rdi.core.server.utils.RdiHttpClient;
 import calebzhou.rdi.core.server.utils.ServerUtils;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import it.unimi.dsi.fastutil.Pair;
+import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.MessageArgument;
@@ -42,7 +43,7 @@ public class SpeakCommand extends RdiCommand {
 						ServerPlayer receiver = PlayerUtils.getPlayerByUuid(pidToReceiveMsg);
 						if(receiver!=null){
 							PlayerUtils.sendChatMessage(receiver,Component.literal(player.getScoreboardName()+"(岛内)：")
-									.append(txt));
+									.append(txt).withStyle(ChatFormatting.GOLD));
 							RdiCoreServer.LOGGER.info("{}岛内说：{}",player.getScoreboardName(),txt);;
 						}
 					});

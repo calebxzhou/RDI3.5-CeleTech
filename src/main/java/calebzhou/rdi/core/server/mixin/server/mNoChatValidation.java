@@ -1,5 +1,7 @@
 package calebzhou.rdi.core.server.mixin.server;
 
+import net.minecraft.client.multiplayer.ClientPacketListener;
+import net.minecraft.client.multiplayer.chat.ChatListener;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.LastSeenMessagesValidator;
 import net.minecraft.network.protocol.game.ServerGamePacketListener;

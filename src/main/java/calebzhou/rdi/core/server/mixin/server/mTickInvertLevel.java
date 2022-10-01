@@ -5,9 +5,7 @@ import calebzhou.rdi.core.server.RdiTickTaskManager;
 import calebzhou.rdi.core.server.ServerLaggingStatus;
 import calebzhou.rdi.core.server.command.impl.TpsCommand;
 import calebzhou.rdi.core.server.mixin.AccessCollectingNeighborUpdater;
-import calebzhou.rdi.core.server.mixin.AccessLegacyRandomSource;
 import calebzhou.rdi.core.server.mixin.AccessMultiNeighborUpdate;
-import calebzhou.rdi.core.server.mixin.AccessSpawnState;
 import calebzhou.rdi.core.server.module.tickinv.BlockEntityTickInverter;
 import calebzhou.rdi.core.server.module.tickinv.EntityTickInverter;
 import calebzhou.rdi.core.server.module.tickinv.WorldTickThreadManager;
@@ -16,13 +14,13 @@ import calebzhou.rdi.core.server.utils.WorldUtils;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.ServerFunctionManager;
 import net.minecraft.server.level.*;
 import net.minecraft.util.RandomSource;
 import net.minecraft.util.profiling.ProfilerFiller;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.NaturalSpawner;
 import net.minecraft.world.level.block.Block;
@@ -30,12 +28,10 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.TickingBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.chunk.LevelChunk;
-import net.minecraft.world.level.levelgen.LegacyRandomSource;
 import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.level.redstone.CollectingNeighborUpdater;
 import net.minecraft.world.ticks.LevelChunkTicks;
 import net.minecraft.world.ticks.LevelTicks;
-import org.apache.commons.lang3.RandomUtils;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
@@ -45,9 +41,8 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-import java.util.Arrays;
+import java.util.Map;
 import java.util.Queue;
-import java.util.Random;
 import java.util.function.BiConsumer;
 import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
@@ -74,7 +69,14 @@ class mTickInvertServer {
 
     @Shadow public abstract ServerFunctionManager getFunctions();
 
-    //用try-catch包起来服务器运行主体，防止崩溃
+	@Shadow
+	@Final
+	private Map<ResourceKey<Level>, ServerLevel> levels;
+
+	@Shadow
+	public abstract ServerLevel overworld();
+
+	//用try-catch包起来服务器运行主体，防止崩溃
     @Redirect(method = "runServer",
             at = @At(value = "INVOKE", target = "Lnet/minecraft/server/MinecraftServer;tickServer(Ljava/util/function/BooleanSupplier;)V"))
     private void tickServerNoCrash(MinecraftServer instance, BooleanSupplier shouldKeepTicking){
@@ -113,18 +115,31 @@ class mTickInvertServer {
 	}*/
     //tick之前
    /* @Inject(method = "tickChildren",
-    at=@At(value = "INVOKE",target = "Lnet/minecraft/server/MinecraftServer;getAllLevels()Ljava/lang/Iterable;"))
+    at=@At(value = "INVOKE",target = "Ljava/lang/Iterable;iterator()Ljava/util/Iterator;"))
     private void beforeTick(BooleanSupplier booleanSupplier, CallbackInfo ci){
-        WorldTickThreadManager.INSTANCE.onServerTickingChildrenWorlds(levels);
-    }*/
+		ParallelProcessor.preTick(levels.size(), (MinecraftServer) (Object) this);
+    }
+	@Inject(method = "tickChildren", at = @At(value = "INVOKE", target = "Lnet/minecraft/util/profiling/ProfilerFiller;popPush(Ljava/lang/String;)V", ordinal = 1))
+	private void postTick(BooleanSupplier shouldKeepTicking, CallbackInfo ci) {
+		ParallelProcessor.postTick((MinecraftServer) (Object) this);
+	}*/
     @Redirect(
             method = "tickChildren",
             at = @At(value = "INVOKE", target = "Lnet/minecraft/server/level/ServerLevel;tick(Ljava/util/function/BooleanSupplier;)V"))
     private void tickWorldNoCrash(ServerLevel world, BooleanSupplier shouldKeepTicking){
         WorldTickThreadManager.onServerCallWorldTick(world,shouldKeepTicking);
     }
-
-
+	/*@Redirect(method = "reloadResources", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/MinecraftServer;isSameThread()Z"))
+	private boolean onServerExecutionThreadPatch(MinecraftServer minecraftServer) {
+		return ParallelProcessor.serverExecutionThreadPatch(minecraftServer);
+	}
+	@Redirect(method = "prepareLevels", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/level/ServerChunkCache;getTickingGenerated()I"))
+	private int initialChunkCountBypass(ServerChunkCache instance) {
+		if (DebugHookTerminator.isBypassLoadTarget())
+			return 441;
+		int loaded = overworld().getChunkSource().getLoadedChunksCount();
+		return Math.min(loaded, 441); // Maybe because multi loading caused overflow
+	}*/
 }
 @Mixin(LevelTicks.class)
 abstract
@@ -339,14 +354,7 @@ class mTickInvertNeighborUpdater{
 @Mixin(NaturalSpawner.class)
 abstract
 class mTickInvertSpawner {
-	@Shadow
-	@Final
-	private static MobCategory[] SPAWNING_CATEGORIES;
-	private static RandomSource instance;
 
-	@Shadow
-	public static void spawnCategoryForChunk(MobCategory category, ServerLevel level, LevelChunk chunk, NaturalSpawner.SpawnPredicate filter, NaturalSpawner.AfterSpawnCallback callback) {
-	}
 
 	//卡顿时取消刷怪
 	@Inject(method = "spawnForChunk",at=@At("HEAD"),cancellable = true)

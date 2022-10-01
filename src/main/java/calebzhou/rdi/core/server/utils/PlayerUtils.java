@@ -240,6 +240,10 @@ public class PlayerUtils {
     public static void setSpawnPoint(ServerPlayer player, ResourceKey<Level> levelResourceKey,BlockPos blockPos){
         player.setRespawnPosition(levelResourceKey,blockPos,0,true,true);
     }
+	public static boolean satisfyMainTownBuildCondition(Player player){
+		RdiUser rdiUser = RdiMemoryStorage.pidUserMap.get(player.getStringUUID());
+		return rdiUser!=null && (  rdiUser.isGenuine() || player.experienceLevel>=50 );
+	}
     public static void resetProfile(ServerPlayer player){
         player.experienceLevel=0;
         player.getInventory().clearContent();
@@ -269,7 +273,7 @@ public class PlayerUtils {
 			loca = geoLocation.city+","+geoLocation.province;
 		}
 
-		String tempNow = Math.floor(rdiWeather.lowTemp)+" ~ "
+		String tempNow = "\uD83C\uDF21️"+Math.floor(rdiWeather.lowTemp)+" ~ "
 				+ColorConst.GOLD+Math.floor(rdiWeather.temperature)+"℃"+ColorConst.RESET+" ~ "+
 				Math.floor(rdiWeather.highTemp);
 		String humidity = "湿度"+Math.floor(rdiWeather.humidity*100)+"%";
@@ -349,7 +353,7 @@ public class PlayerUtils {
 		String pid = player.getStringUUID();
 		RdiUser rdiUser = RdiMemoryStorage.pidUserMap.get(pid);
 		MutableComponent nameComponent = Component.literal(player.getScoreboardName());
-		if (rdiUser.isGenuine()) {
+		if (rdiUser!=null && rdiUser.isGenuine()) {
 			nameComponent.withStyle(ChatFormatting.GOLD);
 		}
 		RdiWeather rdiWeather = RdiMemoryStorage.pidWeatherMap.get(pid);

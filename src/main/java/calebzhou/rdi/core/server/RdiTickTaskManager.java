@@ -1,17 +1,21 @@
 package calebzhou.rdi.core.server;
 
 import calebzhou.rdi.core.server.utils.ServerUtils;
+import calebzhou.rdi.core.server.utils.ThreadPool;
 import calebzhou.rdi.core.server.utils.WorldUtils;
 import com.google.common.collect.EvictingQueue;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import net.minecraft.world.level.Level;
+
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
  * Created by calebzhou on 2022-09-26,8:21.
  */
 @SuppressWarnings("ALL")
 public class RdiTickTaskManager {
-	private static final int queueSize = 1024000;
+	private static final int queueSize = 3*1024*1024;
 	//维度名vsTick队列
 	private static final Object2ObjectOpenHashMap<String, EvictingQueue<Runnable>> dimensionTickQueueMap = new Object2ObjectOpenHashMap<>();
 	public static void addDelayTickTask(Level level, Runnable tickableRunnable){
@@ -34,16 +38,18 @@ public class RdiTickTaskManager {
 		else
 			return queue.size();
 	}
+
+	private static final ExecutorService tickPool = Executors.newCachedThreadPool();
 	public static void onServerTick(){
 		if(ServerLaggingStatus.isServerLagging())
 			return;
 		dimensionTickQueueMap.forEach((dimensionName,queue)->{
-			if(queue.peek() != null){
-				ServerUtils.executeOnServerThread(()->{
+				if(queue.peek() != null){
+					//ServerUtils.executeOnServerThread(()->{
 					queue.poll().run();
-				});
-			}
-		});
+					//});
+				}
 
+		});
 	}
 }

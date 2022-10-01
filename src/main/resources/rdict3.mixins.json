@@ -9,6 +9,7 @@
     "AccessCollectingNeighborUpdater",
     "AccessLegacyRandomSource",
     "AccessMultiNeighborUpdate",
+    "AccessServerChunkCache",
     "AccessServerLoginPacketListenerImpl",
     "AccessSpawnState",
     "gameplay.mArrowDamangeUp",
@@ -71,8 +72,6 @@
     "server.mTickInvertServerLevel",
     "server.mTickInvertSpawner",
     "server.NoJoin"
-  ],
-  "client": [
   ],
   "injectors": {
     "defaultRequire": 1

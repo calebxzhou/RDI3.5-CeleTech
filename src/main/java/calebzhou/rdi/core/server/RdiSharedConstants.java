@@ -9,7 +9,7 @@ public class RdiSharedConstants {
 
 	public static final String PROTOCOL_NAME ="RDI Core 3.7";
     //调试模式
-    public static final boolean DEBUG = true;
+    public static final boolean DEBUG = false;
     //modid
     public static final String MOD_ID ="rdict3";
     //空岛存档维度id前缀

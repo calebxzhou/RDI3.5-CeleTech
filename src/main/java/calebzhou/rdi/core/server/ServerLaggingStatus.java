@@ -11,16 +11,16 @@ public class ServerLaggingStatus {
 	private static long msBehind;
 
 	//落后这些ms代表卡顿
-	private static final long behindThreshold = 10;
+	private static final long behindThreshold = 1;
 
 	//更新落后的tick时间
 	public static void updateMilliSecondsBehind(long msBehind){
 		ServerLaggingStatus.msBehind=msBehind;
 		if(msBehind>0)
 			RdiCoreServer.LOGGER.info("服务器tick时间 落后{}ms",msBehind);
-		if(isServerVeryLagging()){
+		/*if(isServerVeryLagging()){
 			ServerUtils.broadcastActionBarMessage(Component.literal("正在存档与清理内存"));
-		}
+		}*/
 
 	}
 
