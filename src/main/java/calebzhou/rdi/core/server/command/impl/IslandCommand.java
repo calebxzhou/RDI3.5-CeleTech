@@ -8,6 +8,9 @@ import calebzhou.rdi.core.server.model.ResultData;
 import calebzhou.rdi.core.server.utils.*;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
+import com.mojang.brigadier.context.CommandContext;
+import com.mojang.brigadier.suggestion.Suggestions;
+import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import it.unimi.dsi.fastutil.Pair;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
@@ -24,6 +27,7 @@ import xyz.nucleoid.fantasy.Fantasy;
 import xyz.nucleoid.fantasy.RuntimeWorldHandle;
 
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 
 import static calebzhou.rdi.core.server.utils.IslandUtils.getIslandDimensionLoca;
 import static calebzhou.rdi.core.server.utils.PlayerUtils.*;
@@ -40,17 +44,12 @@ public class IslandCommand extends RdiCommand {
             ====================
             """;
 
-
     @Override
     public LiteralArgumentBuilder<CommandSourceStack> getExecution() {
         return baseArgBuilder.executes(context -> sendIslandHelp(context.getSource().getPlayer()))
                 .then(
                         Commands.argument("指令参数", StringArgumentType.string())
-                                .suggests(
-                                        (context, builder) ->
-                                                SharedSuggestionProvider.suggest(new String[]{
-                                                        "create","reset","kick","invite","loca","transfer","quit"},builder)
-                                )
+                                .suggests(this::getSuggestion)
                                 .executes(
                                         context -> handleSubCommand(context.getSource().getPlayer(),StringArgumentType.getString(context,"指令参数"))
                                 )
@@ -61,7 +60,14 @@ public class IslandCommand extends RdiCommand {
                 )
                 ;
     }
-    private int handleSubCommandWithPlayerNameParam(String param, ServerPlayer fromPlayer, ServerPlayer toPlayer) {
+
+	@Override
+	protected CompletableFuture<Suggestions> getSuggestion(CommandContext<CommandSourceStack> context, SuggestionsBuilder builder) {
+		return  SharedSuggestionProvider.suggest(new String[]{
+						"create","reset","kick","invite","loca","transfer","quit"},builder);
+	}
+
+	private int handleSubCommandWithPlayerNameParam(String param, ServerPlayer fromPlayer, ServerPlayer toPlayer) {
         switch (param){
             case "invite" -> invitePlayer(fromPlayer,toPlayer);
             case "kick" -> kickPlayer(fromPlayer,toPlayer);

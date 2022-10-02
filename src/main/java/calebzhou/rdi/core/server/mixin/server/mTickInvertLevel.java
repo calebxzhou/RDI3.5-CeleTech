@@ -41,6 +41,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
+import java.util.ArrayList;
 import java.util.Map;
 import java.util.Queue;
 import java.util.function.BiConsumer;
@@ -75,6 +76,12 @@ class mTickInvertServer {
 
 	@Shadow
 	public abstract ServerLevel overworld();
+
+	@Shadow
+	public abstract Iterable<ServerLevel> getAllLevels();
+
+	@Shadow
+	private int tickCount;
 
 	//用try-catch包起来服务器运行主体，防止崩溃
     @Redirect(method = "runServer",
@@ -113,16 +120,19 @@ class mTickInvertServer {
 	private void asyncTick(BooleanSupplier hasTimeLeft, CallbackInfo ci){
 
 	}*/
+	//private final Iterable<ServerLevel> emptyVanillaTickWorlds = new ArrayList<>();
     //tick之前
    /* @Inject(method = "tickChildren",
-    at=@At(value = "INVOKE",target = "Ljava/lang/Iterable;iterator()Ljava/util/Iterator;"))
-    private void beforeTick(BooleanSupplier booleanSupplier, CallbackInfo ci){
-		ParallelProcessor.preTick(levels.size(), (MinecraftServer) (Object) this);
-    }
-	@Inject(method = "tickChildren", at = @At(value = "INVOKE", target = "Lnet/minecraft/util/profiling/ProfilerFiller;popPush(Ljava/lang/String;)V", ordinal = 1))
-	private void postTick(BooleanSupplier shouldKeepTicking, CallbackInfo ci) {
-		ParallelProcessor.postTick((MinecraftServer) (Object) this);
+    at=@At(value = "INVOKE",target = "Lnet/minecraft/server/MinecraftServer;getAllLevels()Ljava/lang/Iterable;"))
+    private void RDIbeforeTick2(BooleanSupplier hasTimeLeft, CallbackInfo ci){
+		WorldTickThreadManager.onServerCallWorldTick2(hasTimeLeft);
+	}
+    @Redirect(method = "tickChildren",
+    at=@At(value = "INVOKE",target = "Lnet/minecraft/server/MinecraftServer;getAllLevels()Ljava/lang/Iterable;"))
+    private Iterable<ServerLevel> RDIbeforeTick(MinecraftServer instance){
+		return emptyVanillaTickWorlds;
 	}*/
+
     @Redirect(
             method = "tickChildren",
             at = @At(value = "INVOKE", target = "Lnet/minecraft/server/level/ServerLevel;tick(Ljava/util/function/BooleanSupplier;)V"))

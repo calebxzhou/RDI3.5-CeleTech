@@ -385,6 +385,7 @@ public class PlayerUtils {
 			case "方正宽带" -> "f";
 			case "教育网" -> "e";
 			case "腾讯" -> "te";
+			case "广东广电" -> "g";
 			default -> "*";
 		};
 		Integer provCode = provinceCodeMap.get(geoLocation.province.substring(0, 2));
