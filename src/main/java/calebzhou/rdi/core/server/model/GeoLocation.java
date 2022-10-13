@@ -1,7 +1,5 @@
 package calebzhou.rdi.core.server.model;
 
-import calebzhou.rdi.core.server.utils.RdiSerializer;
-
 import java.io.Serializable;
 
 /**

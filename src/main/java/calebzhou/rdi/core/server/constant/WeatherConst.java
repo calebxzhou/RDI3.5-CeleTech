@@ -1,6 +1,5 @@
 package calebzhou.rdi.core.server.constant;
 
-import calebzhou.rdi.core.server.constant.ColorConst;
 
 public enum WeatherConst {
 

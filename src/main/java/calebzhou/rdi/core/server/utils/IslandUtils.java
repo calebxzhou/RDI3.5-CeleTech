@@ -2,13 +2,9 @@ package calebzhou.rdi.core.server.utils;
 
 import calebzhou.rdi.core.server.RdiCoreServer;
 import calebzhou.rdi.core.server.RdiSharedConstants;
-import calebzhou.rdi.core.server.RdiTickTaskManager;
 import calebzhou.rdi.core.server.model.Island2;
-import calebzhou.rdi.core.server.model.ResultData;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.level.ServerLevel;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -18,12 +14,11 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.ChestBlockEntity;
 import net.minecraft.world.level.dimension.BuiltinDimensionTypes;
-import xyz.nucleoid.fantasy.Fantasy;
 import xyz.nucleoid.fantasy.RuntimeWorldConfig;
 
 public class IslandUtils {
 	public static ResultData<Island2> getIslandByPlayer(Player player){
-		return RdiHttpClient.sendRequest(Island2.class,"get", "/v37/island2/"+player.getStringUUID());
+		return RdiHttpClient.sendRequest(Island2.class,"get", "/v37/mcs_game/island2/"+player.getStringUUID());
 	}
 	/*public static void unloadIsland(ServerLevel islandLevel,ServerPlayer player){
 		//如果在二岛
@@ -68,7 +63,7 @@ public class IslandUtils {
     }
 	public static void placeInitialBlocks(Level world){
 		BlockPos basePos = new BlockPos(0,127,0);
-		WorldUtils.placeBlock(world,basePos, Blocks.OBSIDIAN);
+		WorldUtils.placeBlock(world,basePos, Blocks.BEDROCK);
 		BlockPos chestPos = basePos.offset(0, 1, -1);
 		WorldUtils.placeBlock(world, chestPos,Blocks.CHEST.defaultBlockState());
 		if (world.getBlockEntity(chestPos) instanceof ChestBlockEntity chestBlockEntity) {

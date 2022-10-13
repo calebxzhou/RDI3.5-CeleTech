@@ -1,11 +1,9 @@
 package calebzhou.rdi.core.server.model;
 
 
-import calebzhou.rdi.core.server.utils.RdiSerializer;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 
 import java.io.Serializable;
-import java.util.Objects;
 
 public class RdiGeoLocation implements Serializable {
     public String nation;

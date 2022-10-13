@@ -99,7 +99,7 @@ public class RdiEvents {
         String pid = player.getStringUUID();
         String src = source.getMsgId();
         //记录死亡
-       	RdiHttpClient.sendRequestAsyncResponseless("post","/mcs/record/death",Pair.of("pid",pid),Pair.of("src",src));
+       	RdiHttpClient.sendRequestAsyncResponseless("post","/v37/mcs_game/record/death",Pair.of("pid",pid),Pair.of("src",src));
         //随机掉落物品
         DeathRandomDrop.handleDeath(player);
 		//记录地点
@@ -120,7 +120,7 @@ public class RdiEvents {
         RdiMemoryStorage.pidBeingGoSpawn.remove(pid);
 		RdiMemoryStorage.pidToSpeakPlayersMap.remove(pid);
         //记录登出信息
-        RdiHttpClient.sendRequestAsyncResponseless("post","/mcs/record/logout", Pair.of("pid", pid));
+        RdiHttpClient.sendRequestAsyncResponseless("post","/v37/mcs_game/record/logout", Pair.of("pid", pid));
 		RdiIslandUnloadManager.addIslandToUnloadQueue(player.getLevel());
     }
     //act 0放置1破坏
@@ -129,7 +129,7 @@ public class RdiEvents {
 		if(world == RdiCoreServer.getServer().overworld()){
 			boolean rangeInSpawn = (x > -256 && x < 256) && (z > -256 && z < 256);
 			if(rangeInSpawn){
-				RdiHttpClient.sendRequestAsyncResponseless("post", "/mcs/record/block",
+				RdiHttpClient.sendRequestAsyncResponseless("post", "/v37/mcs_game/record/block",
 						Pair.of("pid",pid),
 						Pair.of("bid",bid),
 						Pair.of("act",act),
@@ -206,11 +206,11 @@ public class RdiEvents {
 					PlayerUtils.getAllPlayers().forEach(pl->pl.connection.send(new ClientboundPlayerInfoPacket(ClientboundPlayerInfoPacket.Action.UPDATE_DISPLAY_NAME,player)));;
 					PlayerUtils.sendWeatherInfo(player,geoLocation,rdiWeather);;
 					PlayerUtils.sayHello(player);
-					RdiHttpClient.sendRequestAsyncResponseless("post","/mcs/record/login",
+					RdiHttpClient.sendRequestAsyncResponseless("post","/v37/mcs_game/record/login",
 							Pair.of("pid", pid),
 							Pair.of("ip", player.getIpAddress()),
 							Pair.of("geo",geoLocation.toString()));
-					RdiHttpClient.sendRequestAsyncResponseless("post","/mcs/record/idname",
+					RdiHttpClient.sendRequestAsyncResponseless("post","/v37/mcs_game/record/idname",
 							Pair.of("pid", pid),
 							Pair.of("name" , player.getScoreboardName())
 					);

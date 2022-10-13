@@ -1,180 +1,147 @@
-package calebzhou.rdi.core.server.utils;
+package calebzhou.rdi.core.server.utils
 
-import calebzhou.rdi.core.server.RdiCoreServer;
-import calebzhou.rdi.core.server.RdiSharedConstants;
-import calebzhou.rdi.core.server.model.ResultData;
-import com.google.gson.reflect.TypeToken;
-import it.unimi.dsi.fastutil.Pair;
-import okhttp3.*;
+import calebzhou.rdi.core.server.RdiCoreServer
+import calebzhou.rdi.core.server.RdiSharedConstants
+import com.google.gson.reflect.TypeToken
+import it.unimi.dsi.fastutil.Pair
+import okhttp3.*
+import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
+import java.io.IOException
+import java.security.SecureRandom
+import java.security.cert.CertificateException
+import java.security.cert.X509Certificate
+import java.util.concurrent.TimeUnit
+import javax.net.ssl.SSLContext
+import javax.net.ssl.TrustManager
+import javax.net.ssl.X509TrustManager
 
-import javax.net.ssl.*;
-import java.io.IOException;
-import java.security.cert.CertificateException;
-import java.util.concurrent.TimeUnit;
+object RdiHttpClient {
+    private const val CONNECTION_TIME_OUT = 10
+    private var client: OkHttpClient? = null
 
-public class RdiHttpClient {
-    private static final int CONNECTION_TIME_OUT = 10;
-    private static OkHttpClient client;
-
-    static {
+    init {
         try {
-            client = RdiSharedConstants.DEBUG ?
-                    getUnsafeOkHttpClient() :
-                    new OkHttpClient.Builder()
-                            .connectTimeout(CONNECTION_TIME_OUT, TimeUnit.SECONDS)
-                            .readTimeout(CONNECTION_TIME_OUT, TimeUnit.SECONDS)
-                            .writeTimeout(CONNECTION_TIME_OUT, TimeUnit.SECONDS)
-                            .connectionPool(new ConnectionPool(32, 60, TimeUnit.SECONDS))
-                            .build();
-        } catch (Exception e) {
-            e.printStackTrace();
+            client = if (RdiSharedConstants.DEBUG) unsafeOkHttpClient else OkHttpClient.Builder()
+                .connectTimeout(CONNECTION_TIME_OUT.toLong(), TimeUnit.SECONDS)
+                .readTimeout(CONNECTION_TIME_OUT.toLong(), TimeUnit.SECONDS)
+                .writeTimeout(CONNECTION_TIME_OUT.toLong(), TimeUnit.SECONDS)
+                .connectionPool(ConnectionPool(32, 60, TimeUnit.SECONDS))
+                .build()
+        } catch (e: Exception) {
+            e.printStackTrace()
         }
     }
 
-    private static final String ADDR=  (RdiSharedConstants.DEBUG?"127.0.0.1":"www.davisoft.cn");
-
-
+    private val ADDR = if (RdiSharedConstants.DEBUG) "127.0.0.1" else "www.davisoft.cn"
+    @JvmStatic
 	@SafeVarargs
-	public static void sendRequestAsyncResponseless(String type, String url, Pair<String, Object>... params){
-		ThreadPool.newThread(()->{
-			sendRequest(type, url, params);
-		});
-	}
+    fun sendRequestAsyncResponseless(type: String, url: String, vararg params: Pair<String, Any>) {
+        ThreadPool.newThread { sendRequest(type, url, *params) }
+    }
 
-	@SafeVarargs
-	public static <T> ResultData<T> sendRequest(Class<T> resultClass,String type, String url, Pair<String, Object>... params){
-		if(RdiSharedConstants.DEBUG)
-			RdiCoreServer.LOGGER.info("HTTP发送{} {} {}",type,url,params);
-        Request.Builder okreq = new Request.Builder();
-		HttpUrl.Builder urlBuilder = HttpUrl.parse("https://"+ADDR+":26837"+url).newBuilder();
-		final FormBody bodyFromParams = getFormBodyFromParams(params);
-
-		switch (type){
-			case "post" -> okreq.post(bodyFromParams);
-            case "put" -> okreq.put(bodyFromParams);
-            case "delete" -> okreq.delete(bodyFromParams);
-            default -> {
-				okreq.get();
-				assembleUrlBuilderFromParams(urlBuilder,params);
-			}
+    @SafeVarargs
+    fun <T> sendRequest(
+        resultClass: Class<T>,
+        type: String,
+        url: String,
+        vararg params: Pair<String, Any>
+    ): ResultData<T> {
+        if (RdiSharedConstants.DEBUG) RdiCoreServer.LOGGER.info("HTTP发送{} {} {}", type, url, params)
+        val okreq = Request.Builder()
+        val urlBuilder: HttpUrl.Builder = ("https://$ADDR:26837$url").toHttpUrlOrNull()!!.newBuilder()
+        val bodyFromParams = getFormBodyFromParams(*params)
+        when (type) {
+            "post" -> okreq.post(bodyFromParams)
+            "put" -> okreq.put(bodyFromParams)
+            "delete" -> okreq.delete(bodyFromParams)
+            else -> {
+                okreq.get()
+                assembleUrlBuilderFromParams(urlBuilder, *params)
+            }
         }
-		okreq.url(urlBuilder.build());
-		Response response = null;
-		try {
-			response =client.newCall(okreq.build()).execute();
-		} catch (IOException e) {
-			RdiCoreServer.LOGGER.info("请求出现错误："+e.getMessage()+e.getCause());
-			return new ResultData(-404,"请求超时",e.getMessage()+e.getCause());
-		}
-		String respStr = null;
-		try(ResponseBody body = response.body()) {
-			respStr = body.string();
-
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		if(RdiSharedConstants.DEBUG)
-			RdiCoreServer.LOGGER.info("HTTP响应 {}",respStr);
-		return RdiSerializer.GSON.fromJson(respStr,
-				resultClass == null ?
-						ResultData.class  : TypeToken.getParameterized(ResultData.class,resultClass).getType());
-	}
-	@SafeVarargs
-	public static ResultData sendRequest(String type, String url, Pair<String, Object>... params){
-         return sendRequest(null,type,url,params);
-	}
-
-
-	@SafeVarargs
-	private static FormBody getFormBodyFromParams(Pair<String,Object>... params){
-		if(params==null)
-			return null;
-		FormBody.Builder builder = new FormBody.Builder();
-		for (Pair<String, Object> param : params) {
-			builder.add(param.left(), String.valueOf(param.right()));
-		}
-		return builder.build();
-	}
-	@SafeVarargs
-	private static void assembleUrlBuilderFromParams(HttpUrl.Builder urlBuilder,Pair<String,Object>... params){
-		for (Pair<String, Object> param : params) {
-			urlBuilder.addQueryParameter(param.left(), String.valueOf(param.right()));
-		}
-	}
-    private static OkHttpClient getUnsafeOkHttpClient() {
+        okreq.url(urlBuilder.build())
+        var response: Response? = null
+        response = try {
+            client!!.newCall(okreq.build()).execute()
+        } catch (e: IOException) {
+            RdiCoreServer.LOGGER.info("请求出现错误：" + e.message + e.cause)
+            return ResultData<Any>(-404, "请求超时", e.message + e.cause)
+        }
+        var respStr: String? = null
         try {
+            response.body.use { body -> respStr = body!!.string() }
+        } catch (e: IOException) {
+            e.printStackTrace()
+        }
+        if (RdiSharedConstants.DEBUG) RdiCoreServer.LOGGER.info("HTTP响应 {}", respStr)
+        return RdiSerializer.GSON.fromJson(
+            respStr,
+            if (resultClass == null) ResultData::class.java else TypeToken.getParameterized(
+                ResultData::class.java, resultClass
+            ).type
+        )
+    }
+
+    @JvmStatic
+	@SafeVarargs
+    fun sendRequest(type: String?, url: String, vararg params: Pair<String, Any>): ResultData<*> {
+        return sendRequest<Any>(null, type, url, *params)
+    }
+
+    @SafeVarargs
+    private fun getFormBodyFromParams(vararg params: Pair<String, Any>): FormBody {
+        val builder = FormBody.Builder()
+        for (param in params) {
+            builder.add(param.left(), param.right().toString())
+        }
+        return builder.build()
+    }
+
+    @SafeVarargs
+    private fun assembleUrlBuilderFromParams(urlBuilder: HttpUrl.Builder, vararg params: Pair<String, Any>) {
+        for (param in params) {
+            urlBuilder.addQueryParameter(param.left(), param.right().toString())
+        }
+    }
+
+    // Create a trust manager that does not validate certificate chains
+    private val unsafeOkHttpClient: OkHttpClient
+        // Install the all-trusting trust manager
+        // Create an ssl socket factory with our all-trusting manager
+        private get() = try {
             // Create a trust manager that does not validate certificate chains
-            final TrustManager[] trustAllCerts = new TrustManager[] {
-                    new X509TrustManager() {
-                        @Override
-                        public void checkClientTrusted(java.security.cert.X509Certificate[] chain, String authType) throws CertificateException {
-                        }
-
-                        @Override
-                        public void checkServerTrusted(java.security.cert.X509Certificate[] chain, String authType) throws CertificateException {
-                        }
-
-                        @Override
-                        public java.security.cert.X509Certificate[] getAcceptedIssuers() {
-                            return new java.security.cert.X509Certificate[]{};
-                        }
+            val trustAllCerts = arrayOf<TrustManager>(
+                object : X509TrustManager {
+                    @Throws(CertificateException::class)
+                    override fun checkClientTrusted(
+                        chain: Array<X509Certificate>,
+                        authType: String
+                    ) {
                     }
-            };
+
+                    @Throws(CertificateException::class)
+                    override fun checkServerTrusted(
+                        chain: Array<X509Certificate>,
+                        authType: String
+                    ) {
+                    }
+
+                    override fun getAcceptedIssuers(): Array<X509Certificate> {
+                        return arrayOf()
+                    }
+                }
+            )
 
             // Install the all-trusting trust manager
-            final SSLContext sslContext = SSLContext.getInstance("SSL");
-            sslContext.init(null, trustAllCerts, new java.security.SecureRandom());
+            val sslContext = SSLContext.getInstance("SSL")
+            sslContext.init(null, trustAllCerts, SecureRandom())
             // Create an ssl socket factory with our all-trusting manager
-            final SSLSocketFactory sslSocketFactory = sslContext.getSocketFactory();
-
-            OkHttpClient.Builder builder = new OkHttpClient.Builder();
-            builder.sslSocketFactory(sslSocketFactory, (X509TrustManager)trustAllCerts[0]);
-            builder.hostnameVerifier(new HostnameVerifier() {
-                @Override
-                public boolean verify(String hostname, SSLSession session) {
-                    return true;
-                }
-            });
-
-            OkHttpClient okHttpClient = builder.build();
-            return okHttpClient;
-        } catch (Exception e) {
-            throw new RuntimeException(e);
+            val sslSocketFactory = sslContext.socketFactory
+            val builder = OkHttpClient.Builder()
+            builder.sslSocketFactory(sslSocketFactory, trustAllCerts[0] as X509TrustManager)
+            builder.hostnameVerifier({ hostname, session -> true })
+            builder.build()
+        } catch (e: Exception) {
+            throw RuntimeException(e)
         }
-    }
 }
-/* public static Consumer<Exception> universalHttpRequestFailureConsumer(Player player){
-        return exception -> {
-            PlayerUtils.sendChatMessage(player, PlayerUtils.RESPONSE_ERROR, "请求出现错误：请立刻联系服主！" + exception.toString());
-            if(RdiSharedConstants.DEBUG) exception.printStackTrace();
-        };
-    }
-    public static void universalHttpRequestFailureConsumer(Exception exception){
-            RdiCoreServer.LOGGER.info("请求出现错误：" + exception.toString() + " " + exception.getLocalizedMessage());
-            if(RdiSharedConstants.DEBUG) exception.printStackTrace();
-    }
-    public static void sendRequestAsync(RdiHttpRequest request, Player player, Consumer<ResultData> doOnSuccess){
-        sendRequestAsync(request,doOnSuccess, RdiHttpClient.universalHttpRequestFailureConsumer(player));
-    }*/
-
-   /*response.enqueue(new Callback() {
-          @Override
-          public void onFailure(@NotNull Call call, @NotNull IOException e) {
-              doOnFailure.accept(e);
-          }
-
-          @Override
-          public void onResponse(@NotNull Call call, @NotNull Response response) {
-              try (ResponseBody body = response.body()){
-                  if (!response.isSuccessful()) {
-                      System.err.println(response);
-                      return;
-                  }
-                  doOnSuccess.accept(body.string());
-
-              } catch (Exception e) {
-                  e.printStackTrace();
-              }
-
-          }
-      });*/

@@ -28,7 +28,7 @@ public class mMinecraftServer {
 	@DontObfuscate
 	@Overwrite(remap = false)
 	public String getServerModName(){
-		return "rdi-core";
+		return "rdi-core-c++";
 	}
 
 }

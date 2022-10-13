@@ -6,6 +6,7 @@
   "priority": 1999,
   "mixins": [
     "AccessBoundTickingBlockEntity",
+    "AccessChunkMap",
     "AccessCollectingNeighborUpdater",
     "AccessLegacyRandomSource",
     "AccessMultiNeighborUpdate",

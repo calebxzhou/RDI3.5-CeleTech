@@ -1,6 +1,7 @@
 package calebzhou.rdi.core.server;
 
 import calebzhou.rdi.core.server.constant.FileConst;
+import calebzhou.rdi.core.server.thread.MobSpawningThread;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.Difficulty;
 import org.apache.logging.log4j.LogManager;
@@ -28,9 +29,11 @@ public class RdiCoreServer implements ModInitializer {
         ServerLifecycleEvents.READY.register((server) -> {
             RdiCoreServer.server = server;
             server.getWorldData().setDifficulty(Difficulty.HARD);
+			new MobSpawningThread().start();
         });
         RdiNetworkReceiver.INSTANCE.register();
         RdiEvents.INSTANCE.register();
+
     }
     public static void loadFiles() throws IOException{
         if(!FileConst.getMainFolder().exists()){

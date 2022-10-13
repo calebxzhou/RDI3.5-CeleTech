@@ -1,8 +1,6 @@
 package calebzhou.rdi.core.server.model;
 
 
-import calebzhou.rdi.core.server.utils.RdiSerializer;
-
 public class RdiWeather {
 	public String alert;
 	public double temperature;
