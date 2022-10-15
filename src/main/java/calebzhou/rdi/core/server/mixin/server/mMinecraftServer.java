@@ -1,6 +1,6 @@
 package calebzhou.rdi.core.server.mixin.server;
 
-import calebzhou.rdi.core.server.RdiSharedConstants;
+import calebzhou.rdi.core.server.constant.RdiSharedConstants;
 import net.minecraft.obfuscate.DontObfuscate;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.dedicated.DedicatedServer;
@@ -28,7 +28,7 @@ public class mMinecraftServer {
 	@DontObfuscate
 	@Overwrite(remap = false)
 	public String getServerModName(){
-		return "rdi-core-c++";
+		return RdiSharedConstants.SERVER_TYPE;
 	}
 
 }

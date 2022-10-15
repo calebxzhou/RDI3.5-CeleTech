@@ -1,6 +1,6 @@
 package calebzhou.rdi.core.server.command.impl
 
-import calebzhou.rdi.core.server.RdiCommandConfirmer
+import calebzhou.rdi.core.server.misc.CommandConfirmer
 import calebzhou.rdi.core.server.command.RdiCommand
 import com.mojang.brigadier.arguments.StringArgumentType
 import com.mojang.brigadier.builder.LiteralArgumentBuilder
@@ -16,7 +16,7 @@ class RdiConfirmCommand : RdiCommand("rdi-confirm", "确认执行指令。") {
         return baseArgBuilder.then(
             Commands.argument("confirm-id", StringArgumentType.string())
                 .executes { context: CommandContext<CommandSourceStack?>? ->
-                    RdiCommandConfirmer.onCommandExecute(context)
+                    CommandConfirmer.onCommandExecute(context)
                 })
     }
 }

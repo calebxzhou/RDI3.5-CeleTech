@@ -1,28 +1,35 @@
-package calebzhou.rdi.core.server;
+package calebzhou.rdi.core.server.misc
 
-import calebzhou.rdi.core.server.model.RdiPlayerLocation;
-import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
-import net.minecraft.server.level.ServerPlayer;
-
-import static calebzhou.rdi.core.server.utils.PlayerUtils.*;
+import calebzhou.rdi.core.server.model.RdiPlayerLocation
+import calebzhou.rdi.core.server.model.RdiPlayerLocation.Companion.create
+import calebzhou.rdi.core.server.utils.PlayerUtils
+import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap
+import net.minecraft.server.level.ServerPlayer
 
 /**
  * Created by calebzhou on 2022-09-26,21:20.
  */
-public class RdiPlayerLocationRecorder {
-	//玩家pid vs 上次死亡的位置（back指令专用）
-	public static final Object2ObjectOpenHashMap<String, RdiPlayerLocation> pidBackPos = new Object2ObjectOpenHashMap<>();
+object PlayerLocationRecorder {
+    //玩家pid vs 位置记录（back指令专用）
+    private val pidBackPos = Object2ObjectOpenHashMap<String, RdiPlayerLocation>()
 
-	//记录玩家当前的位置
-	public static void record(ServerPlayer player){
-		RdiPlayerLocation location = RdiPlayerLocation.create(player);
-		sendChatMessage(player,RESPONSE_INFO,"已经记录当前位置%s，使用/back指令可以返回。".formatted(location.toString()));
-		pidBackPos.put(player.getStringUUID(), location);
-	}
-	public static RdiPlayerLocation getLocation(ServerPlayer player){
-		return pidBackPos.get(player.getStringUUID());
-	}
-	public static void remove(ServerPlayer player){
-		pidBackPos.remove(player.getStringUUID());
-	}
+    //记录玩家当前的位置
+	@JvmStatic
+	fun record(player: ServerPlayer) {
+        val location = create(player)
+        PlayerUtils.sendChatMessage(
+            player,
+            PlayerUtils.RESPONSE_INFO,
+            "已经记录当前位置${location}，使用/back指令可以返回。"
+        )
+        pidBackPos[player.stringUUID] = location
+    }
+
+    fun getLocation(player: ServerPlayer): RdiPlayerLocation? {
+        return pidBackPos[player.stringUUID]
+    }
+
+    fun remove(player: ServerPlayer) {
+        pidBackPos.remove(player.stringUUID)
+    }
 }

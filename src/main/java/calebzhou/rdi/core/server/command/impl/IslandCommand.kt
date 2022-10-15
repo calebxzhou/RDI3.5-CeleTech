@@ -1,6 +1,6 @@
 package calebzhou.rdi.core.server.command.impl
 
-import calebzhou.rdi.core.server.RdiCommandConfirmer
+import calebzhou.rdi.core.server.misc.CommandConfirmer
 import calebzhou.rdi.core.server.RdiCoreServer
 import calebzhou.rdi.core.server.RdiIslandUnloadManager
 import calebzhou.rdi.core.server.command.RdiCommand
@@ -90,14 +90,14 @@ class IslandCommand : RdiCommand("is", "岛屿菜单。", true) {
 
     private fun resetIsland(player: ServerPlayer?) {
         PlayerUtils.sendChatMessage(player, PlayerUtils.RESPONSE_WARNING, "真的，要重置这个岛屿吗？所有的数据将会被删除！")
-        RdiCommandConfirmer.addConfirm(player) { player: ServerPlayer -> confirmedResetIsland(player) }
+        CommandConfirmer.addConfirm(player) { player: ServerPlayer -> confirmedResetIsland(player) }
     }
 
     private fun confirmedResetIsland(player: ServerPlayer) {
         ThreadPool.newThread {
-            val resultData = RdiHttpClient.sendRequest(Int::class.java, "delete", "/v37/mcs_game/island2/" + player.stringUUID)
-            if (resultData.isSuccess) {
-                val dim = IslandUtils.getIslandDimensionLoca(resultData.data)
+            val ResponseData = RdiHttpClient.sendRequest(Int::class.java, "delete", "/v37/mcs_game/island2/" + player.stringUUID)
+            if (ResponseData.isSuccess) {
+                val dim = IslandUtils.getIslandDimensionLoca(ResponseData.data)
                 RdiIslandUnloadManager.removeIslandFromQueue(dim.toString())
                 ServerUtils.executeOnServerThread {
                     val worldHandle = Fantasy.get(RdiCoreServer.getServer())
@@ -112,18 +112,18 @@ class IslandCommand : RdiCommand("is", "岛屿菜单。", true) {
 
     private fun quitIsland(player: ServerPlayer?) {
         PlayerUtils.sendChatMessage(player, PlayerUtils.RESPONSE_WARNING, "真的，要退出这个岛屿吗？您的个人全部数据，将会被删除！")
-        RdiCommandConfirmer.addConfirm(player) { player: ServerPlayer -> confirmedQuitIsland(player) }
+        CommandConfirmer.addConfirm(player) { player: ServerPlayer -> confirmedQuitIsland(player) }
     }
 
     private fun confirmedQuitIsland(player: ServerPlayer) {
         ThreadPool.newThread {
-            val resultData = RdiHttpClient.sendRequest("delete", "/v37/mcs_game/island2/crew/" + player.stringUUID)
-            if (resultData.isSuccess) {
+            val ResponseData = RdiHttpClient.sendRequest("delete", "/v37/mcs_game/island2/crew/" + player.stringUUID)
+            if (ResponseData.isSuccess) {
                 ServerUtils.executeOnServerThread {
                     PlayerUtils.resetProfile(player)
                     PlayerUtils.sendChatMessage(player, PlayerUtils.RESPONSE_SUCCESS)
                 }
-            } else PlayerUtils.sendServiceResultData(player, resultData)
+            } else PlayerUtils.sendServiceResponseData(player, ResponseData)
         }
     }
 
@@ -133,38 +133,38 @@ class IslandCommand : RdiCommand("is", "岛屿菜单。", true) {
             return
         }
         PlayerUtils.sendChatMessage(fromPlayer, PlayerUtils.RESPONSE_WARNING, "真的，要转让这个岛屿吗？您的个人全部数据，将会被删除！")
-        RdiCommandConfirmer.addConfirm(
+        CommandConfirmer.addConfirm(
             fromPlayer
         ) { fromPlayerAfterConfirm: ServerPlayer -> confirmedTransferToPlayer(fromPlayerAfterConfirm, toPlayer) }
     }
 
     private fun confirmedTransferToPlayer(fromPlayer: ServerPlayer, toPlayer: ServerPlayer) {
         ThreadPool.newThread {
-            val resultData = RdiHttpClient.sendRequest(
+            val ResponseData = RdiHttpClient.sendRequest(
                 "put",
                 "/v37/mcs_game/island2/transfer/" + fromPlayer.stringUUID + "/" + toPlayer.stringUUID
             )
-            if (resultData.isSuccess) {
+            if (ResponseData.isSuccess) {
                 PlayerUtils.sendChatMessage(fromPlayer, PlayerUtils.RESPONSE_SUCCESS)
                 PlayerUtils.sendChatMessage(
                     toPlayer,
                     PlayerUtils.RESPONSE_SUCCESS,
                     fromPlayer.scoreboardName + "把岛屿转让给了你！"
                 )
-            } else PlayerUtils.sendServiceResultData(fromPlayer, resultData)
+            } else PlayerUtils.sendServiceResponseData(fromPlayer, ResponseData)
         }
     }
 
     private fun createIsland(player: ServerPlayer?) {
         PlayerUtils.sendChatMessage(player, PlayerUtils.RESPONSE_INFO, "准备创建岛屿，不要触碰鼠标或者键盘！")
         ThreadPool.newThread {
-            val resultData = RdiHttpClient.sendRequest(Int::class.java, "post", "/v37/mcs_game/island2/" + player!!.stringUUID)
-            if (!resultData.isSuccess) {
-                PlayerUtils.sendServiceResultData(player, resultData)
+            val ResponseData = RdiHttpClient.sendRequest(Int::class.java, "post", "/v37/mcs_game/island2/" + player!!.stringUUID)
+            if (!ResponseData.isSuccess) {
+                PlayerUtils.sendServiceResponseData(player, ResponseData)
                 return@newThread
             }
             PlayerUtils.sendChatMessage(player, PlayerUtils.RESPONSE_INFO, "开始创建岛屿，不要触碰鼠标或者键盘！")
-            val iid = resultData.data
+            val iid = ResponseData.data
             PlayerUtils.sendChatMessage(player, PlayerUtils.RESPONSE_INFO, "您的岛屿ID：$iid")
             val server = RdiCoreServer.getServer()
             ServerUtils.executeOnServerThread {
@@ -196,7 +196,7 @@ class IslandCommand : RdiCommand("is", "岛屿菜单。", true) {
             player, PlayerUtils.RESPONSE_WARNING, "真的要，将这个岛屿的传送点，更改为您目前所在的位置，（%s）吗？"
                 .formatted(player!!.onPos.toShortString())
         )
-        RdiCommandConfirmer.addConfirm(player) { player: ServerPlayer -> confirmLocateIsland(player) }
+        CommandConfirmer.addConfirm(player) { player: ServerPlayer -> confirmLocateIsland(player) }
     }
 
     private fun confirmLocateIsland(player: ServerPlayer) {
@@ -206,7 +206,7 @@ class IslandCommand : RdiCommand("is", "岛屿菜单。", true) {
         val w = player.xRot.toDouble()
         val p = player.yRot.toDouble()
         ThreadPool.newThread {
-            val resultData = RdiHttpClient.sendRequest(
+            val ResponseData = RdiHttpClient.sendRequest(
                 "put", "/v37/mcs_game/island2/loca/" + player.stringUUID,
                 Pair.of("x", x),
                 Pair.of("y", y),
@@ -214,9 +214,9 @@ class IslandCommand : RdiCommand("is", "岛屿菜单。", true) {
                 Pair.of("w", w),
                 Pair.of("p", p)
             )
-            if (resultData.isSuccess) {
+            if (ResponseData.isSuccess) {
                 PlayerUtils.sendChatMessage(player, PlayerUtils.RESPONSE_SUCCESS, "将这个岛屿的传送点，更改为您目前所在的位置了！")
-            } else PlayerUtils.sendServiceResultData(player, resultData)
+            } else PlayerUtils.sendServiceResponseData(player, ResponseData)
         }
     }
 
@@ -230,15 +230,15 @@ class IslandCommand : RdiCommand("is", "岛屿菜单。", true) {
             PlayerUtils.RESPONSE_WARNING,
             "真的，要踢出玩家" + kickPlayer.scoreboardName + "吗？他的全部数据将会被删除！"
         )
-        RdiCommandConfirmer.addConfirm(
+        CommandConfirmer.addConfirm(
             fromPlayer
         ) { fromPlayerAfterConfirm: ServerPlayer -> confirmKickPlayer(fromPlayerAfterConfirm, kickPlayer) }
     }
 
     private fun confirmKickPlayer(fromPlayer: ServerPlayer, kickPlayer: ServerPlayer) {
         ThreadPool.newThread {
-            val resultData = RdiHttpClient.sendRequest("delete", "/v37/mcs_game/island2/crew/" + kickPlayer.stringUUID)
-            if (resultData.isSuccess) {
+            val ResponseData = RdiHttpClient.sendRequest("delete", "/v37/mcs_game/island2/crew/" + kickPlayer.stringUUID)
+            if (ResponseData.isSuccess) {
                 PlayerUtils.sendChatMessage(
                     kickPlayer,
                     PlayerUtils.RESPONSE_WARNING,
@@ -246,7 +246,7 @@ class IslandCommand : RdiCommand("is", "岛屿菜单。", true) {
                 )
                 PlayerUtils.resetProfile(kickPlayer)
                 PlayerUtils.sendChatMessage(fromPlayer, PlayerUtils.RESPONSE_SUCCESS)
-            } else PlayerUtils.sendServiceResultData(fromPlayer, resultData)
+            } else PlayerUtils.sendServiceResponseData(fromPlayer, ResponseData)
         }
     }
 
@@ -256,11 +256,11 @@ class IslandCommand : RdiCommand("is", "岛屿菜单。", true) {
             return
         }
         ThreadPool.newThread {
-            val resultData = RdiHttpClient.sendRequest(
+            val ResponseData = RdiHttpClient.sendRequest(
                 "post",
                 "/v37/mcs_game/island2/crew/" + player!!.stringUUID + "/" + invitedPlayer.stringUUID
             )
-            if (resultData.isSuccess) {
+            if (ResponseData.isSuccess) {
                 PlayerUtils.sendChatMessage(player, "您邀请了$invitedPlayer")
                 PlayerUtils.sendChatMessage(
                     invitedPlayer,
@@ -269,7 +269,7 @@ class IslandCommand : RdiCommand("is", "岛屿菜单。", true) {
                 )
                 PlayerUtils.sendChatMessage(invitedPlayer, "按下[H键]可以前往他的岛屿")
                 PlayerUtils.sendChatMessage(player, PlayerUtils.RESPONSE_SUCCESS, "1")
-            } else PlayerUtils.sendServiceResultData(player, resultData)
+            } else PlayerUtils.sendServiceResponseData(player, ResponseData)
         }
     }
 

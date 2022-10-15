@@ -1,55 +1,44 @@
-package calebzhou.rdi.core.server;
+package calebzhou.rdi.core.server.misc
 
-import calebzhou.rdi.core.server.utils.ServerUtils;
-import calebzhou.rdi.core.server.utils.ThreadPool;
-import calebzhou.rdi.core.server.utils.WorldUtils;
-import com.google.common.collect.EvictingQueue;
-import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
-import net.minecraft.world.level.Level;
-
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import calebzhou.rdi.core.server.RdiCoreServer
+import calebzhou.rdi.core.server.ServerLaggingStatus
+import calebzhou.rdi.core.server.utils.WorldUtils
+import com.google.common.collect.EvictingQueue
+import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap
+import net.minecraft.world.level.Level
 
 /**
  * Created by calebzhou on 2022-09-26,8:21.
  */
-@SuppressWarnings("ALL")
-public class RdiTickTaskManager {
-	private static final int queueSize = 3*1024*1024;
-	//维度名vsTick队列
-	private static final Object2ObjectOpenHashMap<String, EvictingQueue<Runnable>> dimensionTickQueueMap = new Object2ObjectOpenHashMap<>();
-	public static void addDelayTickTask(Level level, Runnable tickableRunnable){
-		String dimensionName = WorldUtils.getDimensionName(level);
-		if(!dimensionTickQueueMap.containsKey(dimensionName)){
-			RdiCoreServer.LOGGER.info("维度{}没有延迟tick队列，正在创建",dimensionName);
-			dimensionTickQueueMap.put(dimensionName,EvictingQueue.create(queueSize));
-		}
-		dimensionTickQueueMap.get(dimensionName).add(tickableRunnable);
+object TickTaskManager {
+    private const val queueSize = 3 * 1024 * 1024
 
-	}
-	public static void removeDimension(String dimensionName){
-		dimensionTickQueueMap.remove(dimensionName);
-		RdiCoreServer.LOGGER.info("已删除维度{}的延迟tick队列",dimensionName);
-	}
-	public static int getQueueSize(String dimensionName){
-		EvictingQueue<Runnable> queue = dimensionTickQueueMap.get(dimensionName);
-		if(queue == null)
-			return 0;
-		else
-			return queue.size();
-	}
+    //维度名vsTick队列
+    private val dimensionTickQueueMap = Object2ObjectOpenHashMap<String, EvictingQueue<Runnable>>()
+	fun addDelayTickTask(level: Level, tickableRunnable: Runnable) {
+        val dimensionName = WorldUtils.getDimensionName(level)
+        if (!dimensionTickQueueMap.containsKey(dimensionName)) {
+            RdiCoreServer.LOGGER.info("维度{}没有延迟tick队列，正在创建", dimensionName)
+            dimensionTickQueueMap[dimensionName] =
+                EvictingQueue.create(queueSize)
+        }
+        dimensionTickQueueMap[dimensionName]!!.add(tickableRunnable)
+    }
+    fun removeDimension(dimensionName: String) {
+        dimensionTickQueueMap.remove(dimensionName)
+        RdiCoreServer.LOGGER.info("已删除维度{}的延迟tick队列", dimensionName)
+    }
 
-	private static final ExecutorService tickPool = Executors.newCachedThreadPool();
-	public static void onServerTick(){
-		if(ServerLaggingStatus.isServerLagging())
-			return;
-		dimensionTickQueueMap.forEach((dimensionName,queue)->{
-				if(queue.peek() != null){
-					//ServerUtils.executeOnServerThread(()->{
-					queue.poll().run();
-					//});
-				}
-
-		});
-	}
+    fun getQueueSize(dimensionName: String): Int {
+        val queue = dimensionTickQueueMap[dimensionName]
+        return queue?.size ?: 0
+    }
+	fun onServerTick() {
+        if (ServerLaggingStatus.isServerLagging()) return
+        dimensionTickQueueMap.forEach { (dimensionName: String, queue: EvictingQueue<Runnable>) ->
+            if (queue.peek() != null) {
+                queue.poll()!!.run()
+            }
+        }
+    }
 }

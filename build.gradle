@@ -1,4 +1,14 @@
+buildscript {
+	repositories {
+		google()
+		mavenCentral()
+	}
+	dependencies {
+		classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:1.7.20"
+	}
+}
 plugins {
+	id 'org.jetbrains.kotlin.jvm' version '1.7.20'
 	id 'maven-publish'
 	alias libs.plugins.quilt.loom
 	alias libs.plugins.quilt.loom.quiltflower
@@ -76,8 +86,12 @@ dependencies {
 	modImplementation("maven.modrinth:lithium:mc1.19.2-0.8.3")
 	//ferrite core 节省内存
 	modImplementation("maven.modrinth:ferrite-core:5.0.0-fabric")
-
-
+	modImplementation("net.fabricmc:fabric-language-kotlin:1.8.4+kotlin.1.7.20")
+	implementation("org.jetbrains.kotlin:kotlin-reflect")
+	implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
+	implementation('org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4')
+	implementation('org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:1.6.4')
+	testImplementation 'org.jetbrains.kotlin:kotlin-test'
 //world edit
 	//modImplementation("curse.maven:project-225608:3922622")
 }

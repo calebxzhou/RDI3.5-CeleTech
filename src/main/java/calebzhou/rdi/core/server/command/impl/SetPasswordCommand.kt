@@ -1,10 +1,8 @@
 package calebzhou.rdi.core.server.command.impl
 
-import calebzhou.rdi.core.server.NetworkPackets
+import calebzhou.rdi.core.server.constant.NetworkPackets
 import calebzhou.rdi.core.server.command.RdiCommand
-import calebzhou.rdi.core.server.utils.NetworkUtils
 import calebzhou.rdi.core.server.utils.PlayerUtils
-import calebzhou.rdi.core.server.utils.RdiHttpClient
 import calebzhou.rdi.core.server.utils.ThreadPool
 import com.mojang.brigadier.arguments.StringArgumentType
 import com.mojang.brigadier.builder.LiteralArgumentBuilder
@@ -38,13 +36,13 @@ class SetPasswordCommand : RdiCommand("set-password", "设定密码") {
             return 1
         }
         ThreadPool.newThread {
-            val resultData = RdiHttpClient.sendRequest(
+            val ResponseData = RdiHttpClient.sendRequest(
                 "post",
                 "/v37/account/register/" + player!!.stringUUID,
                 Pair.of("pwd", pwdVerify),
                 Pair.of("ip", player.ipAddress)
             )
-            if (resultData.isSuccess) {
+            if (ResponseData.isSuccess) {
                 PlayerUtils.sendChatMessage(player, PlayerUtils.RESPONSE_SUCCESS, "加密成功，请牢记密码：$pwdVerify")
                 PlayerUtils.sendChatMessage(
                     player,
@@ -53,7 +51,7 @@ class SetPasswordCommand : RdiCommand("set-password", "设定密码") {
                 )
                 PlayerUtils.sendChatMessage(player, PlayerUtils.RESPONSE_SUCCESS, "启动游戏时将自动读取密码，不需要您手动输入")
                 NetworkUtils.sendPacketToClient(player, NetworkPackets.SET_PASSWORD, pwdVerify)
-            } else PlayerUtils.sendServiceResultData(player, resultData)
+            } else PlayerUtils.sendServiceResponseData(player, ResponseData)
         }
         return 1
     }

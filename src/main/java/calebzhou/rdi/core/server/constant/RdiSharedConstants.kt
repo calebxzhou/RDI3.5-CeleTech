@@ -1,23 +1,29 @@
-package calebzhou.rdi.core.server;
+package calebzhou.rdi.core.server.constant
 
-import calebzhou.rdi.core.server.model.RdiPlayerLocation;
-import net.minecraft.core.BlockPos;
-import net.minecraft.server.MinecraftServer;
+import net.minecraft.core.BlockPos
 
 //常量
-public class RdiSharedConstants {
+object RdiSharedConstants {
+    //协议版本
+    const val PROTOCOL_NAME = "RDI Core 3.7"
 
-	public static final String PROTOCOL_NAME ="RDI Core 3.7";
+    //F3服务器类型
+    const val SERVER_TYPE = "rdi-core-c++"
     //调试模式
-    public static final boolean DEBUG = true;
+    const val DEBUG = true
+    //微服务地址
+    @JvmField
+    val SERVICE_ADDR =  "https://${if (DEBUG) "127.0.0.1" else "www.davisoft.cn"}:19198"
     //modid
-    public static final String MOD_ID ="rdict3";
-    //空岛存档维度id前缀
-    public static final String ISLAND_DIMENSION_PREFIX ="i_";
-    public static final String ISLAND_DIMENSION_FULL_PREFIX =RdiSharedConstants.MOD_ID+":"+RdiSharedConstants.ISLAND_DIMENSION_PREFIX;
-    //版本号
-    public static final int PROTOCOL_VERSION =0x37;
-	//主城
-	public static final BlockPos SPAWN_LOCATION =new BlockPos(0,138,0);
+    const val MOD_ID = "rdict3"
 
+    //空岛存档维度id前缀
+    const val ISLAND_DIMENSION_PREFIX = "i_"
+    const val ISLAND_DIMENSION_FULL_PREFIX = "$MOD_ID:$ISLAND_DIMENSION_PREFIX"
+    //版本号
+    const val PROTOCOL_VERSION = 0x37
+
+    //主城
+	@JvmField
+	val SPAWN_LOCATION = BlockPos(0, 138, 0)
 }

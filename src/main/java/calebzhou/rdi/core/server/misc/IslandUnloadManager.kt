@@ -1,5 +1,6 @@
-package calebzhou.rdi.core.server
+package calebzhou.rdi.core.server.misc
 
+import calebzhou.rdi.core.server.RdiCoreServer
 import calebzhou.rdi.core.server.utils.ServerUtils
 import calebzhou.rdi.core.server.utils.WorldUtils
 import it.unimi.dsi.fastutil.objects.Object2ObjectMap
@@ -11,13 +12,13 @@ import java.util.*
 /**
  * Created by calebzhou on 2022-09-29,21:05.
  */
-class RdiIslandUnloadManager : TimerTask() {
+class IslandUnloadManager : TimerTask() {
     override fun run() {
         processUnloadQueue()
     }
 
     companion object {
-        private val INSTANCE = RdiIslandUnloadManager()
+        private val INSTANCE = IslandUnloadManager()
 
         init {
             //每分钟检查一次维度卸载队列
@@ -71,7 +72,7 @@ class RdiIslandUnloadManager : TimerTask() {
                         return@forEach
                     }
                     RdiCoreServer.LOGGER.info("岛屿" + dimensionName + "没有玩家了，即将卸载")
-                    RdiTickTaskManager.removeDimension(dimensionName)
+                    TickTaskManager.removeDimension(dimensionName)
                     ServerUtils.executeOnServerThread {
                         levelToUnload.save(null, true, false)
                         Fantasy.get(RdiCoreServer.getServer()).unloadWorld(levelToUnload)

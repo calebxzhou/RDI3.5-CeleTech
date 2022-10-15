@@ -1,14 +1,11 @@
 package calebzhou.rdi.core.server.mixin.gameplay;
 
 
-import calebzhou.rdi.core.server.RdiLoginProtocol;
+import calebzhou.rdi.core.server.misc.RdiLoginProtocol;
 import calebzhou.rdi.core.server.mixin.AccessServerLoginPacketListenerImpl;
-import com.mojang.authlib.GameProfile;
 import net.minecraft.network.Connection;
-import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.login.ServerboundHelloPacket;
-import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerLoginPacketListenerImpl;
 import net.minecraft.util.SignatureValidator;
 import net.minecraft.world.entity.player.ProfilePublicKey;
@@ -17,7 +14,6 @@ import org.spongepowered.asm.mixin.*;
 import org.spongepowered.asm.mixin.injection.Constant;
 import org.spongepowered.asm.mixin.injection.ModifyConstant;
 
-import java.time.Duration;
 import java.util.UUID;
 
 @Mixin(ServerboundHelloPacket.class)

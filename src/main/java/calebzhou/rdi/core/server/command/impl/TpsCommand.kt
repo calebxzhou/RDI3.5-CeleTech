@@ -1,7 +1,7 @@
 package calebzhou.rdi.core.server.command.impl
 
 import calebzhou.rdi.core.server.RdiCoreServer
-import calebzhou.rdi.core.server.RdiTickTaskManager
+import calebzhou.rdi.core.server.misc.TickTaskManager
 import calebzhou.rdi.core.server.ServerLaggingStatus
 import calebzhou.rdi.core.server.command.RdiCommand
 import calebzhou.rdi.core.server.constant.ColorConst
@@ -47,13 +47,13 @@ class TpsCommand : RdiCommand("tps", "查询服务器的流畅程度") {
                 "%d%%/%.2fTPS/%.2fms%s".formatted(Math.round(ratio * 100), meanTPS, meanTickTime, squaresToSend)
             )
             val dimensionName = WorldUtils.getDimensionName(sourceStack.level)
-            val queueSize = RdiTickTaskManager.getQueueSize(dimensionName)
+            val queueSize = TickTaskManager.getQueueSize(dimensionName)
             PlayerUtils.sendMessageToCommandSource(
                 sourceStack,
                 "延迟?%s %sms 任务数%s "
                     .formatted(
                         if (ServerLaggingStatus.isServerLagging()) "是" else "否",
-                        ServerLaggingStatus.getMsBehind(),
+                        ServerLaggingStatus.msBehind,
                         queueSize
                     )
             )

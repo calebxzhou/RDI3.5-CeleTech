@@ -25,10 +25,10 @@ class GoNetherCommand : RdiCommand("go-nether", "下地狱", true) {
             return 1
         }
         val targetPos = WorldUtils.getIsland2ToNetherPos(WorldUtils.getIsland2IdInt(player.getLevel()))
-        WorldUtils.placeBlock(WorldUtils.getNether(), BlockPos(targetPos), Blocks.OBSIDIAN.defaultBlockState())
+        WorldUtils.placeBlock(WorldUtils.nether, BlockPos(targetPos), Blocks.OBSIDIAN.defaultBlockState())
         PlayerUtils.teleport(
             player,
-            WorldUtils.getNether(),
+            WorldUtils.nether,
             targetPos.x.toDouble(),
             (targetPos.y + 3).toDouble(),
             targetPos.z.toDouble(),

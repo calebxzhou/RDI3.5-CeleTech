@@ -1,6 +1,6 @@
 package calebzhou.rdi.core.server.mixin.server;
 
-import calebzhou.rdi.core.server.RdiSharedConstants;
+import calebzhou.rdi.core.server.constant.RdiSharedConstants;
 import com.google.gson.JsonObject;
 import net.minecraft.DetectedVersion;
 import org.spongepowered.asm.mixin.Final;

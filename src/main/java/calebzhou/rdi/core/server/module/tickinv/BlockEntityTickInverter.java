@@ -1,25 +1,13 @@
 package calebzhou.rdi.core.server.module.tickinv;
 
-import calebzhou.rdi.core.server.RdiCoreServer;
-import calebzhou.rdi.core.server.RdiTickTaskManager;
+import calebzhou.rdi.core.server.misc.TickTaskManager;
 import calebzhou.rdi.core.server.ServerLaggingStatus;
 import calebzhou.rdi.core.server.command.impl.TpsCommand;
-import calebzhou.rdi.core.server.mixin.AccessBoundTickingBlockEntity;
-import calebzhou.rdi.core.server.mixin.AccessCollectingNeighborUpdater;
-import calebzhou.rdi.core.server.utils.PlayerUtils;
 import calebzhou.rdi.core.server.utils.ServerUtils;
 import calebzhou.rdi.core.server.utils.WorldUtils;
-import net.minecraft.ChatFormatting;
-import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.protocol.status.ServerStatus;
-import net.minecraft.server.level.ServerLevel;
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.BossEvent;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.TickingBlockEntity;
-import net.minecraft.world.level.chunk.LevelChunk;
 
 public class BlockEntityTickInverter  {
     public static void handleTick(Level level, TickingBlockEntity ticker){
@@ -32,7 +20,7 @@ public class BlockEntityTickInverter  {
 								.withStyle(ChatFormatting.GOLD)
 								.withStyle(ChatFormatting.ITALIC),
 						true);*/
-				RdiTickTaskManager.addDelayTickTask(level,()->{
+				TickTaskManager.addDelayTickTask(level,()->{
 					ticker.tick();
 					TpsCommand.delayTickStatus.put(WorldUtils.getDimensionName(level),
 							Component.literal("延迟tick容器")

@@ -1,7 +1,7 @@
 package calebzhou.rdi.core.server.command.impl
 
 import calebzhou.rdi.core.server.RdiMemoryStorage
-import calebzhou.rdi.core.server.RdiPlayerLocationRecorder
+import calebzhou.rdi.core.server.misc.PlayerLocationRecorder
 import calebzhou.rdi.core.server.command.RdiCommand
 import calebzhou.rdi.core.server.utils.PlayerUtils
 import com.mojang.brigadier.builder.LiteralArgumentBuilder
@@ -23,7 +23,7 @@ class TpyesCommand : RdiCommand("tpyes", "接受传送请求") {
                 return@executes 1
             }
             val fromPlayer = PlayerUtils.getPlayerByUuid(fromPlayerId)
-            RdiPlayerLocationRecorder.record(fromPlayer)
+            PlayerLocationRecorder.record(fromPlayer)
             if (fromPlayer == null) {
                 PlayerUtils.sendChatMessage(toPlayer, PlayerUtils.RESPONSE_ERROR, "玩家不在线！")
                 return@executes 1

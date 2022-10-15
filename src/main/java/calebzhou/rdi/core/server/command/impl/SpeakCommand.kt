@@ -5,7 +5,6 @@ import calebzhou.rdi.core.server.RdiMemoryStorage
 import calebzhou.rdi.core.server.command.RdiCommand
 import calebzhou.rdi.core.server.utils.EncodingUtils
 import calebzhou.rdi.core.server.utils.PlayerUtils
-import calebzhou.rdi.core.server.utils.RdiHttpClient
 import calebzhou.rdi.core.server.utils.ServerUtils
 import com.mojang.brigadier.builder.LiteralArgumentBuilder
 import com.mojang.brigadier.context.CommandContext

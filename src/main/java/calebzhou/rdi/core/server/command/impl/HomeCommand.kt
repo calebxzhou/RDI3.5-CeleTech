@@ -17,12 +17,12 @@ class HomeCommand : RdiCommand("home", "回到我的岛屿", true) {
             val player = context.source.player
             PlayerUtils.sendChatMessage(player, PlayerUtils.RESPONSE_INFO, "开始返回您的岛屿，请稍等...")
             ThreadPool.newThread {
-                val resultData = IslandUtils.getIslandByPlayer(player)
-                if (!resultData.isSuccess) {
-                    PlayerUtils.sendChatMessage(player, PlayerUtils.RESPONSE_ERROR, resultData.message)
+                val ResponseData = IslandUtils.getIslandByPlayer(player)
+                if (!ResponseData.isSuccess) {
+                    PlayerUtils.sendChatMessage(player, PlayerUtils.RESPONSE_ERROR, ResponseData.message)
                     return@newThread
                 }
-                val island2 = resultData.data
+                val island2 = ResponseData.data
                 val dim = IslandUtils.getIslandDimensionLoca(island2.iid)
                 ServerUtils.executeOnServerThread {
                     val gameTime = System.currentTimeMillis() - island2.ts.time

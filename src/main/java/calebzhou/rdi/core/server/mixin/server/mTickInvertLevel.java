@@ -1,7 +1,7 @@
 package calebzhou.rdi.core.server.mixin.server;
 
 import calebzhou.rdi.core.server.RdiCoreServer;
-import calebzhou.rdi.core.server.RdiTickTaskManager;
+import calebzhou.rdi.core.server.misc.TickTaskManager;
 import calebzhou.rdi.core.server.ServerLaggingStatus;
 import calebzhou.rdi.core.server.command.impl.TpsCommand;
 import calebzhou.rdi.core.server.mixin.AccessCollectingNeighborUpdater;
@@ -41,7 +41,6 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-import java.util.ArrayList;
 import java.util.Map;
 import java.util.Queue;
 import java.util.function.BiConsumer;
@@ -349,7 +348,7 @@ class mTickInvertNeighborUpdater{
 						Component.literal("提交延迟tick邻块任务").append(sourceBlock.getName()).append(Component.literal(updatePos.toShortString())).withStyle(ChatFormatting.GOLD)
 				);
 			}
-			RdiTickTaskManager.addDelayTickTask(level,()->{
+			TickTaskManager.addDelayTickTask(level,()->{
 				((AccessCollectingNeighborUpdater) this).invokeAddAndRun(updatePos,neighborUpdates);//neighborUpdates.runNext(level);
 				TpsCommand.delayTickStatus.put(WorldUtils.getDimensionName(level),
 						Component.literal("延迟tick邻块").append(sourceBlock.getName()).append(Component.literal(updatePos.toShortString())).withStyle(ChatFormatting.AQUA)

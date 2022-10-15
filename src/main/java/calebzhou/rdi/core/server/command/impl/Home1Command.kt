@@ -2,7 +2,6 @@ package calebzhou.rdi.core.server.command.impl
 
 import calebzhou.rdi.core.server.command.RdiCommand
 import calebzhou.rdi.core.server.utils.PlayerUtils
-import calebzhou.rdi.core.server.utils.RdiHttpClient
 import calebzhou.rdi.core.server.utils.ServerUtils
 import calebzhou.rdi.core.server.utils.ThreadPool
 import com.mojang.brigadier.builder.LiteralArgumentBuilder
@@ -16,13 +15,13 @@ class Home1Command : RdiCommand("home1", "回到一岛（仅限老玩家）", fa
         return baseArgBuilder.executes { context: CommandContext<CommandSourceStack> ->
             val player = context.source.player
             ThreadPool.newThread {
-                val resultData =
+                val ResponseData =
                     RdiHttpClient.sendRequest(String::class.java, "get", "/v37/island/" + player!!.stringUUID)
-                if (resultData.status < 0) {
-                    PlayerUtils.sendServiceResultData(player, resultData)
+                if (ResponseData.status < 0) {
+                    PlayerUtils.sendServiceResponseData(player, ResponseData)
                     return@newThread
                 }
-                val split = resultData.data.split(",".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
+                val split = ResponseData.data.split(",".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
                 val x = split[0].toInt()
                 val y = split[1].toInt()
                 val z = split[2].toInt()

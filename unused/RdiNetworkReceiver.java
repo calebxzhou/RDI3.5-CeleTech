@@ -1,6 +1,7 @@
 package calebzhou.rdi.core.server;
 
 import calebzhou.rdi.core.server.constant.FileConst;
+import calebzhou.rdi.core.server.constant.NetworkPackets;
 import calebzhou.rdi.core.server.utils.PlayerUtils;
 import calebzhou.rdi.core.server.utils.ThreadPool;
 import net.minecraft.core.BlockPos;
@@ -23,27 +24,6 @@ import java.nio.charset.StandardCharsets;
 import java.util.UUID;
 
 public class RdiNetworkReceiver {
-    public static final RdiNetworkReceiver INSTANCE = new RdiNetworkReceiver();
-    private RdiNetworkReceiver(){ }
-    public void register(){
-        ServerPlayNetworking.registerGlobalReceiver(NetworkPackets.AFK_DETECT,this::afkDetect);
-        ServerPlayNetworking.registerGlobalReceiver(NetworkPackets.DANCE_TREE_GROW,this::danceTreeGrow);
-        ServerPlayNetworking.registerGlobalReceiver(NetworkPackets.SAVE_WORLD,this::saveWorld);
-        ServerPlayNetworking.registerGlobalReceiver(NetworkPackets.ANIMAL_SEX,this::animalSex);
-        ServerPlayNetworking.registerGlobalReceiver(NetworkPackets.HW_SPEC,this::receiveHardwareSpec );
-    }
-    //挂机检测
-    private void afkDetect(MinecraftServer server, ServerPlayer player, ServerGamePacketListenerImpl listener, FriendlyByteBuf buf, PacketSender sender) {
-        try {
-            int afkTicks = buf.readInt();
-            if(afkTicks>0)
-                RdiMemoryStorage.afkMap.put(player.getScoreboardName(), afkTicks);
-            else
-                RdiMemoryStorage.afkMap.removeInt(player.getScoreboardName());
-        } catch (Exception e) {
-                RdiCoreServer.LOGGER.error(e.getStackTrace());
-        }
-    }
     //跳舞树
     private void danceTreeGrow(MinecraftServer server, ServerPlayer player, ServerGamePacketListenerImpl listener, FriendlyByteBuf buf, PacketSender sender) {
         try {
@@ -61,10 +41,6 @@ public class RdiNetworkReceiver {
         } catch (Exception e) {
             RdiCoreServer.LOGGER.error(e.getStackTrace());
         }
-    }
-    //保存地图
-    private void saveWorld(MinecraftServer server, ServerPlayer player, ServerGamePacketListenerImpl listener, FriendlyByteBuf buf, PacketSender sender) {
-        RdiCoreServer.getServer().saveEverything(true, true, true);
     }
     //快速繁殖
     private void animalSex(MinecraftServer server, ServerPlayer player, ServerGamePacketListenerImpl listener, FriendlyByteBuf buf, PacketSender sender) {
@@ -100,16 +76,4 @@ public class RdiNetworkReceiver {
         });
     }
 }
-//隔空跳跃
-        /*ServerPlayNetworking.registerGlobalReceiver(NetworkPackets.LEAP,((server, player, handler, buf, responseSender) -> {
-            String s = buf.readUtf();
-            BlockPos bpos = BlockPos.of(Long.parseLong(s));
-            double distance = bpos.distSqr(new Vec3i(player.getX(), player.getY(), player.getZ()));
-            int levelNeed = (int) Math.cbrt(distance) / 2;
-            if(player.experienceLevel<levelNeed) {
-                sendChatMessage(player,"经验不足，需要"+levelNeed+"经验！");
-                return;
-            }
-            PlayerUtils.teleport(player, new PlayerLocation(bpos.offset(0,2,0),player.getLevel(), player.getYRot(), player.getXRot()));
-            sendChatMessage(player, PlayerUtils.RESPONSE_SUCCESS,"1");
-        }));*/
+

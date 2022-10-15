@@ -1,8 +1,9 @@
 package calebzhou.rdi.core.server.utils;
 
 import calebzhou.rdi.core.server.RdiCoreServer;
-import calebzhou.rdi.core.server.RdiSharedConstants;
+import calebzhou.rdi.core.server.constant.RdiSharedConstants;
 import calebzhou.rdi.core.server.model.Island2;
+import calebzhou.rdi.core.server.model.ResponseData;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.Difficulty;
@@ -17,7 +18,7 @@ import net.minecraft.world.level.dimension.BuiltinDimensionTypes;
 import xyz.nucleoid.fantasy.RuntimeWorldConfig;
 
 public class IslandUtils {
-	public static ResultData<Island2> getIslandByPlayer(Player player){
+	public static ResponseData<Island2> getIslandByPlayer(Player player){
 		return RdiHttpClient.sendRequest(Island2.class,"get", "/v37/mcs_game/island2/"+player.getStringUUID());
 	}
 	/*public static void unloadIsland(ServerLevel islandLevel,ServerPlayer player){

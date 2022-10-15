@@ -1,11 +1,10 @@
 package calebzhou.rdi.core.server.utils;
 
-import calebzhou.rdi.core.server.NetworkPackets;
+import calebzhou.rdi.core.server.constant.NetworkPackets;
 import calebzhou.rdi.core.server.RdiCoreServer;
 import calebzhou.rdi.core.server.RdiMemoryStorage;
-import calebzhou.rdi.core.server.RdiSharedConstants;
+import calebzhou.rdi.core.server.constant.RdiSharedConstants;
 import calebzhou.rdi.core.server.constant.ColorConst;
-import calebzhou.rdi.core.server.constant.WeatherConst;
 import calebzhou.rdi.core.server.model.*;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import net.minecraft.ChatFormatting;
@@ -41,7 +40,7 @@ import java.util.List;
 import java.util.UUID;
 import java.util.function.Predicate;
 
-import static calebzhou.rdi.core.server.RdiSharedConstants.SPAWN_LOCATION;
+import static calebzhou.rdi.core.server.constant.RdiSharedConstants.SPAWN_LOCATION;
 
 public class PlayerUtils {
 	public static final int RESPONSE_SUCCESS=2;
@@ -107,8 +106,8 @@ public class PlayerUtils {
 	public static void sendChatMessage(Player player, Component textComponent, boolean isOnActionBar) {
 		player.displayClientMessage(textComponent, isOnActionBar);
 	}
-	public static void sendServiceResultData(Player player, ResultData data) {
-		sendChatMessage(player,data.getStatus()>0?RESPONSE_SUCCESS:RESPONSE_ERROR,data.getMessage());
+	public static void sendServiceResponseData(Player player, ResponseData data) {
+		sendChatMessage(player,data.getStat()>0?RESPONSE_SUCCESS:RESPONSE_ERROR,data.getMsg());
 	}
 	public static void sendChatMessage(Player player, Component textComponent) {
 		sendChatMessage(player,textComponent ,false);
@@ -241,8 +240,8 @@ public class PlayerUtils {
         player.setRespawnPosition(levelResourceKey,blockPos,0,true,true);
     }
 	public static boolean satisfyMainTownBuildCondition(Player player){
-		RdiUser rdiUser = RdiMemoryStorage.pidUserMap.get(player.getStringUUID());
-		return rdiUser!=null && (  rdiUser.isGenuine() || player.experienceLevel>=50 );
+		RdiPlayerProfile rdiPlayerProfile = RdiMemoryStorage.pidUserMap.get(player.getStringUUID());
+		return rdiPlayerProfile !=null && (  rdiPlayerProfile.isGenuine() || player.experienceLevel>=50 );
 	}
     public static void resetProfile(ServerPlayer player){
         player.experienceLevel=0;
@@ -262,7 +261,7 @@ public class PlayerUtils {
 	}
 
 	public static void sendWeatherInfo(ServerPlayer player, RdiGeoLocation geoLocation, RdiWeather rdiWeather) {
-		String alert = ColorConst.GOLD+rdiWeather.alert+ColorConst.RESET;
+		/*String alert = ColorConst.GOLD+rdiWeather.alert+ColorConst.RESET;
 		String loca;
 		if("中国".equals(geoLocation.nation)){
 			loca = geoLocation.city.replace("市","")
@@ -279,9 +278,9 @@ public class PlayerUtils {
 		String humidity = "湿度"+Math.floor(rdiWeather.humidity*100)+"%";
 		String skycon = WeatherConst.valueOf(rdiWeather.skycon).getName();
 		String airQuality = "空气"+rdiWeather.aqiDescription+"("+rdiWeather.aqiValue+")";
-		/*String visibility = "能见度"+rdiWeather.visibility+"km";
+		*//*String visibility = "能见度"+rdiWeather.visibility+"km";
 		String windSpeed = "风速"+rdiWeather.windSpeed+"km/h";
-		String pressure = "大气压"+rdiWeather.pressure/1000+"kPa";*/
+		String pressure = "大气压"+rdiWeather.pressure/1000+"kPa";*//*
 		String rain = "降水概率"+Math.floor(rdiWeather.rainProba*100)+"% ";
 		String rainChn = rdiWeather.minuteRainDescription.replace("小彩云","dav").replace("彩云","dav");
 		String hourlyDescr = rdiWeather.hourlyDescr;
@@ -290,7 +289,7 @@ public class PlayerUtils {
 		String wind = "风速%.2fkm/h %.1f°".formatted(rdiWeather.windSpeed,rdiWeather.windDirection);
 		sendChatMessage(player,alert);
 		sendChatMessage(player,"%s %s %s %s %s %s %s %s %s %s %s".formatted(loca,tempNow,skycon,hourlyDescr,airQuality,humidity,rain,rdiWeather.rainProba>0.001?rainChn:"",sunRiseTime,sunSetTime,wind));
-	}
+	*/}
 	public static String getPasswordStorageFile(Player player){
 		return ".minecraft/mods/rdi/users/"+player.getStringUUID()+"_password.txt";
 	}
@@ -351,15 +350,15 @@ public class PlayerUtils {
 	public static Component getTabListDisplayName(Player player){
 
 		String pid = player.getStringUUID();
-		RdiUser rdiUser = RdiMemoryStorage.pidUserMap.get(pid);
+		RdiPlayerProfile rdiPlayerProfile = RdiMemoryStorage.pidUserMap.get(pid);
 		MutableComponent nameComponent = Component.literal(player.getScoreboardName());
-		if (rdiUser!=null && rdiUser.isGenuine()) {
+		if (rdiPlayerProfile !=null && rdiPlayerProfile.isGenuine()) {
 			nameComponent.withStyle(ChatFormatting.GOLD);
 		}
 		RdiWeather rdiWeather = RdiMemoryStorage.pidWeatherMap.get(pid);
 		if(rdiWeather==null)
 			return  null;
-		double temperature = rdiWeather.temperature;
+		double temperature = rdiWeather.getRealTimeWeather().getTemp();
 		ChatFormatting color = ChatFormatting.WHITE;
 		if(temperature>40)
 			color = ChatFormatting.DARK_RED;
@@ -377,7 +376,7 @@ public class PlayerUtils {
 			color = ChatFormatting.DARK_BLUE;
 
 		RdiGeoLocation geoLocation = RdiMemoryStorage.pidGeoMap.get(pid);
-		String ispDisplay = switch (geoLocation.isp) {
+		String ispDisplay = switch (geoLocation.getIsp()) {
 			case "联通" -> "u";
 			case "电信" -> "t";
 			case "移动","铁通" -> "m";
@@ -388,11 +387,11 @@ public class PlayerUtils {
 			case "广东广电" -> "g";
 			default -> "*";
 		};
-		Integer provCode = provinceCodeMap.get(geoLocation.province.substring(0, 2));
+		Integer provCode = provinceCodeMap.get(geoLocation.getProvince().substring(0, 2));
 		String provinceCodeDisplay ;
 		if(provCode==null){
 			try {
-				provinceCodeDisplay = geoLocation.nation.split("\\|")[1];
+				provinceCodeDisplay = geoLocation.getNation().split("\\|")[1];
 			} catch (ArrayIndexOutOfBoundsException e) {
 				e.printStackTrace();
 				return Component.empty()

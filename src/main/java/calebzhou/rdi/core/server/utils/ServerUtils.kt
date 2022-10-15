@@ -1,53 +1,50 @@
-package calebzhou.rdi.core.server.utils;
+package calebzhou.rdi.core.server.utils
 
-import calebzhou.rdi.core.server.RdiCoreServer;
-import net.minecraft.commands.CommandSourceStack;
-import net.minecraft.commands.Commands;
-import net.minecraft.core.BlockPos;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.chat.Component;
-import net.minecraft.server.MinecraftServer;
-import net.minecraft.server.level.ServerLevel;
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.MobSpawnType;
-import net.minecraft.world.entity.player.Player;
+import calebzhou.rdi.core.server.RdiCoreServer
+import net.minecraft.commands.CommandSourceStack
+import net.minecraft.core.BlockPos
+import net.minecraft.network.chat.Component
+import net.minecraft.server.level.ServerLevel
+import net.minecraft.world.entity.EntityType
+import net.minecraft.world.entity.MobSpawnType
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.function.Predicate;
-
-public class ServerUtils {
-    public static void broadcastChatMessage(String msg){
-        broadcastChatMessage(Component.literal( msg ));
+object ServerUtils {
+    fun broadcastChatMessage(msg: String) {
+        broadcastChatMessage(Component.literal(msg))
     }
-    public static void broadcastChatMessage(Component msg){
-        for (ServerPlayer player : RdiCoreServer.getServer().getPlayerList().getPlayers()) {
-            PlayerUtils.sendChatMessage(player,msg);
+
+    fun broadcastChatMessage(msg: Component) {
+        for (player in RdiCoreServer.getServer().playerList.players) {
+            PlayerUtils.sendChatMessage(player, msg)
         }
     }
-    public static void broadcastActionBarMessage(Component msg){
-        for (ServerPlayer player : RdiCoreServer.getServer().getPlayerList().getPlayers()) {
-            PlayerUtils.sendChatMessage(player,msg,true);
+
+    fun broadcastActionBarMessage(msg: Component) {
+        for (player in RdiCoreServer.getServer().playerList.players) {
+            PlayerUtils.sendChatMessage(player, msg, true)
         }
     }
-    public static void executeCommandOnServer(String command){
-        executeCommandOnSource(command, RdiCoreServer.getServer().createCommandSourceStack());
+
+    fun executeCommandOnServer(command: String) {
+        executeCommandOnSource(command, RdiCoreServer.getServer().createCommandSourceStack())
     }
-    public static void executeOnServerThread(Runnable cmd){
-        RdiCoreServer.getServer().execute(cmd);
+
+    fun executeOnServerThread(cmd: Runnable) {
+        RdiCoreServer.getServer().execute(cmd)
     }
-    public static void executeCommandOnSource(String command, CommandSourceStack source){
-        MinecraftServer server = RdiCoreServer.getServer();
-		Commands commands = server.getCommands();
-		commands.performCommand(
-				commands.getDispatcher().parse(command, source)
-				,command);
+
+    fun executeCommandOnSource(command: String, source: CommandSourceStack) {
+        val server = RdiCoreServer.getServer()
+        val commands = server.commands
+        commands.performCommand(
+            commands.dispatcher.parse(command, source), command
+        )
     }
-	public static void spawnEntity(EntityType entityType, ServerLevel level, BlockPos pos){
-		entityType.spawn(level,null,null,null , pos, MobSpawnType.NATURAL,false,false);
-	}
+
+    fun spawnEntity(entityType: EntityType<*>, level: ServerLevel, pos: BlockPos) {
+        entityType.spawn(level, null, null, null, pos, MobSpawnType.NATURAL, false, false)
+    }
+
     //获取在线玩家 名称
     /*public static List<String> getOnlinePlayerNameList(){
         return RdiCoreServer.getServer().getPlayerList().getPlayers().stream()
@@ -61,8 +58,8 @@ public class ServerUtils {
                 .toList()
         return new ArrayList<>();
     }
-    //挂机玩家 做什么?
-    public static void getAfkPlayerListDo(Predicate<? super Map.Entry<String,Integer>> predicate,ServerPlayer fromPlayer){
+    //挂机玩家 做什么
+    public static void getAfkPlayerListDo(Predicate< super Map.Entry<String,Integer>> predicate,ServerPlayer fromPlayer){
         getAfkPlayerList().stream()
                 //玩家说的话里面有没有挂机人的名称
                 .filter(predicate)
@@ -73,7 +70,7 @@ public class ServerUtils {
                 });
     }*/
     //存档
-    public static void save(){
-        RdiCoreServer.getServer().saveAllChunks(true,true,true);
+    fun save() {
+        RdiCoreServer.getServer().saveAllChunks(true, true, true)
     }
 }

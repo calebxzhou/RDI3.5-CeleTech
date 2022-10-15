@@ -1,11 +1,13 @@
 package calebzhou.rdi.core.server.utils
 
 import calebzhou.rdi.core.server.RdiCoreServer
-import calebzhou.rdi.core.server.RdiSharedConstants
+import calebzhou.rdi.core.server.constant.RdiSharedConstants
+import calebzhou.rdi.core.server.model.ResponseData
+import calebzhou.rdi.core.server.utils.RdiSerializer.Companion.gson
 import com.google.gson.reflect.TypeToken
 import it.unimi.dsi.fastutil.Pair
 import okhttp3.*
-import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
+import okhttp3.HttpUrl.Companion.toHttpUrl
 import java.io.IOException
 import java.security.SecureRandom
 import java.security.cert.CertificateException
@@ -14,41 +16,33 @@ import java.util.concurrent.TimeUnit
 import javax.net.ssl.SSLContext
 import javax.net.ssl.TrustManager
 import javax.net.ssl.X509TrustManager
+import kotlin.reflect.KClass
 
 object RdiHttpClient {
-    private const val CONNECTION_TIME_OUT = 10
-    private var client: OkHttpClient? = null
+    private const val CONNECTION_TIME_OUT = 5
+    private val client: OkHttpClient =
+        if (RdiSharedConstants.DEBUG)
+            unsafeOkHttpClient
+        else OkHttpClient.Builder()
+            .connectTimeout(CONNECTION_TIME_OUT.toLong(), TimeUnit.SECONDS)
+            .readTimeout(CONNECTION_TIME_OUT.toLong(), TimeUnit.SECONDS)
+            .writeTimeout(CONNECTION_TIME_OUT.toLong(), TimeUnit.SECONDS)
+            .connectionPool(ConnectionPool(32, 60, TimeUnit.SECONDS))
+            .build()
 
-    init {
-        try {
-            client = if (RdiSharedConstants.DEBUG) unsafeOkHttpClient else OkHttpClient.Builder()
-                .connectTimeout(CONNECTION_TIME_OUT.toLong(), TimeUnit.SECONDS)
-                .readTimeout(CONNECTION_TIME_OUT.toLong(), TimeUnit.SECONDS)
-                .writeTimeout(CONNECTION_TIME_OUT.toLong(), TimeUnit.SECONDS)
-                .connectionPool(ConnectionPool(32, 60, TimeUnit.SECONDS))
-                .build()
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
-    }
-
-    private val ADDR = if (RdiSharedConstants.DEBUG) "127.0.0.1" else "www.davisoft.cn"
-    @JvmStatic
-	@SafeVarargs
     fun sendRequestAsyncResponseless(type: String, url: String, vararg params: Pair<String, Any>) {
         ThreadPool.newThread { sendRequest(type, url, *params) }
     }
-
-    @SafeVarargs
-    fun <T> sendRequest(
-        resultClass: Class<T>,
+    fun <T : Any> sendRequest(
+        resultClass: KClass<T>?,
         type: String,
         url: String,
         vararg params: Pair<String, Any>
-    ): ResultData<T> {
-        if (RdiSharedConstants.DEBUG) RdiCoreServer.LOGGER.info("HTTP发送{} {} {}", type, url, params)
+    ): ResponseData<out Any?> {
+        if (RdiSharedConstants.DEBUG)
+            RdiCoreServer.LOGGER.info("HTTP发送{} {} {}", type, url, params)
         val okreq = Request.Builder()
-        val urlBuilder: HttpUrl.Builder = ("https://$ADDR:26837$url").toHttpUrlOrNull()!!.newBuilder()
+        val urlBuilder= (RdiSharedConstants.SERVICE_ADDR + url).toHttpUrl().newBuilder()
         val bodyFromParams = getFormBodyFromParams(*params)
         when (type) {
             "post" -> okreq.post(bodyFromParams)
@@ -60,31 +54,28 @@ object RdiHttpClient {
             }
         }
         okreq.url(urlBuilder.build())
-        var response: Response? = null
-        response = try {
-            client!!.newCall(okreq.build()).execute()
+        val response = try {
+            client.newCall(okreq.build()).execute()
         } catch (e: IOException) {
             RdiCoreServer.LOGGER.info("请求出现错误：" + e.message + e.cause)
-            return ResultData<Any>(-404, "请求超时", e.message + e.cause)
+            return ResponseData(-404, "请求超时", e.message + e.cause)
         }
-        var respStr: String? = null
-        try {
-            response.body.use { body -> respStr = body!!.string() }
-        } catch (e: IOException) {
-            e.printStackTrace()
-        }
-        if (RdiSharedConstants.DEBUG) RdiCoreServer.LOGGER.info("HTTP响应 {}", respStr)
-        return RdiSerializer.GSON.fromJson(
+
+        val respStr: String = response.body.use { body -> body!!.string() }
+        if (RdiSharedConstants.DEBUG)
+            RdiCoreServer.LOGGER.info("HTTP响应 {}", respStr)
+        return gson.fromJson(
             respStr,
-            if (resultClass == null) ResultData::class.java else TypeToken.getParameterized(
-                ResultData::class.java, resultClass
+            if (resultClass == null)
+                ResponseData::class.java
+            else TypeToken.getParameterized(
+                ResponseData::class.java, resultClass.java
             ).type
         )
     }
 
-    @JvmStatic
-	@SafeVarargs
-    fun sendRequest(type: String?, url: String, vararg params: Pair<String, Any>): ResultData<*> {
+    @SafeVarargs
+    fun sendRequest(type: String, url: String, vararg params: Pair<String, Any>): ResponseData<*> {
         return sendRequest<Any>(null, type, url, *params)
     }
 
@@ -108,7 +99,7 @@ object RdiHttpClient {
     private val unsafeOkHttpClient: OkHttpClient
         // Install the all-trusting trust manager
         // Create an ssl socket factory with our all-trusting manager
-        private get() = try {
+        get() = try {
             // Create a trust manager that does not validate certificate chains
             val trustAllCerts = arrayOf<TrustManager>(
                 object : X509TrustManager {
@@ -139,7 +130,7 @@ object RdiHttpClient {
             val sslSocketFactory = sslContext.socketFactory
             val builder = OkHttpClient.Builder()
             builder.sslSocketFactory(sslSocketFactory, trustAllCerts[0] as X509TrustManager)
-            builder.hostnameVerifier({ hostname, session -> true })
+            builder.hostnameVerifier { hostname, session -> true }
             builder.build()
         } catch (e: Exception) {
             throw RuntimeException(e)

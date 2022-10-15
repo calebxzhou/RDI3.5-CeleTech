@@ -1,6 +1,10 @@
 package calebzhou.rdi.core.server;
 
 import calebzhou.rdi.core.server.command.impl.*;
+import calebzhou.rdi.core.server.constant.NetworkPackets;
+import calebzhou.rdi.core.server.misc.PlayerLocationRecorder;
+import calebzhou.rdi.core.server.misc.ServerLaggingStatus;
+import calebzhou.rdi.core.server.misc.TickTaskManager;
 import calebzhou.rdi.core.server.model.*;
 import calebzhou.rdi.core.server.module.DeathRandomDrop;
 import calebzhou.rdi.core.server.utils.*;
@@ -9,7 +13,6 @@ import it.unimi.dsi.fastutil.Pair;
 import net.fabricmc.fabric.api.entity.event.v1.ServerEntityWorldChangeEvents;
 import net.fabricmc.fabric.api.entity.event.v1.ServerPlayerEvents;
 import net.fabricmc.fabric.api.event.player.PlayerBlockBreakEvents;
-import net.fabricmc.fabric.api.event.player.UseBlockCallback;
 import net.minecraft.commands.CommandBuildContext;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
@@ -21,14 +24,11 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.network.ServerGamePacketListenerImpl;
-import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResult;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.phys.BlockHitResult;
 import org.quiltmc.qsl.command.api.CommandRegistrationCallback;
 import org.quiltmc.qsl.lifecycle.api.event.ServerTickEvents;
 import org.quiltmc.qsl.networking.api.PacketSender;
@@ -56,7 +56,7 @@ public class RdiEvents {
 	private void onServerEndTick(MinecraftServer server) {
 		for (int i=0;i<1000;++i){
 			if(!ServerLaggingStatus.isServerLagging())
-				RdiTickTaskManager.onServerTick();
+				TickTaskManager.onServerTick();
 			else
 				break;
 		}
@@ -103,7 +103,7 @@ public class RdiEvents {
         //随机掉落物品
         DeathRandomDrop.handleDeath(player);
 		//记录地点
-		RdiPlayerLocationRecorder.record(player);
+		PlayerLocationRecorder.record(player);
         return true;
     }
 
@@ -170,15 +170,15 @@ public class RdiEvents {
         //提示账号是否有密码
 		String pid = player.getStringUUID();
 		ThreadPool.newThread(()-> {
-			ResultData<Boolean> resultData = RdiHttpClient.sendRequest(Boolean.class,"get", "/v37/account/isreg/" + pid);
-			RdiUser rdiUser = RdiMemoryStorage.pidUserMap.get(pid);
-			if(rdiUser==null){
+			ResponseData<Boolean> ResponseData = RdiHttpClient.sendRequest(Boolean.class,"get", "/v37/account/isreg/" + pid);
+			RdiPlayerProfile rdiPlayerProfile = RdiMemoryStorage.pidUserMap.get(pid);
+			if(rdiPlayerProfile ==null){
 				player.connection.disconnect(Component.literal("用户对象不能为空"));
 				return;
 			}
-			if(resultData.getData()){
-				if (Boolean.parseBoolean(String.valueOf(resultData.getData()))){
-					ResultData loginData = RdiHttpClient.sendRequest("get", "/v37/account/login/" + pid, Pair.of("pwd", rdiUser.getPwd()));
+			if(ResponseData.getData()){
+				if (Boolean.parseBoolean(String.valueOf(ResponseData.getData()))){
+					ResponseData loginData = RdiHttpClient.sendRequest("get", "/v37/account/login/" + pid, Pair.of("pwd", rdiPlayerProfile.getPwd()));
 					if (!loginData.isSuccess()) {
 						RdiCoreServer.LOGGER.info("此请求密码错误！");
 						player.connection.disconnect(Component.literal("RDI密码错误，请尝试重启游戏\n或者检查文件"+PlayerUtils.getPasswordStorageFile(player)));
@@ -186,22 +186,22 @@ public class RdiEvents {
 				}
 			}else{
 				//只有盗版才提示
-				if (rdiUser.getType().equals("legacy")) {
+				if (rdiPlayerProfile.getType().equals("legacy")) {
 					sendClientPopup(player,"warning","RDI账号安全","建议使用/set-password指令设置密码");
 				}
 			}
         });
 		ThreadPool.newThread(()->{
-			ResultData<RdiGeoLocation> request = RdiHttpClient.sendRequest(RdiGeoLocation.class,"get", "/v37/public/ip2loca",Pair.of("ip",player.getIpAddress()));
+			ResponseData<RdiGeoLocation> request = RdiHttpClient.sendRequest(RdiGeoLocation.class,"get", "/v37/public/ip2loca",Pair.of("ip",player.getIpAddress()));
 			if(request.isSuccess()){
 				RdiGeoLocation geoLocation = request.getData();
-				ResultData<RdiWeather> weatherResultData = RdiHttpClient.sendRequest(RdiWeather.class,"get", "/v37/public/weather", Pair.of("longitude", geoLocation.location.longitude), Pair.of("latitude", geoLocation.location.latitude));
-				if (weatherResultData.isSuccess()) {
-					RdiWeather rdiWeather = weatherResultData.getData();
+				ResponseData<RdiWeather> weatherResponseData = RdiHttpClient.sendRequest(RdiWeather.class,"get", "/v37/public/weather", Pair.of("longitude", geoLocation.location.longitude), Pair.of("latitude", geoLocation.location.latitude));
+				if (weatherResponseData.isSuccess()) {
+					RdiWeather rdiWeather = weatherResponseData.getData();
 
 					PlayerUtils.saveGeoLocation(player,geoLocation);
 					PlayerUtils.saveWeather(player,rdiWeather);
-					NetworkUtils.sendPacketToClient(player,NetworkPackets.GEO_LOCATION, RdiSerializer.GSON.toJson(geoLocation));
+					NetworkUtils.sendPacketToClient(player, NetworkPackets.GEO_LOCATION, RdiSerializer.GSON.toJson(geoLocation));
 					NetworkUtils.sendPacketToClient(player,NetworkPackets.WEATHER, RdiSerializer.GSON.toJson(rdiWeather));
 					PlayerUtils.getAllPlayers().forEach(pl->pl.connection.send(new ClientboundPlayerInfoPacket(ClientboundPlayerInfoPacket.Action.UPDATE_DISPLAY_NAME,player)));;
 					PlayerUtils.sendWeatherInfo(player,geoLocation,rdiWeather);;

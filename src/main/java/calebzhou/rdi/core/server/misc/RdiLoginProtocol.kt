@@ -1,7 +1,9 @@
-package calebzhou.rdi.core.server
+package calebzhou.rdi.core.server.misc
 
+import calebzhou.rdi.core.server.RdiCoreServer
+import calebzhou.rdi.core.server.RdiMemoryStorage
 import calebzhou.rdi.core.server.mixin.AccessServerLoginPacketListenerImpl
-import calebzhou.rdi.core.server.model.RdiUser
+import calebzhou.rdi.core.server.model.RdiPlayerProfile
 import calebzhou.rdi.core.server.utils.RdiSerializer
 import com.mojang.authlib.GameProfile
 import net.minecraft.network.Connection
@@ -14,7 +16,6 @@ import java.util.*
  * Created by calebzhou on 2022-09-18,21:08.
  */
 object RdiLoginProtocol {
-    @JvmStatic
     fun handleHello(
         connection: Connection,
         loginPacketListener: ServerLoginPacketListenerImpl,
@@ -28,15 +29,15 @@ object RdiLoginProtocol {
                 connection.disconnect(Component.literal("登录协议错误 格式错误1，请更新客户端！"))
                 return false
             }
-            val rdiUser = RdiSerializer.GSON.fromJson(json, RdiUser::class.java)
+            val rdiPlayerProfile = RdiSerializer.gson.fromJson(json, RdiPlayerProfile::class.java)
             (loginPacketListener as AccessServerLoginPacketListenerImpl).setGameProfile(
                 GameProfile(
                     UUID.fromString(
-                        rdiUser.uuid
-                    ), rdiUser.name
+                        rdiPlayerProfile.uuid
+                    ), rdiPlayerProfile.name
                 )
             )
-            RdiMemoryStorage.pidUserMap[rdiUser.uuid] = rdiUser
+            RdiMemoryStorage.pidUserMap[rdiPlayerProfile.uuid] = rdiPlayerProfile
             return true
         } catch (e: Exception) {
             e.printStackTrace()
