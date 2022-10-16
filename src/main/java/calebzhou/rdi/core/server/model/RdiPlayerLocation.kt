@@ -6,6 +6,7 @@ import net.minecraft.server.level.ServerLevel
 import net.minecraft.server.level.ServerPlayer
 import net.minecraft.world.phys.Vec3
 import java.io.Serializable
+import kotlin.math.roundToInt
 
 /**
  * Created by calebzhou on 2022-09-23,20:54.
@@ -21,11 +22,11 @@ class RdiPlayerLocation private constructor(
 
     override fun toString(): String {
         return "{" + WorldUtils.getDimensionName(level) +
-                ", x=" + Math.round(x) +
-                ", y=" + Math.round(y) +
-                ", z=" + Math.round(z) +
-                ", w=" + Math.round(w) +
-                ", p=" + Math.round(p) +
+                ", x=" + x.roundToInt() +
+                ", y=" + y.roundToInt() +
+                ", z=" + z.roundToInt() +
+                ", w=" + w.roundToInt() +
+                ", p=" + p.roundToInt() +
                 '}'
     }
 

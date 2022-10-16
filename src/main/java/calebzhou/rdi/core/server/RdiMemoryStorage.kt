@@ -14,15 +14,9 @@ object RdiMemoryStorage {
 
 	val tpaMap = Object2ObjectOpenHashMap<String, String>()
 
-    //pid vs 玩家地理位置
 
-	val pidGeoMap = Object2ObjectOpenHashMap<String, RdiGeoLocation>()
 
-    //pid vs 玩家天气
 
-	val pidWeatherMap = Object2ObjectOpenHashMap<String, RdiWeather>()
-
-	val pidUserMap = Object2ObjectOpenHashMap<String, RdiPlayerProfile>()
 
     //正在挂机的玩家名
 

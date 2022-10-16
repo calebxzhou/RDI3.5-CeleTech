@@ -23,7 +23,7 @@ class RdiNumberCommand : RdiCommand("rdi-number", "查询自己的RDI编号") {
     }
 
     private fun exec(context: CommandContext<CommandSourceStack>): Short {
-        val player = context.source.player
+        val player = context.source.player!!
         val pid = player!!.stringUUID
         PlayerUtils.sendChatMessage(player, PlayerUtils.RESPONSE_INFO, "您的编号是：")
         PlayerUtils.sendChatMessage(player, Component.literal(pid).withStyle { style: Style ->

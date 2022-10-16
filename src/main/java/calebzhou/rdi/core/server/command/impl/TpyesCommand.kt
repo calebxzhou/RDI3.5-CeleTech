@@ -18,16 +18,16 @@ class TpyesCommand : RdiCommand("tpyes", "接受传送请求") {
                 return@executes 1
             }
             val fromPlayerId = RdiMemoryStorage.tpaMap[toPlayer.stringUUID]
-            if (StringUtils.isEmpty(fromPlayerId)) {
+            if (fromPlayerId==null) {
                 PlayerUtils.sendChatMessage(toPlayer, PlayerUtils.RESPONSE_ERROR, "找不到传送请求....")
                 return@executes 1
             }
             val fromPlayer = PlayerUtils.getPlayerByUuid(fromPlayerId)
-            PlayerLocationRecorder.record(fromPlayer)
             if (fromPlayer == null) {
                 PlayerUtils.sendChatMessage(toPlayer, PlayerUtils.RESPONSE_ERROR, "玩家不在线！")
                 return@executes 1
             }
+            PlayerLocationRecorder.record(fromPlayer)
             PlayerUtils.sendChatMessage(toPlayer, "正在传送..")
             PlayerUtils.sendChatMessage(fromPlayer, "正在传送..")
             PlayerUtils.teleport(fromPlayer, toPlayer)

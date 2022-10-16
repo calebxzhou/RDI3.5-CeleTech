@@ -1,7 +1,7 @@
 package calebzhou.rdi.core.server.mixin.server;
 
 import calebzhou.rdi.core.server.RdiCoreServer;
-import calebzhou.rdi.core.server.ServerLaggingStatus;
+import calebzhou.rdi.core.server.misc.ServerLaggingStatus;
 import calebzhou.rdi.core.server.utils.PlayerUtils;
 import net.minecraft.Util;
 import net.minecraft.network.chat.Component;

@@ -37,7 +37,7 @@ object RdiLoginProtocol {
                     ), rdiPlayerProfile.name
                 )
             )
-            RdiMemoryStorage.pidUserMap[rdiPlayerProfile.uuid] = rdiPlayerProfile
+            RdiPlayerProfileManager.addProfile(rdiPlayerProfile.uuid,rdiPlayerProfile)
             return true
         } catch (e: Exception) {
             e.printStackTrace()

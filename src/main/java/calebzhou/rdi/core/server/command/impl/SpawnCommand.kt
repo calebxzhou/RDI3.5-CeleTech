@@ -10,7 +10,7 @@ class SpawnCommand : RdiCommand("spawn", "回到主城") {
     override fun getExecution(): LiteralArgumentBuilder<CommandSourceStack> {
         return baseArgBuilder
             .executes { context: CommandContext<CommandSourceStack> ->
-                val player = context.source.player
+                val player = context.source.player!!
                 PlayerUtils.teleportToSpawn(player)
                 PlayerUtils.sendChatMessage(player, PlayerUtils.RESPONSE_SUCCESS, "成功回到了主城！")
                 1

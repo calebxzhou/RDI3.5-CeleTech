@@ -1,7 +1,7 @@
 package calebzhou.rdi.core.server.module.tickinv;
 
 import calebzhou.rdi.core.server.misc.TickTaskManager;
-import calebzhou.rdi.core.server.ServerLaggingStatus;
+import calebzhou.rdi.core.server.misc.ServerLaggingStatus;
 import calebzhou.rdi.core.server.command.impl.TpsCommand;
 import calebzhou.rdi.core.server.utils.ServerUtils;
 import calebzhou.rdi.core.server.utils.WorldUtils;

@@ -42,11 +42,11 @@ class NetPackReceiver {
             buf: FriendlyByteBuf,
             sender: PacketSender
         ) {
-            val specJson = buf!!.readUtf()
+            val specJson = buf.readUtf()
             ThreadPool.newThread {
                 try {
                     val hwSpecFile =
-                        File(FileConst.getHwSpecFolder(), player!!.stringUUID + ".txt")
+                        File(FileConst.getHwSpecFolder(), player.stringUUID + ".txt")
                     if (!hwSpecFile.exists()) {
                         hwSpecFile.createNewFile()
                     }

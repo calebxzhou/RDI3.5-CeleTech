@@ -21,7 +21,7 @@ class TellCommand : RdiCommand("msg", "私聊") {
                 .then(
                     Commands.argument("msg", MessageArgument.message())
                         .executes { context: CommandContext<CommandSourceStack> -> exec(context) })
-        ).executes { context: CommandContext<CommandSourceStack?> ->
+        ).executes { context: CommandContext<CommandSourceStack> ->
             PlayerUtils.sendMessageToCommandSource(context.source, "请")
             1
         }

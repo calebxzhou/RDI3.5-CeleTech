@@ -1,7 +1,6 @@
 package calebzhou.rdi.core.server.misc
 
 import calebzhou.rdi.core.server.RdiCoreServer
-import calebzhou.rdi.core.server.ServerLaggingStatus
 import calebzhou.rdi.core.server.utils.WorldUtils
 import com.google.common.collect.EvictingQueue
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap
@@ -34,7 +33,7 @@ object TickTaskManager {
         return queue?.size ?: 0
     }
 	fun onServerTick() {
-        if (ServerLaggingStatus.isServerLagging()) return
+        if (ServerLaggingStatus.isServerLagging) return
         dimensionTickQueueMap.forEach { (dimensionName: String, queue: EvictingQueue<Runnable>) ->
             if (queue.peek() != null) {
                 queue.poll()!!.run()

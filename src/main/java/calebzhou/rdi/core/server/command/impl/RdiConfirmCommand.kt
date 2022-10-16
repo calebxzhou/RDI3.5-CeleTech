@@ -15,7 +15,7 @@ class RdiConfirmCommand : RdiCommand("rdi-confirm", "确认执行指令。") {
     override fun getExecution(): LiteralArgumentBuilder<CommandSourceStack> {
         return baseArgBuilder.then(
             Commands.argument("confirm-id", StringArgumentType.string())
-                .executes { context: CommandContext<CommandSourceStack?>? ->
+                .executes { context: CommandContext<CommandSourceStack> ->
                     CommandConfirmer.onCommandExecute(context)
                 })
     }

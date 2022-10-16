@@ -2,9 +2,9 @@ package calebzhou.rdi.core.server.command.impl
 
 import calebzhou.rdi.core.server.RdiCoreServer
 import calebzhou.rdi.core.server.misc.TickTaskManager
-import calebzhou.rdi.core.server.ServerLaggingStatus
 import calebzhou.rdi.core.server.command.RdiCommand
 import calebzhou.rdi.core.server.constant.ColorConst
+import calebzhou.rdi.core.server.misc.ServerLaggingStatus
 import calebzhou.rdi.core.server.utils.PlayerUtils
 import calebzhou.rdi.core.server.utils.ThreadPool
 import calebzhou.rdi.core.server.utils.WorldUtils
@@ -14,6 +14,7 @@ import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap
 import net.minecraft.commands.CommandSourceStack
 import net.minecraft.network.chat.Component
 import java.util.*
+import kotlin.math.roundToInt
 
 class TpsCommand : RdiCommand("tps", "查询服务器的流畅程度") {
     override fun getExecution(): LiteralArgumentBuilder<CommandSourceStack> {
@@ -29,13 +30,13 @@ class TpsCommand : RdiCommand("tps", "查询服务器的流畅程度") {
         ThreadPool.newThread {
 
             //平均tick时间
-            val meanTickTime = Arrays.stream(RdiCoreServer.getServer().tickTimes).average().asDouble * 1.0E-6
+            val meanTickTime = Arrays.stream(RdiCoreServer.server.tickTimes).average().asDouble * 1.0E-6
             //平均tps
             val meanTPS = Math.min(1000.0 / meanTickTime, 20.0)
             //平均tick时间 比 100%负载tick时间
             val ratio = meanTickTime / stdTickTime
             //字符数
-            val squares = Math.round(25 * ratio)
+            val squares = (25 * ratio).roundToInt()
             val squaresToSend = StringBuilder(ColorConst.BRIGHT_GREEN)
             for (i in 0..squares) {
                 squaresToSend.append(squarePattern1)
@@ -52,7 +53,7 @@ class TpsCommand : RdiCommand("tps", "查询服务器的流畅程度") {
                 sourceStack,
                 "延迟?%s %sms 任务数%s "
                     .formatted(
-                        if (ServerLaggingStatus.isServerLagging()) "是" else "否",
+                        if (ServerLaggingStatus.isServerLagging) "是" else "否",
                         ServerLaggingStatus.msBehind,
                         queueSize
                     )

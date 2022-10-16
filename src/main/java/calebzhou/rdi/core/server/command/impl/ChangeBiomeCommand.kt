@@ -40,7 +40,7 @@ class ChangeBiomeCommand : RdiCommand("change-biome", "改变一个区域内的�
     }
 
     private fun changeBiomeWith2Pos(context: CommandContext<CommandSourceStack>): Int {
-        val player = context.source.player
+        val player = context.source.player!!
         if (!PlayerUtils.isInIsland(player)) {
             PlayerUtils.sendChatMessage(player, PlayerUtils.RESPONSE_ERROR, "只有在二岛上才能改变生物群系！")
             return 1
@@ -48,7 +48,7 @@ class ChangeBiomeCommand : RdiCommand("change-biome", "改变一个区域内的�
         val blockPos1 = BlockPosArgument.getLoadedBlockPos(context, "pos1")
         val blockPos2 = BlockPosArgument.getLoadedBlockPos(context, "pos2")
         val xpLvlNeed = Math.cbrt(blockPos2.distSqr(blockPos1)).toInt() * xpNeedBase
-        if (player!!.experienceLevel < xpLvlNeed) {
+        if (player.experienceLevel < xpLvlNeed) {
             PlayerUtils.sendChatMessage(
                 player,
                 PlayerUtils.RESPONSE_ERROR,

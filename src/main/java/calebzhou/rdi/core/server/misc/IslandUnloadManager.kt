@@ -48,7 +48,7 @@ class IslandUnloadManager : TimerTask() {
             )
         }
 
-        fun removeIslandFromQueue(level: ServerLevel?) {
+        fun removeIslandFromQueue(level: ServerLevel) {
             removeIslandFromQueue(WorldUtils.getDimensionName(level))
         }
 
@@ -75,7 +75,7 @@ class IslandUnloadManager : TimerTask() {
                     TickTaskManager.removeDimension(dimensionName)
                     ServerUtils.executeOnServerThread {
                         levelToUnload.save(null, true, false)
-                        Fantasy.get(RdiCoreServer.getServer()).unloadWorld(levelToUnload)
+                        Fantasy.get(RdiCoreServer.server).unloadWorld(levelToUnload)
                     }
                     dimNameLevelMap.remove(dimensionName)
                 }

@@ -22,7 +22,7 @@ class SpeakScopeCommand : RdiCommand("speak-scope", "设定聊天范围，是岛
 
     private fun exec(context: CommandContext<CommandSourceStack>): Int {
         ThreadPool.newThread {
-            val player = context.source.player
+            val player = context.source.player!!
             val pid = player!!.stringUUID
             if (RdiMemoryStorage.pidToSpeakPlayersMap.containsKey(pid) && RdiMemoryStorage.pidToSpeakPlayersMap[pid]!!.size > 0) {
                 if (RdiMemoryStorage.pidToSpeakPlayersMap.remove(pid) != null) {
@@ -48,9 +48,9 @@ class SpeakScopeCommand : RdiCommand("speak-scope", "设定聊天范围，是岛
                 player,
                 PlayerUtils.RESPONSE_SUCCESS,
                 "成功将聊天范围设定为：岛屿内可见。您的聊天消息只有以下玩家可见：" + Arrays.toString(
-                    playerSet.stream().map { uuid: String? -> PlayerUtils.getPlayerByUuid(uuid) }
+                    playerSet.stream().map { uuid: String -> PlayerUtils.getPlayerByUuid(uuid) }
                         .toArray()))
-            playersInLevel.forEach(Consumer { playerInLevel: ServerPlayer? ->
+            playersInLevel.forEach(Consumer { playerInLevel: ServerPlayer ->
                 PlayerUtils.sendChatMessage(
                     playerInLevel,
                     PlayerUtils.RESPONSE_INFO,

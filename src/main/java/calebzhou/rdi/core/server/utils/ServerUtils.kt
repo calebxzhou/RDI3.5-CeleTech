@@ -14,27 +14,27 @@ object ServerUtils {
     }
 
     fun broadcastChatMessage(msg: Component) {
-        for (player in RdiCoreServer.getServer().playerList.players) {
+        for (player in RdiCoreServer.server.playerList.players) {
             PlayerUtils.sendChatMessage(player, msg)
         }
     }
 
     fun broadcastActionBarMessage(msg: Component) {
-        for (player in RdiCoreServer.getServer().playerList.players) {
+        for (player in RdiCoreServer.server.playerList.players) {
             PlayerUtils.sendChatMessage(player, msg, true)
         }
     }
 
     fun executeCommandOnServer(command: String) {
-        executeCommandOnSource(command, RdiCoreServer.getServer().createCommandSourceStack())
+        executeCommandOnSource(command, RdiCoreServer.server.createCommandSourceStack())
     }
 
     fun executeOnServerThread(cmd: Runnable) {
-        RdiCoreServer.getServer().execute(cmd)
+        RdiCoreServer.server.execute(cmd)
     }
 
     fun executeCommandOnSource(command: String, source: CommandSourceStack) {
-        val server = RdiCoreServer.getServer()
+        val server = RdiCoreServer.server
         val commands = server.commands
         commands.performCommand(
             commands.dispatcher.parse(command, source), command
@@ -71,6 +71,6 @@ object ServerUtils {
     }*/
     //存档
     fun save() {
-        RdiCoreServer.getServer().saveAllChunks(true, true, true)
+        RdiCoreServer.server.saveAllChunks(true, true, true)
     }
 }

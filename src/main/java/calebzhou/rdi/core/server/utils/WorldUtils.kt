@@ -34,14 +34,14 @@ object WorldUtils {
         }
     }
 
-    fun getLevelByDimensionName(dimKey: String?): ServerLevel? {
+    fun getLevelByDimensionName(dimKey: String): ServerLevel? {
         val resourceLocation = ResourceLocation(dimKey)
         val worldKey = ResourceKey.create(Registry.DIMENSION_REGISTRY, resourceLocation)
-        return RdiCoreServer.getServer().getLevel(worldKey)
+        return RdiCoreServer.server.getLevel(worldKey)
     }
 
-    val nether: ServerLevel?
-        get() = RdiCoreServer.getServer().getLevel(ServerLevel.NETHER)
+    val nether: ServerLevel
+        get() = RdiCoreServer.server.getLevel(ServerLevel.NETHER)!!
 
     fun isNoPlayersInLevel(playerExitingIsland: Player, level: ServerLevel): Boolean {
         return level.getPlayers { playersInLevel: ServerPlayer -> playersInLevel.stringUUID != playerExitingIsland.stringUUID }
@@ -139,6 +139,6 @@ object WorldUtils {
     }
 
     fun isOverworld(toLevel: ServerLevel): Boolean {
-        return toLevel === RdiCoreServer.getServer().overworld()
+        return toLevel === RdiCoreServer.server.overworld()
     }
 }

@@ -1,53 +1,54 @@
-package calebzhou.rdi.core.server;
+package calebzhou.rdi.core.server
 
-import calebzhou.rdi.core.server.constant.FileConst;
-import calebzhou.rdi.core.server.constant.RdiSharedConstants;
-import calebzhou.rdi.core.server.thread.MobSpawningThread;
-import net.minecraft.server.MinecraftServer;
-import net.minecraft.world.Difficulty;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.quiltmc.loader.api.ModContainer;
-import org.quiltmc.qsl.base.api.entrypoint.ModInitializer;
-import org.quiltmc.qsl.lifecycle.api.event.ServerLifecycleEvents;
+import calebzhou.rdi.core.server.constant.FileConst
+import calebzhou.rdi.core.server.constant.RdiSharedConstants
+import calebzhou.rdi.core.server.misc.NetPackReceiver.Companion.register
+import calebzhou.rdi.core.server.thread.MobSpawningThread
+import net.minecraft.server.MinecraftServer
+import net.minecraft.world.Difficulty
+import org.apache.logging.log4j.LogManager
+import org.quiltmc.loader.api.ModContainer
+import org.quiltmc.qsl.base.api.entrypoint.ModInitializer
+import org.quiltmc.qsl.lifecycle.api.event.ServerLifecycleEvents
+import java.io.IOException
+import java.util.*
 
-import java.io.IOException;
-import java.util.SplittableRandom;
-
-public class RdiCoreServer implements ModInitializer {
-
-    public static final Logger LOGGER = LogManager.getLogger(RdiSharedConstants.MOD_ID);
-    public static final SplittableRandom RANDOM = new SplittableRandom();
-    private static MinecraftServer server;
-
-    @Override
-    public void onInitialize(ModContainer modContainer) {
+val logger = LogManager.getLogger(RdiSharedConstants.MOD_ID)
+class RdiCoreServer : ModInitializer {
+    override fun onInitialize(modContainer: ModContainer) {
         try {
-            loadFiles();
-        } catch (IOException e) {
-            e.printStackTrace();
+            loadFiles()
+        } catch (e: IOException) {
+            e.printStackTrace()
         }
-        ServerLifecycleEvents.READY.register((server) -> {
-            RdiCoreServer.server = server;
-            server.getWorldData().setDifficulty(Difficulty.HARD);
-			new MobSpawningThread().start();
-        });
-        RdiNetworkReceiver.INSTANCE.register();
-        RdiEvents.INSTANCE.register();
-
-    }
-    public static void loadFiles() throws IOException{
-        if(!FileConst.getMainFolder().exists()){
-            LOGGER.info("没有配置存储文件夹，正在创建！");
-            FileConst.getMainFolder().mkdir();
-        }
-        if(!FileConst.getHwSpecFolder().exists()){
-            LOGGER.info("没有hwspec文件夹，正在创建！");
-            FileConst.getHwSpecFolder().mkdir();
-        }
-    }
-    public static MinecraftServer getServer() {
-        return server;
+        ServerLifecycleEvents.READY.register(ServerLifecycleEvents.Ready { server: MinecraftServer ->
+            Companion.server = server
+            server.worldData.difficulty = Difficulty.HARD
+            MobSpawningThread().start()
+        })
+        register()
+        RdiEvents.INSTANCE.register()
     }
 
+    companion object {
+        @JvmField
+		val LOGGER = LogManager.getLogger(RdiSharedConstants.MOD_ID)
+        @JvmField
+		val RANDOM = SplittableRandom()
+        @JvmStatic
+		lateinit var server: MinecraftServer
+            private set
+
+        @Throws(IOException::class)
+        fun loadFiles() {
+            if (!FileConst.getMainFolder().exists()) {
+                LOGGER.info("没有配置存储文件夹，正在创建！")
+                FileConst.getMainFolder().mkdir()
+            }
+            if (!FileConst.getHwSpecFolder().exists()) {
+                LOGGER.info("没有hwspec文件夹，正在创建！")
+                FileConst.getHwSpecFolder().mkdir()
+            }
+        }
+    }
 }

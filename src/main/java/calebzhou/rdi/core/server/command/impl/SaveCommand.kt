@@ -10,7 +10,7 @@ import net.minecraft.network.chat.Component
 class SaveCommand : RdiCommand("SAVE", "存档。") {
     override fun getExecution(): LiteralArgumentBuilder<CommandSourceStack> {
         return baseArgBuilder.executes { c: CommandContext<CommandSourceStack> ->
-            RdiCoreServer.getServer().saveEverything(true, true, true)
+            RdiCoreServer.server.saveEverything(true, true, true)
             c.source.sendSuccess(Component.literal("成功"), true)
             1
         }

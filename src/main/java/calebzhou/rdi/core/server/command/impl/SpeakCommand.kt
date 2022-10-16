@@ -5,6 +5,7 @@ import calebzhou.rdi.core.server.RdiMemoryStorage
 import calebzhou.rdi.core.server.command.RdiCommand
 import calebzhou.rdi.core.server.utils.EncodingUtils
 import calebzhou.rdi.core.server.utils.PlayerUtils
+import calebzhou.rdi.core.server.utils.RdiHttpClient
 import calebzhou.rdi.core.server.utils.ServerUtils
 import com.mojang.brigadier.builder.LiteralArgumentBuilder
 import com.mojang.brigadier.context.CommandContext
@@ -25,13 +26,13 @@ class SpeakCommand : RdiCommand("speak", "说话") {
         return baseArgBuilder.then(
             Commands.argument("msg", MessageArgument.message())
                 .executes { context: CommandContext<CommandSourceStack> ->
-                    val player = context.source.player
+                    val player = context.source.player!!
                     val pid = player!!.stringUUID
                     val chatMessage = MessageArgument.getChatMessage(context, "msg")
                     chatMessage.resolve(context.source) { playerChatMessage: PlayerChatMessage ->
                         val txt = playerChatMessage.signedContent().plain()
                         if (RdiMemoryStorage.pidToSpeakPlayersMap.containsKey(pid)) {
-                            RdiMemoryStorage.pidToSpeakPlayersMap[pid]!!.forEach(Consumer { pidToReceiveMsg: String? ->
+                            RdiMemoryStorage.pidToSpeakPlayersMap[pid]!!.forEach(Consumer { pidToReceiveMsg: String ->
                                 val receiver = PlayerUtils.getPlayerByUuid(pidToReceiveMsg)
                                 if (receiver != null) {
                                     PlayerUtils.sendChatMessage(

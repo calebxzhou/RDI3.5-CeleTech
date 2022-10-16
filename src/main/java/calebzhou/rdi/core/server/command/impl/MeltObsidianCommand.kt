@@ -15,14 +15,14 @@ import net.minecraft.world.level.block.Blocks
 class MeltObsidianCommand : RdiCommand("melt-obsidian", "熔化黑曜石") {
     override fun getExecution(): LiteralArgumentBuilder<CommandSourceStack> {
         return baseArgBuilder.executes { context: CommandContext<CommandSourceStack> ->
-            val player = context.source.player
+            val player = context.source.player!!
             val posLook = PlayerUtils.getPlayerLookingBlockPosition(player, false)
             if (posLook == Vec3i(0, 127, 0)) {
                 PlayerUtils.sendChatMessage(player, PlayerUtils.RESPONSE_ERROR, "不能熔化原点方块！")
                 return@executes 1
             }
-            if (Blocks.OBSIDIAN === player!!.getLevel().getBlockState(posLook).block) {
-                WorldUtils.placeBlock(player!!.getLevel(), posLook, Blocks.LAVA)
+            if (Blocks.OBSIDIAN === player.getLevel().getBlockState(posLook).block) {
+                WorldUtils.placeBlock(player.getLevel(), posLook, Blocks.LAVA)
                 PlayerUtils.sendChatMessage(player, PlayerUtils.RESPONSE_SUCCESS, "成功融化黑曜石")
             } else {
                 PlayerUtils.sendChatMessage(player, PlayerUtils.RESPONSE_ERROR, "准星必须对准黑曜石")

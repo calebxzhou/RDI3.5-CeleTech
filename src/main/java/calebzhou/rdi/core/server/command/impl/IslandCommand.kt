@@ -2,8 +2,8 @@ package calebzhou.rdi.core.server.command.impl
 
 import calebzhou.rdi.core.server.misc.CommandConfirmer
 import calebzhou.rdi.core.server.RdiCoreServer
-import calebzhou.rdi.core.server.RdiIslandUnloadManager
 import calebzhou.rdi.core.server.command.RdiCommand
+import calebzhou.rdi.core.server.misc.IslandUnloadManager
 import calebzhou.rdi.core.server.utils.*
 import com.mojang.brigadier.arguments.StringArgumentType
 import com.mojang.brigadier.builder.LiteralArgumentBuilder
@@ -26,7 +26,7 @@ class IslandCommand : RdiCommand("is", "岛屿菜单。", true) {
     override fun getExecution(): LiteralArgumentBuilder<CommandSourceStack> {
         return baseArgBuilder.then(
                 Commands.argument("指令参数", StringArgumentType.string())
-                    .suggests { context: CommandContext<CommandSourceStack?>?, builder: SuggestionsBuilder? ->
+                    .suggests { context: CommandContext<CommandSourceStack>, builder: SuggestionsBuilder ->
                         getSuggestion(
                             context,
                             builder
@@ -34,7 +34,7 @@ class IslandCommand : RdiCommand("is", "岛屿菜单。", true) {
                     }
                     .executes { context: CommandContext<CommandSourceStack> ->
                         handleSubCommand(
-                            context.source.player,
+                            context.source.player!!,
                             StringArgumentType.getString(context, "指令参数")
                         )
                     }
@@ -43,7 +43,7 @@ class IslandCommand : RdiCommand("is", "岛屿菜单。", true) {
                             .executes { context: CommandContext<CommandSourceStack> ->
                                 handleSubCommandWithPlayerNameParam(
                                     StringArgumentType.getString(context, "指令参数"),
-                                    context.source.player,
+                                    context.source.player!!,
                                     EntityArgument.getPlayer(context, "玩家名")
                                 )
                             }
@@ -52,9 +52,9 @@ class IslandCommand : RdiCommand("is", "岛屿菜单。", true) {
     }
 
     protected fun getSuggestion(
-        context: CommandContext<CommandSourceStack?>?,
-        builder: SuggestionsBuilder?
-    ): CompletableFuture<Suggestions?> {
+        context: CommandContext<CommandSourceStack>,
+        builder: SuggestionsBuilder
+    ): CompletableFuture<Suggestions> {
         return SharedSuggestionProvider.suggest(
             arrayOf(
                 "create", "reset", "kick", "invite", "loca", "transfer", "quit"
@@ -64,7 +64,7 @@ class IslandCommand : RdiCommand("is", "岛屿菜单。", true) {
 
     private fun handleSubCommandWithPlayerNameParam(
         param: String,
-        fromPlayer: ServerPlayer?,
+        fromPlayer: ServerPlayer,
         toPlayer: ServerPlayer
     ): Int {
         when (param) {
@@ -76,7 +76,7 @@ class IslandCommand : RdiCommand("is", "岛屿菜单。", true) {
         return 1
     }
 
-    private fun handleSubCommand(player: ServerPlayer?, param: String): Int {
+    private fun handleSubCommand(player: ServerPlayer, param: String): Int {
         when (param) {
             "create" -> createIsland(player)
             "reset" -> resetIsland(player)
@@ -88,19 +88,19 @@ class IslandCommand : RdiCommand("is", "岛屿菜单。", true) {
     }
 
 
-    private fun resetIsland(player: ServerPlayer?) {
+    private fun resetIsland(player: ServerPlayer) {
         PlayerUtils.sendChatMessage(player, PlayerUtils.RESPONSE_WARNING, "真的，要重置这个岛屿吗？所有的数据将会被删除！")
         CommandConfirmer.addConfirm(player) { player: ServerPlayer -> confirmedResetIsland(player) }
     }
 
     private fun confirmedResetIsland(player: ServerPlayer) {
         ThreadPool.newThread {
-            val ResponseData = RdiHttpClient.sendRequest(Int::class.java, "delete", "/v37/mcs_game/island2/" + player.stringUUID)
+            val ResponseData = RdiHttpClient.sendRequest(Int::class, "delete", "/v37/mcs_game/island2/" + player.stringUUID)
             if (ResponseData.isSuccess) {
-                val dim = IslandUtils.getIslandDimensionLoca(ResponseData.data)
-                RdiIslandUnloadManager.removeIslandFromQueue(dim.toString())
+                val dim = IslandUtils.getIslandDimensionLoca(ResponseData.data!!)
+                IslandUnloadManager.removeIslandFromQueue(dim.toString())
                 ServerUtils.executeOnServerThread {
-                    val worldHandle = Fantasy.get(RdiCoreServer.getServer())
+                    val worldHandle = Fantasy.get(RdiCoreServer.server)
                         .getOrOpenPersistentWorld(dim, IslandUtils.getIslandWorldConfig(0))
                     PlayerUtils.resetProfile(player)
                     worldHandle.delete()
@@ -110,7 +110,7 @@ class IslandCommand : RdiCommand("is", "岛屿菜单。", true) {
         }
     }
 
-    private fun quitIsland(player: ServerPlayer?) {
+    private fun quitIsland(player: ServerPlayer) {
         PlayerUtils.sendChatMessage(player, PlayerUtils.RESPONSE_WARNING, "真的，要退出这个岛屿吗？您的个人全部数据，将会被删除！")
         CommandConfirmer.addConfirm(player) { player: ServerPlayer -> confirmedQuitIsland(player) }
     }
@@ -127,7 +127,7 @@ class IslandCommand : RdiCommand("is", "岛屿菜单。", true) {
         }
     }
 
-    private fun transferIsland(fromPlayer: ServerPlayer?, toPlayer: ServerPlayer) {
+    private fun transferIsland(fromPlayer: ServerPlayer, toPlayer: ServerPlayer) {
         if (fromPlayer === toPlayer) {
             PlayerUtils.sendChatMessage(fromPlayer, PlayerUtils.RESPONSE_ERROR, "目标玩家不能是自己！")
             return
@@ -155,18 +155,18 @@ class IslandCommand : RdiCommand("is", "岛屿菜单。", true) {
         }
     }
 
-    private fun createIsland(player: ServerPlayer?) {
+    private fun createIsland(player: ServerPlayer) {
         PlayerUtils.sendChatMessage(player, PlayerUtils.RESPONSE_INFO, "准备创建岛屿，不要触碰鼠标或者键盘！")
         ThreadPool.newThread {
-            val ResponseData = RdiHttpClient.sendRequest(Int::class.java, "post", "/v37/mcs_game/island2/" + player!!.stringUUID)
+            val ResponseData = RdiHttpClient.sendRequest(Int::class, "post", "/v37/mcs_game/island2/" + player!!.stringUUID)
             if (!ResponseData.isSuccess) {
                 PlayerUtils.sendServiceResponseData(player, ResponseData)
                 return@newThread
             }
             PlayerUtils.sendChatMessage(player, PlayerUtils.RESPONSE_INFO, "开始创建岛屿，不要触碰鼠标或者键盘！")
-            val iid = ResponseData.data
+            val iid = ResponseData.data!!
             PlayerUtils.sendChatMessage(player, PlayerUtils.RESPONSE_INFO, "您的岛屿ID：$iid")
-            val server = RdiCoreServer.getServer()
+            val server = RdiCoreServer.server
             ServerUtils.executeOnServerThread {
                 val fantasy = Fantasy.get(server)
                 PlayerUtils.sendChatMessage(player, PlayerUtils.RESPONSE_INFO, "正在创建存档。。不要触碰鼠标或者键盘！")
@@ -183,7 +183,7 @@ class IslandCommand : RdiCommand("is", "岛屿菜单。", true) {
         }
     }
 
-    private fun locateIsland(player: ServerPlayer?) {
+    private fun locateIsland(player: ServerPlayer) {
         if (!PlayerUtils.isInIsland(player)) {
             PlayerUtils.sendChatMessage(player, PlayerUtils.RESPONSE_ERROR, "必须在您自己的岛屿上，才能设定传送点！")
             return
@@ -220,7 +220,7 @@ class IslandCommand : RdiCommand("is", "岛屿菜单。", true) {
         }
     }
 
-    private fun kickPlayer(fromPlayer: ServerPlayer?, kickPlayer: ServerPlayer) {
+    private fun kickPlayer(fromPlayer: ServerPlayer, kickPlayer: ServerPlayer) {
         if (fromPlayer === kickPlayer) {
             PlayerUtils.sendChatMessage(fromPlayer, PlayerUtils.RESPONSE_ERROR, "您不可以踢出自己!!")
             return
@@ -250,7 +250,7 @@ class IslandCommand : RdiCommand("is", "岛屿菜单。", true) {
         }
     }
 
-    private fun invitePlayer(player: ServerPlayer?, invitedPlayer: ServerPlayer) {
+    private fun invitePlayer(player: ServerPlayer, invitedPlayer: ServerPlayer) {
         if (player === invitedPlayer) {
             PlayerUtils.sendChatMessage(player, PlayerUtils.RESPONSE_ERROR, "目标玩家不能是自己！")
             return

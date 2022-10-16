@@ -12,12 +12,12 @@ class DragonCommand : RdiCommand("dragon", "召唤一只末影龙", true) {
     private val expLvlNeed = 100
     override fun getExecution(): LiteralArgumentBuilder<CommandSourceStack> {
         return baseArgBuilder.executes { context: CommandContext<CommandSourceStack> ->
-            val player = context.source.player
+            val player = context.source.player!!
             if (!PlayerUtils.isInTheEnd(player)) {
                 PlayerUtils.sendChatMessage(player, PlayerUtils.RESPONSE_ERROR, "必须在末地执行本指令")
                 return@executes 1
             }
-            if (player!!.experienceLevel < expLvlNeed) {
+            if (player.experienceLevel < expLvlNeed) {
                 PlayerUtils.sendChatMessage(player, PlayerUtils.RESPONSE_ERROR, "您需要有" + expLvlNeed + "级经验才能召唤神龙！")
                 return@executes 1
             }

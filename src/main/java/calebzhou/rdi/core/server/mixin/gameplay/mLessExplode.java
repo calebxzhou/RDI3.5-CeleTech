@@ -1,6 +1,6 @@
 package calebzhou.rdi.core.server.mixin.gameplay;
 
-import calebzhou.rdi.core.server.ServerLaggingStatus;
+import calebzhou.rdi.core.server.misc.ServerLaggingStatus;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;

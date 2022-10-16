@@ -2,7 +2,7 @@ package calebzhou.rdi.core.server.mixin.server;
 
 import calebzhou.rdi.core.server.RdiCoreServer;
 import calebzhou.rdi.core.server.misc.TickTaskManager;
-import calebzhou.rdi.core.server.ServerLaggingStatus;
+import calebzhou.rdi.core.server.misc.ServerLaggingStatus;
 import calebzhou.rdi.core.server.command.impl.TpsCommand;
 import calebzhou.rdi.core.server.mixin.AccessCollectingNeighborUpdater;
 import calebzhou.rdi.core.server.mixin.AccessMultiNeighborUpdate;

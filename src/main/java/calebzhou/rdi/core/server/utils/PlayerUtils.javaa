@@ -177,10 +177,10 @@ public class PlayerUtils {
 				.startsWith(RdiSharedConstants.ISLAND_DIMENSION_FULL_PREFIX);
 	}
 	public static void sendClientPopup(Player player,String type, String title, String msg){
-		sendPacketToClient(player, NetworkPackets.POPUP,String.format("%s|%s|%s",type,title,msg));
+		sendPacketToClient(player, NetworkPackets.INSTANCE.getPOPUP(), String.format("%s|%s|%s",type,title,msg));
 	}
 	public static void sendClientDialog(Player player,String type, String title, String msg){
-		sendPacketToClient(player, NetworkPackets.DIALOG_INFO,String.format("%s|%s|%s",type,title,msg));
+		sendPacketToClient(player, NetworkPackets.INSTANCE.getDIALOG_INFO(),String.format("%s|%s|%s",type,title,msg));
 	}
 	public static void teleportToSpawn(Player player){
 		teleport(player, RdiCoreServer.getServer().overworld(),RdiSharedConstants.SPAWN_LOCATION);
@@ -240,7 +240,7 @@ public class PlayerUtils {
         player.setRespawnPosition(levelResourceKey,blockPos,0,true,true);
     }
 	public static boolean satisfyMainTownBuildCondition(Player player){
-		RdiPlayerProfile rdiPlayerProfile = RdiMemoryStorage.pidUserMap.get(player.getStringUUID());
+		RdiPlayerProfile rdiPlayerProfile = RdiMemoryStorage.INSTANCE.getPidUserMap().get(player.getStringUUID());
 		return rdiPlayerProfile !=null && (  rdiPlayerProfile.isGenuine() || player.experienceLevel>=50 );
 	}
     public static void resetProfile(ServerPlayer player){
@@ -305,47 +305,6 @@ public class PlayerUtils {
 		return RdiCoreServer.getServer().getPlayerList().getPlayers();
 	}
 	public static final Object2ObjectOpenHashMap<String,Integer> provinceCodeMap = new Object2ObjectOpenHashMap<>();
-	static {
-		provinceCodeMap.put("北京",11);
-		provinceCodeMap.put("天津",12);
-		provinceCodeMap.put("河北",13);
-		provinceCodeMap.put("山西",14);
-		provinceCodeMap.put("内蒙",15);
-
-		provinceCodeMap.put("辽宁",21);
-		provinceCodeMap.put("吉林",22);
-		provinceCodeMap.put("黑龙",23);
-
-		provinceCodeMap.put("上海",31);
-		provinceCodeMap.put("江苏",32);
-		provinceCodeMap.put("浙江",33);
-		provinceCodeMap.put("安徽",34);
-		provinceCodeMap.put("福建",35);
-		provinceCodeMap.put("江西",36);
-		provinceCodeMap.put("山东",37);
-
-		provinceCodeMap.put("河南",41);
-		provinceCodeMap.put("湖北",42);
-		provinceCodeMap.put("湖南",43);
-		provinceCodeMap.put("广东",44);
-		provinceCodeMap.put("广西",45);
-		provinceCodeMap.put("海南",46);
-
-		provinceCodeMap.put("重庆",50);
-		provinceCodeMap.put("四川",51);
-		provinceCodeMap.put("贵州",52);
-		provinceCodeMap.put("云南",53);
-		provinceCodeMap.put("西藏",54);
-
-		provinceCodeMap.put("陕西",61);
-		provinceCodeMap.put("甘肃",62);
-		provinceCodeMap.put("青海",63);
-		provinceCodeMap.put("宁夏",64);
-		provinceCodeMap.put("新疆",65);
-		provinceCodeMap.put("台湾",71);
-		provinceCodeMap.put("香港",81);
-		provinceCodeMap.put("澳门",82);
-	}
 	//TAB列表显示名称
 	public static Component getTabListDisplayName(Player player){
 

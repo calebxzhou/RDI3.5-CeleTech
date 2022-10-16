@@ -15,12 +15,12 @@ class GoNetherCommand : RdiCommand("go-nether", "下地狱", true) {
     }
 
     private fun exec(context: CommandContext<CommandSourceStack>): Int {
-        val player = context.source.player
+        val player = context.source.player!!
         if (!PlayerUtils.isInIsland(player)) {
             PlayerUtils.sendChatMessage(player, PlayerUtils.RESPONSE_ERROR, "只有在您的岛屿才能通过此功能前往地狱！")
             return 1
         }
-        if (player!!.experienceLevel < 3) {
+        if (player.experienceLevel < 3) {
             PlayerUtils.sendChatMessage(player, PlayerUtils.RESPONSE_ERROR, "必须有3级经验才能前往地狱！")
             return 1
         }

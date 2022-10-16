@@ -58,7 +58,6 @@
     "gameplay.mSkeleton",
     "gameplay.mSpawnHealth",
     "gameplay.mSweetBerry",
-    "server.LevelPropagatorMixin",
     "server.mDedicatedServer",
     "server.mDetectedVersion",
     "server.mDisplayTempOnPlayerList",

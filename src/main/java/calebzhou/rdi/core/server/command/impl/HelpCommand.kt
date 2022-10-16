@@ -11,7 +11,7 @@ import net.minecraft.commands.CommandSourceStack
 class HelpCommand : RdiCommand("rdi-help") {
     override fun getExecution(): LiteralArgumentBuilder<CommandSourceStack> {
         return baseArgBuilder.executes { context: CommandContext<CommandSourceStack> ->
-            val player = context.source.player
+            val player = context.source.player!!
             PlayerUtils.sendChatMessage(player, ColorConst.BRIGHT_GREEN + "=====RDI帮助菜单=====")
             RdiMemoryStorage.commandSet.parallelStream().forEach { command: RdiCommand ->
                 if(command.displayInHelp){

@@ -18,15 +18,17 @@ import javax.net.ssl.TrustManager
 import javax.net.ssl.X509TrustManager
 import kotlin.reflect.KClass
 
+
+
 object RdiHttpClient {
-    private const val CONNECTION_TIME_OUT = 5
+    const val CONNECTION_TIME_OUT = 5
     private val client: OkHttpClient =
         if (RdiSharedConstants.DEBUG)
-            unsafeOkHttpClient
+            RdiHttpClient.unsafeOkHttpClient
         else OkHttpClient.Builder()
-            .connectTimeout(CONNECTION_TIME_OUT.toLong(), TimeUnit.SECONDS)
-            .readTimeout(CONNECTION_TIME_OUT.toLong(), TimeUnit.SECONDS)
-            .writeTimeout(CONNECTION_TIME_OUT.toLong(), TimeUnit.SECONDS)
+            .connectTimeout(RdiHttpClient.CONNECTION_TIME_OUT.toLong(), TimeUnit.SECONDS)
+            .readTimeout(RdiHttpClient.CONNECTION_TIME_OUT.toLong(), TimeUnit.SECONDS)
+            .writeTimeout(RdiHttpClient.CONNECTION_TIME_OUT.toLong(), TimeUnit.SECONDS)
             .connectionPool(ConnectionPool(32, 60, TimeUnit.SECONDS))
             .build()
 
@@ -38,7 +40,7 @@ object RdiHttpClient {
         type: String,
         url: String,
         vararg params: Pair<String, Any>
-    ): ResponseData<out Any?> {
+    ): ResponseData<T> {
         if (RdiSharedConstants.DEBUG)
             RdiCoreServer.LOGGER.info("HTTP发送{} {} {}", type, url, params)
         val okreq = Request.Builder()
@@ -58,7 +60,7 @@ object RdiHttpClient {
             client.newCall(okreq.build()).execute()
         } catch (e: IOException) {
             RdiCoreServer.LOGGER.info("请求出现错误：" + e.message + e.cause)
-            return ResponseData(-404, "请求超时", e.message + e.cause)
+            return ResponseData(-404, "请求超时.${e.message},${e.cause}",null)
         }
 
         val respStr: String = response.body.use { body -> body!!.string() }
@@ -96,7 +98,7 @@ object RdiHttpClient {
     }
 
     // Create a trust manager that does not validate certificate chains
-    private val unsafeOkHttpClient: OkHttpClient
+    val unsafeOkHttpClient: OkHttpClient
         // Install the all-trusting trust manager
         // Create an ssl socket factory with our all-trusting manager
         get() = try {
