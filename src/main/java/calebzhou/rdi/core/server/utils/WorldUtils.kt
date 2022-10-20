@@ -116,6 +116,7 @@ object WorldUtils {
         return false
     }
 
+    @JvmStatic
     fun placeBlock(world: Level, bpos: BlockPos?, blockState: BlockState?) {
         world.setBlockAndUpdate(bpos, blockState)
     }

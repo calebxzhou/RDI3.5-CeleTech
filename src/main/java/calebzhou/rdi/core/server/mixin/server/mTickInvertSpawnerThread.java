@@ -2,7 +2,6 @@ package calebzhou.rdi.core.server.mixin.server;
 
 import calebzhou.rdi.core.server.mixin.AccessChunkMap;
 import calebzhou.rdi.core.server.thread.MobSpawningThread;
-import calebzhou.rdi.core.server.utils.ThreadPool;
 import net.minecraft.server.level.ChunkMap;
 import net.minecraft.server.level.ServerChunkCache;
 import net.minecraft.server.level.ServerLevel;

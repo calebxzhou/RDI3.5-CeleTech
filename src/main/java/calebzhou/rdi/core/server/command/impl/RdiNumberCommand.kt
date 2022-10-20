@@ -1,6 +1,6 @@
 package calebzhou.rdi.core.server.command.impl
 
-import calebzhou.rdi.core.server.command.RdiCommand
+import calebzhou.rdi.core.server.command.RdiNormalCommand
 import calebzhou.rdi.core.server.utils.PlayerUtils
 import com.mojang.brigadier.builder.LiteralArgumentBuilder
 import com.mojang.brigadier.context.CommandContext
@@ -14,17 +14,17 @@ import net.minecraft.network.chat.Style
 /**
  * Created by calebzhou on 2022-09-28,12:42.
  */
-class RdiNumberCommand : RdiCommand("rdi-number", "查询自己的RDI编号") {
-    override fun getExecution(): LiteralArgumentBuilder<CommandSourceStack> {
-        return baseArgBuilder.executes { context: CommandContext<CommandSourceStack> ->
+class RdiNumberCommand : RdiNormalCommand("rdi-number", "查询自己的RDI编号") {
+    override val execution : LiteralArgumentBuilder<CommandSourceStack>
+    get() = baseArgBuilder.executes { context: CommandContext<CommandSourceStack> ->
             exec(context)
                 .toInt()
-        }
+
     }
 
     private fun exec(context: CommandContext<CommandSourceStack>): Short {
         val player = context.source.player!!
-        val pid = player!!.stringUUID
+        val pid = player.stringUUID
         PlayerUtils.sendChatMessage(player, PlayerUtils.RESPONSE_INFO, "您的编号是：")
         PlayerUtils.sendChatMessage(player, Component.literal(pid).withStyle { style: Style ->
             style.withColor(ChatFormatting.GREEN)

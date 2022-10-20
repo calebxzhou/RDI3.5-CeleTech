@@ -18,3 +18,9 @@ data class Island2Crew (var id:Int,var pid:String,var iid:Int,var ts:Timestamp)
 data class Island2(var iid:Int, var pid:String, var ts: Timestamp,
                    var loca: Island2Loca, var crews:List<Island2Crew>){
 }
+data class Island2CrewVo(val player: RdiPlayer,val joinTime:Timestamp?)
+data class Island2Vo(val iid:Int,
+                     val owner:RdiPlayer,
+                     val createTime:Timestamp,
+                     val loca:Island2Loca, val crews:List<Island2CrewVo> ) {
+}

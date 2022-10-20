@@ -1,6 +1,6 @@
 package calebzhou.rdi.core.server.command.impl
 
-import calebzhou.rdi.core.server.command.RdiCommand
+import calebzhou.rdi.core.server.command.RdiNormalCommand
 import calebzhou.rdi.core.server.utils.PlayerUtils
 import calebzhou.rdi.core.server.utils.WorldUtils
 import com.mojang.brigadier.builder.LiteralArgumentBuilder
@@ -9,10 +9,10 @@ import net.minecraft.commands.CommandSourceStack
 import net.minecraft.core.BlockPos
 import net.minecraft.world.level.block.Blocks
 
-class GoNetherCommand : RdiCommand("go-nether", "下地狱", true) {
-    override fun getExecution(): LiteralArgumentBuilder<CommandSourceStack> {
-        return baseArgBuilder.executes { context: CommandContext<CommandSourceStack> -> exec(context) }
-    }
+class GoNetherCommand : RdiNormalCommand("go-nether", "下地狱", true) {
+    override val execution: LiteralArgumentBuilder<CommandSourceStack>
+        get() = baseArgBuilder.executes(::exec)
+
 
     private fun exec(context: CommandContext<CommandSourceStack>): Int {
         val player = context.source.player!!
@@ -40,3 +40,5 @@ class GoNetherCommand : RdiCommand("go-nether", "下地狱", true) {
         return 1
     }
 }
+
+

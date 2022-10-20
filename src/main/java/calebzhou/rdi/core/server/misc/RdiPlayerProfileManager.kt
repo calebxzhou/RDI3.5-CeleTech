@@ -10,6 +10,9 @@ object RdiPlayerProfileManager {
     fun addProfile(uuid: String, rdiPlayerProfile: RdiPlayerProfile) {
         pidProfileMap[uuid]=rdiPlayerProfile
     }
+    fun removeProfile(uuid: String){
+        pidProfileMap.remove(uuid)
+    }
 
     val pidProfileMap = Object2ObjectOpenHashMap<String, RdiPlayerProfile>()
 

@@ -1,8 +1,8 @@
 package calebzhou.rdi.core.server.command.impl
 
-import calebzhou.rdi.core.server.RdiCoreServer
 import calebzhou.rdi.core.server.RdiMemoryStorage
-import calebzhou.rdi.core.server.command.RdiCommand
+import calebzhou.rdi.core.server.command.RdiNormalCommand
+import calebzhou.rdi.core.server.logger
 import calebzhou.rdi.core.server.utils.EncodingUtils
 import calebzhou.rdi.core.server.utils.PlayerUtils
 import calebzhou.rdi.core.server.utils.RdiHttpClient
@@ -21,13 +21,13 @@ import java.util.function.Consumer
 /**
  * Created by calebzhou on 2022-09-19,11:58.
  */
-class SpeakCommand : RdiCommand("speak", "说话") {
-    override fun getExecution(): LiteralArgumentBuilder<CommandSourceStack> {
-        return baseArgBuilder.then(
+class SpeakCommand : RdiNormalCommand("speak", "说话") {
+    override val execution : LiteralArgumentBuilder<CommandSourceStack>
+    get() = baseArgBuilder.then(
             Commands.argument("msg", MessageArgument.message())
                 .executes { context: CommandContext<CommandSourceStack> ->
                     val player = context.source.player!!
-                    val pid = player!!.stringUUID
+                    val pid = player.stringUUID
                     val chatMessage = MessageArgument.getChatMessage(context, "msg")
                     chatMessage.resolve(context.source) { playerChatMessage: PlayerChatMessage ->
                         val txt = playerChatMessage.signedContent().plain()
@@ -39,12 +39,12 @@ class SpeakCommand : RdiCommand("speak", "说话") {
                                         receiver, Component.literal(player.scoreboardName + "(岛内)：")
                                             .append(txt).withStyle(ChatFormatting.GOLD)
                                     )
-                                    RdiCoreServer.LOGGER.info("{}岛内说：{}", player.scoreboardName, txt)
+                                    logger.info("{}岛内说：{}", player.scoreboardName, txt)
                                 }
                             })
                         } else {
                             ServerUtils.broadcastChatMessage(Component.literal(player.scoreboardName + "：").append(txt))
-                            RdiCoreServer.LOGGER.info("{}说：{}", player.scoreboardName, txt)
+                            logger.info("{}说：{}", player.scoreboardName, txt)
                         }
                         RdiHttpClient.sendRequestAsyncResponseless(
                             "post",
@@ -55,5 +55,5 @@ class SpeakCommand : RdiCommand("speak", "说话") {
                     }
                     1
                 })
-    }
+
 }

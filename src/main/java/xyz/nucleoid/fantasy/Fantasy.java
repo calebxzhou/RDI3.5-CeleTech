@@ -1,6 +1,7 @@
 package xyz.nucleoid.fantasy;
 
 import calebzhou.rdi.core.server.RdiCoreServer;
+import calebzhou.rdi.core.server.constant.RdiSharedConstants;
 import com.google.common.base.Preconditions;
 import it.unimi.dsi.fastutil.objects.ReferenceOpenHashSet;
 import net.minecraft.core.BlockPos;
@@ -36,7 +37,7 @@ import java.util.Set;
  * @see Fantasy#getOrOpenPersistentWorld(ResourceLocation, RuntimeWorldConfig)
  */
 public final class Fantasy {
-    public static final Logger LOGGER = RdiCoreServer.LOGGER;
+    public static final Logger LOGGER = LogManager.getLogger("Fantasy");
     public static final String ID = "fantasy";
     public static final ResourceKey<DimensionType> DEFAULT_DIM_TYPE = ResourceKey.create(Registry.DIMENSION_TYPE_REGISTRY, new ResourceLocation(Fantasy.ID, "default"));
 

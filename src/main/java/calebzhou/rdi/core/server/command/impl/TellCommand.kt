@@ -1,6 +1,6 @@
 package calebzhou.rdi.core.server.command.impl
 
-import calebzhou.rdi.core.server.command.RdiCommand
+import calebzhou.rdi.core.server.command.RdiNormalCommand
 import calebzhou.rdi.core.server.utils.PlayerUtils
 import com.mojang.brigadier.builder.LiteralArgumentBuilder
 import com.mojang.brigadier.context.CommandContext
@@ -14,9 +14,9 @@ import net.minecraft.network.chat.Component
 /**
  * Created by calebzhou on 2022-09-26,20:52.
  */
-class TellCommand : RdiCommand("msg", "私聊") {
-    override fun getExecution(): LiteralArgumentBuilder<CommandSourceStack> {
-        return baseArgBuilder.then(
+class TellCommand : RdiNormalCommand("msg", "私聊") {
+    override val execution : LiteralArgumentBuilder<CommandSourceStack>
+    get() = baseArgBuilder.then(
             Commands.argument("player", EntityArgument.player())
                 .then(
                     Commands.argument("msg", MessageArgument.message())
@@ -25,17 +25,13 @@ class TellCommand : RdiCommand("msg", "私聊") {
             PlayerUtils.sendMessageToCommandSource(context.source, "请")
             1
         }
-    }
-
-    @Throws(CommandSyntaxException::class)
     private fun exec(context: CommandContext<CommandSourceStack>): Int {
-        val fromPlayer = context.source.player
+        val fromPlayer = context.source.player!!
         val toPlayer = EntityArgument.getPlayer(context, "player")
         val msg = MessageArgument.getMessage(context, "msg")
         PlayerUtils.sendChatMessage(
             toPlayer,
-            Component.literal("%s私聊您：".formatted(fromPlayer!!.scoreboardName))
-                .append(msg)
+            Component.literal("${fromPlayer.scoreboardName}私聊您：").append(msg)
         )
         return 1
     }

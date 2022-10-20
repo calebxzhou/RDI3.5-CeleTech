@@ -1,6 +1,6 @@
 package calebzhou.rdi.core.server.command.impl
 
-import calebzhou.rdi.core.server.command.RdiCommand
+import calebzhou.rdi.core.server.command.RdiNormalCommand
 import calebzhou.rdi.core.server.utils.PlayerUtils
 import com.mojang.brigadier.builder.LiteralArgumentBuilder
 import com.mojang.brigadier.context.CommandContext
@@ -11,9 +11,9 @@ import net.minecraft.server.level.ServerPlayer
 /**
  * Created by calebzhou on 2022-09-22,11:17.
  */
-class WeatherCommand : RdiCommand("change-weather", "花费3经验改变天气。") {
-    override fun getExecution(): LiteralArgumentBuilder<CommandSourceStack> {
-        return baseArgBuilder
+class WeatherNormalCommand : RdiNormalCommand("change-weather", "花费3经验改变天气。") {
+    override val execution : LiteralArgumentBuilder<CommandSourceStack>
+    get() = baseArgBuilder
             .then(
                 Commands.literal("clear")
                     .executes { context: CommandContext<CommandSourceStack> ->
@@ -50,7 +50,7 @@ class WeatherCommand : RdiCommand("change-weather", "花费3经验改变天气�
                         )
                     }
             )
-    }
+
 
     companion object {
         private fun setWeather(

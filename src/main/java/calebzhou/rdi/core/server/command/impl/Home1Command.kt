@@ -1,6 +1,6 @@
 package calebzhou.rdi.core.server.command.impl
 
-import calebzhou.rdi.core.server.command.RdiCommand
+import calebzhou.rdi.core.server.command.RdiNormalCommand
 import calebzhou.rdi.core.server.utils.PlayerUtils
 import calebzhou.rdi.core.server.utils.RdiHttpClient
 import calebzhou.rdi.core.server.utils.ServerUtils
@@ -11,18 +11,17 @@ import net.minecraft.commands.CommandSourceStack
 import net.minecraft.world.effect.MobEffectInstance
 import net.minecraft.world.effect.MobEffects
 
-class Home1Command : RdiCommand("home1", "回到一岛（仅限老玩家）", false) {
-    override fun getExecution(): LiteralArgumentBuilder<CommandSourceStack> {
-        return baseArgBuilder.executes { context: CommandContext<CommandSourceStack> ->
+class Home1Command : RdiNormalCommand("home1", "回到一岛（仅限老玩家）", false) {
+    override val execution : LiteralArgumentBuilder<CommandSourceStack>
+    get() = baseArgBuilder.executes { context: CommandContext<CommandSourceStack> ->
             val player = context.source.player!!
             ThreadPool.newThread {
-                val ResponseData =
-                    RdiHttpClient.sendRequest(String::class, "get", "/v37/island/" + player!!.stringUUID)
-                if (!ResponseData.isSuccess) {
-                    PlayerUtils.sendServiceResponseData(player, ResponseData)
+                val data = RdiHttpClient.sendRequest(String::class, "get", "/v37/island/" + player.stringUUID)
+                if (!data.isSuccess) {
+                    PlayerUtils.sendServiceResponseData(player, data)
                     return@newThread
                 }
-                val split = ResponseData.data!!.split(",".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
+                val split = data.data!!.split(",")
                 val x = split[0].toInt()
                 val y = split[1].toInt()
                 val z = split[2].toInt()
@@ -42,5 +41,5 @@ class Home1Command : RdiCommand("home1", "回到一岛（仅限老玩家）", fa
             }
             1
         }
-    }
+
 }

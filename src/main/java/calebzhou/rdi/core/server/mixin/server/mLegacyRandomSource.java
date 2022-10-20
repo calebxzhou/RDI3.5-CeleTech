@@ -1,8 +1,6 @@
 package calebzhou.rdi.core.server.mixin.server;
 
-import net.minecraft.util.ThreadingDetector;
 import net.minecraft.world.level.levelgen.LegacyRandomSource;
-import org.apache.commons.lang3.RandomUtils;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;

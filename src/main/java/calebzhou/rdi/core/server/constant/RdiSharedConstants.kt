@@ -4,6 +4,7 @@ import net.minecraft.core.BlockPos
 
 //常量
 object RdiSharedConstants {
+    const val InternalCommandPrefix = "__rdi_internal_"
     //协议版本
     const val PROTOCOL_NAME = "RDI Core 3.7"
 

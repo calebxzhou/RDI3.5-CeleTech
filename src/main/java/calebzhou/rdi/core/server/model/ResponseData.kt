@@ -1,6 +1,5 @@
 package calebzhou.rdi.core.server.model
 
-import calebzhou.rdi.core.server.constant.ResponseCode
 import calebzhou.rdi.core.server.utils.RdiSerializer
 import com.google.gson.reflect.TypeToken
 import kotlin.reflect.KClass

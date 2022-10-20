@@ -1,6 +1,6 @@
 package calebzhou.rdi.core.server.misc
 
-import calebzhou.rdi.core.server.RdiCoreServer
+import calebzhou.rdi.core.server.logger
 import calebzhou.rdi.core.server.utils.WorldUtils
 import com.google.common.collect.EvictingQueue
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap
@@ -14,10 +14,11 @@ object TickTaskManager {
 
     //维度名vsTick队列
     private val dimensionTickQueueMap = Object2ObjectOpenHashMap<String, EvictingQueue<Runnable>>()
+    @JvmStatic
 	fun addDelayTickTask(level: Level, tickableRunnable: Runnable) {
         val dimensionName = WorldUtils.getDimensionName(level)
         if (!dimensionTickQueueMap.containsKey(dimensionName)) {
-            RdiCoreServer.LOGGER.info("维度{}没有延迟tick队列，正在创建", dimensionName)
+            logger.info("维度{}没有延迟tick队列，正在创建", dimensionName)
             dimensionTickQueueMap[dimensionName] =
                 EvictingQueue.create(queueSize)
         }
@@ -25,7 +26,7 @@ object TickTaskManager {
     }
     fun removeDimension(dimensionName: String) {
         dimensionTickQueueMap.remove(dimensionName)
-        RdiCoreServer.LOGGER.info("已删除维度{}的延迟tick队列", dimensionName)
+        logger.info("已删除维度{}的延迟tick队列", dimensionName)
     }
 
     fun getQueueSize(dimensionName: String): Int {

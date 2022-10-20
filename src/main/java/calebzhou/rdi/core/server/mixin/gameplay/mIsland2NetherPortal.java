@@ -2,7 +2,6 @@ package calebzhou.rdi.core.server.mixin.gameplay;
 
 
 import calebzhou.rdi.core.server.utils.WorldUtils;
-import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.BaseFireBlock;
 import org.spongepowered.asm.mixin.Mixin;

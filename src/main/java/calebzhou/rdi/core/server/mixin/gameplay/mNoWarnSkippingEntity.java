@@ -9,8 +9,5 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 
 @Mixin(EntityType.class)
 public class mNoWarnSkippingEntity {
-    @Redirect(method = "method_17847",at=@At(value = "INVOKE",target = "Lorg/slf4j/Logger;warn(Ljava/lang/String;Ljava/lang/Object;)V"))
-    private static void noWarn(Logger instance, String s, Object o){
 
-    }
 }

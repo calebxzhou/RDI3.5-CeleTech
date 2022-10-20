@@ -3,7 +3,6 @@ package calebzhou.rdi.core.server.thread;
 import calebzhou.rdi.core.server.RdiCoreServer;
 
 import java.util.LinkedList;
-import java.util.Objects;
 import java.util.Queue;
 
 /**

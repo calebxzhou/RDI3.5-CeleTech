@@ -1,9 +1,9 @@
 package calebzhou.rdi.core.server.mixin.server;
 
 import calebzhou.rdi.core.server.RdiCoreServer;
-import calebzhou.rdi.core.server.misc.TickTaskManager;
+import calebzhou.rdi.core.server.command.impl.TpsNormalCommand;
 import calebzhou.rdi.core.server.misc.ServerLaggingStatus;
-import calebzhou.rdi.core.server.command.impl.TpsCommand;
+import calebzhou.rdi.core.server.misc.TickTaskManager;
 import calebzhou.rdi.core.server.mixin.AccessCollectingNeighborUpdater;
 import calebzhou.rdi.core.server.mixin.AccessMultiNeighborUpdate;
 import calebzhou.rdi.core.server.module.tickinv.BlockEntityTickInverter;
@@ -17,7 +17,10 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.ServerFunctionManager;
-import net.minecraft.server.level.*;
+import net.minecraft.server.level.ChunkMap;
+import net.minecraft.server.level.DistanceManager;
+import net.minecraft.server.level.ServerChunkCache;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.RandomSource;
 import net.minecraft.util.profiling.ProfilerFiller;
 import net.minecraft.world.entity.Entity;
@@ -323,7 +326,7 @@ class mTickInvertNeighborUpdater{
 
 	@Redirect(method = "runUpdates", at = @At(value = "INVOKE",target = "Lnet/minecraft/world/level/redstone/CollectingNeighborUpdater$NeighborUpdates;runNext(Lnet/minecraft/world/level/Level;)Z"))
 	private boolean RDIrunnext(CollectingNeighborUpdater.NeighborUpdates neighborUpdates, Level level){
-		if(ServerLaggingStatus.isServerLagging()){
+		if(ServerLaggingStatus.INSTANCE.isServerLagging()){
 
 			BlockPos updatePos;
 			Block sourceBlock;
@@ -344,13 +347,13 @@ class mTickInvertNeighborUpdater{
 				updatePos = BlockPos.ZERO;
 			}
 			if(RdiCoreServer.getServer().overworld() != level){
-				TpsCommand.delayTickStatus.put(WorldUtils.getDimensionName(level),
+				TpsNormalCommand.delayTickStatus.put(WorldUtils.getDimensionName(level),
 						Component.literal("提交延迟tick邻块任务").append(sourceBlock.getName()).append(Component.literal(updatePos.toShortString())).withStyle(ChatFormatting.GOLD)
 				);
 			}
 			TickTaskManager.addDelayTickTask(level,()->{
 				((AccessCollectingNeighborUpdater) this).invokeAddAndRun(updatePos,neighborUpdates);//neighborUpdates.runNext(level);
-				TpsCommand.delayTickStatus.put(WorldUtils.getDimensionName(level),
+				TpsNormalCommand.delayTickStatus.put(WorldUtils.getDimensionName(level),
 						Component.literal("延迟tick邻块").append(sourceBlock.getName()).append(Component.literal(updatePos.toShortString())).withStyle(ChatFormatting.AQUA)
 				);
 			});
@@ -368,7 +371,7 @@ class mTickInvertSpawner {
 	//卡顿时取消刷怪
 	@Inject(method = "spawnForChunk",at=@At("HEAD"),cancellable = true)
 	private static void RdiSpawnWithTpsCheck(ServerLevel level, LevelChunk chunk, NaturalSpawner.SpawnState spawnState, boolean spawnFriendlies, boolean spawnMonsters, boolean forcedDespawn, CallbackInfo ci){
-		if(ServerLaggingStatus.isServerLagging())
+		if(ServerLaggingStatus.INSTANCE.isServerLagging())
 			ci.cancel();
 	}
 	/*@Overwrite

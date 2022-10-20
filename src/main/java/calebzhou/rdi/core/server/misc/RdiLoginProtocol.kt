@@ -1,7 +1,6 @@
 package calebzhou.rdi.core.server.misc
 
-import calebzhou.rdi.core.server.RdiCoreServer
-import calebzhou.rdi.core.server.RdiMemoryStorage
+import calebzhou.rdi.core.server.logger
 import calebzhou.rdi.core.server.mixin.AccessServerLoginPacketListenerImpl
 import calebzhou.rdi.core.server.model.RdiPlayerProfile
 import calebzhou.rdi.core.server.utils.RdiSerializer
@@ -16,6 +15,7 @@ import java.util.*
  * Created by calebzhou on 2022-09-18,21:08.
  */
 object RdiLoginProtocol {
+    @JvmStatic
     fun handleHello(
         connection: Connection,
         loginPacketListener: ServerLoginPacketListenerImpl,
@@ -23,9 +23,9 @@ object RdiLoginProtocol {
     ): Boolean {
         try {
             val json = helloPacket.name()
-            RdiCoreServer.LOGGER.info("收到登录请求：{}", json)
+            logger.info("收到登录请求：{}", json)
             if (!json.contains("{")) {
-                RdiCoreServer.LOGGER.info("此请求协议格式错误！")
+                logger.info("此请求协议格式错误！")
                 connection.disconnect(Component.literal("登录协议错误 格式错误1，请更新客户端！"))
                 return false
             }

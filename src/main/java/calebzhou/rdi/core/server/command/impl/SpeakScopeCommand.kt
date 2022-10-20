@@ -1,7 +1,7 @@
 package calebzhou.rdi.core.server.command.impl
 
 import calebzhou.rdi.core.server.RdiMemoryStorage
-import calebzhou.rdi.core.server.command.RdiCommand
+import calebzhou.rdi.core.server.command.RdiNormalCommand
 import calebzhou.rdi.core.server.utils.PlayerUtils
 import calebzhou.rdi.core.server.utils.ThreadPool
 import com.mojang.brigadier.builder.LiteralArgumentBuilder
@@ -15,10 +15,10 @@ import java.util.function.Consumer
 /**
  * Created by calebzhou on 2022-10-01,8:55.
  */
-class SpeakScopeCommand : RdiCommand("speak-scope", "设定聊天范围，是岛内可见还是全服可见") {
-    override fun getExecution(): LiteralArgumentBuilder<CommandSourceStack> {
-        return baseArgBuilder.executes { context: CommandContext<CommandSourceStack> -> exec(context) }
-    }
+class SpeakScopeCommand : RdiNormalCommand("speak-scope", "设定聊天范围，是岛内可见还是全服可见") {
+    override val execution : LiteralArgumentBuilder<CommandSourceStack>
+    get() = baseArgBuilder.executes { context: CommandContext<CommandSourceStack> -> exec(context) }
+
 
     private fun exec(context: CommandContext<CommandSourceStack>): Int {
         ThreadPool.newThread {
@@ -54,7 +54,7 @@ class SpeakScopeCommand : RdiCommand("speak-scope", "设定聊天范围，是岛
                 PlayerUtils.sendChatMessage(
                     playerInLevel,
                     PlayerUtils.RESPONSE_INFO,
-                    "岛屿成员%s将聊天范围设定为了 仅岛屿内可见 ，您可以通过/speak-scope指令来设置。".formatted(
+                    "岛屿成员%s将聊天范围设定为了 仅岛屿内可见 ，您可以通过/speak-scope指令来设置。".format(
                         player.scoreboardName
                     )
                 )

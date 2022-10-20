@@ -1,24 +1,11 @@
 package calebzhou.rdi.core.server.module.tickinv;
 
-import calebzhou.rdi.core.server.RdiCoreServer;
 import calebzhou.rdi.core.server.utils.ServerUtils;
-import net.minecraft.CrashReport;
-import net.minecraft.ReportedException;
-import net.minecraft.network.protocol.game.ClientboundSetTimePacket;
-import net.minecraft.resources.ResourceKey;
-import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.server.players.PlayerList;
-import net.minecraft.util.profiling.ProfilerFiller;
-import net.minecraft.world.level.GameRules;
-import net.minecraft.world.level.Level;
-import xyz.nucleoid.fantasy.mixin.MinecraftServerAccess;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
 import java.util.function.BooleanSupplier;
-import java.util.function.Supplier;
 
 public class WorldTickThreadManager {
 
@@ -42,7 +29,7 @@ public class WorldTickThreadManager {
 			tickPool.submit(()->{
 				ResourceKey<Level> key = entry.getKey();
 				ServerLevel serverLevel = entry.getValue();
-				RdiCoreServer.LOGGER.info("ticking {}",key.toString());
+				logger.info("ticking {}",key.toString());
 				profiler.push(() -> serverLevel + " " + serverLevel.dimension().location());
 				if (tickCount % 20 == 0) {
 					profiler.push("timeSync");

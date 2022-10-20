@@ -27,7 +27,7 @@ class RdiCoreServer : ModInitializer {
             MobSpawningThread().start()
         })
         register()
-        RdiEvents.INSTANCE.register()
+        RdiEvents().register()
     }
 
     companion object {

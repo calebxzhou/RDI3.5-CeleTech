@@ -1,14 +1,15 @@
 package calebzhou.rdi.core.server.utils
 
 import calebzhou.rdi.core.server.RdiCoreServer.Companion.server
-import calebzhou.rdi.core.server.RdiMemoryStorage
 import calebzhou.rdi.core.server.constant.ColorConst
 import calebzhou.rdi.core.server.constant.NetworkPackets.DIALOG_INFO
 import calebzhou.rdi.core.server.constant.NetworkPackets.POPUP
 import calebzhou.rdi.core.server.constant.RdiSharedConstants
 import calebzhou.rdi.core.server.constant.RdiSharedConstants.SPAWN_LOCATION
+import calebzhou.rdi.core.server.misc.GeoWeatherManager
 import calebzhou.rdi.core.server.misc.RdiPlayerProfileManager
-import calebzhou.rdi.core.server.model.*
+import calebzhou.rdi.core.server.model.RdiPlayerLocation
+import calebzhou.rdi.core.server.model.ResponseData
 import calebzhou.rdi.core.server.utils.TimeUtils.timeChineseString
 import calebzhou.rdi.core.server.utils.WorldUtils.getDimensionName
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap
@@ -37,6 +38,7 @@ import org.quiltmc.qsl.networking.api.ServerPlayNetworking
 import java.util.*
 import java.util.function.Consumer
 import java.util.function.Predicate
+import kotlin.math.roundToInt
 
 /**
  * Created by calebzhou on 2022-10-16,21:37.
@@ -46,10 +48,10 @@ object PlayerUtils {
     const val RESPONSE_WARNING = 1
     const val RESPONSE_INFO = 0
     const val RESPONSE_ERROR = -1
-    val RESPONSE_ERROR_PREFIX = Component.literal("错误 >").withStyle(ChatFormatting.DARK_RED).withStyle(ChatFormatting.BOLD)
-    val RESPONSE_SUCCESS_PREFIX = Component.literal("成功 >").withStyle(ChatFormatting.DARK_GREEN).withStyle(ChatFormatting.BOLD)
-    val RESPONSE_INFO_PREFIX = Component.literal("提示 >").withStyle(ChatFormatting.AQUA).withStyle(ChatFormatting.BOLD)
-    val RESPONSE_WARNING_PREFIX = Component.literal("警告 >").withStyle(ChatFormatting.GOLD).withStyle(ChatFormatting.BOLD)
+    val RESPONSE_ERROR_PREFIX = Component.literal("错误").withStyle(ChatFormatting.DARK_RED).withStyle(ChatFormatting.BOLD).append(Component.literal(">").withStyle(ChatFormatting.RED))
+    val RESPONSE_SUCCESS_PREFIX = Component.literal("成功").withStyle(ChatFormatting.DARK_GREEN).withStyle(ChatFormatting.BOLD).append(Component.literal(">").withStyle(ChatFormatting.GREEN))
+    val RESPONSE_INFO_PREFIX = Component.literal("提示").withStyle(ChatFormatting.AQUA).withStyle(ChatFormatting.BOLD).append(Component.literal(">").withStyle(ChatFormatting.AQUA))
+    val RESPONSE_WARNING_PREFIX = Component.literal("警告").withStyle(ChatFormatting.GOLD).withStyle(ChatFormatting.BOLD).append(Component.literal(">").withStyle(ChatFormatting.YELLOW))
 
     fun sendPacketToClient(player:Player, pack: ResourceLocation, content:Any) {
 		val buf = PacketByteBufs.create();
@@ -126,10 +128,10 @@ object PlayerUtils {
 
     fun sendChatMessage(player: Player, messageType: Int, content: String) {
         when (messageType) {
-            RESPONSE_SUCCESS -> sendChatMessage(player, RESPONSE_SUCCESS_PREFIX .append( content))
-            RESPONSE_WARNING -> sendChatMessage(player, RESPONSE_WARNING_PREFIX .append( content))
-            RESPONSE_INFO -> sendChatMessage(player, RESPONSE_INFO_PREFIX .append(content))
-            RESPONSE_ERROR -> sendChatMessage(player, RESPONSE_ERROR_PREFIX .append( content))
+            RESPONSE_SUCCESS -> sendChatMessage(player, Component.empty().append(RESPONSE_SUCCESS_PREFIX) .append( content))
+            RESPONSE_WARNING -> sendChatMessage(player, Component.empty().append(RESPONSE_WARNING_PREFIX) .append( content))
+            RESPONSE_INFO -> sendChatMessage(player, Component.empty().append(RESPONSE_INFO_PREFIX ).append(content))
+            RESPONSE_ERROR -> sendChatMessage(player, Component.empty().append(RESPONSE_ERROR_PREFIX) .append( content))
         }
     }
 
@@ -300,6 +302,23 @@ object PlayerUtils {
 
     fun getAllPlayers(): List<ServerPlayer> {
         return server.playerList.players
+    }
+
+    @JvmStatic
+    fun getTabListDisplayName(player: Player): Component {
+        val component = Component.literal(player.scoreboardName)
+        val pid = player.stringUUID
+        val profile = RdiPlayerProfileManager.pidProfileMap[pid]?:return component
+        if(profile.isGenuine){
+            component.withStyle(ChatFormatting.GOLD)
+        }
+        val rdiWeather = GeoWeatherManager.pidWeatherMap[pid]?:return component
+        val rdiGeoLocation = GeoWeatherManager.pidGeoMap[pid]?:return component
+        return component
+            .append(
+                GeoWeatherManager.getTemperatureDisplayComponent(rdiWeather.realTimeWeather.temp.roundToInt()))
+        .append(GeoWeatherManager.getIspCode(rdiGeoLocation.isp).toString())
+            .append(GeoWeatherManager.getProvinceCode(rdiGeoLocation))
     }
 
     val provinceCodeMap = Object2ObjectOpenHashMap<String, Int>()

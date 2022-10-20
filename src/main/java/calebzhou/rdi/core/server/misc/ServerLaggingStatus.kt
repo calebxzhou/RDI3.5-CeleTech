@@ -14,7 +14,7 @@ object ServerLaggingStatus {
 	fun updateMilliSecondsBehind(msBehind: Long) {
         ServerLaggingStatus.msBehind = msBehind
     }
-
+    @JvmStatic
     val isServerVeryLagging: Boolean
         get() = msBehind > 200
     val isServerLagging: Boolean

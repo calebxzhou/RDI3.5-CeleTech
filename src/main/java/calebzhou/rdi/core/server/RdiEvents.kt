@@ -1,26 +1,36 @@
 package calebzhou.rdi.core.server
 
 import calebzhou.rdi.core.server.RdiCoreServer.Companion.server
-import calebzhou.rdi.core.server.command.RdiCommand
+import calebzhou.rdi.core.server.RdiMemoryStorage.commandSet
 import calebzhou.rdi.core.server.command.impl.*
+import calebzhou.rdi.core.server.command.internal.RiLoadIslandCommand
+import calebzhou.rdi.core.server.command.internal.RiTeleportCommand
+import calebzhou.rdi.core.server.command.internal.RiTellCommand
 import calebzhou.rdi.core.server.constant.NetworkPackets
+import calebzhou.rdi.core.server.misc.GeoWeatherManager
 import calebzhou.rdi.core.server.misc.IslandUnloadManager
 import calebzhou.rdi.core.server.misc.PlayerLocationRecorder.record
+import calebzhou.rdi.core.server.misc.RdiPlayerProfileManager
 import calebzhou.rdi.core.server.misc.ServerLaggingStatus.isServerLagging
-import calebzhou.rdi.core.server.misc.TickTaskManager.onServerTick
-import calebzhou.rdi.core.server.model.RdiGeoLocation
+import calebzhou.rdi.core.server.misc.TickTaskManager
 import calebzhou.rdi.core.server.model.RdiPlayerProfile
-import calebzhou.rdi.core.server.model.RdiWeather
 import calebzhou.rdi.core.server.model.ResponseData
 import calebzhou.rdi.core.server.module.DeathRandomDrop
-import calebzhou.rdi.core.server.utils.*
+import calebzhou.rdi.core.server.utils.PlayerUtils.RESPONSE_ERROR
 import calebzhou.rdi.core.server.utils.PlayerUtils.getAllPlayers
 import calebzhou.rdi.core.server.utils.PlayerUtils.getPasswordStorageFile
 import calebzhou.rdi.core.server.utils.PlayerUtils.isInIsland
+import calebzhou.rdi.core.server.utils.PlayerUtils.isInMainTown
+import calebzhou.rdi.core.server.utils.PlayerUtils.satisfyMainTownBuildCondition
 import calebzhou.rdi.core.server.utils.PlayerUtils.sayHello
+import calebzhou.rdi.core.server.utils.PlayerUtils.sendChatMessage
+import calebzhou.rdi.core.server.utils.PlayerUtils.sendClientPopup
+import calebzhou.rdi.core.server.utils.PlayerUtils.sendPacketToClient
 import calebzhou.rdi.core.server.utils.PlayerUtils.teleportToSpawn
 import calebzhou.rdi.core.server.utils.RdiHttpClient.sendRequest
 import calebzhou.rdi.core.server.utils.RdiHttpClient.sendRequestAsyncResponseless
+import calebzhou.rdi.core.server.utils.RdiSerializer
+import calebzhou.rdi.core.server.utils.ThreadPool
 import calebzhou.rdi.core.server.utils.WorldUtils.getDimensionName
 import calebzhou.rdi.core.server.utils.WorldUtils.isInIsland2
 import calebzhou.rdi.core.server.utils.WorldUtils.isNoPlayersInLevel
@@ -53,87 +63,29 @@ import org.quiltmc.qsl.networking.api.PacketSender
 import org.quiltmc.qsl.networking.api.ServerPlayConnectionEvents
 import java.util.function.Consumer
 
-class RdiEvents private constructor() {
+class RdiEvents  constructor() {
     fun register() {
-        ServerTickEvents.END.register(ServerTickEvents.End { server: MinecraftServer -> onServerEndTick(server) })
-        CommandRegistrationCallback.EVENT.register(CommandRegistrationCallback { dispatcher: CommandDispatcher<CommandSourceStack>, context: CommandBuildContext, selection: CommandSelection ->
-            registerCommands(
-                dispatcher,
-                context,
-                selection
-            )
-        })
-        ServerPlayConnectionEvents.JOIN.register(ServerPlayConnectionEvents.Join { listener: ServerGamePacketListenerImpl, sender: PacketSender, server: MinecraftServer ->
-            onPlayerJoin(
-                listener,
-                sender,
-                server
-            )
-        })
-        ServerPlayConnectionEvents.DISCONNECT.register(ServerPlayConnectionEvents.Disconnect { listener: ServerGamePacketListenerImpl, server: MinecraftServer ->
-            onPlayerDisconnect(
-                listener,
-                server
-            )
-        })
-        PlayerBlockBreakEvents.BEFORE.register(PlayerBlockBreakEvents.Before { level: Level, player: Player, pos: BlockPos, blockState: BlockState, blockEntity: BlockEntity ->
-            beforeBreakBlock(
-                level,
-                player,
-                pos,
-                blockState,
-                blockEntity
-            )
-        })
-        PlayerBlockBreakEvents.AFTER.register(PlayerBlockBreakEvents.After { level: Level, player: Player, blockPos: BlockPos, state: BlockState, block: BlockEntity ->
-            onAfterBreakBlock(
-                level,
-                player,
-                blockPos,
-                state,
-                block
-            )
-        })
+        ServerTickEvents.END.register(ServerTickEvents.End(::onServerEndTick))
+        CommandRegistrationCallback.EVENT.register(CommandRegistrationCallback(::registerCommands))
+        ServerPlayConnectionEvents.JOIN.register(ServerPlayConnectionEvents.Join(::onPlayerJoin))
+        ServerPlayConnectionEvents.DISCONNECT.register(ServerPlayConnectionEvents.Disconnect(::onPlayerDisconnect))
+        PlayerBlockBreakEvents.BEFORE.register(PlayerBlockBreakEvents.Before(::beforeBreakBlock))
+        PlayerBlockBreakEvents.AFTER.register(PlayerBlockBreakEvents.After(::onAfterBreakBlock))
         //UseBlockCallback.EVENT.register(this::onUseBlock);
-        ServerPlayerEvents.ALLOW_DEATH.register(AllowDeath { player: ServerPlayer, source: DamageSource, damage: Float ->
-            onPlayerDeath(
-                player,
-                source,
-                damage
-            )
-        })
-        ServerEntityWorldChangeEvents.AFTER_PLAYER_CHANGE_WORLD.register(AfterPlayerChange { player: ServerPlayer, fromLevel: ServerLevel, toLevel: ServerLevel ->
-            onPlayerChangeWorld(
-                player,
-                fromLevel,
-                toLevel
-            )
-        })
+        ServerPlayerEvents.ALLOW_DEATH.register(AllowDeath(::onPlayerDeath))
+        ServerEntityWorldChangeEvents.AFTER_PLAYER_CHANGE_WORLD.register(AfterPlayerChange(::onPlayerChangeWorld))
     }
 
     private fun onServerEndTick(server: MinecraftServer) {
         for (i in 0..999) {
-            if (!isServerLagging) onServerTick() else break
+            if (!isServerLagging)
+                TickTaskManager.onServerTick()
+            else break
         }
     }
-
-    /*private InteractionResult onUseBlock(Player player, Level level, InteractionHand hand, BlockHitResult result) {
-		if(isInMainTown(player)  && satisfyMainTownBuildCondition(player) ){
-			sendChatMessage(player, RESPONSE_ERROR,"要建造主城，您需要有50级经验或者使用微软账号登录。");
-			return InteractionResult.FAIL;
-		}
-
-		return InteractionResult.PASS;
-
-	}*/
     //改变世界之后
     private fun onPlayerChangeWorld(player: ServerPlayer, fromLevel: ServerLevel, toLevel: ServerLevel) {
-        RdiCoreServer.LOGGER.info(
-            "{}离开{}去{}",
-            player.scoreboardName,
-            getDimensionName(fromLevel),
-            getDimensionName(toLevel)
-        )
+        logger.info("{}离开{}去{}", player.scoreboardName, getDimensionName(fromLevel), getDimensionName(toLevel))
         //要去的维度在岛屿卸载队列里面
         if (IslandUnloadManager.isIslandInQueue(toLevel)) {
             IslandUnloadManager.removeIslandFromQueue(toLevel)
@@ -178,14 +130,13 @@ class RdiEvents private constructor() {
         RdiMemoryStorage.afkMap.removeInt(player.scoreboardName)
         val pid = player.stringUUID
         RdiMemoryStorage.tpaMap.remove(pid)
-        RdiMemoryStorage.pidGeoMap.remove(pid)
-        RdiMemoryStorage.pidWeatherMap.remove(pid)
-        RdiMemoryStorage.pidUserMap.remove(pid)
+        GeoWeatherManager.clearForPlayer(pid)
+        RdiPlayerProfileManager.removeProfile(pid)
         RdiMemoryStorage.pidBeingGoSpawn.remove(pid)
         RdiMemoryStorage.pidToSpeakPlayersMap.remove(pid)
         //记录登出信息
         sendRequestAsyncResponseless("post", "/v37/mcs_game/record/logout", Pair.of("pid", pid))
-        RdiIslandUnloadManager.addIslandToUnloadQueue(player.getLevel())
+        IslandUnloadManager.addIslandToUnloadQueue(player.getLevel())
     }
 
     //成功破坏方块
@@ -225,22 +176,20 @@ class RdiEvents private constructor() {
             teleportToSpawn(player)
             RdiMemoryStorage.pidBeingGoSpawn.remove(player.stringUUID)
         }
-        if (isInIsland(player)) RdiIslandUnloadManager.removeIslandFromQueue(player.getLevel())
+        if (isInIsland(player)) IslandUnloadManager.removeIslandFromQueue(player.getLevel())
         //提示账号是否有密码
         val pid = player.stringUUID
         ThreadPool.newThread {
-            val ResponseData: ResponseData<Boolean?> =
-                sendRequest(Boolean::class.java, "get", "/v37/account/isreg/$pid")
-            val rdiPlayerProfile: RdiPlayerProfile = RdiMemoryStorage.pidUserMap.get(pid)
-            if (rdiPlayerProfile == null) {
+            val ResponseData= sendRequest(String::class, "get", "/v37/public/account/isreg/$pid")
+            val rdiPlayerProfile: RdiPlayerProfile = RdiPlayerProfileManager.pidProfileMap[pid]?:let {
                 player.connection.disconnect(Component.literal("用户对象不能为空"))
                 return@newThread
             }
-            if (ResponseData.data!!) {
+            if (ResponseData.data.toBoolean()) {
                 if (java.lang.Boolean.parseBoolean(ResponseData.data.toString())) {
-                    val loginData = sendRequest("get", "/v37/account/login/$pid", Pair.of("pwd", rdiPlayerProfile.pwd))
+                    val loginData = sendRequest("get", "/v37/public/account/login/$pid", Pair.of("pwd", rdiPlayerProfile.pwd))
                     if (!loginData.isSuccess) {
-                        RdiCoreServer.LOGGER.info("此请求密码错误！")
+                        logger.info("此请求密码错误！")
                         player.connection.disconnect(
                             Component.literal(
                                 """
@@ -259,54 +208,41 @@ class RdiEvents private constructor() {
             }
         }
         ThreadPool.newThread {
-            val request: ResponseData<RdiGeoLocation?> =
-                sendRequest(RdiGeoLocation::class.java, "get", "/v37/public/ip2loca", Pair.of("ip", player.ipAddress))
-            if (request.isSuccess) {
-                val geoLocation = request.data
-                val weatherResponseData: ResponseData<RdiWeather?> = sendRequest(
-                    RdiWeather::class.java,
-                    "get",
-                    "/v37/public/weather",
-                    Pair.of("longitude", geoLocation!!.location.longitude),
-                    Pair.of("latitude", geoLocation.location.latitude)
-                )
-                if (weatherResponseData.isSuccess) {
-                    val rdiWeather = weatherResponseData.data
-                    PlayerUtils.saveGeoLocation(player, geoLocation)
-                    PlayerUtils.saveWeather(player, rdiWeather)
-                    NetworkUtils.sendPacketToClient(
-                        player,
-                        NetworkPackets.GEO_LOCATION,
-                        RdiSerializer.GSON.toJson(geoLocation)
-                    )
-                    NetworkUtils.sendPacketToClient(
-                        player,
-                        NetworkPackets.WEATHER,
-                        RdiSerializer.GSON.toJson(rdiWeather)
-                    )
-                    getAllPlayers().forEach(Consumer { pl: ServerPlayer ->
-                        pl.connection.send(
-                            ClientboundPlayerInfoPacket(ClientboundPlayerInfoPacket.Action.UPDATE_DISPLAY_NAME, player)
-                        )
-                    })
-                    PlayerUtils.sendWeatherInfo(player, geoLocation, rdiWeather)
-                    sayHello(player)
+            val loca = GeoWeatherManager.getGeoLocation(pid, player.ipAddress)
+            val weather = GeoWeatherManager.getWeather(pid, loca.location)
+            GeoWeatherManager.sendToPlayer(player)
+            sendPacketToClient(player, NetworkPackets.GEO_LOCATION, RdiSerializer.gson.toJson(loca))
+            sendPacketToClient(player, NetworkPackets.WEATHER, RdiSerializer.gson.toJson(weather))
+            getAllPlayers().forEach(Consumer { pl: ServerPlayer -> pl.connection.send(ClientboundPlayerInfoPacket(ClientboundPlayerInfoPacket.Action.UPDATE_DISPLAY_NAME, player)) })
+                   // PlayerUtils.sendWeatherInfo(player, loca, rdiWeather)
+            sayHello(player)
+            sendRequestAsyncResponseless("post", "/v37/mcs_game/record/login", Pair.of("pid", pid), Pair.of("ip", player.ipAddress), Pair.of("geo", loca.toString()))
+            sendRequestAsyncResponseless("post", "/v37/mcs_game/record/idname", Pair.of("pid", pid), Pair.of("name", player.scoreboardName))
+        }
+
+    }
+    companion object
+    {
+        @JvmStatic
+        fun recordBlock(pid: String, bid: String, act: Int, world: Level, x: Int, y: Int, z: Int) {
+            //只记录主世界主城以内
+            if (world === server.overworld()) {
+                val rangeInSpawn = x > -256 && x < 256 && z > -256 && z < 256
+                if (rangeInSpawn) {
                     sendRequestAsyncResponseless(
-                        "post", "/v37/mcs_game/record/login",
+                        "post", "/v37/mcs_game/record/block",
                         Pair.of("pid", pid),
-                        Pair.of("ip", player.ipAddress),
-                        Pair.of("geo", geoLocation.toString())
-                    )
-                    sendRequestAsyncResponseless(
-                        "post", "/v37/mcs_game/record/idname",
-                        Pair.of("pid", pid),
-                        Pair.of("name", player.scoreboardName)
+                        Pair.of("bid", bid),
+                        Pair.of("act", act),
+                        Pair.of("world", world),
+                        Pair.of("x", x),
+                        Pair.of("y", y),
+                        Pair.of("z", z)
                     )
                 }
             }
         }
     }
-
     //指令注册
     private fun registerCommands(
         dispatcher: CommandDispatcher<CommandSourceStack>,
@@ -329,40 +265,13 @@ class RdiEvents private constructor() {
         commandSet.add(SpawnCommand())
         commandSet.add(SpeakCommand())
         commandSet.add(TpaCommand())
-        commandSet.add(TpsCommand())
+        commandSet.add(TpsNormalCommand())
         commandSet.add(TpyesCommand())
-        commandSet.add(WeatherCommand())
+        commandSet.add(WeatherNormalCommand())
         commandSet.add(RdiNumberCommand())
         commandSet.add(SpeakScopeCommand())
-        commandSet.forEach(Consumer { cmd: RdiCommand ->
-            if (cmd.getExecution() != null) {
-                dispatcher.register(cmd.getExecution())
-            }
+        commandSet.forEach(Consumer { cmd ->
+            dispatcher.register(cmd.execution)
         })
-    }
-
-    companion object {
-        val INSTANCE = RdiEvents()
-
-        //act 0放置1破坏
-        @JvmStatic
-        fun recordBlock(pid: String, bid: String, act: Int, world: Level, x: Int, y: Int, z: Int) {
-            //只记录主世界主城以内
-            if (world === server.overworld()) {
-                val rangeInSpawn = x > -256 && x < 256 && z > -256 && z < 256
-                if (rangeInSpawn) {
-                    sendRequestAsyncResponseless(
-                        "post", "/v37/mcs_game/record/block",
-                        Pair.of("pid", pid),
-                        Pair.of("bid", bid),
-                        Pair.of("act", act),
-                        Pair.of("world", world),
-                        Pair.of("x", x),
-                        Pair.of("y", y),
-                        Pair.of("z", z)
-                    )
-                }
-            }
-        }
-    }
+    }//act 0放置1破坏
 }

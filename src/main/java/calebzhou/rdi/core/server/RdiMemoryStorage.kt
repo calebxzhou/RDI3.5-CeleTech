@@ -1,9 +1,7 @@
 package calebzhou.rdi.core.server
 
 import calebzhou.rdi.core.server.command.RdiCommand
-import calebzhou.rdi.core.server.model.RdiGeoLocation
-import calebzhou.rdi.core.server.model.RdiPlayerProfile
-import calebzhou.rdi.core.server.model.RdiWeather
+import calebzhou.rdi.core.server.command.RdiNormalCommand
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap
 import it.unimi.dsi.fastutil.objects.ObjectArrayList
@@ -28,6 +26,6 @@ object RdiMemoryStorage {
 
 	val pidToSpeakPlayersMap = Object2ObjectOpenHashMap<String, ObjectOpenHashSet<String>>()
 
-	val commandSet: Set<RdiCommand> = ObjectOpenHashSet() //准备卸载的维度队列
+	val commandSet: ObjectOpenHashSet<RdiCommand> = ObjectOpenHashSet() //准备卸载的维度队列
     //public static final Queue<ServerLevel> levelsBeingUnloadQueue = new LinkedList<>();
 }

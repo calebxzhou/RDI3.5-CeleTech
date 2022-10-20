@@ -9,6 +9,7 @@ import net.minecraft.world.entity.EntityType
 import net.minecraft.world.entity.MobSpawnType
 
 object ServerUtils {
+    @JvmStatic
     fun broadcastChatMessage(msg: String) {
         broadcastChatMessage(Component.literal(msg))
     }

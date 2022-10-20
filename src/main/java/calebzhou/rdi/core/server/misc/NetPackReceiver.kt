@@ -1,9 +1,9 @@
 package calebzhou.rdi.core.server.misc
 
-import calebzhou.rdi.core.server.RdiCoreServer
 import calebzhou.rdi.core.server.RdiMemoryStorage
 import calebzhou.rdi.core.server.constant.FileConst
 import calebzhou.rdi.core.server.constant.NetworkPackets
+import calebzhou.rdi.core.server.logger
 import calebzhou.rdi.core.server.utils.PlayerUtils
 import calebzhou.rdi.core.server.utils.ServerUtils
 import calebzhou.rdi.core.server.utils.ThreadPool
@@ -53,7 +53,7 @@ class NetPackReceiver {
                     //写入硬件信息
                     FileUtils.write(hwSpecFile, specJson, StandardCharsets.UTF_8)
                 } catch (e: IOException) {
-                    RdiCoreServer.LOGGER.error(e.stackTrace)
+                    logger.error(e.stackTrace)
                 }
             }
 
@@ -119,7 +119,7 @@ class NetPackReceiver {
                     afkTicks
                 ) else RdiMemoryStorage.afkMap.removeInt(player.scoreboardName)
             } catch (e: Exception) {
-                RdiCoreServer.LOGGER.error(e.stackTrace)
+                logger.error(e.stackTrace)
             }
         }
 

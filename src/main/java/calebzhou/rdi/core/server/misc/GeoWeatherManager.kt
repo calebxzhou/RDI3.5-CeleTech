@@ -12,6 +12,7 @@ import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap
 import net.minecraft.ChatFormatting
 import net.minecraft.network.chat.Component
+import net.minecraft.network.chat.MutableComponent
 import net.minecraft.server.level.ServerPlayer
 import kotlin.math.roundToInt
 
@@ -39,7 +40,10 @@ object GeoWeatherManager {
         }
         return resp.data!!
     }
-
+    fun clearForPlayer(pid:String){
+        pidGeoMap.remove(pid)
+        pidWeatherMap.remove(pid)
+    }
     fun sendToPlayer(player: ServerPlayer){
         val geo = pidGeoMap[player.stringUUID]?:let {
             PlayerUtils.sendChatMessage(player,"无法获取天气预报")
@@ -58,11 +62,13 @@ object GeoWeatherManager {
                 "${geo.city},${geo.province},${geo.nation}"
         )
                 //天气状况Emoji
-            .append("${Skycon.valueOf(rtw.skycon)} ")
+            .append("${Skycon.valueOf(rtw.skycon).desc} ")
             //天气状况描述
             .append("${rtw.skyDesc} ")
                 //温度与感受
-            .append("\uD83C\uDF21 ${rtw.temp.roundToInt()}℃ ❤️${rtw.feel} ")
+            .append("\uD83C\uDF21 ${rtw.temp.roundToInt()}℃ ${rtw.feel} ")
+            //紫外线
+            .append("紫外线${rtw.uv} ")
                 //湿度
             .append("\uD83D\uDCA6 ${rtw.humi*100}% ")
                 //能见度
@@ -75,12 +81,11 @@ object GeoWeatherManager {
             .append("\uD83D\uDE24 ${rtw.aqi}(${rtw.aqiDesc})")
                 //降水
             .append("\uD83C\uDF27 ${rtw.rainDesc}")
-                //紫外线
-            .append("紫外线${rtw.uv}")
+
         PlayerUtils.sendChatMessage(player,line1)
 
     }
-    fun getTemperatureDisplayComponent(temp:Int):Component{
+    fun getTemperatureDisplayComponent(temp:Int):MutableComponent{
         return Component.literal("${temp}℃").withStyle(
             if (temp >=40)
                 ChatFormatting.DARK_RED
@@ -106,6 +111,12 @@ object GeoWeatherManager {
         }else
             '*'
 
+    }
+    fun getProvinceCode(geo:RdiGeoLocation):String{
+        val code = provinceCodeMap.getInt(geo.province.subSequence(0,2))
+        return if(code==0 && geo.nation!="中国")
+            geo.nation.split("|")[1]
+        else code.toString()
     }
     private val provinceCodeMap = Object2IntOpenHashMap<String>()
     private val ispCodeMap = Object2CharOpenHashMap<String>()

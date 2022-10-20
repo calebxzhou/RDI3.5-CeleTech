@@ -49,7 +49,7 @@ public class EntityTickInverter{
 	private static final int tickAnimalRequired=20/5;
 	private static void handleAnimalTick(Consumer tickConsumer, Animal animal) {
 		if(ticksAnimalNow>=tickAnimalRequired){
-			if(!ServerLaggingStatus.isServerLagging()) tickConsumer.accept(animal);
+			if(!ServerLaggingStatus.INSTANCE.isServerLagging()) tickConsumer.accept(animal);
 			ticksAnimalNow=0;
 		}else{
 			++ticksAnimalNow;
@@ -59,7 +59,7 @@ public class EntityTickInverter{
 
 	//怪物只要不卡就动
 	private static void handleMonsterTick(Consumer tickConsumer, Enemy monster) {
-		if(!ServerLaggingStatus.isServerLagging())
+		if(!ServerLaggingStatus.INSTANCE.isServerLagging())
 			tickConsumer.accept(monster);
 	}
 
@@ -68,7 +68,7 @@ public class EntityTickInverter{
 	private static final int tickVillageRequired=20/5;
 	private static void handleVillagerTick(Consumer tickConsumer, AbstractVillager villager) {
 		if(ticksVillageNow>=tickVillageRequired){
-			if(!ServerLaggingStatus.isServerLagging())
+			if(!ServerLaggingStatus.INSTANCE.isServerLagging())
 				tickConsumer.accept(villager);
 			ticksVillageNow=0;
 		}else{
@@ -114,7 +114,7 @@ public class EntityTickInverter{
 			}else if(Registry.ENTITY_TYPE.getKey(entity.getType()).getNamespace().equals("botania"))
 				remove=false;
 			if(remove){
-				RdiCoreServer.LOGGER.info("即将清除：{}",entity.toString());
+				logger.info("即将清除：{}",entity.toString());
 				entity.remove(Entity.RemovalReason.DISCARDED);
 			}
         }*/

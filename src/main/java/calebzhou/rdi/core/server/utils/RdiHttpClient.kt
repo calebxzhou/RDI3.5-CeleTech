@@ -1,7 +1,7 @@
 package calebzhou.rdi.core.server.utils
 
-import calebzhou.rdi.core.server.RdiCoreServer
 import calebzhou.rdi.core.server.constant.RdiSharedConstants
+import calebzhou.rdi.core.server.logger
 import calebzhou.rdi.core.server.model.ResponseData
 import calebzhou.rdi.core.server.utils.RdiSerializer.Companion.gson
 import com.google.gson.reflect.TypeToken
@@ -17,7 +17,6 @@ import javax.net.ssl.SSLContext
 import javax.net.ssl.TrustManager
 import javax.net.ssl.X509TrustManager
 import kotlin.reflect.KClass
-
 
 
 object RdiHttpClient {
@@ -42,7 +41,7 @@ object RdiHttpClient {
         vararg params: Pair<String, Any>
     ): ResponseData<T> {
         if (RdiSharedConstants.DEBUG)
-            RdiCoreServer.LOGGER.info("HTTP发送{} {} {}", type, url, params)
+            logger.info("HTTP发送{} {} {}", type, url, params)
         val okreq = Request.Builder()
         val urlBuilder= (RdiSharedConstants.SERVICE_ADDR + url).toHttpUrl().newBuilder()
         val bodyFromParams = getFormBodyFromParams(*params)
@@ -59,13 +58,13 @@ object RdiHttpClient {
         val response = try {
             client.newCall(okreq.build()).execute()
         } catch (e: IOException) {
-            RdiCoreServer.LOGGER.info("请求出现错误：" + e.message + e.cause)
+            logger.info("请求出现错误：" + e.message + e.cause)
             return ResponseData(-404, "请求超时.${e.message},${e.cause}",null)
         }
 
         val respStr: String = response.body.use { body -> body!!.string() }
         if (RdiSharedConstants.DEBUG)
-            RdiCoreServer.LOGGER.info("HTTP响应 {}", respStr)
+            logger.info("HTTP响应 {}", respStr)
         return gson.fromJson(
             respStr,
             if (resultClass == null)

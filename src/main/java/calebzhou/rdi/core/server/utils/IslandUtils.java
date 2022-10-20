@@ -18,17 +18,14 @@ import net.minecraft.world.level.dimension.BuiltinDimensionTypes;
 import xyz.nucleoid.fantasy.RuntimeWorldConfig;
 
 public class IslandUtils {
-	public static ResponseData<Island2> getIslandByPlayer(Player player){
-		return RdiHttpClient.sendRequest(Island2.class,"get", "/v37/mcs_game/island2/"+player.getStringUUID());
-	}
 	/*public static void unloadIsland(ServerLevel islandLevel,ServerPlayer player){
 		//如果在二岛
 		if(WorldUtils.isInIsland2(islandLevel)){
 			String dimensionName = WorldUtils.getDimensionName(islandLevel);
-			RdiCoreServer.LOGGER.info("玩家{}离开了岛屿维度{}",player.getScoreboardName(), dimensionName);
+			logger.info("玩家{}离开了岛屿维度{}",player.getScoreboardName(), dimensionName);
 			//如果岛上没有人（除了自己） 就卸载存档
 			if(WorldUtils.isNoPlayersInLevel(player,islandLevel)){
-				RdiCoreServer.LOGGER.info("岛屿"+ dimensionName +"没有玩家了，即将卸载");
+				logger.info("岛屿"+ dimensionName +"没有玩家了，即将卸载");
 				RdiTickTaskManager.removeDimension(dimensionName);
 				ServerUtils.executeOnServerThread(()->{
 					islandLevel.save(null,true,false);

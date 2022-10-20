@@ -1,6 +1,6 @@
 package calebzhou.rdi.core.server.command.impl
 
-import calebzhou.rdi.core.server.command.RdiCommand
+import calebzhou.rdi.core.server.command.RdiNormalCommand
 import calebzhou.rdi.core.server.constant.FileConst
 import calebzhou.rdi.core.server.utils.PlayerUtils
 import calebzhou.rdi.core.server.utils.ThreadPool
@@ -15,9 +15,10 @@ import java.io.File
 import java.io.IOException
 import java.nio.charset.StandardCharsets
 
-class HwSpecCommand : RdiCommand("hardware-debugging") {
-    override fun getExecution(): LiteralArgumentBuilder<CommandSourceStack> {
-        return baseArgBuilder.then(
+/*
+class HwSpecNormalCommand : RdiNormalCommand("hardware-debugging") {
+    override val execution : LiteralArgumentBuilder<CommandSourceStack>
+    get() = baseArgBuilder.then(
             Commands.argument("玩家", EntityArgument.player())
                 .executes { context: CommandContext<CommandSourceStack> ->
                     exec(
@@ -48,3 +49,4 @@ class HwSpecCommand : RdiCommand("hardware-debugging") {
         return 1
     }
 }
+*/

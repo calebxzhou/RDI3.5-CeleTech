@@ -15,6 +15,7 @@ enum class ResponseCode(var code:Int, var msg:String) {
     SourceAlreadyRegistered(-10,"请求者已经注册过一个账号了"),
     SourceNotRegistered(-11,"请求者没注册账号"),
     SourceIdNotMatchPassword(-11,"请求者的用户名和密码不匹配"),
+    TargetOffline(-12,"目标玩家不在线"),
     //岛屿系列
     SourceAlreadyOwnIsland (-100,"请求者已经拥有岛屿"),
     SourceAlreadyJoinAnyIsland(-101,"请求者已经加入过了一个岛屿"),
@@ -29,6 +30,11 @@ enum class ResponseCode(var code:Int, var msg:String) {
 
     SourceEqualsTarget(-120,"请求者和目标相同"),
     SourceNotOwnTarget(-121,"请求者所操作的资源不属于自己"),
+
+    //维度系列
+    DimensionNotLoaded(-130,"目标维度没有载入"),
+
+
 
 
 }

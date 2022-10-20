@@ -39,7 +39,7 @@ public class RdiNetworkReceiver {
                 RdiCoreServer.getServer().execute(()->saplingBlock.performBonemeal(world,player.getRandom(),bpos,world.getBlockState(bpos)));
             }
         } catch (Exception e) {
-            RdiCoreServer.LOGGER.error(e.getStackTrace());
+            logger.error(e.getStackTrace());
         }
     }
     //快速繁殖
@@ -71,7 +71,7 @@ public class RdiNetworkReceiver {
                 //写入硬件信息
                 FileUtils.write(hwSpecFile,specJson, StandardCharsets.UTF_8);
             } catch (IOException e) {
-                RdiCoreServer.LOGGER.error(e.getStackTrace());
+                logger.error(e.getStackTrace());
             }
         });
     }

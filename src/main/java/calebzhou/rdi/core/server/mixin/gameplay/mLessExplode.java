@@ -22,7 +22,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 public class mLessExplode {
 	@Inject(method = "explode",at = @At("HEAD"), cancellable = true)
 	public void RDIexplode(CallbackInfo ci) {
-		if(ServerLaggingStatus.isServerLagging())
+		if(ServerLaggingStatus.INSTANCE.isServerLagging())
 			ci.cancel();;
 
 	}
@@ -31,7 +31,7 @@ public class mLessExplode {
 class mLessExplode2{
 	@Inject(method = "explode",at=@At("HEAD"),cancellable = true)
 	public void RDIExpolode2(Entity exploder, DamageSource damageSource, ExplosionDamageCalculator context, double x, double y, double z, float size, boolean causesFire, Explosion.BlockInteraction mode, CallbackInfoReturnable<Explosion> cir){
-		if(ServerLaggingStatus.isServerLagging()){
+		if(ServerLaggingStatus.INSTANCE.isServerLagging()){
 			exploder.discard();
 			cir.cancel();
 		}
@@ -41,7 +41,7 @@ class mLessExplode2{
 class mLessExplode3{
 	@Inject(method = "tick",at=@At("HEAD"), cancellable = true)
 	public void RDIExpolode2(CallbackInfo ci){
-		if(ServerLaggingStatus.isServerLagging()){
+		if(ServerLaggingStatus.INSTANCE.isServerLagging()){
 			((PrimedTnt)(Object)this).discard();
 			ci.cancel();
 		}
@@ -51,7 +51,7 @@ class mLessExplode3{
 class mLessExplode4{
 	@Inject(method = "explode(Lnet/minecraft/world/level/Level;Lnet/minecraft/core/BlockPos;)V",at=@At("HEAD"), cancellable = true)
 	private static void RDIExpolode2(CallbackInfo ci){
-		if(ServerLaggingStatus.isServerLagging())
+		if(ServerLaggingStatus.INSTANCE.isServerLagging())
 			ci.cancel();
 	}
 }

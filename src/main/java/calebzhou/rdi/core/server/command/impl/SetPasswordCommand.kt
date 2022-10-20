@@ -1,7 +1,7 @@
 package calebzhou.rdi.core.server.command.impl
 
+import calebzhou.rdi.core.server.command.RdiNormalCommand
 import calebzhou.rdi.core.server.constant.NetworkPackets
-import calebzhou.rdi.core.server.command.RdiCommand
 import calebzhou.rdi.core.server.utils.PlayerUtils
 import calebzhou.rdi.core.server.utils.RdiHttpClient
 import calebzhou.rdi.core.server.utils.ThreadPool
@@ -12,9 +12,9 @@ import it.unimi.dsi.fastutil.Pair
 import net.minecraft.commands.CommandSourceStack
 import net.minecraft.commands.Commands
 
-class SetPasswordCommand : RdiCommand("set-password", "设定密码") {
-    override fun getExecution(): LiteralArgumentBuilder<CommandSourceStack> {
-        return baseArgBuilder
+class SetPasswordCommand : RdiNormalCommand("set-password", "设定密码") {
+    override val execution : LiteralArgumentBuilder<CommandSourceStack>
+    get() = baseArgBuilder
             .then(
                 Commands.argument("用来加密的密码", StringArgumentType.string())
                     .then(
@@ -22,7 +22,7 @@ class SetPasswordCommand : RdiCommand("set-password", "设定密码") {
                             .executes { context: CommandContext<CommandSourceStack> -> exec(context) }
                     )
             )
-    }
+
 
     private fun exec(context: CommandContext<CommandSourceStack>): Int {
         val player = context.source.player!!
@@ -39,7 +39,7 @@ class SetPasswordCommand : RdiCommand("set-password", "设定密码") {
         ThreadPool.newThread {
             val ResponseData = RdiHttpClient.sendRequest(
                 "post",
-                "/v37/account/register/" + player!!.stringUUID,
+                "/v37/public/account/register/" + player!!.stringUUID,
                 Pair.of("pwd", pwdVerify),
                 Pair.of("ip", player.ipAddress)
             )

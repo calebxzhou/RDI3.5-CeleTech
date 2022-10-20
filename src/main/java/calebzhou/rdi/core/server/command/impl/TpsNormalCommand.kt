@@ -1,10 +1,10 @@
 package calebzhou.rdi.core.server.command.impl
 
 import calebzhou.rdi.core.server.RdiCoreServer
-import calebzhou.rdi.core.server.misc.TickTaskManager
-import calebzhou.rdi.core.server.command.RdiCommand
+import calebzhou.rdi.core.server.command.RdiNormalCommand
 import calebzhou.rdi.core.server.constant.ColorConst
 import calebzhou.rdi.core.server.misc.ServerLaggingStatus
+import calebzhou.rdi.core.server.misc.TickTaskManager
 import calebzhou.rdi.core.server.utils.PlayerUtils
 import calebzhou.rdi.core.server.utils.ThreadPool
 import calebzhou.rdi.core.server.utils.WorldUtils
@@ -16,10 +16,10 @@ import net.minecraft.network.chat.Component
 import java.util.*
 import kotlin.math.roundToInt
 
-class TpsCommand : RdiCommand("tps", "查询服务器的流畅程度") {
-    override fun getExecution(): LiteralArgumentBuilder<CommandSourceStack> {
-        return baseArgBuilder.executes { context: CommandContext<CommandSourceStack> -> exec(context.source) }
-    }
+class TpsNormalCommand : RdiNormalCommand("tps", "查询服务器的流畅程度") {
+    override val execution : LiteralArgumentBuilder<CommandSourceStack>
+    get() = baseArgBuilder.executes { context: CommandContext<CommandSourceStack> -> exec(context.source) }
+
 
     val squarePattern1 = ">"
 
@@ -32,7 +32,7 @@ class TpsCommand : RdiCommand("tps", "查询服务器的流畅程度") {
             //平均tick时间
             val meanTickTime = Arrays.stream(RdiCoreServer.server.tickTimes).average().asDouble * 1.0E-6
             //平均tps
-            val meanTPS = Math.min(1000.0 / meanTickTime, 20.0)
+            val meanTPS = (1000.0 / meanTickTime).coerceAtMost(20.0)
             //平均tick时间 比 100%负载tick时间
             val ratio = meanTickTime / stdTickTime
             //字符数
@@ -45,14 +45,14 @@ class TpsCommand : RdiCommand("tps", "查询服务器的流畅程度") {
             }
             PlayerUtils.sendMessageToCommandSource(
                 sourceStack,
-                "%d%%/%.2fTPS/%.2fms%s".formatted(Math.round(ratio * 100), meanTPS, meanTickTime, squaresToSend)
+                "%d%%/%.2fTPS/%.2fms%s".format((ratio * 100).roundToInt(), meanTPS, meanTickTime, squaresToSend)
             )
             val dimensionName = WorldUtils.getDimensionName(sourceStack.level)
             val queueSize = TickTaskManager.getQueueSize(dimensionName)
             PlayerUtils.sendMessageToCommandSource(
                 sourceStack,
                 "延迟?%s %sms 任务数%s "
-                    .formatted(
+                    .format(
                         if (ServerLaggingStatus.isServerLagging) "是" else "否",
                         ServerLaggingStatus.msBehind,
                         queueSize
@@ -63,7 +63,7 @@ class TpsCommand : RdiCommand("tps", "查询服务器的流畅程度") {
             val memoryUsage = memoryUsed.toFloat() / totalMemory.toFloat()
             PlayerUtils.sendMessageToCommandSource(
                 sourceStack,
-                "ram=%.1fMB/%dMB(%.1f%%)".formatted(displayMaxMemory * memoryUsage, displayMaxMemory, memoryUsage * 100)
+                "ram=%.1fMB/%dMB(%.1f%%)".format(displayMaxMemory * memoryUsage, displayMaxMemory, memoryUsage * 100)
             )
             if (queueSize > 0) sourceStack.sendSuccess(delayTickStatus[dimensionName], false)
         }

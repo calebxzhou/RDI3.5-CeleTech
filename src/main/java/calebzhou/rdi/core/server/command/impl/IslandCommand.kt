@@ -1,8 +1,8 @@
 package calebzhou.rdi.core.server.command.impl
 
-import calebzhou.rdi.core.server.misc.CommandConfirmer
 import calebzhou.rdi.core.server.RdiCoreServer
-import calebzhou.rdi.core.server.command.RdiCommand
+import calebzhou.rdi.core.server.command.RdiNormalCommand
+import calebzhou.rdi.core.server.misc.CommandConfirmer
 import calebzhou.rdi.core.server.misc.IslandUnloadManager
 import calebzhou.rdi.core.server.utils.*
 import com.mojang.brigadier.arguments.StringArgumentType
@@ -22,9 +22,9 @@ import net.minecraft.world.phys.Vec3
 import xyz.nucleoid.fantasy.Fantasy
 import java.util.concurrent.CompletableFuture
 
-class IslandCommand : RdiCommand("is", "岛屿菜单。", true) {
-    override fun getExecution(): LiteralArgumentBuilder<CommandSourceStack> {
-        return baseArgBuilder.then(
+class IslandCommand : RdiNormalCommand("is", "岛屿菜单。", true) {
+    override val execution : LiteralArgumentBuilder<CommandSourceStack>
+    get() = baseArgBuilder.then(
                 Commands.argument("指令参数", StringArgumentType.string())
                     .suggests { context: CommandContext<CommandSourceStack>, builder: SuggestionsBuilder ->
                         getSuggestion(
@@ -49,7 +49,7 @@ class IslandCommand : RdiCommand("is", "岛屿菜单。", true) {
                             }
                     )
             )
-    }
+
 
     protected fun getSuggestion(
         context: CommandContext<CommandSourceStack>,
@@ -194,7 +194,7 @@ class IslandCommand : RdiCommand("is", "岛屿菜单。", true) {
         }
         PlayerUtils.sendChatMessage(
             player, PlayerUtils.RESPONSE_WARNING, "真的要，将这个岛屿的传送点，更改为您目前所在的位置，（%s）吗？"
-                .formatted(player!!.onPos.toShortString())
+                .format(player!!.onPos.toShortString())
         )
         CommandConfirmer.addConfirm(player) { player: ServerPlayer -> confirmLocateIsland(player) }
     }

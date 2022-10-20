@@ -1,10 +1,9 @@
 package calebzhou.rdi.core.server.command.impl
 
-import calebzhou.rdi.core.server.command.RdiCommand
+import calebzhou.rdi.core.server.command.RdiNormalCommand
 import calebzhou.rdi.core.server.utils.PlayerUtils
 import com.mojang.brigadier.builder.LiteralArgumentBuilder
 import com.mojang.brigadier.context.CommandContext
-import com.mojang.brigadier.exceptions.CommandSyntaxException
 import com.mojang.brigadier.exceptions.DynamicCommandExceptionType
 import net.minecraft.commands.CommandSourceStack
 import net.minecraft.commands.Commands
@@ -20,9 +19,9 @@ import net.minecraft.world.level.chunk.ChunkAccess
 import net.minecraft.world.level.chunk.PalettedContainer
 import net.minecraft.world.level.levelgen.structure.BoundingBox
 
-class ChangeBiomeCommand : RdiCommand("change-biome", "改变一个区域内的生物群系",true) {
-    override fun getExecution(): LiteralArgumentBuilder<CommandSourceStack> {
-        return baseArgBuilder
+class ChangeBiomeCommand : RdiNormalCommand("change-biome", "改变一个区域内的生物群系",true) {
+    override val execution : LiteralArgumentBuilder<CommandSourceStack>
+    get() = baseArgBuilder
             .then(
                 Commands.argument("biome", ResourceOrTagLocationArgument.resourceOrTag(Registry.BIOME_REGISTRY))
                     .then(
@@ -37,12 +36,14 @@ class ChangeBiomeCommand : RdiCommand("change-biome", "改变一个区域内的�
                             )
                     )
             )
-    }
 
+
+    //worldedit抄的，232行，
+    // https://github.com/EngineHub/WorldEdit/blob/b4ae41a4b65876650d2538aa91847e0d49ca79cf/worldedit-fabric/src/main/java/com/sk89q/worldedit/fabric/FabricWorld.java
     private fun changeBiomeWith2Pos(context: CommandContext<CommandSourceStack>): Int {
         val player = context.source.player!!
         if (!PlayerUtils.isInIsland(player)) {
-            PlayerUtils.sendChatMessage(player, PlayerUtils.RESPONSE_ERROR, "只有在二岛上才能改变生物群系！")
+            PlayerUtils.sendChatMessage(player, PlayerUtils.RESPONSE_ERROR, "只有在岛上才能改变生物群系！")
             return 1
         }
         val blockPos1 = BlockPosArgument.getLoadedBlockPos(context, "pos1")
@@ -75,7 +76,7 @@ class ChangeBiomeCommand : RdiCommand("change-biome", "改变一个区域内的�
             PlayerUtils.sendChatMessage(
                 player,
                 PlayerUtils.RESPONSE_ERROR,
-                "找不到%s这个群系！%s".formatted(biomeType, e.message)
+                "找不到%s这个群系！%s".format(biomeType, e.message)
             )
             return 1
         }
@@ -86,18 +87,15 @@ class ChangeBiomeCommand : RdiCommand("change-biome", "改变一个区域内的�
                 val chunk: ChunkAccess = level.getChunk(bpos.x shr 4, bpos.z shr 4)
                 // Screw it, we know it's really mutable...
                 val section = chunk.getSection(chunk.getSectionIndex(bpos.y))
-                val biomeArray = section.biomes as PalettedContainer<Holder<Biome>?>
-                biomeArray.getAndSetUnchecked(
-                    bpos.x and 3, bpos.y and 3, bpos.z and 3,
-                    finalBiomeHolder
-                )
+                val biomeArray = section.biomes as PalettedContainer<Holder<Biome>>
+                biomeArray.getAndSetUnchecked(bpos.x and 3, bpos.y and 3, bpos.z and 3, finalBiomeHolder)
                 chunk.isUnsaved = true
             }
         player.experienceLevel -= xpLvlNeed
         PlayerUtils.sendChatMessage(
             player,
             PlayerUtils.RESPONSE_SUCCESS,
-            "将您附近一个区域设定成了生物群系：%s ！重新载入区块后，更改将会生效。".formatted(biomeResourceKey.location())
+            "将您附近一个区域设定成了生物群系：%s ！重新载入区块后，更改将会生效。".format(biomeResourceKey.location())
         )
         return 1
     }
@@ -110,8 +108,6 @@ class ChangeBiomeCommand : RdiCommand("change-biome", "改变一个区域内的�
             )
         }
 
-        //worldedit抄的，232行，
-        // https://github.com/EngineHub/WorldEdit/blob/b4ae41a4b65876650d2538aa91847e0d49ca79cf/worldedit-fabric/src/main/java/com/sk89q/worldedit/fabric/FabricWorld.java
         const val xpNeedBase = 2
     }
 }

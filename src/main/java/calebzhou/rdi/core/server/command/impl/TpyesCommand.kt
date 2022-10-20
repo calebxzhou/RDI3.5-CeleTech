@@ -1,17 +1,16 @@
 package calebzhou.rdi.core.server.command.impl
 
 import calebzhou.rdi.core.server.RdiMemoryStorage
+import calebzhou.rdi.core.server.command.RdiNormalCommand
 import calebzhou.rdi.core.server.misc.PlayerLocationRecorder
-import calebzhou.rdi.core.server.command.RdiCommand
 import calebzhou.rdi.core.server.utils.PlayerUtils
 import com.mojang.brigadier.builder.LiteralArgumentBuilder
 import com.mojang.brigadier.context.CommandContext
 import net.minecraft.commands.CommandSourceStack
-import org.apache.commons.lang3.StringUtils
 
-class TpyesCommand : RdiCommand("tpyes", "接受传送请求") {
-    override fun getExecution(): LiteralArgumentBuilder<CommandSourceStack> {
-        return baseArgBuilder.executes { context: CommandContext<CommandSourceStack> ->
+class TpyesCommand : RdiNormalCommand("tpyes", "接受传送请求") {
+    override val execution : LiteralArgumentBuilder<CommandSourceStack>
+    get() = baseArgBuilder.executes { context: CommandContext<CommandSourceStack> ->
             val toPlayer = context.source.player
             if (toPlayer!!.experienceLevel < 3) {
                 PlayerUtils.sendChatMessage(toPlayer, PlayerUtils.RESPONSE_ERROR, "经验不足,您需要3级经验.")
@@ -35,5 +34,4 @@ class TpyesCommand : RdiCommand("tpyes", "接受传送请求") {
             RdiMemoryStorage.tpaMap.remove(toPlayer.stringUUID)
             1
         }
-    }
 }

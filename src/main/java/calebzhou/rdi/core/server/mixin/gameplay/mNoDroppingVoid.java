@@ -10,8 +10,6 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Shadow;
 
-import static calebzhou.rdi.core.server.utils.PlayerUtils.*;
-
 /**
  * Created by calebzhou on 2022-09-21,18:53.
  */
@@ -23,7 +21,7 @@ public abstract class mNoDroppingVoid {
 	@Overwrite
 	public void outOfWorld() {
 		if((LivingEntity)(Object)this instanceof Player player){
-			sendChatMessage(player, Component.literal("神秘的力量从虚空捞了你一把...").withStyle(ChatFormatting.GOLD).withStyle(ChatFormatting.ITALIC),true);
+			PlayerUtils.INSTANCE.sendChatMessage(player, Component.literal("神秘的力量从虚空捞了你一把...").withStyle(ChatFormatting.GOLD).withStyle(ChatFormatting.ITALIC),true);
 			player.teleportTo(player.getX(),320,player.getZ());
 		}else{
 			hurt(DamageSource.OUT_OF_WORLD, 114514.1919F);
