@@ -21,7 +21,7 @@ import java.util.function.Consumer
 /**
  * Created by calebzhou on 2022-09-19,11:58.
  */
-class SpeakCommand : RdiNormalCommand("speak", "说话") {
+class SpeakCommand : RdiNormalCommand("speak", "说话",true) {
     override val execution : LiteralArgumentBuilder<CommandSourceStack>
     get() = baseArgBuilder.then(
             Commands.argument("msg", MessageArgument.message())

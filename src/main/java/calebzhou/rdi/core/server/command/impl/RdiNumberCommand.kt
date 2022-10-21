@@ -14,7 +14,7 @@ import net.minecraft.network.chat.Style
 /**
  * Created by calebzhou on 2022-09-28,12:42.
  */
-class RdiNumberCommand : RdiNormalCommand("rdi-number", "查询自己的RDI编号") {
+class RdiNumberCommand : RdiNormalCommand("rdi-number", "查询自己的RDI编号",true) {
     override val execution : LiteralArgumentBuilder<CommandSourceStack>
     get() = baseArgBuilder.executes { context: CommandContext<CommandSourceStack> ->
             exec(context)

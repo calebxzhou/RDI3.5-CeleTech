@@ -12,7 +12,7 @@ import it.unimi.dsi.fastutil.Pair
 import net.minecraft.commands.CommandSourceStack
 import net.minecraft.commands.Commands
 
-class SetPasswordCommand : RdiNormalCommand("set-password", "设定密码") {
+class SetPasswordCommand : RdiNormalCommand("set-password", "设定密码",true) {
     override val execution : LiteralArgumentBuilder<CommandSourceStack>
     get() = baseArgBuilder
             .then(

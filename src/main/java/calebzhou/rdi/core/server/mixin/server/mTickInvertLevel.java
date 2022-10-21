@@ -1,7 +1,7 @@
 package calebzhou.rdi.core.server.mixin.server;
 
 import calebzhou.rdi.core.server.RdiCoreServer;
-import calebzhou.rdi.core.server.command.impl.TpsNormalCommand;
+import calebzhou.rdi.core.server.command.impl.TpsCommand;
 import calebzhou.rdi.core.server.misc.ServerLaggingStatus;
 import calebzhou.rdi.core.server.misc.TickTaskManager;
 import calebzhou.rdi.core.server.mixin.AccessCollectingNeighborUpdater;
@@ -347,13 +347,13 @@ class mTickInvertNeighborUpdater{
 				updatePos = BlockPos.ZERO;
 			}
 			if(RdiCoreServer.getServer().overworld() != level){
-				TpsNormalCommand.delayTickStatus.put(WorldUtils.getDimensionName(level),
+				TpsCommand.delayTickStatus.put(WorldUtils.getDimensionName(level),
 						Component.literal("提交延迟tick邻块任务").append(sourceBlock.getName()).append(Component.literal(updatePos.toShortString())).withStyle(ChatFormatting.GOLD)
 				);
 			}
 			TickTaskManager.addDelayTickTask(level,()->{
 				((AccessCollectingNeighborUpdater) this).invokeAddAndRun(updatePos,neighborUpdates);//neighborUpdates.runNext(level);
-				TpsNormalCommand.delayTickStatus.put(WorldUtils.getDimensionName(level),
+				TpsCommand.delayTickStatus.put(WorldUtils.getDimensionName(level),
 						Component.literal("延迟tick邻块").append(sourceBlock.getName()).append(Component.literal(updatePos.toShortString())).withStyle(ChatFormatting.AQUA)
 				);
 			});

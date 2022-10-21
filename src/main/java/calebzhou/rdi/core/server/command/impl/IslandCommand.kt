@@ -158,7 +158,7 @@ class IslandCommand : RdiNormalCommand("is", "岛屿菜单。", true) {
     private fun createIsland(player: ServerPlayer) {
         PlayerUtils.sendChatMessage(player, PlayerUtils.RESPONSE_INFO, "准备创建岛屿，不要触碰鼠标或者键盘！")
         ThreadPool.newThread {
-            val ResponseData = RdiHttpClient.sendRequest(Int::class, "post", "/v37/mcs_game/island2/" + player!!.stringUUID)
+            val ResponseData = RdiHttpClient.sendRequest(String::class, "post", "/v37/mcs_game/island2/" + player.stringUUID)
             if (!ResponseData.isSuccess) {
                 PlayerUtils.sendServiceResponseData(player, ResponseData)
                 return@newThread

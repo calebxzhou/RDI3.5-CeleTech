@@ -12,7 +12,7 @@ import net.minecraft.commands.Commands
 import net.minecraft.commands.arguments.EntityArgument
 import net.minecraft.server.level.ServerPlayer
 
-class TpaCommand : RdiNormalCommand("tpa", "传送到一个玩家身边") {
+class TpaCommand : RdiNormalCommand("tpa", "传送到一个玩家身边",true) {
     override val execution: LiteralArgumentBuilder<CommandSourceStack>
         get() = baseArgBuilder.then(
             Commands.argument("玩家", EntityArgument.player())

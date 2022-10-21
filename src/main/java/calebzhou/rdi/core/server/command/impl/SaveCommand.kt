@@ -7,7 +7,7 @@ import com.mojang.brigadier.context.CommandContext
 import net.minecraft.commands.CommandSourceStack
 import net.minecraft.network.chat.Component
 
-class SaveCommand : RdiNormalCommand("SAVE", "存档。") {
+class SaveCommand : RdiNormalCommand("SAVE", "存档。",true) {
     override val execution : LiteralArgumentBuilder<CommandSourceStack>
     get() = baseArgBuilder.executes { c: CommandContext<CommandSourceStack> ->
             RdiCoreServer.server.saveEverything(true, true, true)

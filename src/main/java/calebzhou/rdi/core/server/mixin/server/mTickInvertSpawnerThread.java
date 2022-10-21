@@ -1,7 +1,6 @@
 package calebzhou.rdi.core.server.mixin.server;
 
 import calebzhou.rdi.core.server.mixin.AccessChunkMap;
-import calebzhou.rdi.core.server.thread.MobSpawningThread;
 import net.minecraft.server.level.ChunkMap;
 import net.minecraft.server.level.ServerChunkCache;
 import net.minecraft.server.level.ServerLevel;
@@ -55,7 +54,7 @@ public abstract class mTickInvertSpawnerThread {
 	private void noVanillaSpawnMob(ServerLevel level, LevelChunk chunk, NaturalSpawner.SpawnState spawnState, boolean spawnFriendlies, boolean spawnMonsters, boolean forcedDespawn){
 
 	}
-	@Inject(method = "tickChunks",at=@At(value = "INVOKE",target = "Ljava/util/Collections;shuffle(Ljava/util/List;)V",shift = At.Shift.AFTER),locals = LocalCapture.CAPTURE_FAILSOFT)
+	/*@Inject(method = "tickChunks",at=@At(value = "INVOKE",target = "Ljava/util/Collections;shuffle(Ljava/util/List;)V",shift = At.Shift.AFTER),locals = LocalCapture.CAPTURE_FAILSOFT)
 	private void addSpawnMobTask(CallbackInfo ci, long l, long m, boolean bl, LevelData levelData, ProfilerFiller profilerFiller, int i, boolean bl2, int j, NaturalSpawner.SpawnState spawnState, List<ServerChunkCache.ChunkAndHolder> list, boolean bl3){
 
 		MobSpawningThread.addTask(()->{
@@ -79,5 +78,5 @@ public abstract class mTickInvertSpawnerThread {
 			}
 		});
 
-	}
+	}*/
 }

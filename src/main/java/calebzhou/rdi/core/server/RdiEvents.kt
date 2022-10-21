@@ -3,9 +3,6 @@ package calebzhou.rdi.core.server
 import calebzhou.rdi.core.server.RdiCoreServer.Companion.server
 import calebzhou.rdi.core.server.RdiMemoryStorage.commandSet
 import calebzhou.rdi.core.server.command.impl.*
-import calebzhou.rdi.core.server.command.internal.RiLoadIslandCommand
-import calebzhou.rdi.core.server.command.internal.RiTeleportCommand
-import calebzhou.rdi.core.server.command.internal.RiTellCommand
 import calebzhou.rdi.core.server.constant.NetworkPackets
 import calebzhou.rdi.core.server.misc.GeoWeatherManager
 import calebzhou.rdi.core.server.misc.IslandUnloadManager
@@ -14,7 +11,6 @@ import calebzhou.rdi.core.server.misc.RdiPlayerProfileManager
 import calebzhou.rdi.core.server.misc.ServerLaggingStatus.isServerLagging
 import calebzhou.rdi.core.server.misc.TickTaskManager
 import calebzhou.rdi.core.server.model.RdiPlayerProfile
-import calebzhou.rdi.core.server.model.ResponseData
 import calebzhou.rdi.core.server.module.DeathRandomDrop
 import calebzhou.rdi.core.server.utils.PlayerUtils.RESPONSE_ERROR
 import calebzhou.rdi.core.server.utils.PlayerUtils.getAllPlayers
@@ -265,7 +261,7 @@ class RdiEvents  constructor() {
         commandSet.add(SpawnCommand())
         commandSet.add(SpeakCommand())
         commandSet.add(TpaCommand())
-        commandSet.add(TpsNormalCommand())
+        commandSet.add(TpsCommand())
         commandSet.add(TpyesCommand())
         commandSet.add(WeatherNormalCommand())
         commandSet.add(RdiNumberCommand())

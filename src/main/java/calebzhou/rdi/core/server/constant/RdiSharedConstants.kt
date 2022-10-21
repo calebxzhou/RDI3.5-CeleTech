@@ -11,7 +11,7 @@ object RdiSharedConstants {
     //F3服务器类型
     const val SERVER_TYPE = "rdi-core-c++"
     //调试模式
-    const val DEBUG = true
+    const val DEBUG = false
     //微服务地址
     @JvmField
     val SERVICE_ADDR =  "https://${if (DEBUG) "127.0.0.1" else "www.davisoft.cn"}:19198"

@@ -65,8 +65,7 @@ object RdiHttpClient {
         val respStr: String = response.body.use { body -> body!!.string() }
         if (RdiSharedConstants.DEBUG)
             logger.info("HTTP响应 {}", respStr)
-        return gson.fromJson(
-            respStr,
+        return gson.fromJson(respStr,
             if (resultClass == null)
                 ResponseData::class.java
             else TypeToken.getParameterized(

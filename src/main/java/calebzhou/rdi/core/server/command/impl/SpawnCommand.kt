@@ -6,7 +6,7 @@ import com.mojang.brigadier.builder.LiteralArgumentBuilder
 import com.mojang.brigadier.context.CommandContext
 import net.minecraft.commands.CommandSourceStack
 
-class SpawnCommand : RdiNormalCommand("spawn", "回到主城") {
+class SpawnCommand : RdiNormalCommand("spawn", "回到主城",true) {
     override val execution : LiteralArgumentBuilder<CommandSourceStack>
     get() = baseArgBuilder
             .executes { context: CommandContext<CommandSourceStack> ->

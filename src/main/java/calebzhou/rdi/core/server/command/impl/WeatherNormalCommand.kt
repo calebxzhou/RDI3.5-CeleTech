@@ -11,7 +11,7 @@ import net.minecraft.server.level.ServerPlayer
 /**
  * Created by calebzhou on 2022-09-22,11:17.
  */
-class WeatherNormalCommand : RdiNormalCommand("change-weather", "花费3经验改变天气。") {
+class WeatherNormalCommand : RdiNormalCommand("change-weather", "改变天气",true) {
     override val execution : LiteralArgumentBuilder<CommandSourceStack>
     get() = baseArgBuilder
             .then(

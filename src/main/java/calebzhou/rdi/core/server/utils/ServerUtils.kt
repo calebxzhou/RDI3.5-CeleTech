@@ -72,6 +72,9 @@ object ServerUtils {
     }*/
     //存档
     fun save() {
-        RdiCoreServer.server.saveAllChunks(true, true, true)
+        executeOnServerThread{
+            RdiCoreServer.server.saveAllChunks(true, true, true)
+        }
+
     }
 }

@@ -11,7 +11,7 @@ import net.minecraft.world.level.block.Blocks
 /**
  * Created by calebzhou on 2022-09-18,16:11.
  */
-class MeltObsidianCommand : RdiNormalCommand("melt-obsidian", "熔化黑曜石") {
+class MeltObsidianCommand : RdiNormalCommand("melt-obsidian", "熔化黑曜石",true) {
     override val execution : LiteralArgumentBuilder<CommandSourceStack>
     get() = baseArgBuilder.executes { context ->
             val player = context.source.player!!

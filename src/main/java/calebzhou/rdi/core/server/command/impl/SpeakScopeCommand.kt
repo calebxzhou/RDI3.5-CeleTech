@@ -15,7 +15,7 @@ import java.util.function.Consumer
 /**
  * Created by calebzhou on 2022-10-01,8:55.
  */
-class SpeakScopeCommand : RdiNormalCommand("speak-scope", "设定聊天范围，是岛内可见还是全服可见") {
+class SpeakScopeCommand : RdiNormalCommand("speak-scope", "设定聊天范围，岛内可见/全服可见",true) {
     override val execution : LiteralArgumentBuilder<CommandSourceStack>
     get() = baseArgBuilder.executes { context: CommandContext<CommandSourceStack> -> exec(context) }
 
@@ -37,7 +37,7 @@ class SpeakScopeCommand : RdiNormalCommand("speak-scope", "设定聊天范围，
                 return@newThread
             }
             val playersInLevel = PlayerUtils.getPlayersInLevel(player)
-            if (playersInLevel.size == 0) {
+            if (playersInLevel.isEmpty()) {
                 PlayerUtils.sendChatMessage(player, PlayerUtils.RESPONSE_ERROR, "您的岛屿上目前没有成员，需要等待成员上线以后才能使用此功能！")
                 return@newThread
             }

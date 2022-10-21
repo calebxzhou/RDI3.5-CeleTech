@@ -14,7 +14,7 @@ import net.minecraft.network.chat.Component
 /**
  * Created by calebzhou on 2022-09-26,20:52.
  */
-class TellCommand : RdiNormalCommand("msg", "私聊") {
+class TellCommand : RdiNormalCommand("msg", "私聊",true) {
     override val execution : LiteralArgumentBuilder<CommandSourceStack>
     get() = baseArgBuilder.then(
             Commands.argument("player", EntityArgument.player())

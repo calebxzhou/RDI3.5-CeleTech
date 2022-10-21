@@ -48,10 +48,10 @@ object PlayerUtils {
     const val RESPONSE_WARNING = 1
     const val RESPONSE_INFO = 0
     const val RESPONSE_ERROR = -1
-    val RESPONSE_ERROR_PREFIX = Component.literal("错误").withStyle(ChatFormatting.DARK_RED).withStyle(ChatFormatting.BOLD).append(Component.literal(">").withStyle(ChatFormatting.RED))
-    val RESPONSE_SUCCESS_PREFIX = Component.literal("成功").withStyle(ChatFormatting.DARK_GREEN).withStyle(ChatFormatting.BOLD).append(Component.literal(">").withStyle(ChatFormatting.GREEN))
-    val RESPONSE_INFO_PREFIX = Component.literal("提示").withStyle(ChatFormatting.AQUA).withStyle(ChatFormatting.BOLD).append(Component.literal(">").withStyle(ChatFormatting.AQUA))
-    val RESPONSE_WARNING_PREFIX = Component.literal("警告").withStyle(ChatFormatting.GOLD).withStyle(ChatFormatting.BOLD).append(Component.literal(">").withStyle(ChatFormatting.YELLOW))
+    val RESPONSE_ERROR_PREFIX = Component.literal("错误").withStyle(ChatFormatting.DARK_RED).withStyle(ChatFormatting.BOLD).append(Component.literal(">"))
+    val RESPONSE_SUCCESS_PREFIX = Component.literal("成功").withStyle(ChatFormatting.DARK_GREEN).withStyle(ChatFormatting.BOLD).append(Component.literal(">"))
+    val RESPONSE_INFO_PREFIX = Component.literal("提示").withStyle(ChatFormatting.AQUA).withStyle(ChatFormatting.BOLD).append(Component.literal(">"))
+    val RESPONSE_WARNING_PREFIX = Component.literal("警告").withStyle(ChatFormatting.GOLD).withStyle(ChatFormatting.BOLD).append(Component.literal(">"))
 
     fun sendPacketToClient(player:Player, pack: ResourceLocation, content:Any) {
 		val buf = PacketByteBufs.create();
@@ -128,10 +128,10 @@ object PlayerUtils {
 
     fun sendChatMessage(player: Player, messageType: Int, content: String) {
         when (messageType) {
-            RESPONSE_SUCCESS -> sendChatMessage(player, Component.empty().append(RESPONSE_SUCCESS_PREFIX) .append( content))
-            RESPONSE_WARNING -> sendChatMessage(player, Component.empty().append(RESPONSE_WARNING_PREFIX) .append( content))
-            RESPONSE_INFO -> sendChatMessage(player, Component.empty().append(RESPONSE_INFO_PREFIX ).append(content))
-            RESPONSE_ERROR -> sendChatMessage(player, Component.empty().append(RESPONSE_ERROR_PREFIX) .append( content))
+            RESPONSE_SUCCESS -> sendChatMessage(player, Component.empty().append(RESPONSE_SUCCESS_PREFIX) .append( content).withStyle(ChatFormatting.GREEN))
+            RESPONSE_WARNING -> sendChatMessage(player, Component.empty().append(RESPONSE_WARNING_PREFIX) .append( content).withStyle(ChatFormatting.YELLOW))
+            RESPONSE_INFO -> sendChatMessage(player, Component.empty().append(RESPONSE_INFO_PREFIX ).append(content).withStyle(ChatFormatting.AQUA))
+            RESPONSE_ERROR -> sendChatMessage(player, Component.empty().append(RESPONSE_ERROR_PREFIX) .append(content).withStyle(ChatFormatting.RED))
         }
     }
 

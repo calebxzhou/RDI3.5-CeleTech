@@ -16,7 +16,7 @@ import net.minecraft.network.chat.Component
 import java.util.*
 import kotlin.math.roundToInt
 
-class TpsNormalCommand : RdiNormalCommand("tps", "查询服务器的流畅程度") {
+class TpsCommand : RdiNormalCommand("tps", "查询服务器的流畅程度",true) {
     override val execution : LiteralArgumentBuilder<CommandSourceStack>
     get() = baseArgBuilder.executes { context: CommandContext<CommandSourceStack> -> exec(context.source) }
 

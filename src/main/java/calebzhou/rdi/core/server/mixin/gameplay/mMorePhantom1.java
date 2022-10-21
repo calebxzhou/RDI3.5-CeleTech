@@ -19,15 +19,3 @@ public class mMorePhantom1 {
     }
 
 }
-//幻翼变多
-@Mixin(PhantomSpawner.class)
-class mMorePhantom2{
-    @ModifyConstant(
-            method = "tick(Lnet/minecraft/server/level/ServerLevel;ZZ)I"
-            ,constant = @Constant(intValue = 1,ordinal = 1)
-
-    )
-    private int changeAmount(int c){
-        return 26;
-    }
-}
