@@ -7,7 +7,7 @@ object ServerLaggingStatus {
         private set
 
     //落后这些ms代表卡顿
-    private const val behindThreshold: Long = 1
+    private const val behindThreshold: Long = 100
 
     //更新落后的tick时间
 	@JvmStatic

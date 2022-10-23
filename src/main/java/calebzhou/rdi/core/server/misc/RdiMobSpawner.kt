@@ -27,7 +27,7 @@ import java.util.*
  * Created  on 2022-10-21,21:59.
  */
 object RdiMobSpawner {
-    fun spawnCategoryForPosition(
+  /*  fun spawnCategoryForPosition(
         category: MobCategory,
         level: ServerLevel,
         chunk: ChunkAccess,
@@ -114,7 +114,7 @@ object RdiMobSpawner {
                 }
             }
         }
-    }
+    }*/
     private fun isRightDistanceToPlayerAndSpawnPoint(
         level: ServerLevel,
         chunk: ChunkAccess,

@@ -324,7 +324,7 @@ class mTickInvertNeighborUpdater{
 	@Final
 	private Level level;
 
-	@Redirect(method = "runUpdates", at = @At(value = "INVOKE",target = "Lnet/minecraft/world/level/redstone/CollectingNeighborUpdater$NeighborUpdates;runNext(Lnet/minecraft/world/level/Level;)Z"))
+	/*@Redirect(method = "runUpdates", at = @At(value = "INVOKE",target = "Lnet/minecraft/world/level/redstone/CollectingNeighborUpdater$NeighborUpdates;runNext(Lnet/minecraft/world/level/Level;)Z"))
 	private boolean RDIrunnext(CollectingNeighborUpdater.NeighborUpdates neighborUpdates, Level level){
 		if(ServerLaggingStatus.INSTANCE.isServerLagging()){
 
@@ -361,7 +361,7 @@ class mTickInvertNeighborUpdater{
 		}else{
 			return neighborUpdates.runNext(level);
 		}
-	}
+	}*/
 }
 @Mixin(NaturalSpawner.class)
 abstract

@@ -1,6 +1,7 @@
 package calebzhou.rdi.core.server.misc
 
 import calebzhou.rdi.core.server.RdiCoreServer
+import calebzhou.rdi.core.server.utils.ServerUtils
 import java.time.Duration
 import java.time.ZoneId
 import java.time.ZonedDateTime
@@ -16,7 +17,9 @@ object RestartScheduler {
     init {
         val task = object :TimerTask(){
             override fun run() {
-                RdiCoreServer.server.halt(false)
+                RdiCoreServer.server.saveAllChunks(true, true, true)
+                System.exit(114514)
+            //RdiCoreServer.server.halt(false)
             }
         }
         val now = ZonedDateTime.now(ZoneId.of("Asia/Shanghai"))
