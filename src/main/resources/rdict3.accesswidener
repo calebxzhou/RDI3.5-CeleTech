@@ -16,3 +16,4 @@ accessible class net/minecraft/world/level/redstone/CollectingNeighborUpdater$Sh
 accessible class net/minecraft/world/level/redstone/CollectingNeighborUpdater$SimpleNeighborUpdate
 accessible class net/minecraft/server/level/ServerChunkCache$MainThreadExecutor
 accessible class net/minecraft/server/level/ServerChunkCache$ChunkAndHolder
+accessible class net/minecraft/world/entity/SpawnPlacements$Data

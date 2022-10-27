@@ -1,5 +1,6 @@
-package net.himeki.mcmtfabric.parallelised.fastutil;
+package calebzhou.rdi.core.server.utils;
 
+import it.unimi.dsi.fastutil.ints.Int2ObjectLinkedOpenHashMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.IntSet;
 import it.unimi.dsi.fastutil.objects.ObjectCollection;

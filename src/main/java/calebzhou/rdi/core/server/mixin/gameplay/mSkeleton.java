@@ -1,17 +1,32 @@
 package calebzhou.rdi.core.server.mixin.gameplay;
 
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.entity.ai.goal.*;
+import net.minecraft.world.entity.ai.goal.target.HurtByTargetGoal;
+import net.minecraft.world.entity.ai.goal.target.NearestAttackableTargetGoal;
+import net.minecraft.world.entity.animal.IronGolem;
+import net.minecraft.world.entity.animal.Turtle;
+import net.minecraft.world.entity.animal.Wolf;
 import net.minecraft.world.entity.monster.AbstractSkeleton;
 import net.minecraft.world.entity.monster.Monster;
+import net.minecraft.world.entity.monster.Spider;
+import net.minecraft.world.entity.monster.Zombie;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.Level;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.injection.Constant;
 import org.spongepowered.asm.mixin.injection.ModifyConstant;
 
 @Mixin(AbstractSkeleton.class)
-public abstract class mSkeleton {
-    @ModifyConstant(
+public abstract class mSkeleton extends Monster{
+	private mSkeleton(EntityType<? extends Monster> entityType, Level level) {
+		super(entityType, level);
+	}
+
+	@ModifyConstant(
             method = "reassessWeaponGoal()V",
             constant = @Constant(intValue = 20)
     )
@@ -27,4 +42,16 @@ public abstract class mSkeleton {
                 .add(Attributes.MOVEMENT_SPEED, 0.4)
                 .add(Attributes.MAX_HEALTH,50);
     }
+	@Overwrite
+	public void registerGoals() {
+		this.goalSelector.addGoal(1, new AvoidEntityGoal(this, Wolf.class, 6.0F, 1.0, 1.2));
+		this.goalSelector.addGoal(2, new LookAtPlayerGoal(this, Player.class, 32.0F));
+		this.goalSelector.addGoal(2, new RandomLookAroundGoal(this));
+		this.targetSelector.addGoal(1, new HurtByTargetGoal(this));
+		this.targetSelector.addGoal(2, new NearestAttackableTargetGoal(this, Player.class, true));
+		this.targetSelector.addGoal(2, new NearestAttackableTargetGoal(this, Zombie.class, true));
+		this.targetSelector.addGoal(2, new NearestAttackableTargetGoal(this, Spider.class, true));
+		this.targetSelector.addGoal(3, new NearestAttackableTargetGoal(this, IronGolem.class, true));
+		this.targetSelector.addGoal(3, new NearestAttackableTargetGoal(this, Turtle.class, 10, true, false, Turtle.BABY_ON_LAND_SELECTOR));
+	}
 }

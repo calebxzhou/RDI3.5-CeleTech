@@ -11,13 +11,10 @@ import net.minecraft.world.entity.player.Player;
 import java.util.function.Consumer;
 
 public class EntityTickInverter{
+
     public static void handleEntityException(Exception ex, Entity entity, String msg){
-        ServerUtils.broadcastChatMessage("在"+entity.toString()+"tick entity错误！"+ex+"原因："+msg+ex.getCause()+"。已经强制删除！");
-        ex.printStackTrace();
-        if(!(ex instanceof NullPointerException) ){
-            entity.discard();
-            entity=null;
-        }
+
+
     }
 
     public static void handleTick(Consumer tickConsumer, Entity entity){
@@ -31,7 +28,7 @@ public class EntityTickInverter{
 			}else if(entity instanceof Animal animal){
 				handleAnimalTick(tickConsumer,animal);
 			}else{
-				if(!ServerLaggingStatus.isServerVeryLagging())
+				//if(!ServerLaggingStatus.isServerVeryLagging())
 					tickConsumer.accept(entity);
 			}
 		} catch (Exception e) {

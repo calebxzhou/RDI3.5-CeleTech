@@ -8,17 +8,18 @@ import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.NaturalSpawner;
 import net.minecraft.world.level.chunk.ChunkAccess;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.gen.Accessor;
 import org.spongepowered.asm.mixin.gen.Invoker;
 
 /**
  * Created by calebzhou on 2022-09-28,21:55.
  */
 
-@Mixin(NaturalSpawner.SpawnState.class)
-public interface AccessSpawnState {
-	@Invoker
-	boolean invokeCanSpawnForCategory(MobCategory category, ChunkPos pos);
-	@Invoker boolean invokeCanSpawn(EntityType<?> entityType, BlockPos pos, ChunkAccess chunk);
-	@Invoker void invokeAfterSpawn(Mob mob, ChunkAccess chunk) ;
+@Mixin(NaturalSpawner.class)
+public interface AccessNaturalSpawner {
+	@Accessor
+	static MobCategory[] getSPAWNING_CATEGORIES() {
+		return null;
+	}
 
 }

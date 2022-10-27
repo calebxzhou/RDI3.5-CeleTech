@@ -1,4 +1,4 @@
-package net.himeki.mcmtfabric.parallelised.fastutil;
+package calebzhou.rdi.core.server.utils;
 
 import java.util.Collection;
 import java.util.Iterator;

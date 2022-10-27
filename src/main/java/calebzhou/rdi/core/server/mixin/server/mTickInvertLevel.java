@@ -8,6 +8,7 @@ import calebzhou.rdi.core.server.mixin.AccessCollectingNeighborUpdater;
 import calebzhou.rdi.core.server.mixin.AccessMultiNeighborUpdate;
 import calebzhou.rdi.core.server.module.tickinv.BlockEntityTickInverter;
 import calebzhou.rdi.core.server.module.tickinv.EntityTickInverter;
+import calebzhou.rdi.core.server.module.tickinv.EntityTicking;
 import calebzhou.rdi.core.server.module.tickinv.WorldTickThreadManager;
 import calebzhou.rdi.core.server.utils.ServerUtils;
 import calebzhou.rdi.core.server.utils.WorldUtils;
@@ -58,10 +59,7 @@ public abstract class mTickInvertLevel {
     private void tickBlockEntity(TickingBlockEntity invoker){
         BlockEntityTickInverter.handleTick((Level)(Object)this,invoker);
     }
-	@Overwrite
-	public <T extends Entity> void guardEntityTick(Consumer<T> consumerEntity, T entity) {
-		EntityTickInverter.handleTick(consumerEntity, entity);
-	}
+
 }
 @Mixin(MinecraftServer.class)
 abstract
@@ -264,17 +262,7 @@ class mTickInvertServerLevel{
         }
 
     }
-    //lambda：entityTickList forEach
-    /*@Redirect(method = "m_rysxhccr",at = @At(value = "INVOKE",target = "Lnet/minecraft/server/level/ServerLevel;guardEntityTick(Ljava/util/function/Consumer;Lnet/minecraft/world/entity/Entity;)V"))
-    private void tickEntityNoCrash(ServerLevel instance, Consumer tickNonPassenger, Entity entity){
-        try {
-            ((Level)(Object)this).guardEntityTick(tickNonPassenger, entity);
-        }
-        catch (Exception e) {
-           EntityTickInverter.handleEntityException(e,entity,"3");
-        }
-    }*/
-    @Redirect(method = "tickNonPassenger",at = @At(value = "INVOKE",target = "Lnet/minecraft/world/entity/Entity;tick()V"))
+   /* @Redirect(method = "tickNonPassenger",at = @At(value = "INVOKE",target = "Lnet/minecraft/world/entity/Entity;tick()V"))
     private void tickEntity(Entity entity){
         try {
             entity.tick();
@@ -292,7 +280,7 @@ class mTickInvertServerLevel{
             entity2.discard();
         }
 
-    }
+    }*/
 
 }
 @Mixin(ServerChunkCache.class)
@@ -360,72 +348,6 @@ class mTickInvertNeighborUpdater{
 			return false;
 		}else{
 			return neighborUpdates.runNext(level);
-		}
-	}*/
-}
-@Mixin(NaturalSpawner.class)
-abstract
-class mTickInvertSpawner {
-
-
-	//卡顿时取消刷怪
-	@Inject(method = "spawnForChunk",at=@At("HEAD"),cancellable = true)
-	private static void RdiSpawnWithTpsCheck(ServerLevel level, LevelChunk chunk, NaturalSpawner.SpawnState spawnState, boolean spawnFriendlies, boolean spawnMonsters, boolean forcedDespawn, CallbackInfo ci){
-		if(ServerLaggingStatus.INSTANCE.isServerLagging())
-			ci.cancel();
-	}
-	/*@Overwrite
-	public static void spawnForChunk(
-			ServerLevel level, LevelChunk chunk, NaturalSpawner.SpawnState spawnState, boolean spawnFriendlies, boolean spawnMonsters, boolean forcedDespawn
-	) {
-		level.getProfiler().push("spawner");
-		AccessSpawnState state = ((AccessSpawnState) spawnState);
-		Arrays.stream(SPAWNING_CATEGORIES).parallel().forEach(mobCategory -> {
-			if ((spawnFriendlies || !mobCategory.isFriendly())
-					&& (spawnMonsters || mobCategory.isFriendly())
-					&& (forcedDespawn || !mobCategory.isPersistent())
-					&& state.invokeCanSpawnForCategory(mobCategory, chunk.getPos())) {
-				spawnCategoryForChunk(mobCategory, level, chunk, state::invokeCanSpawn, state::invokeAfterSpawn);
-			}
-		});
-
-		level.getProfiler().pop();
-	}
-	*//*@Redirect(method = "getRandomPosWithin",at=@At(value = "INVOKE",target = "Lnet/minecraft/util/RandomSource;nextInt(I)I"))
-	private static int replaceRandomSource (RandomSource instance, int i){
-		return RandomUtils.nextInt(0,i);
-	}*//*
-	@Redirect(method = "spawnCategoryForPosition(Lnet/minecraft/world/entity/MobCategory;Lnet/minecraft/server/level/ServerLevel;Lnet/minecraft/world/level/chunk/ChunkAccess;Lnet/minecraft/core/BlockPos;Lnet/minecraft/world/level/NaturalSpawner$SpawnPredicate;Lnet/minecraft/world/level/NaturalSpawner$AfterSpawnCallback;)V",at=@At(value = "INVOKE",target = "Lnet/minecraft/util/RandomSource;nextInt(I)I"))
-	private
-	static int nextInt(RandomSource instance, int i){
-		return RandomUtils.nextInt(0,i);
-	}
-	@Redirect(method = "spawnCategoryForPosition(Lnet/minecraft/world/entity/MobCategory;" +
-			"Lnet/minecraft/server/level/ServerLevel;Lnet/minecraft/world/level/chunk/ChunkAccess;" +
-			"Lnet/minecraft/core/BlockPos;Lnet/minecraft/world/level/NaturalSpawner$SpawnPredicate;Lnet/minecraft/world/level/NaturalSpawner$AfterSpawnCallback;)V",
-	at=@At(value = "INVOKE",target = "Lnet/minecraft/util/RandomSource;nextFloat()F"))
-	private static float nextFloat(RandomSource instance){
-		return RandomUtils.nextFloat();
-	}
-	@Redirect(method = "spawnMobsForChunkGeneration",at = @At(value = "INVOKE",target = "Lnet/minecraft/util/RandomSource;nextFloat()F"))
-	private static float changeRandomSource(RandomSource instance){
-		return RandomUtils.nextFloat();
-	}
-	@Redirect(method = "spawnMobsForChunkGeneration",at = @At(value = "INVOKE",target = "Lnet/minecraft/util/RandomSource;nextInt(I)I"))
-	private static int changeRandomSource(RandomSource instance, int i){
-		return RandomUtils.nextInt(0,i);
-	}
-	@Redirect(method = "getRandomPosWithin",at=@At(value = "INVOKE",target = "Lnet/minecraft/util/RandomSource;nextInt(I)I"))
-	private static int changeRandomSource2(RandomSource instance, int i){
-		return RandomUtils.nextInt(0,i);
-	}
-	@Redirect(method = "getRandomPosWithin",at=@At(value = "INVOKE",target = "Lnet/minecraft/util/Mth;randomBetweenInclusive(Lnet/minecraft/util/RandomSource;II)I"))
-	private static int changeRandomSource3(RandomSource random, int minInclusive, int maxInclusive){
-		if(random instanceof LegacyRandomSource legacyRandomSource){
-			long seed = ((AccessLegacyRandomSource) legacyRandomSource).getSeed().get();
-			return new LegacyRandomSource(seed).nextInt(maxInclusive - minInclusive + 1) + minInclusive;
-		}else{
-			return random.nextInt(maxInclusive - minInclusive + 1) + minInclusive;
 		}
 	}*/
 }

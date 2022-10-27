@@ -23,18 +23,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 @Mixin(ServerPlayer.class)
 public class mPlayerEvents {
 }
-//成功破坏方块
-/*@Mixin(ServerPlayerGameMode.class)
-class mBreakBlock{
-    @Shadow @Final protected ServerPlayer player;
-
-
-    @Inject(method = "destroyBlock",at = @At("TAIL"))
-    private void breakBlock(BlockPos blockPos, CallbackInfoReturnable<Boolean> cir){
-
-    }
-
-}*/
 //成功放置方块
 @Mixin(ServerPlayerGameMode.class)
 class mPlaceBlock {
