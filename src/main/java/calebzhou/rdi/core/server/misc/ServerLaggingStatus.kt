@@ -16,7 +16,7 @@ object ServerLaggingStatus {
     }
     @JvmStatic
     val isServerVeryLagging: Boolean
-        get() = msBehind > 200
+        get() = msBehind > 300
     val isServerLagging: Boolean
         get() = msBehind > behindThreshold
 }

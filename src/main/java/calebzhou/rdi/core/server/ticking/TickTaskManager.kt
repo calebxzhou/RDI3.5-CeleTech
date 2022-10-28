@@ -1,6 +1,7 @@
-package calebzhou.rdi.core.server.misc
+package calebzhou.rdi.core.server.ticking
 
 import calebzhou.rdi.core.server.logger
+import calebzhou.rdi.core.server.misc.ServerLaggingStatus
 import calebzhou.rdi.core.server.utils.WorldUtils
 import com.google.common.collect.EvictingQueue
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap
@@ -10,7 +11,7 @@ import net.minecraft.world.level.Level
  * Created by calebzhou on 2022-09-26,8:21.
  */
 object TickTaskManager {
-    private const val queueSize = 3 * 1024 * 1024
+    private const val queueSize = 1024576
 
     //维度名vsTick队列
     private val dimensionTickQueueMap = Object2ObjectOpenHashMap<String, EvictingQueue<Runnable>>()
@@ -19,10 +20,9 @@ object TickTaskManager {
         val dimensionName = WorldUtils.getDimensionName(level)
         if (!dimensionTickQueueMap.containsKey(dimensionName)) {
             logger.info("维度{}没有延迟tick队列，正在创建", dimensionName)
-            dimensionTickQueueMap[dimensionName] =
-                EvictingQueue.create(queueSize)
+            dimensionTickQueueMap[dimensionName] = EvictingQueue.create(queueSize)
         }
-        dimensionTickQueueMap[dimensionName]!!.add(tickableRunnable)
+        dimensionTickQueueMap[dimensionName]?.add(tickableRunnable)
     }
     fun removeDimension(dimensionName: String) {
         dimensionTickQueueMap.remove(dimensionName)

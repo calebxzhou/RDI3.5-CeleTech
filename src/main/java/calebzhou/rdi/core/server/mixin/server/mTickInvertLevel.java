@@ -1,23 +1,10 @@
 package calebzhou.rdi.core.server.mixin.server;
 
-import calebzhou.rdi.core.server.RdiCoreServer;
-import calebzhou.rdi.core.server.command.impl.TpsCommand;
-import calebzhou.rdi.core.server.misc.ServerLaggingStatus;
-import calebzhou.rdi.core.server.misc.TickTaskManager;
-import calebzhou.rdi.core.server.mixin.AccessCollectingNeighborUpdater;
-import calebzhou.rdi.core.server.mixin.AccessMultiNeighborUpdate;
-import calebzhou.rdi.core.server.module.tickinv.BlockEntityTickInverter;
-import calebzhou.rdi.core.server.module.tickinv.EntityTickInverter;
-import calebzhou.rdi.core.server.module.tickinv.EntityTicking;
-import calebzhou.rdi.core.server.module.tickinv.WorldTickThreadManager;
+import calebzhou.rdi.core.server.ticking.BlockEntityTickInverter;
+import calebzhou.rdi.core.server.ticking.WorldTicking;
 import calebzhou.rdi.core.server.utils.ServerUtils;
-import calebzhou.rdi.core.server.utils.WorldUtils;
-import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
-import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.server.ServerFunctionManager;
 import net.minecraft.server.level.ChunkMap;
 import net.minecraft.server.level.DistanceManager;
 import net.minecraft.server.level.ServerChunkCache;
@@ -26,30 +13,24 @@ import net.minecraft.util.RandomSource;
 import net.minecraft.util.profiling.ProfilerFiller;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.NaturalSpawner;
-import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.TickingBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.chunk.LevelChunk;
 import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.level.redstone.CollectingNeighborUpdater;
 import net.minecraft.world.ticks.LevelChunkTicks;
 import net.minecraft.world.ticks.LevelTicks;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-import java.util.Map;
+import java.util.List;
 import java.util.Queue;
 import java.util.function.BiConsumer;
 import java.util.function.BooleanSupplier;
-import java.util.function.Consumer;
 
 @Mixin(Level.class)
 public abstract class mTickInvertLevel {
@@ -66,22 +47,15 @@ abstract
 class mTickInvertServer {
     @Shadow public abstract void tickServer(BooleanSupplier booleanSupplier);
 
-    @Shadow public abstract void tickChildren(BooleanSupplier booleanSupplier);
-
-    @Shadow public abstract ServerFunctionManager getFunctions();
-
-	@Shadow
-	@Final
-	private Map<ResourceKey<Level>, ServerLevel> levels;
-
 	@Shadow
 	public abstract ServerLevel overworld();
 
 	@Shadow
-	public abstract Iterable<ServerLevel> getAllLevels();
+	@Final
+	private List<Runnable> tickables;
 
 	@Shadow
-	private int tickCount;
+	public abstract void tickChildren(BooleanSupplier hasTimeLeft);
 
 	//用try-catch包起来服务器运行主体，防止崩溃
     @Redirect(method = "runServer",
@@ -104,52 +78,13 @@ class mTickInvertServer {
             ServerUtils.broadcastChatMessage("tick server children错误"+e+e.getCause());
         }
     }
-    @Redirect(method = "tickChildren",
-            at = @At(value = "INVOKE", target = "Lnet/minecraft/server/ServerFunctionManager;tick()V"))
-    private void tickFunctionNoCrash(ServerFunctionManager instance){
-        try{
-            getFunctions().tick();
-        }catch (Throwable e){
-            e.printStackTrace();
-            ServerUtils.broadcastChatMessage("tick function错误"+e+e.getCause());
-        }
-    }
 
-//TODO  关键一步：世界间异步tick
-	/*@Inject(method = "tickChildren",at = @At(value = "INVOKE",target = "Lnet/minecraft/server/MinecraftServer;getAllLevels()Ljava/lang/Iterable;"), cancellable = true)
-	private void asyncTick(BooleanSupplier hasTimeLeft, CallbackInfo ci){
-
-	}*/
-	//private final Iterable<ServerLevel> emptyVanillaTickWorlds = new ArrayList<>();
-    //tick之前
-   /* @Inject(method = "tickChildren",
-    at=@At(value = "INVOKE",target = "Lnet/minecraft/server/MinecraftServer;getAllLevels()Ljava/lang/Iterable;"))
-    private void RDIbeforeTick2(BooleanSupplier hasTimeLeft, CallbackInfo ci){
-		WorldTickThreadManager.onServerCallWorldTick2(hasTimeLeft);
+	@Inject(method = "tickChildren",at=@At("HEAD"), cancellable = true)
+	public void tickChildrenl(BooleanSupplier hasTimeLeft, CallbackInfo ci) {
+		WorldTicking.onTick(hasTimeLeft,(MinecraftServer)(Object)this,tickables);
+		ci.cancel();
 	}
-    @Redirect(method = "tickChildren",
-    at=@At(value = "INVOKE",target = "Lnet/minecraft/server/MinecraftServer;getAllLevels()Ljava/lang/Iterable;"))
-    private Iterable<ServerLevel> RDIbeforeTick(MinecraftServer instance){
-		return emptyVanillaTickWorlds;
-	}*/
 
-    @Redirect(
-            method = "tickChildren",
-            at = @At(value = "INVOKE", target = "Lnet/minecraft/server/level/ServerLevel;tick(Ljava/util/function/BooleanSupplier;)V"))
-    private void tickWorldNoCrash(ServerLevel world, BooleanSupplier shouldKeepTicking){
-        WorldTickThreadManager.onServerCallWorldTick(world,shouldKeepTicking);
-    }
-	/*@Redirect(method = "reloadResources", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/MinecraftServer;isSameThread()Z"))
-	private boolean onServerExecutionThreadPatch(MinecraftServer minecraftServer) {
-		return ParallelProcessor.serverExecutionThreadPatch(minecraftServer);
-	}
-	@Redirect(method = "prepareLevels", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/level/ServerChunkCache;getTickingGenerated()I"))
-	private int initialChunkCountBypass(ServerChunkCache instance) {
-		if (DebugHookTerminator.isBypassLoadTarget())
-			return 441;
-		int loaded = overworld().getChunkSource().getLoadedChunksCount();
-		return Math.min(loaded, 441); // Maybe because multi loading caused overflow
-	}*/
 }
 @Mixin(LevelTicks.class)
 abstract
@@ -238,9 +173,6 @@ class mTickInvertLevelTicks{
 @Mixin(ServerLevel.class)
 abstract
 class mTickInvertServerLevel{
-    @Shadow protected abstract void tickPassenger(Entity entity, Entity entity2);
-
-    @Shadow public abstract void tickNonPassenger(Entity entity);
 
     @Redirect(method = "tickBlock",at = @At(value = "INVOKE",target = "Lnet/minecraft/world/level/block/state/BlockState;tick(Lnet/minecraft/server/level/ServerLevel;Lnet/minecraft/core/BlockPos;Lnet/minecraft/util/RandomSource;)V"))
     private void tickBlock(BlockState blockState, ServerLevel serverLevel, BlockPos blockPos, RandomSource randomSource){
@@ -262,25 +194,7 @@ class mTickInvertServerLevel{
         }
 
     }
-   /* @Redirect(method = "tickNonPassenger",at = @At(value = "INVOKE",target = "Lnet/minecraft/world/entity/Entity;tick()V"))
-    private void tickEntity(Entity entity){
-        try {
-            entity.tick();
-        } catch (Exception e) {
-            EntityTickInverter.handleEntityException(e,entity,"1");
-        }
 
-    }
-    @Redirect(method = "tickNonPassenger",at = @At(value = "INVOKE",target = "Lnet/minecraft/server/level/ServerLevel;tickPassenger(Lnet/minecraft/world/entity/Entity;Lnet/minecraft/world/entity/Entity;)V"))
-    private void tickPassengerR(ServerLevel serverLevel, Entity entity, Entity entity2){
-        try {
-            tickPassenger(entity, entity2);
-        } catch (Exception e) {
-            EntityTickInverter.handleEntityException(e,entity,"2");
-            entity2.discard();
-        }
-
-    }*/
 
 }
 @Mixin(ServerChunkCache.class)
@@ -303,7 +217,7 @@ class mTickInvertChunk {
         return false;
     }
 
-}
+}/*
 @Mixin(CollectingNeighborUpdater.class)
 abstract
 class mTickInvertNeighborUpdater{
@@ -312,7 +226,7 @@ class mTickInvertNeighborUpdater{
 	@Final
 	private Level level;
 
-	/*@Redirect(method = "runUpdates", at = @At(value = "INVOKE",target = "Lnet/minecraft/world/level/redstone/CollectingNeighborUpdater$NeighborUpdates;runNext(Lnet/minecraft/world/level/Level;)Z"))
+	@Redirect(method = "runUpdates", at = @At(value = "INVOKE",target = "Lnet/minecraft/world/level/redstone/CollectingNeighborUpdater$NeighborUpdates;runNext(Lnet/minecraft/world/level/Level;)Z"))
 	private boolean RDIrunnext(CollectingNeighborUpdater.NeighborUpdates neighborUpdates, Level level){
 		if(ServerLaggingStatus.INSTANCE.isServerLagging()){
 
@@ -349,5 +263,6 @@ class mTickInvertNeighborUpdater{
 		}else{
 			return neighborUpdates.runNext(level);
 		}
-	}*/
+	}
 }
+*/

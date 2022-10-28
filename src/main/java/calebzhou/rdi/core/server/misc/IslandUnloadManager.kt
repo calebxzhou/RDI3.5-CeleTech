@@ -2,6 +2,7 @@ package calebzhou.rdi.core.server.misc
 
 import calebzhou.rdi.core.server.RdiCoreServer
 import calebzhou.rdi.core.server.logger
+import calebzhou.rdi.core.server.ticking.TickTaskManager
 import calebzhou.rdi.core.server.utils.ServerUtils
 import calebzhou.rdi.core.server.utils.WorldUtils
 import it.unimi.dsi.fastutil.objects.Object2ObjectMap
@@ -75,7 +76,6 @@ class IslandUnloadManager : TimerTask() {
                     logger.info("岛屿" + dimensionName + "没有玩家了，即将卸载")
                     TickTaskManager.removeDimension(dimensionName)
                     ServerUtils.executeOnServerThread {
-                        levelToUnload.save(null, true, false)
                         Fantasy.get(RdiCoreServer.server).unloadWorld(levelToUnload)
                     }
                     dimNameLevelMap.remove(dimensionName)

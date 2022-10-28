@@ -4,7 +4,6 @@ import calebzhou.rdi.core.server.command.RdiInternalCommand
 import calebzhou.rdi.core.server.constant.ResponseCode
 import calebzhou.rdi.core.server.utils.PlayerUtils
 import com.mojang.brigadier.context.CommandContext
-import com.mojang.datafixers.optics.profunctors.ReCartesian
 import net.minecraft.commands.CommandSourceStack
 
 /**

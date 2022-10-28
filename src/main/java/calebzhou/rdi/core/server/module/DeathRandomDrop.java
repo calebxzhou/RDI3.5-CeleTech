@@ -42,21 +42,9 @@ public class DeathRandomDrop {
                         player.getInventory().removeItem(stack2Drop);
                     }
         });
-       /* BlockEntity chest = world.getBlockEntity(chestPos);
 
-        if(chest instanceof ChestBlockEntity chs && chest!=null){
-            isSetChestSuccessful = true;
-            for (int i = 0; i < dropItemList.size(); i++) {
-                chs.setItem(i,dropItemList.get(i));
-            }
-        }else{
-            isSetChestSuccessful = false;
-        }
-
-        if(!isSetChestSuccessful){*/
             dropItemList.forEach(stack2Drop -> world.addFreshEntity(new ItemEntity(world,player.getX()+0.5f,
                     player.getY()+1.1f,player.getZ()+0.5f,
                     stack2Drop)));
-       // }
     }
 }

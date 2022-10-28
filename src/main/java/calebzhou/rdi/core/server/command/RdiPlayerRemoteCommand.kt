@@ -1,6 +1,5 @@
 package calebzhou.rdi.core.server.command
 
-import calebzhou.rdi.core.server.utils.RdiHttpClient
 import com.mojang.brigadier.builder.LiteralArgumentBuilder
 import com.mojang.brigadier.context.CommandContext
 import net.minecraft.commands.CommandSourceStack

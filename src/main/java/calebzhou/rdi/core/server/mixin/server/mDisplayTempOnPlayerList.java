@@ -11,7 +11,6 @@ import org.spongepowered.asm.mixin.Overwrite;
 /**
  * Created by calebzhou on 2022-09-20,22:01.
  */
-//@Mixin(targets = {"net.minecraft.network.protocol.game.ClientboundPlayerInfoPacket$Action$1"})
 @Mixin(ServerPlayer.class)
 public class mDisplayTempOnPlayerList {
 	@Overwrite

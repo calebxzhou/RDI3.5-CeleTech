@@ -1,7 +1,6 @@
 package calebzhou.rdi.core.server
 
 import calebzhou.rdi.core.server.command.RdiCommand
-import calebzhou.rdi.core.server.command.RdiNormalCommand
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap
 import it.unimi.dsi.fastutil.objects.ObjectArrayList

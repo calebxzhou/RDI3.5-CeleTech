@@ -10,7 +10,7 @@ import org.spongepowered.asm.mixin.Overwrite;
 public class mFireSpeedUp {
         //火加速
         @Overwrite
-        private static int getFireTickDelay(RandomSource randomSource){
+		private static int getFireTickDelay(RandomSource randomSource){
             return 2 + RdiCoreServer.RANDOM.nextInt(10);
         }
 }

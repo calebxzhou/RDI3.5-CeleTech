@@ -60,12 +60,11 @@ final class RuntimeWorldManager {
 			ServerWorldLoadEvents.UNLOAD.invoker().unloadWorld(this.server, world);
 			MappedRegistry<LevelStem> dimensionsRegistry = getDimensionsRegistry(this.server);
 			RemoveFromRegistry.remove(dimensionsRegistry, dimensionKey.location());
-
-			/*try {
+			try {
 				world.close();
 			} catch (IOException e) {
 				e.printStackTrace();
-			}*/
+			}
 			Fantasy.LOGGER.info("成功卸载维度 {} ", dimensionKey.toString());
 			dimensionKey=null;
 			world=null;
@@ -87,7 +86,7 @@ final class RuntimeWorldManager {
 					Fantasy.LOGGER.warn("删除存档文件夹失败 {} {}", e.getMessage(),e.getCause());
 					try {
 						Fantasy.LOGGER.info("强制删除中");
-						FileUtils.forceDelete(worldDirectory);
+						FileUtils.forceDeleteOnExit(worldDirectory);
 					} catch (IOException ignored) {
 						ignored.printStackTrace();
 					}

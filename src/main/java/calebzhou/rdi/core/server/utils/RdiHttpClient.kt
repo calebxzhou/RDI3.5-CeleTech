@@ -20,14 +20,14 @@ import kotlin.reflect.KClass
 
 
 object RdiHttpClient {
-    const val CONNECTION_TIME_OUT = 5
+    const val CONNECTION_TIME_OUT = 15
     private val client: OkHttpClient =
         if (RdiSharedConstants.DEBUG)
-            RdiHttpClient.unsafeOkHttpClient
+            unsafeOkHttpClient
         else OkHttpClient.Builder()
-            .connectTimeout(RdiHttpClient.CONNECTION_TIME_OUT.toLong(), TimeUnit.SECONDS)
-            .readTimeout(RdiHttpClient.CONNECTION_TIME_OUT.toLong(), TimeUnit.SECONDS)
-            .writeTimeout(RdiHttpClient.CONNECTION_TIME_OUT.toLong(), TimeUnit.SECONDS)
+            .connectTimeout(CONNECTION_TIME_OUT.toLong(), TimeUnit.SECONDS)
+            .readTimeout(CONNECTION_TIME_OUT.toLong(), TimeUnit.SECONDS)
+            .writeTimeout(CONNECTION_TIME_OUT.toLong(), TimeUnit.SECONDS)
             .connectionPool(ConnectionPool(32, 60, TimeUnit.SECONDS))
             .build()
 

@@ -2,8 +2,8 @@ package calebzhou.rdi.core.server.mixin.server;
 
 import calebzhou.rdi.core.server.utils.KRandomSource;
 import net.minecraft.util.RandomSource;
-import net.minecraft.world.entity.Entity;
-import org.spongepowered.asm.mixin.*;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Overwrite;
 
 
 /**

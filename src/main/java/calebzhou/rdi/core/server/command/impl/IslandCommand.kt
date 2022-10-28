@@ -95,9 +95,9 @@ class IslandCommand : RdiNormalCommand("is", "岛屿菜单。", true) {
 
     private fun confirmedResetIsland(player: ServerPlayer) {
         ThreadPool.newThread {
-            val ResponseData = RdiHttpClient.sendRequest(Int::class, "delete", "/v37/mcs_game/island2/" + player.stringUUID)
+            val ResponseData = RdiHttpClient.sendRequest(String::class, "delete", "/v37/mcs_game/island2/" + player.stringUUID)
             if (ResponseData.isSuccess) {
-                val dim = IslandUtils.getIslandDimensionLoca(ResponseData.data!!)
+                val dim = IslandUtils.getIslandDimensionLoca(ResponseData.data)
                 IslandUnloadManager.removeIslandFromQueue(dim.toString())
                 ServerUtils.executeOnServerThread {
                     val worldHandle = Fantasy.get(RdiCoreServer.server)

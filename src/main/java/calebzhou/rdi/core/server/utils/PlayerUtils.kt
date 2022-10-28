@@ -278,7 +278,6 @@ object PlayerUtils {
     fun resetProfile(player: ServerPlayer) {
         player.experienceLevel = 0
         player.inventory.clearContent()
-        player.kill()
         teleport(player, server.overworld(), SPAWN_LOCATION)
         setSpawnPoint(player, Level.OVERWORLD, SPAWN_LOCATION)
     }

@@ -4,7 +4,7 @@ import calebzhou.rdi.core.server.RdiCoreServer
 import calebzhou.rdi.core.server.command.RdiNormalCommand
 import calebzhou.rdi.core.server.constant.ColorConst
 import calebzhou.rdi.core.server.misc.ServerLaggingStatus
-import calebzhou.rdi.core.server.misc.TickTaskManager
+import calebzhou.rdi.core.server.ticking.TickTaskManager
 import calebzhou.rdi.core.server.utils.PlayerUtils
 import calebzhou.rdi.core.server.utils.ThreadPool
 import calebzhou.rdi.core.server.utils.WorldUtils

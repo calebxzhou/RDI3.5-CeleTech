@@ -9,7 +9,7 @@ import calebzhou.rdi.core.server.misc.IslandUnloadManager
 import calebzhou.rdi.core.server.misc.PlayerLocationRecorder.record
 import calebzhou.rdi.core.server.misc.RdiPlayerProfileManager
 import calebzhou.rdi.core.server.misc.ServerLaggingStatus.isServerLagging
-import calebzhou.rdi.core.server.misc.TickTaskManager
+import calebzhou.rdi.core.server.ticking.TickTaskManager
 import calebzhou.rdi.core.server.model.RdiPlayerProfile
 import calebzhou.rdi.core.server.module.DeathRandomDrop
 import calebzhou.rdi.core.server.utils.PlayerUtils.RESPONSE_ERROR
@@ -33,9 +33,7 @@ import calebzhou.rdi.core.server.utils.WorldUtils.isNoPlayersInLevel
 import com.mojang.brigadier.CommandDispatcher
 import it.unimi.dsi.fastutil.Pair
 import net.fabricmc.fabric.api.entity.event.v1.ServerEntityWorldChangeEvents
-import net.fabricmc.fabric.api.entity.event.v1.ServerEntityWorldChangeEvents.AfterPlayerChange
 import net.fabricmc.fabric.api.entity.event.v1.ServerPlayerEvents
-import net.fabricmc.fabric.api.entity.event.v1.ServerPlayerEvents.AllowDeath
 import net.fabricmc.fabric.api.event.player.PlayerBlockBreakEvents
 import net.minecraft.commands.CommandBuildContext
 import net.minecraft.commands.CommandSourceStack
@@ -59,7 +57,7 @@ import org.quiltmc.qsl.networking.api.PacketSender
 import org.quiltmc.qsl.networking.api.ServerPlayConnectionEvents
 import java.util.function.Consumer
 
-class RdiEvents  constructor() {
+class RdiEvents {
     fun register() {
         ServerTickEvents.END.register(ServerTickEvents.End(::onServerEndTick))
         CommandRegistrationCallback.EVENT.register(CommandRegistrationCallback(::registerCommands))
@@ -68,8 +66,12 @@ class RdiEvents  constructor() {
         PlayerBlockBreakEvents.BEFORE.register(PlayerBlockBreakEvents.Before(::beforeBreakBlock))
         PlayerBlockBreakEvents.AFTER.register(PlayerBlockBreakEvents.After(::onAfterBreakBlock))
         //UseBlockCallback.EVENT.register(this::onUseBlock);
-        ServerPlayerEvents.ALLOW_DEATH.register(AllowDeath(::onPlayerDeath))
-        ServerEntityWorldChangeEvents.AFTER_PLAYER_CHANGE_WORLD.register(AfterPlayerChange(::onPlayerChangeWorld))
+        ServerPlayerEvents.ALLOW_DEATH.register(ServerPlayerEvents.AllowDeath(::onPlayerDeath))
+        ServerEntityWorldChangeEvents.AFTER_PLAYER_CHANGE_WORLD.register(
+            ServerEntityWorldChangeEvents.AfterPlayerChange(
+                ::onPlayerChangeWorld
+            )
+        )
     }
 
     private fun onServerEndTick(server: MinecraftServer) {

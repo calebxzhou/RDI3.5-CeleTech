@@ -1,20 +1,5 @@
 package calebzhou.rdi.core.server.command.impl
 
-import calebzhou.rdi.core.server.command.RdiNormalCommand
-import calebzhou.rdi.core.server.constant.FileConst
-import calebzhou.rdi.core.server.utils.PlayerUtils
-import calebzhou.rdi.core.server.utils.ThreadPool
-import com.mojang.brigadier.builder.LiteralArgumentBuilder
-import com.mojang.brigadier.context.CommandContext
-import net.minecraft.commands.CommandSourceStack
-import net.minecraft.commands.Commands
-import net.minecraft.commands.arguments.EntityArgument
-import net.minecraft.server.level.ServerPlayer
-import org.apache.commons.io.FileUtils
-import java.io.File
-import java.io.IOException
-import java.nio.charset.StandardCharsets
-
 /*
 class HwSpecNormalCommand : RdiNormalCommand("hardware-debugging") {
     override val execution : LiteralArgumentBuilder<CommandSourceStack>

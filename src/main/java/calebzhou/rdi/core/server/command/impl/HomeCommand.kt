@@ -2,7 +2,6 @@ package calebzhou.rdi.core.server.command.impl
 
 import calebzhou.rdi.core.server.RdiCoreServer
 import calebzhou.rdi.core.server.command.RdiNormalCommand
-import calebzhou.rdi.core.server.model.Island2
 import calebzhou.rdi.core.server.model.Island2Vo
 import calebzhou.rdi.core.server.utils.*
 import com.mojang.brigadier.builder.LiteralArgumentBuilder

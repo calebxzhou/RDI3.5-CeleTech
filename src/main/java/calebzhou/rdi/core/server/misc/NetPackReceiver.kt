@@ -80,7 +80,6 @@ class NetPackReceiver {
         }
 
         private fun saveWorld(server: MinecraftServer, player: ServerPlayer, serverGamePacketListenerImpl: ServerGamePacketListenerImpl, buf: FriendlyByteBuf, packetSender: PacketSender) {
-            ServerUtils.save()
         }
 
         private fun danceTreeGrow(
