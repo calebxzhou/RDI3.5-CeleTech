@@ -5,6 +5,7 @@ import calebzhou.rdi.core.server.logger
 import calebzhou.rdi.core.server.misc.ServerLaggingStatus
 import calebzhou.rdi.core.server.utils.ServerUtils
 import calebzhou.rdi.core.server.utils.ServerUtils.broadcastChatMessage
+import kotlinx.coroutines.delay
 import net.minecraft.core.Registry
 import net.minecraft.server.level.ServerLevel
 import net.minecraft.util.profiling.ProfilerFiller
@@ -121,8 +122,10 @@ object EntityTicking {
         tickList: EntityTickList,
         level: ServerLevel
     ) {
-        if(!ServerLaggingStatus.isServerVeryLagging)
-            tickList.forEach { entity ->
+        if(ServerLaggingStatus.isServerVeryLagging)
+            return
+
+        tickList.forEach { entity ->
                 if (entity == null) {
                     return@forEach
                 }
@@ -148,6 +151,7 @@ object EntityTicking {
                 tickNonPassenger(entity, level.profiler, tickList)
                 level.profiler.pop()
             }
+
 
     }
 

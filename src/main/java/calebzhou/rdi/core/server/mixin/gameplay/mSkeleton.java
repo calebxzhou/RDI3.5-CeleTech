@@ -48,10 +48,6 @@ public abstract class mSkeleton extends Monster{
 		this.goalSelector.addGoal(2, new RandomLookAroundGoal(this));
 		this.targetSelector.addGoal(1, new HurtByTargetGoal(this));
 		this.targetSelector.addGoal(2, new NearestAttackableTargetGoal(this, Player.class, true));
-		//this.targetSelector.addGoal(2, new NearestAttackableTargetGoal(this, Creeper.class, true));
-		this.targetSelector.addGoal(2, new NearestAttackableTargetGoal(this, EnderMan.class, true));
-		//this.targetSelector.addGoal(2, new NearestAttackableTargetGoal(this, Zombie.class, true));
-		//this.targetSelector.addGoal(2, new NearestAttackableTargetGoal(this, Spider.class, true));
 		this.targetSelector.addGoal(3, new NearestAttackableTargetGoal(this, IronGolem.class, true));
 		this.targetSelector.addGoal(3, new NearestAttackableTargetGoal(this, Turtle.class, 10, true, false, Turtle.BABY_ON_LAND_SELECTOR));
 	}

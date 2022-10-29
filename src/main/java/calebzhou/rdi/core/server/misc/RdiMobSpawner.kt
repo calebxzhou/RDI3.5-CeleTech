@@ -2,6 +2,7 @@ package calebzhou.rdi.core.server.misc
 
 import calebzhou.rdi.core.server.logger
 import calebzhou.rdi.core.server.misc.ServerLaggingStatus.isServerLagging
+import calebzhou.rdi.core.server.misc.ServerLaggingStatus.isServerVeryLagging
 import calebzhou.rdi.core.server.mixin.AccessNaturalSpawner
 import calebzhou.rdi.core.server.mixin.AccessSpawnPlacementData
 import calebzhou.rdi.core.server.mixin.AccessSpawnPlacements
@@ -59,7 +60,7 @@ object RdiMobSpawner {
         chunk: LevelChunk,
         forcedDespawn: Boolean
     ) {
-        if (isServerLagging)
+        if (isServerVeryLagging)
             return
         AccessNaturalSpawner.getSPAWNING_CATEGORIES().forEach { mobCategory ->
             if ((forcedDespawn || !mobCategory.isPersistent))

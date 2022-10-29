@@ -21,21 +21,3 @@ public class mUseRdiMobSpawner {
 		RdiMobSpawner.tick(level, chunk, forcedDespawn);
 	}
 }
-@Mixin(EntityTickList.class)
- class mUseRdiMobSpawner2 {
-	/*@Mutable @Shadow
-	private Int2ObjectMap<Entity> active = new Int2ObjectConcurrentHashMap<>();
-	@Mutable @Shadow
-	private Int2ObjectMap<Entity> passive = new Int2ObjectConcurrentHashMap<>();
-	@Inject(method = "ensureActiveIsNotIterated", at = @At(value = "HEAD"), cancellable = true)
-	private void notSafeAnyWay(CallbackInfo ci) {
-		ci.cancel();
-	}*/
-}
-@Mixin(EntityLookup.class)
-class mUseRdiMobSpawner3{
-	/*@Mutable @Shadow @Final
-	private  Int2ObjectMap byId = new Int2ObjectConcurrentHashMap();
-	@Mutable @Shadow @Final
-	private final Map<UUID, ?> byUuid = new ConcurrentHashMap<>();*/
-}

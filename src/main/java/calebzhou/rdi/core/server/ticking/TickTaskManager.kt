@@ -34,7 +34,6 @@ object TickTaskManager {
         return queue?.size ?: 0
     }
 	fun onServerTick() {
-        if (ServerLaggingStatus.isServerLagging) return
         dimensionTickQueueMap.forEach { (dimensionName: String, queue: EvictingQueue<Runnable>) ->
             if (queue.peek() != null) {
                 queue.poll()!!.run()

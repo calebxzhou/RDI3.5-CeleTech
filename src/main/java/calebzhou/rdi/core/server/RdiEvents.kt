@@ -9,6 +9,7 @@ import calebzhou.rdi.core.server.misc.IslandUnloadManager
 import calebzhou.rdi.core.server.misc.PlayerLocationRecorder.record
 import calebzhou.rdi.core.server.misc.RdiPlayerProfileManager
 import calebzhou.rdi.core.server.misc.ServerLaggingStatus.isServerLagging
+import calebzhou.rdi.core.server.misc.ServerLaggingStatus.isServerVeryLagging
 import calebzhou.rdi.core.server.ticking.TickTaskManager
 import calebzhou.rdi.core.server.model.RdiPlayerProfile
 import calebzhou.rdi.core.server.module.DeathRandomDrop
@@ -76,7 +77,7 @@ class RdiEvents {
 
     private fun onServerEndTick(server: MinecraftServer) {
         for (i in 0..999) {
-            if (!isServerLagging)
+            if (!isServerVeryLagging)
                 TickTaskManager.onServerTick()
             else break
         }
