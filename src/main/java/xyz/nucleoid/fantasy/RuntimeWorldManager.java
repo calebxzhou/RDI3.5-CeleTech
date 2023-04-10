@@ -56,6 +56,7 @@ final class RuntimeWorldManager {
 	boolean unload(ServerLevel world){
 		ResourceKey<Level> dimensionKey = world.dimension();
 		Fantasy.LOGGER.info("卸载维度中 {}", dimensionKey.toString());
+		world.save(null,true,false);
 		if (this.serverAccess.getLevels().remove(dimensionKey, world)) {
 			ServerWorldLoadEvents.UNLOAD.invoker().unloadWorld(this.server, world);
 			MappedRegistry<LevelStem> dimensionsRegistry = getDimensionsRegistry(this.server);

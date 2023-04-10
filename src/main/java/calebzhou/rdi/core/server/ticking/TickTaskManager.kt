@@ -11,7 +11,7 @@ import net.minecraft.world.level.Level
  * Created by calebzhou on 2022-09-26,8:21.
  */
 object TickTaskManager {
-    private const val queueSize = 1024576
+    private const val queueSize = 2147483
 
     //维度名vsTick队列
     private val dimensionTickQueueMap = Object2ObjectOpenHashMap<String, EvictingQueue<Runnable>>()

@@ -12,14 +12,17 @@ import net.minecraft.world.effect.MobEffectInstance
 import net.minecraft.world.effect.MobEffects
 
 class Home1Command : RdiNormalCommand("home1", "回到一岛（仅限老玩家）", false) {
-    override val execution : LiteralArgumentBuilder<CommandSourceStack>
-    get() = baseArgBuilder.executes { context: CommandContext<CommandSourceStack> ->
+    override val execution: LiteralArgumentBuilder<CommandSourceStack>
+        get() = baseArgBuilder.executes { context: CommandContext<CommandSourceStack> ->
             val player = context.source.player!!
             ThreadPool.newThread {
                 val data = RdiHttpClient.sendRequest(String::class, "get", "/v37/island/" + player.stringUUID)
                 if (!data.isSuccess) {
                     PlayerUtils.sendServiceResponseData(player, data)
                     return@newThread
+                }
+                if (data.data!! == "fail") {
+                    PlayerUtils.sendChatMessage(player, PlayerUtils.RESPONSE_ERROR, "你要按下H键，而不是/home1")
                 }
                 val split = data.data!!.split(",")
                 val x = split[0].toInt()

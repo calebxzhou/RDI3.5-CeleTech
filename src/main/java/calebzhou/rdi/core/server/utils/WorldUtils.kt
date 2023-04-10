@@ -86,8 +86,7 @@ object WorldUtils {
 
     @JvmStatic
 	fun isInIsland2(level: Level): Boolean {
-        return getDimensionName(level)
-            .startsWith(RdiSharedConstants.ISLAND_DIMENSION_FULL_PREFIX)
+        return getDimensionName(level).startsWith(RdiSharedConstants.ISLAND_DIMENSION_FULL_PREFIX)
     }
 
     @JvmStatic

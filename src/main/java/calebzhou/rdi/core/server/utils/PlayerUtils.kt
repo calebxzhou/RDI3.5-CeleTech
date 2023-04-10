@@ -272,7 +272,7 @@ object PlayerUtils {
 
     fun satisfyMainTownBuildCondition(player: Player): Boolean {
         val rdiPlayerProfile = RdiPlayerProfileManager.pidProfileMap[player.stringUUID]?:return false
-        return rdiPlayerProfile.isGenuine || player.experienceLevel >= 50
+        return rdiPlayerProfile.isGenuine || player.experienceLevel >= 200
     }
 
     fun resetProfile(player: ServerPlayer) {
@@ -314,12 +314,12 @@ object PlayerUtils {
         val rdiWeather = GeoWeatherManager.pidWeatherMap[pid]?:return component
         val rdiGeoLocation = GeoWeatherManager.pidGeoMap[pid]?:return component
         return component
-            .append(
-                GeoWeatherManager.getTemperatureDisplayComponent(rdiWeather.realTimeWeather.temp.roundToInt()))
+            .append(Component.literal(" ").withStyle(ChatFormatting.RESET))
+            .append(GeoWeatherManager.getTemperatureDisplayComponent(rdiWeather.realTimeWeather.temp.roundToInt()))
         .append(GeoWeatherManager.getIspCode(rdiGeoLocation.isp).toString())
             .append(GeoWeatherManager.getProvinceCode(rdiGeoLocation))
     }
 
-    val provinceCodeMap = Object2ObjectOpenHashMap<String, Int>()
+   // val provinceCodeMap = Object2ObjectOpenHashMap<String, Int>()
 
 }

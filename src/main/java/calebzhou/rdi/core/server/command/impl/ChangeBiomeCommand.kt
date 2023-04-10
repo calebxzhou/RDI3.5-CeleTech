@@ -64,8 +64,8 @@ class ChangeBiomeCommand : RdiNormalCommand("change-biome", "改变一个区域�
             ERROR_BIOME_NOT_FOUND
         )
         val level = player.getLevel()
-        var biomeResourceKey: ResourceKey<Biome>? = null
-        var biomeHolder: Holder<Biome>? = null
+        val biomeResourceKey: ResourceKey<Biome>
+        val biomeHolder: Holder<Biome>
         try {
             biomeResourceKey = biomeType.unwrap().left().get()
             biomeHolder = level.registryAccess().registry(Registry.BIOME_REGISTRY)
@@ -80,7 +80,6 @@ class ChangeBiomeCommand : RdiNormalCommand("change-biome", "改变一个区域�
             )
             return 1
         }
-        val finalBiomeHolder = biomeHolder
         val box = BoundingBox.fromCorners(blockPos1, blockPos2)
         BlockPos.betweenClosedStream(box)
             .forEach { bpos: BlockPos ->
@@ -88,7 +87,7 @@ class ChangeBiomeCommand : RdiNormalCommand("change-biome", "改变一个区域�
                 // Screw it, we know it's really mutable...
                 val section = chunk.getSection(chunk.getSectionIndex(bpos.y))
                 val biomeArray = section.biomes as PalettedContainer<Holder<Biome>>
-                biomeArray.getAndSetUnchecked(bpos.x and 3, bpos.y and 3, bpos.z and 3, finalBiomeHolder)
+                biomeArray.getAndSetUnchecked(bpos.x and 3, bpos.y and 3, bpos.z and 3, biomeHolder)
                 chunk.isUnsaved = true
             }
         player.experienceLevel -= xpLvlNeed

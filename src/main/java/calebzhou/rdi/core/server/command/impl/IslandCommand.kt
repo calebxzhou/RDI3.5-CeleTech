@@ -3,7 +3,7 @@ package calebzhou.rdi.core.server.command.impl
 import calebzhou.rdi.core.server.RdiCoreServer
 import calebzhou.rdi.core.server.command.RdiNormalCommand
 import calebzhou.rdi.core.server.misc.CommandConfirmer
-import calebzhou.rdi.core.server.misc.IslandUnloadManager
+import calebzhou.rdi.core.server.misc.IslandUnloadScanner
 import calebzhou.rdi.core.server.utils.*
 import com.mojang.brigadier.arguments.StringArgumentType
 import com.mojang.brigadier.builder.LiteralArgumentBuilder
@@ -98,7 +98,6 @@ class IslandCommand : RdiNormalCommand("is", "岛屿菜单。", true) {
             val ResponseData = RdiHttpClient.sendRequest(String::class, "delete", "/v37/mcs_game/island2/" + player.stringUUID)
             if (ResponseData.isSuccess) {
                 val dim = IslandUtils.getIslandDimensionLoca(ResponseData.data)
-                IslandUnloadManager.removeIslandFromQueue(dim.toString())
                 ServerUtils.executeOnServerThread {
                     val worldHandle = Fantasy.get(RdiCoreServer.server)
                         .getOrOpenPersistentWorld(dim, IslandUtils.getIslandWorldConfig(0))

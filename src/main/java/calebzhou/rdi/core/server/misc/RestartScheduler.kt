@@ -12,15 +12,8 @@ import java.util.concurrent.TimeUnit
 /**
  * Created  on 2022-10-21,14:13.
  */
-object RestartScheduler {
+object RestartScheduler:TimerTask() {
     init {
-        val task = object :TimerTask(){
-            override fun run() {
-                RdiCoreServer.server.saveAllChunks(true, true, true)
-                System.exit(114514)
-            //RdiCoreServer.server.halt(false)
-            }
-        }
         val now = ZonedDateTime.now(ZoneId.of("Asia/Shanghai"))
         var nextRun = now.withHour(5).withMinute(0).withSecond(0)
         if (now > nextRun)
@@ -31,11 +24,15 @@ object RestartScheduler {
 
         val scheduler = Executors.newScheduledThreadPool(1)
         scheduler.scheduleAtFixedRate(
-            task,
+            this,
             initialDelay,
             TimeUnit.DAYS.toSeconds(1),
             TimeUnit.SECONDS
         )
 
+    }
+    override fun run() {
+        RdiCoreServer.server.saveAllChunks(true, true, true)
+        System.exit(114514)
     }
 }

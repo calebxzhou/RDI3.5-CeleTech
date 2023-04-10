@@ -10,7 +10,7 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 
 //更多的流浪商人
 @Mixin(WanderingTraderSpawner.class)
-public abstract class MixinMoreWanderingTraders {
+public abstract class mMoreWanderingTraders {
     @ModifyConstant(method = "<init>(Lnet/minecraft/world/level/storage/ServerLevelData;)V",
     constant = @Constant(intValue = 24000))
     private int modifyConstSpawnDelay(int constant){

@@ -31,7 +31,7 @@ object ServerUtils {
     }
 
     fun executeOnServerThread(cmd: Runnable) {
-        RdiCoreServer.server.execute(cmd)
+        RdiCoreServer.server.submit(cmd)
     }
 
     fun executeCommandOnSource(command: String, source: CommandSourceStack) {

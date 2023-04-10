@@ -139,8 +139,6 @@ public final class Fantasy {
     }
 	public void unloadWorld(ServerLevel world){
 		this.server.submit(() -> {
-			world.save(null, true, false);
-
 			worldManager.unload(world);
 		});
 	}

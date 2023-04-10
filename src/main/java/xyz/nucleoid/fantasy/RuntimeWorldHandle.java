@@ -20,10 +20,6 @@ public final class RuntimeWorldHandle {
     public void delete() {
         this.fantasy.enqueueWorldDeletion(this.world);
     }
-	public void unload(){
-
-
-	}
     public ServerLevel asWorld() {
         return this.world;
     }

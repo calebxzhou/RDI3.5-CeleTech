@@ -16,11 +16,7 @@ import net.minecraft.network.chat.Style
  */
 class RdiNumberCommand : RdiNormalCommand("rdi-number", "查询自己的RDI编号",true) {
     override val execution : LiteralArgumentBuilder<CommandSourceStack>
-    get() = baseArgBuilder.executes { context: CommandContext<CommandSourceStack> ->
-            exec(context)
-                .toInt()
-
-    }
+    get() = baseArgBuilder.executes { context -> exec(context).toInt() }
 
     private fun exec(context: CommandContext<CommandSourceStack>): Short {
         val player = context.source.player!!

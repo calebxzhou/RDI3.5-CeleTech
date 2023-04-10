@@ -5,7 +5,7 @@ import calebzhou.rdi.core.server.RdiMemoryStorage.commandSet
 import calebzhou.rdi.core.server.command.impl.*
 import calebzhou.rdi.core.server.constant.NetworkPackets
 import calebzhou.rdi.core.server.misc.GeoWeatherManager
-import calebzhou.rdi.core.server.misc.IslandUnloadManager
+import calebzhou.rdi.core.server.misc.IslandUnloadScanner
 import calebzhou.rdi.core.server.misc.PlayerLocationRecorder.record
 import calebzhou.rdi.core.server.misc.RdiPlayerProfileManager
 import calebzhou.rdi.core.server.misc.ServerLaggingStatus.isServerLagging
@@ -53,6 +53,7 @@ import net.minecraft.world.level.Level
 import net.minecraft.world.level.block.entity.BlockEntity
 import net.minecraft.world.level.block.state.BlockState
 import org.quiltmc.qsl.command.api.CommandRegistrationCallback
+import org.quiltmc.qsl.lifecycle.api.event.ServerLifecycleEvents
 import org.quiltmc.qsl.lifecycle.api.event.ServerTickEvents
 import org.quiltmc.qsl.networking.api.PacketSender
 import org.quiltmc.qsl.networking.api.ServerPlayConnectionEvents
@@ -61,6 +62,8 @@ import java.util.function.Consumer
 class RdiEvents {
     fun register() {
         ServerTickEvents.END.register(ServerTickEvents.End(::onServerEndTick))
+
+        ServerLifecycleEvents.STOPPING.register(::onServerStopping)
         CommandRegistrationCallback.EVENT.register(CommandRegistrationCallback(::registerCommands))
         ServerPlayConnectionEvents.JOIN.register(ServerPlayConnectionEvents.Join(::onPlayerJoin))
         ServerPlayConnectionEvents.DISCONNECT.register(ServerPlayConnectionEvents.Disconnect(::onPlayerDisconnect))
@@ -74,24 +77,24 @@ class RdiEvents {
             )
         )
     }
-
+    private fun onServerStopping(server: MinecraftServer) {
+       // IslandUnloadScanner.clearQueue()
+    }
     private fun onServerEndTick(server: MinecraftServer) {
-        for (i in 0..999) {
-            if (!isServerVeryLagging)
+           if (!isServerLagging)
                 TickTaskManager.onServerTick()
-            else break
-        }
+
     }
     //改变世界之后
     private fun onPlayerChangeWorld(player: ServerPlayer, fromLevel: ServerLevel, toLevel: ServerLevel) {
         logger.info("{}离开{}去{}", player.scoreboardName, getDimensionName(fromLevel), getDimensionName(toLevel))
         //要去的维度在岛屿卸载队列里面
-        if (IslandUnloadManager.isIslandInQueue(toLevel)) {
-            IslandUnloadManager.removeIslandFromQueue(toLevel)
+        /*if (IslandUnloadScanner.isIslandInQueue(toLevel)) {
+            IslandUnloadScanner.removeIslandFromQueue(toLevel)
         } else  //离开的维度是岛屿维度 并且里面没人
             if (isInIsland2(fromLevel) && isNoPlayersInLevel(fromLevel)) {
-                IslandUnloadManager.addIslandToUnloadQueue(fromLevel)
-            }
+                IslandUnloadScanner.addIslandToUnloadQueue(fromLevel)
+            }*/
     }
 
     //破坏方块之前
@@ -103,7 +106,7 @@ class RdiEvents {
         blockEntity: BlockEntity
     ): Boolean {
         if (isInMainTown(player) && !satisfyMainTownBuildCondition(player)) {
-            sendChatMessage(player, RESPONSE_ERROR, "要破坏主城方块，您需要有50级经验或者使用微软账号登录。")
+            sendChatMessage(player, RESPONSE_ERROR, "要破坏主城方块，您需要有200级经验 或者 使用微软账号登录。")
             return false
         }
         return true
@@ -135,7 +138,6 @@ class RdiEvents {
         RdiMemoryStorage.pidToSpeakPlayersMap.remove(pid)
         //记录登出信息
         sendRequestAsyncResponseless("post", "/v37/mcs_game/record/logout", Pair.of("pid", pid))
-        IslandUnloadManager.addIslandToUnloadQueue(player.getLevel())
     }
 
     //成功破坏方块
@@ -175,7 +177,6 @@ class RdiEvents {
             teleportToSpawn(player)
             RdiMemoryStorage.pidBeingGoSpawn.remove(player.stringUUID)
         }
-        if (isInIsland(player)) IslandUnloadManager.removeIslandFromQueue(player.getLevel())
         //提示账号是否有密码
         val pid = player.stringUUID
         ThreadPool.newThread {

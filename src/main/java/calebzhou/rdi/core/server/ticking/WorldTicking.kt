@@ -54,16 +54,16 @@ object WorldTicking {
                 server.profiler.pop()
             }
             server.profiler.push("tick")
-            runBlocking{
-                withTimeout(500){
+           // runBlocking{
+           //     withTimeout(500){
                     try {
                         serverLevel.tick(hasTimeLeft)
                     } catch (e: Exception) {
                         e.printStackTrace()
                         broadcastChatMessage("tick world错误" + e.message + e.cause)
                     }
-                }
-            }
+              //  }
+          //  }
             server.profiler.pop()
             server.profiler.pop()
             // }

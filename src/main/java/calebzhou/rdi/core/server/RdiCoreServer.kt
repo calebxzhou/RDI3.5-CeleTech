@@ -2,7 +2,9 @@ package calebzhou.rdi.core.server
 
 import calebzhou.rdi.core.server.constant.FileConst
 import calebzhou.rdi.core.server.constant.RdiSharedConstants
+import calebzhou.rdi.core.server.misc.IslandUnloadScanner
 import calebzhou.rdi.core.server.misc.NetPackReceiver.Companion.register
+import calebzhou.rdi.core.server.misc.RestartScheduler
 import net.minecraft.server.MinecraftServer
 import net.minecraft.world.Difficulty
 import org.apache.logging.log4j.LogManager
@@ -24,10 +26,13 @@ class RdiCoreServer : ModInitializer {
         ServerLifecycleEvents.READY.register(ServerLifecycleEvents.Ready { server: MinecraftServer ->
             Companion.server = server
             server.worldData.difficulty = Difficulty.HARD
+            IslandUnloadScanner
+            RestartScheduler
         })
         register()
         RdiEvents().register()
-        calebzhou.rdi.core.server.misc.RestartScheduler
+
+
     }
 
     companion object {

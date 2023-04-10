@@ -1,7 +1,6 @@
 package calebzhou.rdi.core.server.misc
 
 import calebzhou.rdi.core.server.logger
-import calebzhou.rdi.core.server.misc.ServerLaggingStatus.isServerLagging
 import calebzhou.rdi.core.server.misc.ServerLaggingStatus.isServerVeryLagging
 import calebzhou.rdi.core.server.mixin.AccessNaturalSpawner
 import calebzhou.rdi.core.server.mixin.AccessSpawnPlacementData
@@ -44,15 +43,16 @@ import kotlin.random.Random
  */
 object RdiMobSpawner {
     @JvmStatic
-    private val spawningThreadPool = ThreadPool.newSingleThreadPool("MobSpawningThread")
-
+    private val spawningThreadPool = ThreadPool.newPool("MobSpawningThread")
     @JvmStatic
     fun tick(
         level: ServerLevel,
         chunk: LevelChunk,
         forcedDespawn: Boolean
     ) {
-        spawningThreadPool.submit { spawnForChunk(level, chunk, forcedDespawn) }
+        if (isServerVeryLagging)
+            return
+        spawningThreadPool.submit { spawnForChunk(level, chunk, forcedDespawn)  }
     }
 
     fun spawnForChunk(
@@ -60,8 +60,6 @@ object RdiMobSpawner {
         chunk: LevelChunk,
         forcedDespawn: Boolean
     ) {
-        if (isServerVeryLagging)
-            return
         AccessNaturalSpawner.getSPAWNING_CATEGORIES().forEach { mobCategory ->
             if ((forcedDespawn || !mobCategory.isPersistent))
                 spawnCategoryForChunk(

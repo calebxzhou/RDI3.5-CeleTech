@@ -1,12 +1,19 @@
 package calebzhou.rdi.core.server.mixin.gameplay;
 
 
+import net.minecraft.advancements.Advancement;
+import net.minecraft.advancements.AdvancementProgress;
 import net.minecraft.server.PlayerAdvancements;
 import net.minecraft.server.ServerAdvancementManager;
+import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Redirect;
+
+import java.util.Map;
+import java.util.Set;
 
 @Mixin(PlayerAdvancements.class)
 public abstract class mNoStackOverflowReadAdvancements {
@@ -30,7 +37,7 @@ public abstract class mNoStackOverflowReadAdvancements {
 		}
 	}
 
-	/*@Shadow
+	@Shadow
 	@Final
 	private Map<Advancement, AdvancementProgress> advancements;
 
@@ -134,6 +141,6 @@ public abstract class mNoStackOverflowReadAdvancements {
 			e.printStackTrace();
 		}
 
-	}*/
+	}
 
 }
